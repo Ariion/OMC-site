@@ -1,4 +1,7 @@
-// --- BASE DE DONNÉES ANALYSES ---
+// ==========================================
+// 1. BASES DE DONNÉES
+// ==========================================
+
 const database = {
     "Hématologie (Sang)": [
         { id: "gb", label: "Leucocytes (Globules Blancs)", unit: "G/L", norm: "4.0 - 10.0", help: "Infection ou inflammation." },
@@ -59,7 +62,6 @@ const database = {
     ]
 };
 
-// --- GESTION DES CAUSES DÉCÈS ---
 const causesData = {
     "Neurologique": ["Hémorragie méningée", "Hémorragie intracérébrale massive", "Infarctus cérébral massif", "Traumatisme cranien sévère", "Etat de mal épileptique"],
     "Hémorragique": ["Hémorragie interne massive", "Hémorragie externe incontrôlable", "Rupture d'anévrisme", "Hémorragie obstétricale sévère"],
@@ -69,12 +71,14 @@ const causesData = {
     "Toxique": ["Intoxication médicamenteuse massive", "Overdose opioïdes / cocaïne", "Intoxication monoxyde de carbone", "Empoisonnement chimique"]
 };
 
-// --- INITIALISATION DES PAGES ---
+// ==========================================
+// 2. INITIALISATION ET MISES À JOUR
+// ==========================================
+
 function init() {
     const tabsContainer = document.getElementById('dynamic-tabs');
     const sectionsContainer = document.getElementById('dynamic-sections');
 
-    // On ne lance l'init que si on est sur la page Labo
     if (!tabsContainer || !sectionsContainer) return;
 
     tabsContainer.innerHTML = "";
@@ -114,7 +118,6 @@ function init() {
     }
 }
 
-// --- FONCTIONS DE MISE À JOUR TEXTE ---
 function up(id, val) {
     const el = document.getElementById(id);
     if(el) el.innerText = val || (id==='d-sig' ? "NOM DOCTEUR" : "...");
@@ -127,7 +130,10 @@ function upDate(id, val) {
     if(el) el.innerText = `${d}/${m}/${y}`;
 }
 
-// --- GESTION DES RÉSULTATS LABO ---
+// ==========================================
+// 3. LOGIQUE MÉDICALE (LABO)
+// ==========================================
+
 function res(id, val, cat) {
     const row = document.getElementById('row-'+id);
     const valSpan = document.getElementById('val-'+id);
@@ -167,7 +173,10 @@ function analyserTout() {
     if(conclEl) conclEl.innerText = autoConcl;
 }
 
-// --- GESTION DES CAUSES DÉCÈS (SELECTS) ---
+// ==========================================
+// 4. LOGIQUE DÉCÈS (SÉLECTEURS & RÉF)
+// ==========================================
+
 function updateCausesSub(type) {
     const select = document.getElementById('cause-precision');
     if(!select) return;
@@ -179,31 +188,32 @@ function updateCausesSub(type) {
     }
 }
 
-// --- GÉNÉRATION RÉFÉRENCE AUTOMATIQUE ---
 function genererReference() {
     const n = new Date();
     const jour = n.getDate().toString().padStart(2, '0');
     const mois = (n.getMonth() + 1).toString().padStart(2, '0');
     const heure = n.getHours().toString().padStart(2, '0');
     const minute = n.getMinutes().toString().padStart(2, '0');
+    const ref = `${jour}${mois}${heure}${minute}`;
 
-    const reference = `${jour}${mois}${heure}${minute}`;
+    const elements = { 'd-ref': ref, 'stamp-ref': ref };
+    for (let id in elements) {
+        let el = document.getElementById(id);
+        if (el) el.innerText = elements[id];
+    }
 
-    const refEl = document.getElementById('d-ref');
-    const stampEl = document.getElementById('stamp-ref');
-    const qrEl = document.getElementById('qr-ref');
-
-    if (refEl) refEl.innerText = reference;
-    if (stampEl) stampEl.innerText = reference;
-    if (qrEl) qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${reference}`;
+    const qr = document.getElementById('qr-ref');
+    if (qr) qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${ref}`;
 }
 
-// --- ENVOIS DISCORD ---
+// ==========================================
+// 5. ENVOIS DISCORD
+// ==========================================
+
 async function envoyerDiscord() {
     const webhookURL = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
     const btn = document.getElementById('discord-btn');
     const docElement = document.getElementById('document');
-
     btn.innerText = "📸 CAPTURE...";
     btn.disabled = true;
 
@@ -211,7 +221,7 @@ async function envoyerDiscord() {
         const canvas = await html2canvas(docElement, { scale: 2, useCORS: true });
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
-            const patientNom = document.getElementById('d-nom').innerText || "Inconnu";
+            const patientNom = document.getElementById('d-nom')?.innerText || "Inconnu";
             const payload = {
                 username: "OMC INTRANET",
                 content: `📑 **Nouveau rapport de laboratoire**\n👤 **Patient :** ${patientNom}`,
@@ -226,9 +236,9 @@ async function envoyerDiscord() {
 }
 
 async function envoyerDiscordDeces() {
-    const webhookURL = "TON_WEBHOOK_DECES_ICI"; // À REMPLACER
+    const webhookURL = "TON_WEBHOOK_DECES_ICI"; // À REMPLACER PAR TON LIEN
     const docElement = document.getElementById('document');
-    const patient = document.getElementById('d-defunt').innerText;
+    const patient = document.getElementById('d-defunt')?.innerText || "Inconnu";
 
     html2canvas(docElement, { scale: 2 }).then(canvas => {
         canvas.toBlob(async (blob) => {
@@ -243,7 +253,10 @@ async function envoyerDiscordDeces() {
     });
 }
 
-// --- LANCEMENT ---
+// ==========================================
+// 6. LANCEMENT
+// ==========================================
+
 document.addEventListener('DOMContentLoaded', () => {
     init();
     genererReference();
