@@ -124,12 +124,7 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
    @media print {
        #input-panel { display: none !important; }
        #preview-area { padding: 0 !important; display: block !important; background: white !important; }
-       #document {
-           box-shadow: none !important;
-           width: 210mm !important; /* On garde les 210mm même à l'impression */
-           margin: 0 auto !important;
-           padding: 10mm !important;
-       }
+
    }
 
 .qr-code {
