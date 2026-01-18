@@ -162,17 +162,21 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
     btn.disabled = true;
 
     try {
+        // On définit précisément la zone de capture
         const canvas = await html2canvas(docElement, {
-            scale: 2,
+            scale: 2,               // Haute définition
             useCORS: true,
             backgroundColor: "#ffffff",
-            width: 800, // On capture exactement 800px
+            width: 800,             // On capture 800px de large
+            height: docElement.offsetHeight, // On prend toute la hauteur
+            x: 0,                   // Départ à gauche 0
+            y: 0,                   // Départ en haut 0
             onclone: (clonedDoc) => {
                 const d = clonedDoc.getElementById('document');
                 d.style.width = '800px';
-                d.style.display = 'block';
                 d.style.boxShadow = 'none';
                 d.style.border = 'none';
+                d.style.margin = '0'; // Supprime les marges de centrage pour la photo
             }
         });
 
@@ -187,14 +191,15 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
             formData.append("file", blob, `${fileName}_${patientName}.png`);
 
             await fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ Envoi réussi !");
-            btn.innerText = "PUBLIER SUR L'INTRANET";
+            alert("✅ Envoi réussi ! Format vérifié.");
+            btn.innerText = "ENVOYER SUR L'INTRANET";
             btn.disabled = false;
         }, 'image/png');
 
     } catch (error) {
         console.error(error);
         alert("❌ Erreur de capture.");
+        btn.innerText = "ERREUR";
         btn.disabled = false;
     }
 }
