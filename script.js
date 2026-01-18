@@ -250,7 +250,7 @@ async function envoyerDiscord() {
 }
 
 async function envoyerDiscordDeces() {
-    const webhookURL = "TON_WEBHOOK_DECES_ICI"; // À REMPLACER PAR TON LIEN
+    const webhookURL = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy"; // À REMPLACER PAR TON LIEN
     const docElement = document.getElementById('document');
     const patient = document.getElementById('d-defunt')?.innerText || "Inconnu";
 
