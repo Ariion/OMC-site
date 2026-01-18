@@ -409,7 +409,7 @@ function envoyerDiscord() {
 
 function envoyerDiscordDeces() {
 
-    const url = "TON_WEBHOOK_DECES_ICI";
+    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
 
     capturerEtEnvoyer(url, "acte", "💀 **NOUVEL ACTE DE DÉCÈS ÉTABLI** | Défunt :", "d-defunt");
 
