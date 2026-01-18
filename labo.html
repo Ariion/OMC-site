@@ -27,7 +27,7 @@
         </div>
         <div class="input-group">
             <label>Groupe Sanguin</label>
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <div style="display: flex; gap: 10px;">
                 <button type="button" onclick="determinerGroupeAleatoire()" style="flex: 1; padding: 8px; font-size: 11px; cursor: pointer; background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 4px;">🎲 ALÉATOIRE</button>
                 <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex: 1;">
                     <option value="...">-- Manuel --</option>
@@ -40,8 +40,6 @@
                     <option value="O+">O+</option>
                     <option value="O-">O-</option>
                 </select>
-
-                <div>Groupe Sanguin : <span id="d-groupe" style="font-weight: bold;">...</span></div>
             </div>
         </div>
         <div id="dynamic-tabs"></div>
@@ -73,6 +71,9 @@
                 <div>Médecin : <span id="d-presc">...</span></div>
                 <div>Date de naissance : <span id="d-ddn">...</span></div>
                 <div>Date du prélèvement : <span id="d-date">...</span></div>
+                <div style="margin-top: 5px; font-weight: bold; color: #00d2ff;">
+            Groupe Sanguin : <span id="d-groupe">...</span>
+        </div>
             </div>
 
             <div id="dynamic-sections"></div>
