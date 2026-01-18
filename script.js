@@ -167,13 +167,13 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
             scale: 2,               // Haute définition
             useCORS: true,
             backgroundColor: "#ffffff",
-            width: 800,             // On capture 800px de large
+            width: 100%,             // On capture 800px de large
             height: docElement.offsetHeight, // On prend toute la hauteur
             x: 0,                   // Départ à gauche 0
             y: 0,                   // Départ en haut 0
             onclone: (clonedDoc) => {
                 const d = clonedDoc.getElementById('document');
-                d.style.width = '800px';
+                d.style.width = '100%';
                 d.style.boxShadow = 'none';
                 d.style.border = 'none';
                 d.style.margin = '0'; // Supprime les marges de centrage pour la photo
