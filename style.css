@@ -17,6 +17,31 @@ body {
     overflow: hidden;
 }
 
+/* --- ACCUEIL PORTAIL (index.html) --- */
+.portal-body {
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Force l'alignement vertical */
+}
+
+.portal-container {
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+}
+
+.portal-logo {
+    height: 150px !important; /* Force la taille ici */
+    width: auto;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px var(--omc-cyan));
+}
+
+/* --- LOGOS DANS LES DOCUMENTS (labo & deces) --- */
+.header img, .header-cert img {
+    height: 50px !important; /* Empêche le logo de manger tout le document */
+    width: auto;
+}
 /* ==========================================
    2. INTERFACE DE SAISIE
    ========================================== */
