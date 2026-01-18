@@ -162,21 +162,26 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
     btn.disabled = true;
 
     try {
-        // Cette configuration force la capture de TOUTE la hauteur réelle du document
         const canvas = await html2canvas(docElement, {
-            scale: 2,
+            scale: 2,               // Qualité HD
             useCORS: true,
             backgroundColor: "#ffffff",
-            width: docElement.offsetWidth,
-            height: docElement.offsetHeight, // Utilise la hauteur calculée
-            scrollY: -window.scrollY,         // Fix pour éviter les décalages de scroll
+            width: 794,             // Largeur exacte du document (210mm)
+            windowWidth: 1024,      // On simule un écran large pour éviter le crop à droite
+            x: 0,
+            y: 0,
+            scrollX: 0,
+            scrollY: 0,
             onclone: (clonedDoc) => {
                 const d = clonedDoc.getElementById('document');
+                // On s'assure que le style est parfaitement propre pour la photo
+                d.style.width = '794px';
                 d.style.height = 'auto';
                 d.style.minHeight = 'auto';
                 d.style.boxShadow = 'none';
                 d.style.border = 'none';
-                d.style.margin = '0';
+                d.style.margin = '0 auto';
+                d.style.display = 'block';
             }
         });
 
@@ -191,15 +196,16 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
             formData.append("file", blob, `${fileName}_${patientName}.png`);
 
             await fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ Document envoyé en entier !");
-            btn.innerText = "ENVOYER SUR L'INTRANET";
+            alert("✅ Envoi réussi (format large corrigé) !");
+            btn.innerText = "PUBLIER SUR L'INTRANET";
             btn.disabled = false;
         }, 'image/png');
 
     } catch (error) {
-        console.error(error);
+        console.error("Erreur capture:", error);
         alert("❌ Erreur de capture.");
         btn.disabled = false;
+        btn.innerText = "RÉESSAYER";
     }
 }
 
