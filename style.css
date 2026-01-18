@@ -16,16 +16,18 @@
 
 }
 
-.portal-container {
-   
+.portal-container h1 {
+    color: #00d2ff; /* Ta couleur cyan préférée */
+    font-size: 2.8em;
+    font-weight: 800;
+    letter-spacing: 6px; /* Pour l'effet premium */
+    text-shadow: 0 0 20px rgba(0, 210, 255, 0.4); /* Lueur subtile */
+    margin: 10px 0;
 }
-   
 
 body {
 
     font-family: 'Segoe UI', sans-serif;
-   
-    h1: white;
 
     margin: 0;
 
@@ -305,6 +307,7 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
     background: #f0f0f0; /* Fond de secours */
 
 }
+
 
 
 
