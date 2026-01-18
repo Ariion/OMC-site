@@ -1,12 +1,8 @@
-// ==========================================
-// 1. BASES DE DONNÉES (Gardées telles quelles)
-// ==========================================
-const database = { /* ... tes données ... */ };
-const causesData = { /* ... tes causes ... */ };
+// Les bases de données restent identiques à tes versions précédentes
+const database = { /* ... garde tes données ici ... */ };
+const causesData = { /* ... garde tes causes ici ... */ };
 
-// ==========================================
-// 2. INITIALISATION ET MISES À JOUR
-// ==========================================
+// --- INITIALISATION ---
 function init() {
     const tabsContainer = document.getElementById('dynamic-tabs');
     const sectionsContainer = document.getElementById('dynamic-sections');
@@ -31,9 +27,7 @@ function init() {
         database[cat].forEach(item => {
             div.innerHTML += `
             <div class="input-group">
-                <span class="help-text">${item.help}</span>
                 <label>${item.label}</label>
-                <div style="font-size: 0.7em; color: orange; margin-bottom: 5px;">Norme : ${item.norm} ${item.unit}</div>
                 <input type="text" class="analysis-input" data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
             </div>`;
 
@@ -49,9 +43,10 @@ function init() {
     }
 }
 
+// --- FONCTIONS DE MISE À JOUR ---
 function up(id, val) {
     const el = document.getElementById(id);
-    if(el) el.innerText = val || (id==='d-sig' ? "NOM DOCTEUR" : "...");
+    if(el) el.innerText = val || "...";
 }
 
 function upDate(id, val) {
@@ -61,15 +56,7 @@ function upDate(id, val) {
     if(el) el.innerText = `${d}/${m}/${y}`;
 }
 
-// ==========================================
-// 3. LOGIQUE MÉDICALE & DÉCÈS
-// ==========================================
-function res(id, val, cat) { /* ... identique à ta version ... */ }
-function analyserTout() { /* ... identique à ta version ... */ }
-
-let typeSelectionne = "";
 function updateCausesSub(type) {
-    typeSelectionne = type;
     const select = document.getElementById('cause-precision');
     if(!select) return;
     select.innerHTML = '<option value="">-- Sélectionner --</option>';
@@ -79,33 +66,25 @@ function updateCausesSub(type) {
 }
 
 function updateCauseFinale(precision) {
-    const blocAffichage = document.getElementById('d-cause');
-    if (blocAffichage && precision !== "") {
-        blocAffichage.innerText = `${typeSelectionne} — ${precision}`;
-    }
+    const type = document.getElementById('cause-type').value;
+    const el = document.getElementById('d-cause');
+    if(el) el.innerText = type + " — " + precision;
 }
 
 function genererReference() {
     const n = new Date();
     const ref = n.getDate().toString().padStart(2, '0') + (n.getMonth() + 1).toString().padStart(2, '0') + n.getHours().toString().padStart(2, '0') + n.getMinutes().toString().padStart(2, '0');
-    const elements = { 'd-ref': ref, 'stamp-ref': ref };
-    for (let id in elements) {
-        let el = document.getElementById(id);
-        if (el) el.innerText = elements[id];
-    }
+    if(document.getElementById('d-ref')) document.getElementById('d-ref').innerText = ref;
+    if(document.getElementById('stamp-ref')) document.getElementById('stamp-ref').innerText = ref;
     const qr = document.getElementById('qr-ref');
-    if (qr) qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DOC-${ref}`;
+    if (qr) qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-${ref}`;
 }
 
-// ==========================================
-// 5. ENVOIS DISCORD (FIX DÉFINITIF)
-// ==========================================
+// --- CAPTURE DISCORD ---
 async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
     const docElement = document.getElementById('document');
-    if(!docElement) return;
-
     const btn = document.getElementById('discord-btn');
-    btn.innerText = "📸 CAPTURE...";
+    btn.innerText = "📸 ENVOI...";
     btn.disabled = true;
 
     try {
@@ -113,35 +92,39 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
             scale: 2,
             useCORS: true,
             backgroundColor: "#ffffff",
-            width: 800,           // On force la capture à 800px
-            windowWidth: 1200,    // On simule un écran large pour éviter de couper à droite
+            width: 800,
+            windowWidth: 1200,
             onclone: (clonedDoc) => {
                 const d = clonedDoc.getElementById('document');
                 d.style.width = '800px';
                 d.style.boxShadow = 'none';
-                d.style.margin = '0';
             }
         });
 
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const patientName = document.getElementById(patientId)?.innerText || "Inconnu";
-            formData.append("payload_json", JSON.stringify({
-                content: contentMsg + ` **${patientName}**`
-            }));
+            formData.append("payload_json", JSON.stringify({ content: contentMsg + ` **${patientName}**` }));
             formData.append("file", blob, `${fileName}.png`);
             await fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ RÉUSSI ! Tout est sur Discord.");
+            alert("✅ RÉUSSI !");
+            btn.innerText = "ENVOYER SUR L'INTRANET";
+            btn.disabled = false;
         }, 'image/png');
-
-    } catch (error) {
-        alert("❌ Erreur de capture.");
-    } finally {
-        btn.innerText = "ENVOYER SUR L'INTRANET";
-        btn.disabled = false;
-    }
+    } catch (e) { alert("Erreur capture"); btn.disabled = false; }
 }
 
 function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    capturerEtEnvoyer(url, "labo", "📑 **RAPPORT LABO** | Patient :", "d
+    capturerEtEnvoyer(url, "labo", "📑 **RAPPORT LABO** | Patient :", "d-nom");
+}
+
+function envoyerDiscordDeces() {
+    const url = "TON_WEBHOOK_DECES"; // Mets ton lien ici
+    capturerEtEnvoyer(url, "acte", "💀 **ACTE DE DÉCÈS** | Défunt :", "d-defunt");
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    genererReference();
+});
