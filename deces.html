@@ -2,13 +2,13 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>OMC - Certificat de Décès</title>
+    <title>OMC - Acte de Décès</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <div id="input-panel">
-        <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
+        <a href="index.html" class="back-link">← RETOUR ACCUEIL</a>
         <h2>OMC - ACTE DE DÉCÈS</h2>
 
         <div class="input-group">
@@ -31,16 +31,27 @@
             <label>Lieu du décès</label>
             <input type="text" oninput="up('d-lieu', this.value)" placeholder="OMC - Service Urgences">
         </div>
+
         <div class="input-group">
             <label>Cause immédiate - Type</label>
-            <select onchange="up('d-cause', this.value)">
-                <option value="-">-- Sélectionner --</option>
-                <option value="Arrêt Cardio-respiratoire">Arrêt Cardio-respiratoire</option>
-                <option value="Choc Hypovolémique">Choc Hypovolémique</option>
-                <option value="Traumatisme Crânien">Traumatisme Crânien</option>
-                <option value="Overdose">Overdose</option>
+            <select id="cause-type" onchange="updateCausesSub(this.value)">
+                <option value="">-- Sélectionner --</option>
+                <option value="Neurologique">Neurologique</option>
+                <option value="Hémorragique">Hémorragique</option>
+                <option value="Infectieuse / Métabolique">Infectieuse / Métabolique</option>
+                <option value="Cardio-respiratoire">Cardio-respiratoire</option>
+                <option value="Traumatique">Traumatique</option>
+                <option value="Toxique">Toxique</option>
             </select>
         </div>
+
+        <div class="input-group">
+            <label>Cause immédiate - Précision</label>
+            <select id="cause-precision" onchange="up('d-cause', this.value)">
+                <option value="">-- Sélectionner le type d'abord --</option>
+            </select>
+        </div>
+
         <div class="input-group">
             <label>Médecin certificateur</label>
             <input type="text" oninput="up('d-medecin', this.value)" placeholder="Dr. Bill HANSON">
@@ -51,9 +62,9 @@
     </div>
 
     <div id="preview-area">
-        <div id="document" class="certificate">
+        <div id="document">
             <div class="header-cert">
-                <img src="assets/logo_omc.png" alt="Logo OMC" style="height: 40px;">
+                <img src="assets/logo_omc.png" alt="Logo OMC" style="height: 45px;">
                 <div class="cert-title-block">
                     <span class="cert-tag">OCEAN MEDICAL CENTER</span>
                     <h1 class="cert-main-title">Certificat de décès</h1>
@@ -61,30 +72,12 @@
             </div>
 
             <div class="cert-grid">
-                <div class="cert-box">
-                    <label>Défunt</label>
-                    <div id="d-defunt" class="cert-val">-</div>
-                </div>
-                <div class="cert-box">
-                    <label>Naissance</label>
-                    <div id="d-naissance" class="cert-val">-</div>
-                </div>
-                <div class="cert-box">
-                    <label>Date / heure du décès</label>
-                    <div class="cert-val"><span id="d-date-deces">-</span> <span id="d-heure-deces"></span></div>
-                </div>
-                <div class="cert-box">
-                    <label>Lieu</label>
-                    <div id="d-lieu" class="cert-val">-</div>
-                </div>
-                <div class="cert-box">
-                    <label>Référence dossier</label>
-                    <div id="d-ref" class="cert-val">18011456</div>
-                </div>
-                <div class="cert-box">
-                    <label>Cause immédiate</label>
-                    <div id="d-cause" class="cert-val">-</div>
-                </div>
+                <div class="cert-box"><label>Défunt</label><div id="d-defunt" class="cert-val">-</div></div>
+                <div class="cert-box"><label>Naissance</label><div id="d-naissance" class="cert-val">-</div></div>
+                <div class="cert-box"><label>Date / heure du décès</label><div class="cert-val"><span id="d-date-deces">-</span> à <span id="d-heure-deces">--:--</span></div></div>
+                <div class="cert-box"><label>Lieu</label><div id="d-lieu" class="cert-val">-</div></div>
+                <div class="cert-box"><label>Référence dossier</label><div id="d-ref" class="cert-val">--</div></div>
+                <div class="cert-box"><label>Cause immédiate</label><div id="d-cause" class="cert-val">-</div></div>
             </div>
 
             <div class="cert-footer">
@@ -93,22 +86,20 @@
                     <div id="d-medecin" class="cert-val">-</div>
                 </div>
                 <div class="cert-stamps">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=OMC-DECES-18011456" alt="QR Code" class="qr-code">
+                    <img id="qr-ref" src="" alt="QR Code" class="qr-code">
                     <div class="round-stamp">
                         <span>OCEAN MEDICAL</span>
-                        <span class="stamp-ref">18011456</span>
+                        <span id="stamp-ref" class="stamp-ref">--</span>
                         <span>CENTER</span>
                     </div>
                 </div>
             </div>
 
             <p class="legal-text">
-                Ce certificat de décès est établi dans le cadre de la pratique médicale, sur la base des constatations cliniques et des informations disponibles au moment de la certification. Il atteste uniquement du décès de la personne identifiée ci-dessus.<br><br>
-                Toute reproduction, falsification ou usage détourné de ce document est strictement interdite. Les données nominatives y figurant sont protégées par la réglementation en vigueur et ne peuvent être utilisées qu'aux seules fins administratives, judiciaires ou médicales prévues.
+                Ce certificat de décès est établi dans le cadre de la pratique médicale, sur la base des constatations cliniques. Toute reproduction ou usage détourné est strictement interdite.
             </p>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>

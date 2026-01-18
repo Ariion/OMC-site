@@ -219,3 +219,118 @@ async function envoyerDiscordDeces() {
         });
     });
 }
+
+// Fonction pour générer la référence JOURMOISHEUREMINUTE
+function genererReference() {
+    const maintenant = new Date();
+
+    const jour = maintenant.getDate().toString().padStart(2, '0');
+    const mois = (maintenant.getMonth() + 1).toString().padStart(2, '0'); // +1 car janvier = 0
+    const heure = maintenant.getHours().toString().padStart(2, '0');
+    const minute = maintenant.getMinutes().toString().padStart(2, '0');
+
+    const reference = `${jour}${mois}${heure}${minute}`;
+
+    // On l'affiche dans le document
+    const refElement = document.getElementById('d-ref');
+    if (refElement) {
+        refElement.innerText = reference;
+    }
+}
+
+// On lance la génération au chargement de la page
+window.addEventListener('load', genererReference);
+
+function genererReference() {
+    const maintenant = new Date();
+
+    // Format : JOUR MOIS HEURE MINUTE (ex: 18011504)
+    const jour = maintenant.getDate().toString().padStart(2, '0');
+    const mois = (maintenant.getMonth() + 1).toString().padStart(2, '0');
+    const heure = maintenant.getHours().toString().padStart(2, '0');
+    const minute = maintenant.getMinutes().toString().padStart(2, '0');
+
+    const reference = `${jour}${mois}${heure}${minute}`;
+
+    // 1. Mise à jour de la référence texte
+    if (document.getElementById('d-ref')) {
+        document.getElementById('d-ref').innerText = reference;
+    }
+
+    // 2. Mise à jour de la référence dans le tampon
+    if (document.getElementById('stamp-ref')) {
+        document.getElementById('stamp-ref').innerText = reference;
+    }
+
+    // 3. Mise à jour du QR Code
+    if (document.getElementById('qr-ref')) {
+        document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=OMC-DECES-${reference}`;
+    }
+}
+
+// On s'assure que la fonction se lance au chargement
+window.addEventListener('load', genererReference);
+
+// --- GESTION DES CAUSES (Selon tes captures) ---
+const causesData = {
+    "Neurologique": ["Hémorragie méningée", "Hémorragie intracérébrale massive", "Infarctus cérébral massif", "Traumatisme cranien sévère", "Etat de mal épileptique"],
+    "Hémorragique": ["Hémorragie interne massive", "Hémorragie externe incontrôlable", "Rupture d'anévrisme", "Hémorragie obstétricale sévère"],
+    "Infectieuse / Métabolique": ["Choc septique", "Défaillance multiviscérale", "Méningite bactérienne fulminante", "Acidocétose diabétique sévère", "Insuffisance hépatique aiguë", "Hyperthermie maligne"],
+    "Cardio-respiratoire": ["Arrêt cardio-respiratoire", "Fibrillation / TV", "Infarctus aigu du myocarde", "Embolie pulmonaire massive", "Oedème aigu du poumon", "Noyade"],
+    "Traumatique": ["Polytraumatisme avec choc hémorragique", "Ecrasement thoraco-abdominal", "Section médullaire haute", "Brulures étendues"],
+    "Toxique": ["Intoxication médicamenteuse massive", "Overdose opioïdes / cocaïne", "Intoxication monoxyde de carbone", "Empoisonnement chimique"]
+};
+
+function updateCausesSub(type) {
+    const select = document.getElementById('cause-precision');
+    select.innerHTML = '<option value="">-- Sélectionner --</option>';
+    if (causesData[type]) {
+        causesData[type].forEach(c => {
+            select.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+    }
+}
+
+// --- GÉNÉRATION DE LA RÉFÉRENCE AUTOMATIQUE ---
+function genererReference() {
+    const n = new Date();
+    const ref = `${n.getDate().toString().padStart(2,'0')}${(n.getMonth()+1).toString().padStart(2,'0')}${n.getHours().toString().padStart(2,'0')}${n.getMinutes().toString().padStart(2,'0')}`;
+
+    if(document.getElementById('d-ref')) document.getElementById('d-ref').innerText = ref;
+    if(document.getElementById('stamp-ref')) document.getElementById('stamp-ref').innerText = ref;
+    if(document.getElementById('qr-ref')) document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=OMC-DECES-${ref}`;
+}
+
+// --- FONCTIONS DE MISE À JOUR ---
+function up(id, val) {
+    const el = document.getElementById(id);
+    if(el) el.innerText = val || (id === 'd-medecin' ? "-" : "-");
+}
+
+function upDate(id, val) {
+    if(!val) return;
+    const [y, m, d] = val.split('-');
+    document.getElementById(id).innerText = `${d}/${m}/${y}`;
+}
+
+// --- ENVOI DISCORD ---
+async function envoyerDiscordDeces() {
+    const webhookURL = "TON_WEBHOOK_ICI";
+    const doc = document.getElementById('document');
+    const patient = document.getElementById('d-defunt').innerText;
+
+    html2canvas(doc, { scale: 2 }).then(canvas => {
+        canvas.toBlob(blob => {
+            const formData = new FormData();
+            formData.append("payload_json", JSON.stringify({
+                content: `💀 **ACTE DE DÉCÈS ÉTABLI** | Défunt : **${patient}**`
+            }));
+            formData.append("file", blob, `deces_${patient}.png`);
+            fetch(webhookURL, { method: 'POST', body: formData });
+            alert("✅ Acte envoyé sur l'Intranet !");
+        });
+    });
+}
+
+// Lancement au chargement
+window.onload = genererReference;
