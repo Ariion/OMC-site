@@ -158,25 +158,23 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
     if(!docElement) return;
 
     const btn = document.getElementById('discord-btn');
-    btn.innerText = "📸 CAPTURE...";
+    btn.innerText = "📸 ENVOI...";
     btn.disabled = true;
 
     try {
-        // On définit précisément la zone de capture
         const canvas = await html2canvas(docElement, {
-            scale: 2,               // Haute définition
+            scale: 2,
             useCORS: true,
             backgroundColor: "#ffffff",
-            width: 100%,             // On capture 800px de large
-            height: docElement.offsetHeight, // On prend toute la hauteur
-            x: 0,                   // Départ à gauche 0
-            y: 0,                   // Départ en haut 0
+            width: 800,           // On force la photo à faire 800px
+            windowWidth: 1200,    // On simule un écran très large pour le rendu
+            scrollX: 0,
+            scrollY: 0,
             onclone: (clonedDoc) => {
                 const d = clonedDoc.getElementById('document');
-                d.style.width = '100%';
-                d.style.boxShadow = 'none';
-                d.style.border = 'none';
-                d.style.margin = '0'; // Supprime les marges de centrage pour la photo
+                d.style.width = '800px';
+                d.style.minWidth = '800px';
+                d.style.transform = 'scale(1)'; // Annule tout zoom automatique
             }
         });
 
@@ -185,21 +183,18 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
             const patientName = document.getElementById(patientId)?.innerText || "Inconnu";
 
             formData.append("payload_json", JSON.stringify({
-                username: "OMC INTRANET",
                 content: contentMsg + ` **${patientName}**`
             }));
-            formData.append("file", blob, `${fileName}_${patientName}.png`);
+            formData.append("file", blob, `${fileName}.png`);
 
             await fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ Envoi réussi ! Format vérifié.");
-            btn.innerText = "ENVOYER SUR L'INTRANET";
-            btn.disabled = false;
+            alert("✅ RÉUSSI ! Tout est sur Discord.");
         }, 'image/png');
 
     } catch (error) {
-        console.error(error);
-        alert("❌ Erreur de capture.");
-        btn.innerText = "ERREUR";
+        alert("❌ Erreur. Vérifie ta console (F12)");
+    } finally {
+        btn.innerText = "ENVOYER SUR L'INTRANET";
         btn.disabled = false;
     }
 }
