@@ -221,50 +221,98 @@ function genererReference() {
 }
 
 // ==========================================
-// 5. ENVOIS DISCORD
+// 5. ENVOIS DISCORD (AVEC RECADRAGE AUTO)
 // ==========================================
 
+// --- ENVOI LABORATOIRE (labo.html) ---
 async function envoyerDiscord() {
     const webhookURL = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
     const btn = document.getElementById('discord-btn');
     const docElement = document.getElementById('document');
+
+    if(!docElement) return;
+
     btn.innerText = "📸 CAPTURE...";
     btn.disabled = true;
 
     try {
-        const canvas = await html2canvas(docElement, { scale: 2, useCORS: true });
+        const canvas = await html2canvas(docElement, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            width: 794, // Force la largeur A4 (21cm)
+            onclone: (clonedDoc) => {
+                // Force la hauteur en auto pour supprimer le vide blanc
+                const d = clonedDoc.getElementById('document');
+                d.style.height = 'auto';
+                d.style.minHeight = 'auto';
+            }
+        });
+
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const patientNom = document.getElementById('d-nom')?.innerText || "Inconnu";
             const payload = {
                 username: "OMC INTRANET",
-                content: `📑 **Nouveau rapport de laboratoire**\n👤 **Patient :** ${patientNom}`,
+                content: `📑 **NOUVEAU RAPPORT DE LABORATOIRE**\n👤 **Patient :** ${patientNom}`,
             };
             formData.append("payload_json", JSON.stringify(payload));
-            formData.append("file", blob, `rapport_${patientNom}.png`);
+            formData.append("file", blob, `labo_${patientNom}.png`);
             await fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ Rapport envoyé !");
+            alert("✅ Rapport bio envoyé et recadré !");
         }, 'image/png');
-    } catch (error) { alert("❌ Erreur de capture."); }
-    finally { btn.innerText = "ENVOYER SUR L'INTRANET"; btn.disabled = false; }
+
+    } catch (error) {
+        console.error(error);
+        alert("❌ Erreur de capture.");
+    } finally {
+        btn.innerText = "PUBLIER SUR L'INTRANET";
+        btn.disabled = false;
+    }
 }
 
+// --- ENVOI ACTE DE DÉCÈS (deces.html) ---
 async function envoyerDiscordDeces() {
-    const webhookURL = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy"; // À REMPLACER PAR TON LIEN
+    const webhookURL = "TON_WEBHOOK_DECES_ICI"; // <--- N'OUBLIE PAS TON LIEN ICI
+    const btn = document.getElementById('discord-btn');
     const docElement = document.getElementById('document');
-    const patient = document.getElementById('d-defunt')?.innerText || "Inconnu";
 
-    html2canvas(docElement, { scale: 2 }).then(canvas => {
+    if(!docElement) return;
+
+    btn.innerText = "📸 ENVOI...";
+    btn.disabled = true;
+
+    try {
+        const canvas = await html2canvas(docElement, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            width: 794, // Force la largeur A4 (21cm)
+            onclone: (clonedDoc) => {
+                const d = clonedDoc.getElementById('document');
+                d.style.height = 'auto';
+                d.style.minHeight = 'auto';
+            }
+        });
+
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
+            const patient = document.getElementById('d-defunt')?.innerText || "Inconnu";
             formData.append("payload_json", JSON.stringify({
                 content: `💀 **NOUVEL ACTE DE DÉCÈS ÉTABLI**\n👤 Défunt : **${patient}**`
             }));
             formData.append("file", blob, `acte_deces_${patient}.png`);
             await fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ Acte de décès envoyé !");
-        });
-    });
+            alert("✅ Acte de décès envoyé et recadré !");
+        }, 'image/png');
+
+    } catch (error) {
+        console.error(error);
+        alert("❌ Erreur lors de l'envoi de l'acte.");
+    } finally {
+        btn.innerText = "ENVOYER DANS ACTE DE DÉCÈS";
+        btn.disabled = false;
+    }
 }
 
 // ==========================================
