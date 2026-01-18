@@ -252,16 +252,40 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 
       ========================================== */
 
-   @media print {
+      @media print {
+       /* 1. On cache absolument tout ce qui n'est pas le document */
+       #input-panel, .back-link, button, #dynamic-tabs, .portal-logo {
+           display: none !important;
+       }
 
-       #input-panel { display: none !important; }
+       /* 2. On réinitialise le corps de la page pour qu'il ne soit plus en "flex" */
+       body {
+           display: block !important;
+           background: white !important;
+           overflow: visible !important;
+       }
 
-       #preview-area { padding: 0 !important; display: block !important; background: white !important; }
+       /* 3. On force la zone de prévisualisation à prendre toute la largeur */
+       #preview-area {
+           display: block !important;
+           position: absolute;
+           top: 0;
+           left: 0;
+           width: 100% !important;
+           padding: 0 !important;
+           margin: 0 !important;
+       }
 
-
-
+       /* 4. On fixe le document au format A4 réel pour éviter qu'il soit coupé */
+       #document {
+           width: 210mm !important;
+           min-width: 210mm !important;
+           margin: 0 auto !important;
+           padding: 20mm !important;
+           box-shadow: none !important;
+           border: none !important;
+       }
    }
-
 
 
 .qr-code {

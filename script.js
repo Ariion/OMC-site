@@ -346,12 +346,9 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
 
                 const d = clonedDoc.getElementById('document');
 
-                d.style.width = '800px';
+                d.style.margin = '0';
 
-                d.style.minWidth = '800px';
-
-                d.style.transform = 'scale(1)'; // Annule tout zoom automatique
-
+                d.style.boxShadow = 'none';
             }
 
         });
