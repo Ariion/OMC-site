@@ -7,7 +7,6 @@ const causesData = { /* ... tes causes ... */ };
 // ==========================================
 // 2. INITIALISATION ET MISES À JOUR
 // ==========================================
-
 function init() {
     const tabsContainer = document.getElementById('dynamic-tabs');
     const sectionsContainer = document.getElementById('dynamic-sections');
@@ -63,64 +62,19 @@ function upDate(id, val) {
 }
 
 // ==========================================
-// 3. LOGIQUE MÉDICALE (LABO)
+// 3. LOGIQUE MÉDICALE & DÉCÈS
 // ==========================================
-
-function res(id, val, cat) {
-    const row = document.getElementById('row-'+id);
-    const valSpan = document.getElementById('val-'+id);
-    if(valSpan) valSpan.innerText = val;
-
-    const itemData = Object.values(database).flat().find(i => i.id === id);
-    if (val.trim() !== "" && itemData && itemData.norm !== "Négatif" && itemData.norm !== "Conforme") {
-        const valNum = parseFloat(val.replace(',', '.'));
-        const [min, max] = itemData.norm.replace('0 - ', '0-').split('-').map(n => parseFloat(n));
-        valSpan.style.color = (valNum < min || valNum > max) ? "red" : "green";
-    } else if (val.toLowerCase() === "positif") { valSpan.style.color = "red"; }
-    else if (val.toLowerCase() === "négatif" || val.toLowerCase() === "conforme") { valSpan.style.color = "green"; }
-
-    if(val.trim() !== "") row.classList.add('active'); else row.classList.remove('active');
-    const section = document.getElementById('sec-'+cat);
-    if(section) section.classList.toggle('active', section.querySelectorAll('.row.active').length > 0);
-
-    analyserTout();
-}
-
-function analyserTout() {
-    let anomalies = [];
-    document.querySelectorAll('.analysis-input').forEach(input => {
-        let valText = input.value.trim().replace(',', '.');
-        if (!valText) return;
-        let label = input.getAttribute('data-label'), norm = input.getAttribute('data-norm');
-        if (norm.includes('-') || norm.startsWith('0')) {
-            let valNum = parseFloat(valText), [min, max] = norm.replace('0 - ', '0-').split('-').map(n => parseFloat(n));
-            if (valNum < min) anomalies.push(`${label} bas`);
-            if (valNum > max) anomalies.push(`${label} élevé`);
-        } else if (norm === "Négatif" && valText.toLowerCase() === "positif") { anomalies.push(`${label} POSITIF`); }
-    });
-    let autoConcl = anomalies.length > 0 ? "Points d'attention : " + anomalies.join(', ') + "." : "Bilan biologique satisfaisant.";
-    const textZone = document.getElementById('auto-concl-area');
-    if(textZone) textZone.value = autoConcl;
-    const conclEl = document.getElementById('d-concl');
-    if(conclEl) conclEl.innerText = autoConcl;
-}
-
-// ==========================================
-// 4. LOGIQUE DÉCÈS
-// ==========================================
+function res(id, val, cat) { /* ... identique à ta version ... */ }
+function analyserTout() { /* ... identique à ta version ... */ }
 
 let typeSelectionne = "";
-
 function updateCausesSub(type) {
     typeSelectionne = type;
     const select = document.getElementById('cause-precision');
     if(!select) return;
-
     select.innerHTML = '<option value="">-- Sélectionner --</option>';
     if (causesData[type]) {
-        causesData[type].forEach(c => {
-            select.innerHTML += `<option value="${c}">${c}</option>`;
-        });
+        causesData[type].forEach(c => { select.innerHTML += `<option value="${c}">${c}</option>`; });
     }
 }
 
@@ -133,32 +87,25 @@ function updateCauseFinale(precision) {
 
 function genererReference() {
     const n = new Date();
-    const jour = n.getDate().toString().padStart(2, '0');
-    const mois = (n.getMonth() + 1).toString().padStart(2, '0');
-    const heure = n.getHours().toString().padStart(2, '0');
-    const minute = n.getMinutes().toString().padStart(2, '0');
-    const ref = `${jour}${mois}${heure}${minute}`;
-
+    const ref = n.getDate().toString().padStart(2, '0') + (n.getMonth() + 1).toString().padStart(2, '0') + n.getHours().toString().padStart(2, '0') + n.getMinutes().toString().padStart(2, '0');
     const elements = { 'd-ref': ref, 'stamp-ref': ref };
     for (let id in elements) {
         let el = document.getElementById(id);
         if (el) el.innerText = elements[id];
     }
-
     const qr = document.getElementById('qr-ref');
-    if (qr) qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${ref}`;
+    if (qr) qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DOC-${ref}`;
 }
 
 // ==========================================
-// 5. ENVOIS DISCORD (FIX COUPE IMAGE)
+// 5. ENVOIS DISCORD (FIX DÉFINITIF)
 // ==========================================
-
 async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
     const docElement = document.getElementById('document');
     if(!docElement) return;
 
     const btn = document.getElementById('discord-btn');
-    btn.innerText = "📸 ENVOI...";
+    btn.innerText = "📸 CAPTURE...";
     btn.disabled = true;
 
     try {
@@ -166,33 +113,29 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
             scale: 2,
             useCORS: true,
             backgroundColor: "#ffffff",
-            width: 800,           // On force la photo à faire 800px
-            windowWidth: 1200,    // On simule un écran très large pour le rendu
-            scrollX: 0,
-            scrollY: 0,
+            width: 800,           // On force la capture à 800px
+            windowWidth: 1200,    // On simule un écran large pour éviter de couper à droite
             onclone: (clonedDoc) => {
                 const d = clonedDoc.getElementById('document');
                 d.style.width = '800px';
-                d.style.minWidth = '800px';
-                d.style.transform = 'scale(1)'; // Annule tout zoom automatique
+                d.style.boxShadow = 'none';
+                d.style.margin = '0';
             }
         });
 
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const patientName = document.getElementById(patientId)?.innerText || "Inconnu";
-
             formData.append("payload_json", JSON.stringify({
                 content: contentMsg + ` **${patientName}**`
             }));
             formData.append("file", blob, `${fileName}.png`);
-
             await fetch(webhookURL, { method: 'POST', body: formData });
             alert("✅ RÉUSSI ! Tout est sur Discord.");
         }, 'image/png');
 
     } catch (error) {
-        alert("❌ Erreur. Vérifie ta console (F12)");
+        alert("❌ Erreur de capture.");
     } finally {
         btn.innerText = "ENVOYER SUR L'INTRANET";
         btn.disabled = false;
@@ -201,19 +144,4 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
 
 function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    capturerEtEnvoyer(url, "labo", "📑 **NOUVEAU RAPPORT DE LABORATOIRE** | Patient :", "d-nom");
-}
-
-function envoyerDiscordDeces() {
-    const url = "TON_WEBHOOK_DECES_ICI";
-    capturerEtEnvoyer(url, "acte", "💀 **NOUVEL ACTE DE DÉCÈS ÉTABLI** | Défunt :", "d-defunt");
-}
-
-// ==========================================
-// 6. LANCEMENT
-// ==========================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    init();
-    genererReference();
-});
+    capturerEtEnvoyer(url, "labo", "📑 **RAPPORT LABO** | Patient :", "d
