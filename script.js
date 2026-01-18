@@ -292,17 +292,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function determinerGroupeAleatoire() {
     const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-    // Tirage au sort
     const resultat = groupes[Math.floor(Math.random() * groupes.length)];
 
-    // Mise à jour de l'affichage sur le document
+    // Mise à jour du texte sur le document (sans changement de couleur)
     const afficheur = document.getElementById('d-groupe');
     if(afficheur) {
         afficheur.innerText = resultat;
-        afficheur.style.color = "var(--omc-cyan)"; // Petit effet visuel pour la découverte
     }
 
-    // Synchronisation du menu déroulant
+    // Synchronisation du menu déroulant à gauche
     const select = document.getElementById('select-groupe');
-    if(select) select.value = resultat;
+    if(select) {
+        select.value = resultat;
+    }
 }
