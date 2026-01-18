@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>OMC - Laboratoire de Biologie</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div id="input-panel">
+        <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
+        <h2>OMC LABORATOIRE</h2>
+
+        <div class="input-group">
+            <label>Nom & Prénom</label><input type="text" oninput="up('d-nom', this.value)">
+        </div>
+        <div class="input-group">
+            <label>Date de Naissance</label><input type="date" oninput="upDate('d-ddn', this.value)">
+        </div>
+        <div class="input-group">
+            <label>Date Prélèvement</label><input type="date" oninput="upDate('d-date', this.value)">
+        </div>
+        <div class="input-group">
+            <label>Médecin Prescripteur</label><input type="text" oninput="up('d-presc', this.value)">
+        </div>
+
+        <div id="dynamic-tabs"></div>
+
+        <textarea oninput="up('d-concl', this.value)" id="auto-concl-area" placeholder="Conclusion médicale..." rows="3"></textarea>
+        <input type="text" oninput="up('d-sig', this.value)" placeholder="Nom du Docteur" style="margin-top:10px">
+
+        <button onclick="window.print()" id="print-btn">IMPRIMER LE RAPPORT (PDF)</button>
+        <button onclick="envoyerDiscord()" id="discord-btn">ENVOYER SUR L'INTRANET (DISCORD)</button>
+    </div>
+
+    <div id="preview-area">
+        <div id="document">
+            <div class="header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="assets/logo_omc.png" alt="Logo OMC" style="height: 50px; width: auto;">
+                    <div>
+                        <h1 style="margin:0; font-size: 24px; color: #0a192f;">OCEAN MEDICAL</h1>
+                        <p style="margin:0; font-size:10px; text-transform: uppercase; color: #555;">Clinical & Forensic Laboratory</p>
+                    </div>
+                </div>
+                <div style="text-align:right; font-size:10px; color: #777;">
+                    Réf : #OMC-2026-LAB<br>Los Santos, San Andreas
+                </div>
+            </div>
+
+            <div class="patient-card">
+                <div>Patient : <span id="d-nom">...</span></div>
+                <div>Médecin : <span id="d-presc">...</span></div>
+                <div>Date de naissance : <span id="d-ddn">...</span></div>
+                <div>Date du prélèvement : <span id="d-date">...</span></div>
+            </div>
+
+            <div id="dynamic-sections"></div>
+
+            <div style="margin-top:30px">
+                <strong>Conclusion :</strong>
+                <p id="d-concl" style="font-style:italic; font-size:13px">...</p>
+            </div>
+            <div class="signature-line" id="d-sig">NOM DU DOCTEUR</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
