@@ -177,14 +177,28 @@ function analyserTout() {
 // 4. LOGIQUE DÉCÈS (SÉLECTEURS & RÉF)
 // ==========================================
 
+// Variable globale pour stocker le type sélectionné
+let typeSelectionne = "";
+
 function updateCausesSub(type) {
+    typeSelectionne = type; // On mémorise le type (ex: Cardio-respiratoire)
     const select = document.getElementById('cause-precision');
     if(!select) return;
+
     select.innerHTML = '<option value="">-- Sélectionner --</option>';
     if (causesData[type]) {
         causesData[type].forEach(c => {
             select.innerHTML += `<option value="${c}">${c}</option>`;
         });
+    }
+}
+
+// Fonction de mise à jour modifiée pour fusionner les deux
+function updateCauseFinale(precision) {
+    const blocAffichage = document.getElementById('d-cause');
+    if (blocAffichage && precision !== "") {
+        // Affiche : "Type — Précision" (ex: Cardio-respiratoire — Oedème aigu du poumon)
+        blocAffichage.innerText = `${typeSelectionne} — ${precision}`;
     }
 }
 

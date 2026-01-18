@@ -33,24 +33,24 @@
         </div>
 
         <div class="input-group">
-            <label>Cause immédiate - Type</label>
-            <select id="cause-type" onchange="updateCausesSub(this.value)">
-                <option value="">-- Sélectionner --</option>
-                <option value="Neurologique">Neurologique</option>
-                <option value="Hémorragique">Hémorragique</option>
-                <option value="Infectieuse / Métabolique">Infectieuse / Métabolique</option>
-                <option value="Cardio-respiratoire">Cardio-respiratoire</option>
-                <option value="Traumatique">Traumatique</option>
-                <option value="Toxique">Toxique</option>
-            </select>
-        </div>
+    <label>Cause immédiate - Type</label>
+    <select id="cause-type" onchange="updateCausesSub(this.value)">
+        <option value="">-- Sélectionner --</option>
+        <option value="Neurologique">Neurologique</option>
+        <option value="Hémorragique">Hémorragique</option>
+        <option value="Infectieuse / Métabolique">Infectieuse / Métabolique</option>
+        <option value="Cardio-respiratoire">Cardio-respiratoire</option>
+        <option value="Traumatique">Traumatique</option>
+        <option value="Toxique">Toxique</option>
+    </select>
+</div>
 
-        <div class="input-group">
-            <label>Cause immédiate - Précision</label>
-            <select id="cause-precision" onchange="up('d-cause', this.value)">
-                <option value="">-- Sélectionner le type d'abord --</option>
-            </select>
-        </div>
+<div class="input-group">
+    <label>Cause immédiate - Précision</label>
+    <select id="cause-precision" onchange="updateCauseFinale(this.value)">
+        <option value="">-- Sélectionner le type d'abord --</option>
+    </select>
+</div>
 
         <div class="input-group">
             <label>Médecin certificateur</label>
