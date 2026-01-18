@@ -17,18 +17,6 @@ body {
     overflow: hidden;
 }
 
-#document {
-    width: 210mm;
-    min-height: auto;
-    height: auto;
-    background: white;
-    padding: 20mm;
-    color: #111;
-    /* On garde l'ombre pour l'écran, mais on prépare le terrain */
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    position: relative;
-    border: none; /* Évite les traits de bordure */
-}
 
 /* --- ACCUEIL PORTAIL (index.html) --- */
 .portal-body { justify-content: center; align-items: center; }
@@ -58,8 +46,26 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 /* ==========================================
    3. ZONE DE PRÉVISUALISATION (A4)
    ========================================== */
-#preview-area { flex-grow: 1; display: flex; justify-content: center; padding: 20px; overflow-y: auto; }
-#document { width: 210mm; min-height: 297mm; background: white; padding: 20mm; color: #111; box-shadow: 0 0 20px rgba(0,0,0,0.2); position: relative; }
+#preview-area {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    padding: 40px; /* Un peu plus d'espace pour respirer */
+    overflow-y: auto;
+    background: #d1d5db; /* Fond gris pour détacher la feuille blanche */
+}
+
+#document {
+    width: 210mm;
+    min-height: auto; /* IMPORTANT : auto pour permettre le recadrage */
+    height: auto;
+    background: white;
+    padding: 20mm;
+    color: #111;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+    border: none; /* Évite les traits parasites */
+}
 
 /* ==========================================
    4. STYLE LABORATOIRE (labo.html)

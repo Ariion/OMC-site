@@ -174,14 +174,13 @@ function analyserTout() {
 }
 
 // ==========================================
-// 4. LOGIQUE DÉCÈS (SÉLECTEURS & RÉF)
+// 4. LOGIQUE DÉCÈS
 // ==========================================
 
-// Variable globale pour stocker le type sélectionné
 let typeSelectionne = "";
 
 function updateCausesSub(type) {
-    typeSelectionne = type; // On mémorise le type (ex: Cardio-respiratoire)
+    typeSelectionne = type;
     const select = document.getElementById('cause-precision');
     if(!select) return;
 
@@ -193,11 +192,9 @@ function updateCausesSub(type) {
     }
 }
 
-// Fonction de mise à jour modifiée pour fusionner les deux
 function updateCauseFinale(precision) {
     const blocAffichage = document.getElementById('d-cause');
     if (blocAffichage && precision !== "") {
-        // Affiche : "Type — Précision" (ex: Cardio-respiratoire — Oedème aigu du poumon)
         blocAffichage.innerText = `${typeSelectionne} — ${precision}`;
     }
 }
@@ -221,10 +218,9 @@ function genererReference() {
 }
 
 // ==========================================
-// 5. ENVOIS DISCORD (AVEC RECADRAGE AUTO)
+// 5. ENVOIS DISCORD (ANTI-TRAITS & AUTO-CROP)
 // ==========================================
 
-// --- ENVOI LABORATOIRE (labo.html) ---
 async function envoyerDiscord() {
     const webhookURL = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
     const btn = document.getElementById('discord-btn');
@@ -236,22 +232,20 @@ async function envoyerDiscord() {
     btn.disabled = true;
 
     try {
-      // Remplace le bloc html2canvas par celui-ci (exemple pour Deces)
-const canvas = await html2canvas(docElement, {
-  scale: 2,
-  useCORS: true,
-  backgroundColor: "#ffffff",
-  width: 794,
-  logging: false, // Désactive les logs pour plus de rapidité
-  onclone: (clonedDoc) => {
-      const d = clonedDoc.getElementById('document');
-      d.style.height = 'auto';
-      d.style.minHeight = 'auto';
-      // IMPORTANT : On retire l'ombre et les bordures sur le clone pour éviter les traits
-      d.style.boxShadow = 'none';
-      d.style.border = 'none';
-  }
-});
+        const canvas = await html2canvas(docElement, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            width: 794,
+            logging: false,
+            onclone: (clonedDoc) => {
+                const d = clonedDoc.getElementById('document');
+                d.style.height = 'auto';
+                d.style.minHeight = 'auto';
+                d.style.boxShadow = 'none';
+                d.style.border = 'none';
+            }
+        });
 
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
@@ -275,9 +269,8 @@ const canvas = await html2canvas(docElement, {
     }
 }
 
-// --- ENVOI ACTE DE DÉCÈS (deces.html) ---
 async function envoyerDiscordDeces() {
-    const webhookURL = "TON_WEBHOOK_DECES_ICI"; // <--- N'OUBLIE PAS TON LIEN ICI
+    const webhookURL = "TON_WEBHOOK_DECES_ICI";
     const btn = document.getElementById('discord-btn');
     const docElement = document.getElementById('document');
 
@@ -291,11 +284,14 @@ async function envoyerDiscordDeces() {
             scale: 2,
             useCORS: true,
             backgroundColor: "#ffffff",
-            width: 794, // Force la largeur A4 (21cm)
+            width: 794,
+            logging: false,
             onclone: (clonedDoc) => {
                 const d = clonedDoc.getElementById('document');
                 d.style.height = 'auto';
                 d.style.minHeight = 'auto';
+                d.style.boxShadow = 'none';
+                d.style.border = 'none';
             }
         });
 
