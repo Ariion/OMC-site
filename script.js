@@ -201,3 +201,21 @@ async function envoyerDiscord() {
         btn.disabled = false;
     }
 }
+
+async function envoyerDiscordDeces() {
+    const webhookURL = "TON_WEBHOOK_DECES_ICI"; // Utilise un salon spécialisé si tu veux
+    const docElement = document.getElementById('document');
+    const patient = document.getElementById('d-defunt').innerText;
+
+    html2canvas(docElement, { scale: 2 }).then(canvas => {
+        canvas.toBlob(blob => {
+            const formData = new FormData();
+            formData.append("payload_json", JSON.stringify({
+                content: `💀 **NOUVEL ACTE DE DÉCÈS ÉTABLI**\n👤 Défunt : **${patient}**`
+            }));
+            formData.append("file", blob, `acte_deces_${patient}.png`);
+            fetch(webhookURL, { method: 'POST', body: formData });
+            alert("✅ Acte de décès envoyé en publication !");
+        });
+    });
+}

@@ -1,3 +1,6 @@
+/* ==========================================
+   1. VARIABLES & BASE (Commun à tout le site)
+   ========================================== */
 :root {
     --omc-dark: #0a192f;
     --omc-cyan: #00d2ff;
@@ -5,9 +8,16 @@
     --omc-card: #112240;
 }
 
-body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--omc-bg); height: 100vh; display: flex; overflow: hidden; }
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background: var(--omc-bg);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
 
-/* --- ACCUEIL PORTAIL --- */
+/* --- ACCUEIL PORTAIL (index.html) --- */
 .portal-body { justify-content: center; align-items: center; }
 .portal-container { text-align: center; max-width: 900px; }
 .portal-logo { height: 150px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--omc-cyan)); }
@@ -19,16 +29,28 @@ body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--omc-bg)
 .menu-card.locked { opacity: 0.4; cursor: not-allowed; }
 .card-icon { font-size: 45px; display: block; margin-bottom: 15px; }
 
-/* --- PAGE LABORATOIRE --- */
+/* ==========================================
+   2. INTERFACE DE SAISIE (Commun Labo & Décès)
+   ========================================== */
 #input-panel { width: 480px; background: var(--omc-dark); color: white; padding: 25px; overflow-y: auto; }
-.back-link { color: var(--omc-cyan); text-decoration: none; font-size: 11px; font-weight: bold; letter-spacing: 1px; }
-#preview-area { flex-grow: 1; display: flex; justify-content: center; padding: 20px; overflow-y: auto; }
-#document { width: 210mm; min-height: 297mm; background: white; padding: 20mm; color: #111; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
-
+.back-link { color: var(--omc-cyan); text-decoration: none; font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-bottom: 15px; display: inline-block; }
 .input-group { margin-bottom: 15px; border-bottom: 1px solid #1d3354; padding-bottom: 10px; }
 label { display: block; font-size: 0.8em; font-weight: bold; color: #ccd6f6; margin-bottom: 5px; }
-input, textarea { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #233554; background: #0a192f; color: white; }
+input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #233554; background: #0a192f; color: white; box-sizing: border-box; }
 
+#print-btn, #discord-btn { width: 100%; padding: 15px; background: var(--omc-cyan); border: none; font-weight: bold; cursor: pointer; margin-top: 12px; border-radius: 5px; transition: 0.2s; }
+#discord-btn { background: #5865F2; color: white; }
+#discord-btn:hover { background: #4752c4; }
+
+/* ==========================================
+   3. ZONE DE PRÉVISUALISATION (A4)
+   ========================================== */
+#preview-area { flex-grow: 1; display: flex; justify-content: center; padding: 20px; overflow-y: auto; }
+#document { width: 210mm; min-height: 297mm; background: white; padding: 20mm; color: #111; box-shadow: 0 0 20px rgba(0,0,0,0.2); position: relative; }
+
+/* ==========================================
+   4. STYLE LABORATOIRE (labo.html)
+   ========================================== */
 .tab-btn { width: 100%; background: #172a45; color: var(--omc-cyan); border: none; padding: 12px; text-align: left; cursor: pointer; margin-top: 8px; font-weight: bold; border-radius: 4px; }
 .tab-content { display: none; padding: 15px; background: #112240; border-radius: 0 0 5px 5px; }
 .tab-content.active { display: block; }
@@ -43,7 +65,36 @@ input, textarea { width: 100%; padding: 10px; border-radius: 4px; border: 1px so
 .val { font-weight: bold; text-align: center; }
 .signature-line { margin-top: 60px; font-weight: bold; border-top: 2px solid #000; display: inline-block; min-width: 220px; padding-top: 10px; float: right; text-align: center; }
 
-#print-btn, #discord-btn { width: 100%; padding: 15px; background: var(--omc-cyan); border: none; font-weight: bold; cursor: pointer; margin-top: 12px; border-radius: 5px; }
-#discord-btn { background: #5865F2; color: white; }
+/* ==========================================
+   5. STYLE ACTE DE DÉCÈS (deces.html)
+   ========================================== */
+.header-cert { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+.cert-tag { background: var(--omc-dark); color: white; padding: 3px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; letter-spacing: 1px; }
+.cert-main-title { font-size: 26px; margin: 5px 0 0 0; color: var(--omc-dark); text-transform: uppercase; font-weight: 800; }
 
-@media print { #input-panel { display: none; } #preview-area { padding: 0; } #document { box-shadow: none; width: 100%; margin: 0; } }
+.cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+.cert-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; background: #fff; }
+.cert-box label { color: #64748b; font-size: 10px; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
+.cert-val { font-size: 14px; font-weight: 600; color: #1e293b; min-height: 1.2em; }
+
+.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 50px; }
+.cert-signature { border-top: 1px solid #cbd5e1; min-width: 200px; padding-top: 8px; }
+.cert-stamps { display: flex; align-items: center; gap: 20px; }
+.round-stamp {
+    width: 100px; height: 100px; border: 2px solid var(--omc-dark); border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: bold; text-align: center; color: var(--omc-dark);
+}
+.stamp-ref { font-size: 14px; margin: 5px 0; border-top: 1px solid var(--omc-dark); border-bottom: 1px solid var(--omc-dark); padding: 2px 5px; }
+.qr-code { width: 80px; height: 80px; filter: grayscale(1); }
+
+.legal-text { font-size: 10px; color: #64748b; line-height: 1.5; margin-top: 50px; border-top: 1px dotted #cbd5e1; padding-top: 20px; text-align: justify; }
+
+/* ==========================================
+   6. IMPRESSION
+   ========================================== */
+@media print {
+    #input-panel { display: none !important; }
+    #preview-area { padding: 0 !important; display: block !important; }
+    #document { box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 10mm !important; }
+}
