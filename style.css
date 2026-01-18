@@ -21,6 +21,7 @@
 body {
 
     font-family: 'Segoe UI', sans-serif;
+   h1 : white;
 
     margin: 0;
 
@@ -300,3 +301,4 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
     background: #f0f0f0; /* Fond de secours */
 
 }
+
