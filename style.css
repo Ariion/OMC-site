@@ -56,15 +56,15 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 }
 
 #document {
-    width: 210mm;
-    min-height: auto; /* IMPORTANT : auto pour permettre le recadrage */
+    width: 800px; /* On fixe en pixels pour la capture */
+    min-height: auto;
     height: auto;
     background: white;
-    padding: 20mm;
+    padding: 40px; /* Padding en pixels aussi */
     color: #111;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     position: relative;
-    border: none; /* Évite les traits parasites */
+    box-sizing: border-box; /* Force le padding à rester À L'INTÉRIEUR des 800px */
 }
 
 /* ==========================================

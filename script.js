@@ -163,25 +163,16 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
 
     try {
         const canvas = await html2canvas(docElement, {
-            scale: 2,               // Qualité HD
+            scale: 2,
             useCORS: true,
             backgroundColor: "#ffffff",
-            width: 794,             // Largeur exacte du document (210mm)
-            windowWidth: 1024,      // On simule un écran large pour éviter le crop à droite
-            x: 0,
-            y: 0,
-            scrollX: 0,
-            scrollY: 0,
+            width: 800, // On capture exactement 800px
             onclone: (clonedDoc) => {
                 const d = clonedDoc.getElementById('document');
-                // On s'assure que le style est parfaitement propre pour la photo
-                d.style.width = '794px';
-                d.style.height = 'auto';
-                d.style.minHeight = 'auto';
+                d.style.width = '800px';
+                d.style.display = 'block';
                 d.style.boxShadow = 'none';
                 d.style.border = 'none';
-                d.style.margin = '0 auto';
-                d.style.display = 'block';
             }
         });
 
@@ -196,16 +187,15 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
             formData.append("file", blob, `${fileName}_${patientName}.png`);
 
             await fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ Envoi réussi (format large corrigé) !");
+            alert("✅ Envoi réussi !");
             btn.innerText = "PUBLIER SUR L'INTRANET";
             btn.disabled = false;
         }, 'image/png');
 
     } catch (error) {
-        console.error("Erreur capture:", error);
+        console.error(error);
         alert("❌ Erreur de capture.");
         btn.disabled = false;
-        btn.innerText = "RÉESSAYER";
     }
 }
 
