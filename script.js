@@ -236,18 +236,22 @@ async function envoyerDiscord() {
     btn.disabled = true;
 
     try {
-        const canvas = await html2canvas(docElement, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: "#ffffff",
-            width: 794, // Force la largeur A4 (21cm)
-            onclone: (clonedDoc) => {
-                // Force la hauteur en auto pour supprimer le vide blanc
-                const d = clonedDoc.getElementById('document');
-                d.style.height = 'auto';
-                d.style.minHeight = 'auto';
-            }
-        });
+      // Remplace le bloc html2canvas par celui-ci (exemple pour Deces)
+const canvas = await html2canvas(docElement, {
+  scale: 2,
+  useCORS: true,
+  backgroundColor: "#ffffff",
+  width: 794,
+  logging: false, // Désactive les logs pour plus de rapidité
+  onclone: (clonedDoc) => {
+      const d = clonedDoc.getElementById('document');
+      d.style.height = 'auto';
+      d.style.minHeight = 'auto';
+      // IMPORTANT : On retire l'ombre et les bordures sur le clone pour éviter les traits
+      d.style.boxShadow = 'none';
+      d.style.border = 'none';
+  }
+});
 
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
