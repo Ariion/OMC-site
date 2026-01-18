@@ -221,11 +221,11 @@ function genererReference() {
 // 5. ENVOIS DISCORD (ANTI-TRAITS & AUTO-CROP)
 // ==========================================
 
+// --- ENVOI LABORATOIRE ---
 async function envoyerDiscord() {
     const webhookURL = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
     const btn = document.getElementById('discord-btn');
     const docElement = document.getElementById('document');
-
     if(!docElement) return;
 
     btn.innerText = "📸 CAPTURE...";
@@ -236,7 +236,8 @@ async function envoyerDiscord() {
             scale: 2,
             useCORS: true,
             backgroundColor: "#ffffff",
-            width: 794,
+            width: docElement.scrollWidth,  // Capture toute la largeur réelle
+            height: docElement.scrollHeight, // Capture toute la hauteur réelle
             logging: false,
             onclone: (clonedDoc) => {
                 const d = clonedDoc.getElementById('document');
@@ -257,23 +258,17 @@ async function envoyerDiscord() {
             formData.append("payload_json", JSON.stringify(payload));
             formData.append("file", blob, `labo_${patientNom}.png`);
             await fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ Rapport bio envoyé et recadré !");
+            alert("✅ Rapport bio envoyé en entier !");
         }, 'image/png');
-
-    } catch (error) {
-        console.error(error);
-        alert("❌ Erreur de capture.");
-    } finally {
-        btn.innerText = "PUBLIER SUR L'INTRANET";
-        btn.disabled = false;
-    }
+    } catch (error) { console.error(error); alert("❌ Erreur de capture."); }
+    finally { btn.innerText = "PUBLIER SUR L'INTRANET"; btn.disabled = false; }
 }
 
+// --- ENVOI ACTE DE DÉCÈS ---
 async function envoyerDiscordDeces() {
     const webhookURL = "TON_WEBHOOK_DECES_ICI";
     const btn = document.getElementById('discord-btn');
     const docElement = document.getElementById('document');
-
     if(!docElement) return;
 
     btn.innerText = "📸 ENVOI...";
@@ -284,7 +279,8 @@ async function envoyerDiscordDeces() {
             scale: 2,
             useCORS: true,
             backgroundColor: "#ffffff",
-            width: 794,
+            width: docElement.scrollWidth,
+            height: docElement.scrollHeight,
             logging: false,
             onclone: (clonedDoc) => {
                 const d = clonedDoc.getElementById('document');
@@ -303,18 +299,11 @@ async function envoyerDiscordDeces() {
             }));
             formData.append("file", blob, `acte_deces_${patient}.png`);
             await fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ Acte de décès envoyé et recadré !");
+            alert("✅ Acte de décès envoyé en entier !");
         }, 'image/png');
-
-    } catch (error) {
-        console.error(error);
-        alert("❌ Erreur lors de l'envoi de l'acte.");
-    } finally {
-        btn.innerText = "ENVOYER DANS ACTE DE DÉCÈS";
-        btn.disabled = false;
-    }
+    } catch (error) { console.error(error); alert("❌ Erreur lors de l'envoi."); }
+    finally { btn.innerText = "ENVOYER DANS ACTE DE DÉCÈS"; btn.disabled = false; }
 }
-
 // ==========================================
 // 6. LANCEMENT
 // ==========================================
