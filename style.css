@@ -16,7 +16,10 @@
 
 }
 
-
+.portal-container {
+   
+}
+   
 
 body {
 
@@ -302,5 +305,6 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
     background: #f0f0f0; /* Fond de secours */
 
 }
+
 
 
