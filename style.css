@@ -98,3 +98,10 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
     #preview-area { padding: 0 !important; display: block !important; }
     #document { box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 10mm !important; }
 }
+
+.qr-code {
+    width: 80px;
+    height: 80px;
+    display: block; /* S'assurer qu'il est visible */
+    background: #f0f0f0; /* Fond de secours */
+}

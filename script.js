@@ -1,3 +1,4 @@
+// --- BASE DE DONNÉES ANALYSES ---
 const database = {
     "Hématologie (Sang)": [
         { id: "gb", label: "Leucocytes (Globules Blancs)", unit: "G/L", norm: "4.0 - 10.0", help: "Infection ou inflammation." },
@@ -58,10 +59,24 @@ const database = {
     ]
 };
 
-const tabsContainer = document.getElementById('dynamic-tabs');
-const sectionsContainer = document.getElementById('dynamic-sections');
+// --- GESTION DES CAUSES DÉCÈS ---
+const causesData = {
+    "Neurologique": ["Hémorragie méningée", "Hémorragie intracérébrale massive", "Infarctus cérébral massif", "Traumatisme cranien sévère", "Etat de mal épileptique"],
+    "Hémorragique": ["Hémorragie interne massive", "Hémorragie externe incontrôlable", "Rupture d'anévrisme", "Hémorragie obstétricale sévère"],
+    "Infectieuse / Métabolique": ["Choc septique", "Défaillance multiviscérale", "Méningite bactérienne fulminante", "Acidocétose diabétique sévère", "Insuffisance hépatique aiguë", "Hyperthermie maligne"],
+    "Cardio-respiratoire": ["Arrêt cardio-respiratoire", "Fibrillation / TV", "Infarctus aigu du myocarde", "Embolie pulmonaire massive", "Oedème aigu du poumon", "Noyade"],
+    "Traumatique": ["Polytraumatisme avec choc hémorragique", "Ecrasement thoraco-abdominal", "Section médullaire haute", "Brulures étendues"],
+    "Toxique": ["Intoxication médicamenteuse massive", "Overdose opioïdes / cocaïne", "Intoxication monoxyde de carbone", "Empoisonnement chimique"]
+};
 
+// --- INITIALISATION DES PAGES ---
 function init() {
+    const tabsContainer = document.getElementById('dynamic-tabs');
+    const sectionsContainer = document.getElementById('dynamic-sections');
+
+    // On ne lance l'init que si on est sur la page Labo
+    if (!tabsContainer || !sectionsContainer) return;
+
     tabsContainer.innerHTML = "";
     sectionsContainer.innerHTML = "";
 
@@ -74,7 +89,6 @@ function init() {
 
         let div = document.createElement('div');
         div.id = 't-'+cat; div.className = 'tab-content';
-
         let sec = document.createElement('div');
         sec.id = 'sec-'+cat; sec.className = 'section';
         sec.innerHTML = `<div class="section-title">${cat}</div>`;
@@ -100,14 +114,20 @@ function init() {
     }
 }
 
-function up(id, val) { document.getElementById(id).innerText = val || (id==='d-sig' ? "NOM DOCTEUR" : "..."); }
+// --- FONCTIONS DE MISE À JOUR TEXTE ---
+function up(id, val) {
+    const el = document.getElementById(id);
+    if(el) el.innerText = val || (id==='d-sig' ? "NOM DOCTEUR" : "...");
+}
 
 function upDate(id, val) {
     if(!val) return;
     const [y,m,d] = val.split('-');
-    document.getElementById(id).innerText = `${m}/${d}/${y}`;
+    const el = document.getElementById(id);
+    if(el) el.innerText = `${d}/${m}/${y}`;
 }
 
+// --- GESTION DES RÉSULTATS LABO ---
 function res(id, val, cat) {
     const row = document.getElementById('row-'+id);
     const valSpan = document.getElementById('val-'+id);
@@ -122,9 +142,8 @@ function res(id, val, cat) {
     else if (val.toLowerCase() === "négatif" || val.toLowerCase() === "conforme") { valSpan.style.color = "green"; }
 
     if(val.trim() !== "") row.classList.add('active'); else row.classList.remove('active');
-
     const section = document.getElementById('sec-'+cat);
-    section.classList.toggle('active', section.querySelectorAll('.row.active').length > 0);
+    if(section) section.classList.toggle('active', section.querySelectorAll('.row.active').length > 0);
 
     analyserTout();
 }
@@ -144,145 +163,14 @@ function analyserTout() {
     let autoConcl = anomalies.length > 0 ? "Points d'attention : " + anomalies.join(', ') + "." : "Bilan biologique satisfaisant.";
     const textZone = document.querySelector('textarea[oninput*="d-concl"]');
     if(textZone) textZone.value = autoConcl;
-    document.getElementById('d-concl').innerText = autoConcl;
+    const conclEl = document.getElementById('d-concl');
+    if(conclEl) conclEl.innerText = autoConcl;
 }
 
-// Lancement forcé
-init();
-
-async function envoyerDiscord() {
-    const webhookURL = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    const btn = document.getElementById('discord-btn');
-    const docElement = document.getElementById('document'); // La zone à photographier
-
-    btn.innerText = "📸 CAPTURE EN COURS...";
-    btn.disabled = true;
-
-    try {
-        // 1. Création de la capture d'écran du rapport
-        const canvas = await html2canvas(docElement, {
-            scale: 2, // Meilleure qualité
-            useCORS: true,
-            logging: false
-        });
-
-        // 2. Conversion en fichier image
-        canvas.toBlob(async (blob) => {
-            const formData = new FormData();
-
-            // On crée le message Discord
-            const patientNom = document.getElementById('d-nom').innerText || "Inconnu";
-            const payload = {
-                username: "OMC INTRANET",
-                content: `📑 **Nouveau rapport de laboratoire**\n👤 **Patient :** ${patientNom}\n📅 **Date :** ${document.getElementById('d-date').innerText}`,
-            };
-
-            formData.append("payload_json", JSON.stringify(payload));
-            formData.append("file", blob, `rapport_${patientNom}.png`);
-
-            // 3. Envoi à Discord
-            const response = await fetch(webhookURL, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                alert("✅ Rapport envoyé en image sur Discord !");
-            } else {
-                throw new Error("Erreur lors de l'envoi");
-            }
-        }, 'image/png');
-
-    } catch (error) {
-        console.error(error);
-        alert("❌ Erreur lors de la génération de l'image.");
-    } finally {
-        btn.innerText = "ENVOYER SUR L'INTRANET";
-        btn.disabled = false;
-    }
-}
-
-async function envoyerDiscordDeces() {
-    const webhookURL = "TON_WEBHOOK_DECES_ICI"; // Utilise un salon spécialisé si tu veux
-    const docElement = document.getElementById('document');
-    const patient = document.getElementById('d-defunt').innerText;
-
-    html2canvas(docElement, { scale: 2 }).then(canvas => {
-        canvas.toBlob(blob => {
-            const formData = new FormData();
-            formData.append("payload_json", JSON.stringify({
-                content: `💀 **NOUVEL ACTE DE DÉCÈS ÉTABLI**\n👤 Défunt : **${patient}**`
-            }));
-            formData.append("file", blob, `acte_deces_${patient}.png`);
-            fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ Acte de décès envoyé en publication !");
-        });
-    });
-}
-
-// Fonction pour générer la référence JOURMOISHEUREMINUTE
-function genererReference() {
-    const maintenant = new Date();
-
-    const jour = maintenant.getDate().toString().padStart(2, '0');
-    const mois = (maintenant.getMonth() + 1).toString().padStart(2, '0'); // +1 car janvier = 0
-    const heure = maintenant.getHours().toString().padStart(2, '0');
-    const minute = maintenant.getMinutes().toString().padStart(2, '0');
-
-    const reference = `${jour}${mois}${heure}${minute}`;
-
-    // On l'affiche dans le document
-    const refElement = document.getElementById('d-ref');
-    if (refElement) {
-        refElement.innerText = reference;
-    }
-}
-
-// On lance la génération au chargement de la page
-window.addEventListener('load', genererReference);
-
-function genererReference() {
-    const maintenant = new Date();
-
-    // Format : JOUR MOIS HEURE MINUTE (ex: 18011504)
-    const jour = maintenant.getDate().toString().padStart(2, '0');
-    const mois = (maintenant.getMonth() + 1).toString().padStart(2, '0');
-    const heure = maintenant.getHours().toString().padStart(2, '0');
-    const minute = maintenant.getMinutes().toString().padStart(2, '0');
-
-    const reference = `${jour}${mois}${heure}${minute}`;
-
-    // 1. Mise à jour de la référence texte
-    if (document.getElementById('d-ref')) {
-        document.getElementById('d-ref').innerText = reference;
-    }
-
-    // 2. Mise à jour de la référence dans le tampon
-    if (document.getElementById('stamp-ref')) {
-        document.getElementById('stamp-ref').innerText = reference;
-    }
-
-    // 3. Mise à jour du QR Code
-    if (document.getElementById('qr-ref')) {
-        document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=OMC-DECES-${reference}`;
-    }
-}
-
-// On s'assure que la fonction se lance au chargement
-window.addEventListener('load', genererReference);
-
-// --- GESTION DES CAUSES (Selon tes captures) ---
-const causesData = {
-    "Neurologique": ["Hémorragie méningée", "Hémorragie intracérébrale massive", "Infarctus cérébral massif", "Traumatisme cranien sévère", "Etat de mal épileptique"],
-    "Hémorragique": ["Hémorragie interne massive", "Hémorragie externe incontrôlable", "Rupture d'anévrisme", "Hémorragie obstétricale sévère"],
-    "Infectieuse / Métabolique": ["Choc septique", "Défaillance multiviscérale", "Méningite bactérienne fulminante", "Acidocétose diabétique sévère", "Insuffisance hépatique aiguë", "Hyperthermie maligne"],
-    "Cardio-respiratoire": ["Arrêt cardio-respiratoire", "Fibrillation / TV", "Infarctus aigu du myocarde", "Embolie pulmonaire massive", "Oedème aigu du poumon", "Noyade"],
-    "Traumatique": ["Polytraumatisme avec choc hémorragique", "Ecrasement thoraco-abdominal", "Section médullaire haute", "Brulures étendues"],
-    "Toxique": ["Intoxication médicamenteuse massive", "Overdose opioïdes / cocaïne", "Intoxication monoxyde de carbone", "Empoisonnement chimique"]
-};
-
+// --- GESTION DES CAUSES DÉCÈS (SELECTS) ---
 function updateCausesSub(type) {
     const select = document.getElementById('cause-precision');
+    if(!select) return;
     select.innerHTML = '<option value="">-- Sélectionner --</option>';
     if (causesData[type]) {
         causesData[type].forEach(c => {
@@ -291,46 +179,72 @@ function updateCausesSub(type) {
     }
 }
 
-// --- GÉNÉRATION DE LA RÉFÉRENCE AUTOMATIQUE ---
+// --- GÉNÉRATION RÉFÉRENCE AUTOMATIQUE ---
 function genererReference() {
     const n = new Date();
-    const ref = `${n.getDate().toString().padStart(2,'0')}${(n.getMonth()+1).toString().padStart(2,'0')}${n.getHours().toString().padStart(2,'0')}${n.getMinutes().toString().padStart(2,'0')}`;
+    const jour = n.getDate().toString().padStart(2, '0');
+    const mois = (n.getMonth() + 1).toString().padStart(2, '0');
+    const heure = n.getHours().toString().padStart(2, '0');
+    const minute = n.getMinutes().toString().padStart(2, '0');
 
-    if(document.getElementById('d-ref')) document.getElementById('d-ref').innerText = ref;
-    if(document.getElementById('stamp-ref')) document.getElementById('stamp-ref').innerText = ref;
-    if(document.getElementById('qr-ref')) document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=OMC-DECES-${ref}`;
+    const reference = `${jour}${mois}${heure}${minute}`;
+
+    const refEl = document.getElementById('d-ref');
+    const stampEl = document.getElementById('stamp-ref');
+    const qrEl = document.getElementById('qr-ref');
+
+    if (refEl) refEl.innerText = reference;
+    if (stampEl) stampEl.innerText = reference;
+    if (qrEl) qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${reference}`;
 }
 
-// --- FONCTIONS DE MISE À JOUR ---
-function up(id, val) {
-    const el = document.getElementById(id);
-    if(el) el.innerText = val || (id === 'd-medecin' ? "-" : "-");
+// --- ENVOIS DISCORD ---
+async function envoyerDiscord() {
+    const webhookURL = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
+    const btn = document.getElementById('discord-btn');
+    const docElement = document.getElementById('document');
+
+    btn.innerText = "📸 CAPTURE...";
+    btn.disabled = true;
+
+    try {
+        const canvas = await html2canvas(docElement, { scale: 2, useCORS: true });
+        canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            const patientNom = document.getElementById('d-nom').innerText || "Inconnu";
+            const payload = {
+                username: "OMC INTRANET",
+                content: `📑 **Nouveau rapport de laboratoire**\n👤 **Patient :** ${patientNom}`,
+            };
+            formData.append("payload_json", JSON.stringify(payload));
+            formData.append("file", blob, `rapport_${patientNom}.png`);
+            await fetch(webhookURL, { method: 'POST', body: formData });
+            alert("✅ Rapport envoyé !");
+        }, 'image/png');
+    } catch (error) { alert("❌ Erreur de capture."); }
+    finally { btn.innerText = "ENVOYER SUR L'INTRANET"; btn.disabled = false; }
 }
 
-function upDate(id, val) {
-    if(!val) return;
-    const [y, m, d] = val.split('-');
-    document.getElementById(id).innerText = `${d}/${m}/${y}`;
-}
-
-// --- ENVOI DISCORD ---
 async function envoyerDiscordDeces() {
-    const webhookURL = "TON_WEBHOOK_ICI";
-    const doc = document.getElementById('document');
+    const webhookURL = "TON_WEBHOOK_DECES_ICI"; // À REMPLACER
+    const docElement = document.getElementById('document');
     const patient = document.getElementById('d-defunt').innerText;
 
-    html2canvas(doc, { scale: 2 }).then(canvas => {
-        canvas.toBlob(blob => {
+    html2canvas(docElement, { scale: 2 }).then(canvas => {
+        canvas.toBlob(async (blob) => {
             const formData = new FormData();
             formData.append("payload_json", JSON.stringify({
-                content: `💀 **ACTE DE DÉCÈS ÉTABLI** | Défunt : **${patient}**`
+                content: `💀 **NOUVEL ACTE DE DÉCÈS ÉTABLI**\n👤 Défunt : **${patient}**`
             }));
-            formData.append("file", blob, `deces_${patient}.png`);
-            fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ Acte envoyé sur l'Intranet !");
+            formData.append("file", blob, `acte_deces_${patient}.png`);
+            await fetch(webhookURL, { method: 'POST', body: formData });
+            alert("✅ Acte de décès envoyé !");
         });
     });
 }
 
-// Lancement au chargement
-window.onload = genererReference;
+// --- LANCEMENT ---
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    genererReference();
+});
