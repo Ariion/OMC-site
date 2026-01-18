@@ -11,6 +11,8 @@
         <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
         <h2>OMC LABORATOIRE</h2>
 
+
+
         <div class="input-group">
             <label>Nom & Prénom</label><input type="text" oninput="up('d-nom', this.value)" placeholder="FREEMAN Garret ">
         </div>
@@ -23,7 +25,25 @@
         <div class="input-group">
             <label>Médecin Prescripteur</label><input type="text" oninput="up('d-presc', this.value)">
         </div>
+        <div class="input-group">
+            <label>Groupe Sanguin</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <button type="button" onclick="determinerGroupeAleatoire()" style="flex: 1; padding: 8px; font-size: 11px; cursor: pointer; background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 4px;">🎲 ALÉATOIRE</button>
+                <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex: 1;">
+                    <option value="...">-- Manuel --</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
 
+                <div>Groupe Sanguin : <span id="d-groupe" style="font-weight: bold;">...</span></div>
+            </div>
+        </div>
         <div id="dynamic-tabs"></div>
 
         <textarea oninput="up('d-concl', this.value)" id="auto-concl-area" placeholder="Conclusion médicale..." rows="3"></textarea>

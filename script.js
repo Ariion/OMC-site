@@ -289,3 +289,20 @@ document.addEventListener('DOMContentLoaded', () => {
     init();
     genererReference();
 });
+
+function determinerGroupeAleatoire() {
+    const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+    // Tirage au sort
+    const resultat = groupes[Math.floor(Math.random() * groupes.length)];
+
+    // Mise à jour de l'affichage sur le document
+    const afficheur = document.getElementById('d-groupe');
+    if(afficheur) {
+        afficheur.innerText = resultat;
+        afficheur.style.color = "var(--omc-cyan)"; // Petit effet visuel pour la découverte
+    }
+
+    // Synchronisation du menu déroulant
+    const select = document.getElementById('select-groupe');
+    if(select) select.value = resultat;
+}
