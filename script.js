@@ -227,6 +227,13 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
     btn.innerText = "📸 ENVOI...";
     btn.disabled = true;
 
+    // --- PRÉPARATION DU MESSAGE PERSONNALISÉ ---
+        const now = new Date();
+        const dateFormatee = now.toLocaleDateString('en-US'); // Format MM/DD/YYYY comme sur ta capture
+        const patientName = document.getElementById(patientId)?.innerText || "Inconnu";
+
+        // Construction du texte avec émojis
+        const customHeader = `📄 **${contentMsg}**\n👤 **Patient :** ${patientName}\n📅 **Date :** ${dateFormatee}`;
     try {
         const canvas = await html2canvas(docElement, {
             scale: 2,
@@ -266,12 +273,12 @@ async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
 
 function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    capturerEtEnvoyer(url, "labo", "📑 **NOUVEAU RAPPORT DE LABORATOIRE** | Patient :", "d-nom");
+    // On passe juste le titre, le reste est géré automatiquement
+    capturerEtEnvoyer(url, "labo", "Nouveau rapport de laboratoire", "d-nom");
 }
-
 function envoyerDiscordDeces() {
     const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    capturerEtEnvoyer(url, "acte", "💀 **NOUVEL ACTE DE DÉCÈS ÉTABLI** | Défunt :", "d-defunt");
+    capturerEtEnvoyer(url, "acte", "Nouvel acte de décès établi", "d-defunt");
 }
 
 // ==========================================
