@@ -3,108 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <title>OMC - Acte de Décès</title>
-   <!-- <link rel="stylesheet" href="style.css"> -->
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="deces.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <div id="input-panel">
-        <a href="index.html" class="back-link">← RETOUR ACCUEIL</a>
-        <h2>OMC - ACTE DE DÉCÈS</h2>
+        <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
+        <h2>CERTIFICAT DE DÉCÈS</h2>
 
         <div class="input-group">
-            <label>Défunt (Nom Prénom)</label>
-            <input type="text" oninput="up('d-defunt', this.value)" placeholder="FREEMAN Garret ">
-        </div>
-        <div class="input-group">
-            <label>Date de naissance</label>
-            <input type="date" oninput="upDate('d-naissance', this.value)">
-        </div>
-        <div class="input-group">
-            <label>Date du décès</label>
-            <input type="date" oninput="upDate('d-date-deces', this.value)">
-        </div>
-        <div class="input-group">
-            <label>Heure du décès</label>
-            <input type="time" oninput="up('d-heure-deces', this.value)">
-        </div>
-        <div class="input-group">
-            <label>Lieu du décès</label>
-            <input type="text" oninput="up('d-lieu', this.value)" placeholder="OMC - Service Urgences">
+            <label>Nom & Prénom du Défunt</label>
+            <input type="text" oninput="up('d-nom', this.value)" placeholder="ex: John Doe">
         </div>
 
         <div class="input-group">
-    <label>Cause immédiate - Type</label>
-    <select id="cause-type" onchange="updateCausesSub(this.value)">
-        <option value="">-- Sélectionner --</option>
-        <option value="Neurologique">Neurologique</option>
-        <option value="Hémorragique">Hémorragique</option>
-        <option value="Infectieuse / Métabolique">Infectieuse / Métabolique</option>
-        <option value="Cardio-respiratoire">Cardio-respiratoire</option>
-        <option value="Traumatique">Traumatique</option>
-        <option value="Toxique">Toxique</option>
-    </select>
-</div>
-
-<div class="input-group">
-    <label>Cause immédiate - Précision</label>
-    <select id="cause-precision" onchange="updateCauseFinale(this.value)">
-        <option value="">-- Sélectionner le type d'abord --</option>
-    </select>
-</div>
-
-        <div class="input-group">
-            <label>Médecin certificateur</label>
-            <input type="text" oninput="up('d-medecin', this.value)" placeholder="NOM DOCTEUR">
+            <label>Date de Naissance</label>
+            <input type="date" oninput="upDate('d-ddn', this.value)">
         </div>
 
-        <button onclick="window.print()" id="print-btn">IMPRIMER LE CERTIFICAT</button>
-        <button onclick="envoyerDiscordDeces()" id="discord-btn">ENVOYER DANS ACTE DE DÉCÈS</button>
+        <div class="input-group">
+            <label>Date & Heure du Décès</label>
+            <div style="display: flex; gap: 5px;">
+                <input type="date" oninput="upDate('d-date', this.value)" style="flex: 2;">
+                <input type="time" oninput="up('d-heure', this.value)" style="flex: 1;">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Lieu du Décès</label>
+            <input type="text" oninput="up('d-lieu', this.value)" placeholder="ex: Los Santos">
+        </div>
+
+        <div class="input-group">
+            <label>Cause du Décès (Type)</label>
+            <select id="cause-type" onchange="updateCausesSub(this.value)">
+                <option value="">-- Sélectionner --</option>
+                <option value="Neurologique">Neurologique</option>
+                <option value="Hémorragique">Hémorragique</option>
+                <option value="Infectieuse / Métabolique">Infectieuse / Métabolique</option>
+                <option value="Cardio-respiratoire">Cardio-respiratoire</option>
+                <option value="Traumatique">Traumatique</option>
+                <option value="Toxique">Toxique</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Précision de la cause</label>
+            <select id="cause-precision" onchange="updateCauseFinale(this.value)">
+                <option value="">-- Attente type --</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Docteur Signataire</label>
+            <input type="text" oninput="up('d-sig', this.value)" placeholder="Nom du médecin">
+        </div>
+
+        <button onclick="window.print()" class="btn-print">IMPRIMER / PDF</button>
+        <button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
     </div>
 
     <div id="preview-area">
         <div id="document">
             <div class="header-cert">
-                <img src="assets/logo_omc.png" alt="Logo OMC" style="height: 45px;">
-                <div class="cert-title-block">
-                    <span class="cert-tag">OCEAN MEDICAL CENTER</span>
+                <img src="assets/logo_omc.png" alt="Logo" style="height: 60px;">
+                <div>
+                    <div class="cert-tag">OCEAN MEDICAL CENTER</div>
                     <h1 class="cert-main-title">Certificat de décès</h1>
                 </div>
             </div>
 
             <div class="cert-grid">
-    <div class="cert-box"><label>Défunt</label><div id="d-defunt" class="cert-val">-</div></div>
-    <div class="cert-box"><label>Naissance</label><div id="d-naissance" class="cert-val">-</div></div>
-    <div class="cert-box"><label>Date / heure du décès</label><div class="cert-val"><span id="d-date-deces">-</span> à <span id="d-heure-deces">--:--</span></div></div>
-    <div class="cert-box"><label>Lieu</label><div id="d-lieu" class="cert-val">-</div></div>
-    <div class="cert-box"><label>Référence dossier</label><div id="d-ref" class="cert-val">Chargement...</div></div>
-    <div class="cert-box"><label>Cause immédiate</label><div id="d-cause" class="cert-val">-</div></div>
-</div>
+                <div class="cert-box">
+                    <label>Défunt</label>
+                    <div id="d-nom" class="cert-val">...</div>
+                </div>
+                <div class="cert-box">
+                    <label>Naissance</label>
+                    <div id="d-ddn" class="cert-val">...</div>
+                </div>
+                <div class="cert-box">
+                    <label>Date / Heure du décès</label>
+                    <div class="cert-val"><span id="d-date">...</span> à <span id="d-heure">--:--</span></div>
+                </div>
+                <div class="cert-box">
+                    <label>Lieu</label>
+                    <div id="d-lieu" class="cert-val">...</div>
+                </div>
+                <div class="cert-box" style="grid-column: span 2;">
+                    <label>Référence dossier</label>
+                    <div id="d-ref" class="cert-val" style="color: var(--omc-cyan);">Chargement...</div>
+                </div>
+                <div class="cert-box" style="grid-column: span 2;">
+                    <label>Cause immédiate</label>
+                    <div id="d-cause" class="cert-val">...</div>
+                </div>
+            </div>
 
             <div class="cert-footer">
                 <div class="cert-signature">
-                    <label>Établi par</label>
-                    <div id="d-medecin" class="cert-val">-</div>
+                    Établi par :<br><br>
+                    <span id="d-sig">DOCTEUR</span>
                 </div>
-                <div class="cert-stamps">
-                    <img id="qr-ref" src="" alt="QR Code" class="qr-code">
-                    <div class="round-stamp">
-                        <span>OCEAN MEDICAL</span>
-                        <span id="stamp-ref" class="stamp-ref">--</span>
-                        <span>CENTER</span>
-                    </div>
+                <div class="round-stamp">
+                    <img id="qr-ref" class="qr-code" src="" alt="QR">
+                    OMC MEDICAL CENTER
                 </div>
             </div>
 
             <p class="legal-text">
-                Ce certificat de décès est établi dans le cadre de la pratique médicale, sur la base des constatations cliniques. Toute reproduction ou usage détourné est strictement interdite.
+                Ce certificat de décès est établi dans le cadre de la pratique médicale, sur la base des constatations cliniques. 
+                Toute reproduction ou usage détourné est strictement interdite sous peine de poursuites.
             </p>
         </div>
     </div>
-   <!-- <script src="script.js"></script>-->
+
     <script src="global.js"></script>
     <script src="deces.js"></script>
 </body>
 </html>
-
