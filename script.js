@@ -1,5 +1,5 @@
 // ==========================================
-// 1. BASES DE DONNÉES
+// 1. BASES DE DONNÉES & INITIALISATION
 // ==========================================
 const database = {
     "Hématologie (Sang)": [
@@ -61,24 +61,10 @@ const database = {
     ]
 };
 
-const causesData = {
-    "Neurologique": ["Hémorragie méningée", "Hémorragie intracérébrale massive", "Infarctus cérébral massif", "Traumatisme cranien sévère", "Etat de mal épileptique"],
-    "Hémorragique": ["Hémorragie interne massive", "Hémorragie externe incontrôlable", "Rupture d'anévrisme", "Hémorragie obstétricale sévère"],
-    "Infectieuse / Métabolique": ["Choc septique", "Défaillance multiviscérale", "Méningite bactérienne fulminante", "Acidocétose diabétique sévère", "Insuffisance hépatique aiguë", "Hyperthermie maligne"],
-    "Cardio-respiratoire": ["Arrêt cardio-respiratoire", "Fibrillation / TV", "Infarctus aigu du myocarde", "Embolie pulmonaire massive", "Oedème aigu du poumon", "Noyade"],
-    "Traumatique": ["Polytraumatisme avec choc hémorragique", "Ecrasement thoraco-abdominal", "Section médullaire haute", "Brulures étendues"],
-    "Toxique": ["Intoxication médicamenteuse massive", "Overdose opioïdes / cocaïne", "Intoxication monoxyde de carbone", "Empoisonnement chimique"]
-};
-
-// ==========================================
-// 2. INITIALISATION ET MISES À JOUR
-// ==========================================
-
 function init() {
     const tabsContainer = document.getElementById('dynamic-tabs');
     const sectionsContainer = document.getElementById('dynamic-sections');
     if (!tabsContainer || !sectionsContainer) return;
-
     tabsContainer.innerHTML = "";
     sectionsContainer.innerHTML = "";
 
@@ -98,12 +84,9 @@ function init() {
         database[cat].forEach(item => {
             div.innerHTML += `
             <div class="input-group">
-                <span class="help-text">${item.help}</span>
                 <label>${item.label}</label>
-                <div style="font-size: 0.7em; color: orange; margin-bottom: 5px;">Norme : ${item.norm} ${item.unit}</div>
                 <input type="text" class="analysis-input" data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
             </div>`;
-
             sec.innerHTML += `
             <div class="row" id="row-${item.id}">
                 <span>${item.label}</span>
@@ -116,6 +99,9 @@ function init() {
     }
 }
 
+// ==========================================
+// 2. LOGIQUE D'AFFICHAGE & NAVIGATION
+// ==========================================
 function up(id, val) {
     const el = document.getElementById(id);
     if(el) el.innerText = val || (id==='d-sig' ? "NOM DOCTEUR" : "...");
@@ -128,27 +114,71 @@ function upDate(id, val) {
     if(el) el.innerText = `${d}/${m}/${y}`;
 }
 
-// ==========================================
-// 3. LOGIQUE MÉDICALE (LABO)
-// ==========================================
+function switchMode(mode) {
+    document.getElementById('panel-auto').style.display = (mode === 'auto' ? 'block' : 'none');
+    document.getElementById('panel-manual').style.display = (mode === 'manual' ? 'block' : 'none');
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+}
 
+// ==========================================
+// 3. GENERATION AUTOMATIQUE
+// ==========================================
+function lancerGenerationAuto() {
+    const grav = parseInt(document.getElementById('gravity-range').value);
+    const scenarios = Array.from(document.querySelectorAll('.scenario-grid input:checked')).map(i => i.value);
+    if(scenarios.length === 0) return alert("Coche au moins un scénario !");
+
+    // Valeurs de base normales
+    let results = { hb: 14.5, ht: 45, lact: 1.0, ph: 7.40, pco2: 40, po2: 95, crea: 9.0, hcg: 0, alc: 0, gb: 6.0 };
+
+    scenarios.forEach(s => {
+        if(s === 'acc-route' || s === 'arme-feu' || s === 'arme-blanche') {
+            results.hb -= (grav * 0.85); // Hémorragie plus violente
+            results.ht -= (grav * 2.5);
+            results.lact += (grav * 0.5);
+            if(s === 'arme-feu') results.gb += (grav * 0.6);
+        }
+        if(s === 'overdose') { results.ph -= (grav * 0.04); results.pco2 += (grav * 3); }
+        if(s === 'grossesse') { results.hcg = (grav * 5000); }
+        if(s === 'diabete') { results.ph -= (grav * 0.03); }
+        if(s === 'renal') { results.crea += (grav * 6); }
+    });
+
+    for(let id in results) {
+        let finalVal = results[id].toFixed(id === 'ph' ? 2 : 1);
+        if(id === 'hcg') finalVal = results[id] > 5 ? "POSITIF" : "Négatif";
+        
+        let cat = "";
+        for(let c in database) { if(database[c].find(i => i.id === id)) cat = c; }
+        
+        const input = document.querySelector(`[data-id="${id}"]`);
+        if(input) {
+            input.value = finalVal;
+            res(id, finalVal, cat);
+        }
+    }
+    analyserTout();
+}
+
+// ==========================================
+// 4. RESET & ANALYSE
+// ==========================================
 function res(id, val, cat) {
     const row = document.getElementById('row-'+id);
     const valSpan = document.getElementById('val-'+id);
     if(valSpan) valSpan.innerText = val;
 
     const itemData = Object.values(database).flat().find(i => i.id === id);
-    if (val.trim() !== "" && itemData && itemData.norm !== "Négatif" && itemData.norm !== "Conforme") {
+    if (val.trim() !== "" && itemData && itemData.norm !== "Négatif") {
         const valNum = parseFloat(val.replace(',', '.'));
         const [min, max] = itemData.norm.replace('0 - ', '0-').split('-').map(n => parseFloat(n));
         valSpan.style.color = (valNum < min || valNum > max) ? "red" : "green";
-    } else if (val.toLowerCase() === "positif") { valSpan.style.color = "red"; }
-    else if (val.toLowerCase() === "négatif" || val.toLowerCase() === "conforme") { valSpan.style.color = "green"; }
+    }
 
     if(val.trim() !== "") row.classList.add('active'); else row.classList.remove('active');
     const section = document.getElementById('sec-'+cat);
     if(section) section.classList.toggle('active', section.querySelectorAll('.row.active').length > 0);
-
     analyserTout();
 }
 
@@ -158,243 +188,37 @@ function analyserTout() {
         let valText = input.value.trim().replace(',', '.');
         if (!valText) return;
         let label = input.getAttribute('data-label'), norm = input.getAttribute('data-norm');
-        if (norm.includes('-') || norm.startsWith('0')) {
-            let valNum = parseFloat(valText), [min, max] = norm.replace('0 - ', '0-').split('-').map(n => parseFloat(n));
+        if (norm.includes('-')) {
+            let valNum = parseFloat(valText), [min, max] = norm.split('-').map(n => parseFloat(n));
             if (valNum < min) anomalies.push(`${label} bas`);
             if (valNum > max) anomalies.push(`${label} élevé`);
         } else if (norm === "Négatif" && valText.toLowerCase() === "positif") { anomalies.push(`${label} POSITIF`); }
     });
     let autoConcl = anomalies.length > 0 ? "Points d'attention : " + anomalies.join(', ') + "." : "Bilan biologique satisfaisant.";
-    const textZone = document.getElementById('auto-concl-area');
-    if(textZone) textZone.value = autoConcl;
-    const conclEl = document.getElementById('d-concl');
-    if(conclEl) conclEl.innerText = autoConcl;
+    document.getElementById('auto-concl-area').value = autoConcl;
+    document.getElementById('d-concl').innerText = autoConcl;
+}
+
+function resetTout() {
+    if(!confirm("Réinitialiser UNIQUEMENT les analyses ? Les infos patient resteront.")) return;
+    document.querySelectorAll('.analysis-input').forEach(el => el.value = "");
+    document.querySelectorAll('.scenario-grid input').forEach(el => el.checked = false);
+    document.querySelectorAll('.row').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    document.getElementById('auto-concl-area').value = "";
+    document.getElementById('d-concl').innerText = "...";
 }
 
 // ==========================================
-// 4. LOGIQUE DÉCÈS
+// 5. LANCEMENT
 // ==========================================
-
-let typeSelectionne = "";
-
-function updateCausesSub(type) {
-    typeSelectionne = type;
-    const select = document.getElementById('cause-precision');
-    if(!select) return;
-
-    select.innerHTML = '<option value="">-- Sélectionner --</option>';
-    if (causesData[type]) {
-        causesData[type].forEach(c => {
-            select.innerHTML += `<option value="${c}">${c}</option>`;
-        });
-    }
-}
-
-function updateCauseFinale(precision) {
-    const blocAffichage = document.getElementById('d-cause');
-    if (blocAffichage && precision !== "") {
-        blocAffichage.innerText = `${typeSelectionne} — ${precision}`;
-    }
-}
-
-function genererReference() {
-    const n = new Date();
-    const jour = n.getDate().toString().padStart(2, '0');
-    const mois = (n.getMonth() + 1).toString().padStart(2, '0');
-    const heure = n.getHours().toString().padStart(2, '0');
-    const minute = n.getMinutes().toString().padStart(2, '0');
-    const ref = `${jour}${mois}${heure}${minute}`;
-
-    const elements = { 'd-ref': ref, 'stamp-ref': ref };
-    for (let id in elements) {
-        let el = document.getElementById(id);
-        if (el) el.innerText = elements[id];
-    }
-
-    const qr = document.getElementById('qr-ref');
-    if (qr) qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${ref}`;
-}
-
-// ==========================================
-// 5. ENVOIS DISCORD (FIX COUPE IMAGE)
-// ==========================================
-
-async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
-    const docElement = document.getElementById('document');
-    if(!docElement) return;
-
-    const btn = document.getElementById('discord-btn');
-    btn.innerText = "📸 ENVOI...";
-    btn.disabled = true;
-
-    // --- PRÉPARATION DU MESSAGE PERSONNALISÉ ---
-        const now = new Date();
-        const dateFormatee = now.toLocaleDateString('en-US'); // Format MM/DD/YYYY comme sur ta capture
-        const patientName = document.getElementById(patientId)?.innerText || "Inconnu";
-
-        // Construction du texte avec émojis
-        const customHeader = `📄 **${contentMsg}**\n👤 **Patient :** ${patientName}\n📅 **Date :** ${dateFormatee}`;
-    try {
-        const canvas = await html2canvas(docElement, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: "#ffffff",
-            width: 800,           // Force la capture à 800px
-            windowWidth: 1200,    // Simule un écran large pour éviter les coupures à droite
-            scrollX: 0,
-            scrollY: 0,
-            onclone: (clonedDoc) => {
-                const d = clonedDoc.getElementById('document');
-                d.style.margin = '0';
-                d.style.boxShadow = 'none';
-            }
-        });
-
-        canvas.toBlob(async (blob) => {
-            const formData = new FormData();
-            const patientName = document.getElementById(patientId)?.innerText || "Inconnu";
-
-            formData.append("payload_json", JSON.stringify({
-                content: contentMsg + ` **${patientName}**`
-            }));
-            formData.append("file", blob, `${fileName}.png`);
-
-            await fetch(webhookURL, { method: 'POST', body: formData });
-            alert("✅ RÉUSSI ! Tout est sur Discord.");
-        }, 'image/png');
-
-    } catch (error) {
-        alert("❌ Erreur. Vérifie ta console (F12)");
-    } finally {
-        btn.innerText = "ENVOYER SUR L'INTRANET";
-        btn.disabled = false;
-    }
-}
-
-function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    // On passe juste le titre, le reste est géré automatiquement
-    capturerEtEnvoyer(url, "labo", "Nouveau rapport de laboratoire", "d-nom");
-}
-function envoyerDiscordDeces() {
-    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    capturerEtEnvoyer(url, "acte", "Nouvel acte de décès établi", "d-defunt");
-}
-
-// ==========================================
-// 6. LANCEMENT
-// ==========================================
-
 document.addEventListener('DOMContentLoaded', () => {
     init();
-    genererReference();
 });
 
 function determinerGroupeAleatoire() {
     const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
     const resultat = groupes[Math.floor(Math.random() * groupes.length)];
-
-    // Mise à jour du texte sur le document (sans changement de couleur)
-    const afficheur = document.getElementById('d-groupe');
-    if(afficheur) {
-        afficheur.innerText = resultat;
-    }
-
-    // Synchronisation du menu déroulant à gauche
-    const select = document.getElementById('select-groupe');
-    if(select) {
-        select.value = resultat;
-    }
+    document.getElementById('d-groupe').innerText = resultat;
+    document.getElementById('select-groupe').value = resultat;
 }
-
-// --- LOGIQUE GÉNÉRATEUR AUTO ---
-
-function switchMode(mode) {
-    const panelAuto = document.getElementById('panel-auto');
-    const panelManual = document.getElementById('panel-manual');
-    const btnAuto = document.getElementById('btn-auto');
-    const btnManual = document.getElementById('btn-manual');
-
-    if (mode === 'auto') {
-        panelAuto.style.display = 'block';
-        panelManual.style.display = 'none';
-        btnAuto.classList.add('active');
-        btnManual.classList.remove('active');
-    } else {
-        panelAuto.style.display = 'none';
-        panelManual.style.display = 'block';
-        btnAuto.classList.remove('active');
-        btnManual.classList.add('active');
-    }
-}
-
-function lancerGenerationAuto() {
-    const grav = parseInt(document.getElementById('gravity-range').value);
-    const scenarios = Array.from(document.querySelectorAll('.scenario-grid input:checked')).map(i => i.value);
-    
-    if(scenarios.length === 0) return alert("Coche au moins un scénario !");
-
-    // Valeurs de base (normales)
-    let results = { hb: 14.5, ht: 45, lact: 1.0, ph: 7.40, pco2: 40, po2: 95, crea: 9.0, hcg: 0, alc: 0, gb: 6.0 };
-
-    scenarios.forEach(s => {
-        if(s === 'acc-route' || s === 'arme-feu' || s === 'arme-blanche') {
-            results.hb -= (grav * 0.7);
-            results.ht -= (grav * 2);
-            results.lact += (grav * 0.4);
-            if(s === 'arme-feu') results.gb += (grav * 0.5);
-        }
-        if(s === 'overdose') { results.ph -= (grav * 0.03); results.pco2 += (grav * 2); }
-        if(s === 'grossesse') { results.hcg = (grav * 5000); }
-        if(s === 'diabete') { results.ph -= (grav * 0.02); }
-        if(s === 'renal') { results.crea += (grav * 5); }
-    });
-
-    // Injection dans le système manuel et affichage
-    for(let id in results) {
-        let finalVal = results[id].toFixed(id === 'ph' ? 2 : 1);
-        if(id === 'hcg') finalVal = results[id] > 5 ? "POSITIF ("+results[id]+")" : "Négatif";
-        
-        // On trouve la catégorie pour la fonction res()
-        let cat = "";
-        for(let c in database) { if(database[c].find(i => i.id === id)) cat = c; }
-        
-        // On remplit l'input manuel (caché) et on lance la mise à jour visuelle
-        const input = document.querySelector(`[data-id="${id}"]`);
-        if(input) {
-            input.value = finalVal;
-            res(id, finalVal, cat);
-        }
-    }
-    
-    // On repasse en manuel pour voir les détails
-    switchMode('manual');
-    analyserTout();
-}
-
-function resetTout() {
-    if(!confirm("Voulez-vous vraiment tout effacer ?")) return;
-
-    // 1. Vider les inputs textes et dates
-    document.querySelectorAll('#input-panel input[type="text"], #input-panel input[type="date"], #input-panel textarea').forEach(el => el.value = "");
-    
-    // 2. Décocher les scénarios et reset slider
-    document.querySelectorAll('.scenario-grid input').forEach(el => el.checked = false);
-    document.getElementById('gravity-range').value = 5;
-    document.getElementById('grav-display').innerText = "5";
-
-    // 3. Réinitialiser le document de droite
-    document.querySelectorAll('#document span[id^="d-"]').forEach(el => el.innerText = "...");
-    document.getElementById('d-sig').innerText = "NOM DU DOCTEUR";
-    
-    // 4. Cacher les lignes de résultats
-    document.querySelectorAll('.row').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    
-    // 5. Reset sélecteur groupe
-    document.getElementById('select-groupe').value = "...";
-    
-    analyserTout(); // Remet la conclusion par défaut
-    alert("Interface réinitialisée.");
-}
-
