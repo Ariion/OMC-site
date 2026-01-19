@@ -1318,187 +1318,91 @@ function switchMode(mode) {
 
 
 
+// --- LOGIQUE GÉNÉRATEUR AUTO MISE À JOUR ---
+
 function lancerGenerationAuto() {
-
-
-
     const grav = parseInt(document.getElementById('gravity-range').value);
-
-
-
     const scenarios = Array.from(document.querySelectorAll('.scenario-grid input:checked')).map(i => i.value);
-
-
-
     
-
-
-
     if(scenarios.length === 0) return alert("Coche au moins un scénario !");
 
-
-
-
-
-
-
     // Valeurs de base (normales)
-
-
-
     let results = { hb: 14.5, ht: 45, lact: 1.0, ph: 7.40, pco2: 40, po2: 95, crea: 9.0, hcg: 0, alc: 0, gb: 6.0 };
-
-
-
-
-
-
+    let extraConcl = "";
 
     scenarios.forEach(s => {
-
-
-
+        // Impact de la gravité beaucoup plus fort (Multiplié par grav)
         if(s === 'acc-route' || s === 'arme-feu' || s === 'arme-blanche') {
-
-
-
-            results.hb -= (grav * 0.7);
-
-
-
-            results.ht -= (grav * 2);
-
-
-
-            results.lact += (grav * 0.4);
-
-
-
-            if(s === 'arme-feu') results.gb += (grav * 0.5);
-
-
-
+            results.hb -= (grav * 0.9); // Gravité 10 = -9g/dL (Hémorragie massive)
+            results.ht -= (grav * 2.8);
+            results.lact += (grav * 1.2);
+            if(s === 'arme-feu') results.gb += (grav * 1.5);
         }
-
-
-
-        if(s === 'overdose') { results.ph -= (grav * 0.03); results.pco2 += (grav * 2); }
-
-
-
-        if(s === 'grossesse') { results.hcg = (grav * 5000); }
-
-
-
-        if(s === 'diabete') { results.ph -= (grav * 0.02); }
-
-
-
-        if(s === 'renal') { results.crea += (grav * 5); }
-
-
-
+        if(s === 'overdose') { 
+            results.ph -= (grav * 0.05); 
+            results.pco2 += (grav * 4); 
+            results.alc = (grav * 0.4);
+        }
+        if(s === 'grossesse') { 
+            results.hcg = (grav * 8000); 
+            // Calcul des semaines basé sur la gravité (Grav 1 = 2sem, Grav 10 = 20sem par ex)
+            let semaines = grav * 2;
+            extraConcl = " Test de grossesse POSITIF (Estimation : env. " + semaines + " semaines).";
+        }
+        if(s === 'diabete') { results.ph -= (grav * 0.04); results.gly = (grav * 0.5); }
+        if(s === 'renal') { results.crea += (grav * 8); }
+        if(s === 'infection') { results.gb += (grav * 3); results.crp = (grav * 20); }
     });
 
-
-
-
-
-
-
-    // Injection dans le système manuel et affichage
-
-
-
+    // Injection et affichage
     for(let id in results) {
-
-
-
         let finalVal = results[id].toFixed(id === 'ph' ? 2 : 1);
-
-
-
-        if(id === 'hcg') finalVal = results[id] > 5 ? "POSITIF ("+results[id]+")" : "Négatif";
-
-
-
+        if(id === 'hcg') finalVal = results[id] > 5 ? "POSITIF" : "Négatif";
         
-
-
-
-        // On trouve la catégorie pour la fonction res()
-
-
-
         let cat = "";
-
-
-
         for(let c in database) { if(database[c].find(i => i.id === id)) cat = c; }
-
-
-
         
-
-
-
-        // On remplit l'input manuel (caché) et on lance la mise à jour visuelle
-
-
-
         const input = document.querySelector(`[data-id="${id}"]`);
-
-
-
         if(input) {
-
-
-
             input.value = finalVal;
-
-
-
             res(id, finalVal, cat);
-
-
-
         }
-
-
-
+    }
+    
+    // ANALYSE ET CONCLUSION
+    analyserTout();
+    
+    // Ajout du texte spécifique (ex: Grossesse) à la fin de la conclusion auto
+    if(extraConcl !== "") {
+        const textZone = document.getElementById('auto-concl-area');
+        const conclEl = document.getElementById('d-concl');
+        textZone.value += extraConcl;
+        conclEl.innerText += extraConcl;
     }
 
-
-
-    
-
-
-
-    // On repasse en manuel pour voir les détails
-
-
-
-    switchMode('manual');
-
-
-
-    analyserTout();
-
-
-
+    // ON NE REPASSE PLUS EN MANUEL AUTOMATIQUEMENT
+    // switchMode('manual'); <-- Ligne supprimée pour rester sur l'onglet AUTO
 }
 
+function resetSeulementBio() {
+    if(!confirm("Vider les analyses ? (Les infos patient seront gardées)")) return;
 
+    // 1. Décocher les scénarios
+    document.querySelectorAll('.scenario-grid input').forEach(el => el.checked = false);
 
+    // 2. Vider les inputs de résultats dans les onglets manuels
+    document.querySelectorAll('.analysis-input').forEach(el => el.value = "");
 
-
-
-
-function resetTout() {
-
-
-
-    if(!confirm("Voulez-vous vraiment tout effacer ?")) return;
+    // 3. Masquer les lignes sur le document blanc
+    document.querySelectorAll('.row').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    
+    // 4. Reset conclusion
+    document.getElementById('auto-concl-area').value = "";
+    document.getElementById('d-concl').innerText = "...";
+    
+    console.log("Analyses réinitialisées");
+}
 
 
 
@@ -1591,3 +1495,4 @@ function resetTout() {
 
 
 }
+
