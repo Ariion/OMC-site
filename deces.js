@@ -71,23 +71,37 @@ async function envoyerDiscord() {
     btn.innerText = "ENVOI...";
 
     try {
-        const canvas = await html2canvas(doc, { scale: 2 });
+        // On utilise useCORS pour autoriser la capture d'images venant d'autres sites (comme le QR Code)
+        // On ajoute logging pour voir les erreurs en console si besoin
+        const canvas = await html2canvas(doc, { 
+            scale: 2,
+            useCORS: true, 
+            allowTaint: true,
+            logging: false
+        });
+
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
-            const nom = document.getElementById('d-nom').innerText;
+            const nom = document.getElementById('d-nom').innerText || "Inconnu";
             
             formData.append("payload_json", JSON.stringify({
                 content: `📄 **Nouvel Acte de Décès**\n👤 Défunt : ${nom}`
             }));
             formData.append("file", blob, `deces_${nom}.png`);
             
-            await fetch(url, { method: 'POST', body: formData });
-            alert("✅ Envoyé sur l'intranet !");
-            btn.innerText = "ENVOYÉ";
+            const response = await fetch(url, { method: 'POST', body: formData });
+            
+            if (response.ok) {
+                alert("✅ Envoyé sur l'intranet !");
+                btn.innerText = "ENVOYÉ";
+            } else {
+                throw new Error("Erreur serveur Discord");
+            }
         }, 'image/png');
+
     } catch (e) {
         console.error(e);
-        alert("❌ Erreur capture.");
+        alert("❌ Erreur lors de l'envoi. Vérifiez votre connexion.");
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
     }
