@@ -411,189 +411,28 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 
 
 #preview-area {
-
-
-
-
-
-
-
     flex-grow: 1;
-
-
-
-
-
-
-
     display: flex;
-
-
-
-
-
-
-
     justify-content: center;
-
-
-
-
-
-
-
-    padding: 40px; /* Un peu plus d'espace pour respirer */
-
-
-
-
-
-
-
-    overflow-y: auto;
-
-
-
-
-
-
-
-    background: #d1d5db; /* Fond gris pour détacher la feuille blanche */
-
-
-
-
-
-
-
+    padding: 40px;
+    overflow-y: auto; /* Active le scroll vertical pour les longs rapports */
+    background: #d1d5db;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #document {
-
-
-
-
-
-
-
     width: 800px !important;
-
-
-
-
-
-
-
-    min-width: 800px !important; /* Force la largeur même si l'écran est petit */
-
-
-
-
-
-
-
+    min-width: 800px !important;
     max-width: 800px !important;
-
-
-
-
-
-
-
-    height: auto !important;
-
-
-
-
-
-
-
-    min-height: 400px;
-
-
-
-
-
-
-
+    height: auto !important; /* Permet au document de s'allonger selon le nombre de tests */
+    min-height: 1122px; /* Garde au moins la forme d'une feuille A4 */
     background: white !important;
-
-
-
-
-
-
-
     padding: 40px !important;
-
-
-
-
-
-
-
     color: #111 !important;
-
-
-
-
-
-
-
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-
-
-
-
-
-
-
     position: relative;
-
-
-
-
-
-
-
-    box-sizing: border-box; /* Indispensable pour que le padding ne dépasse pas */
-
-
-
-
-
-
-
-    margin: 0;
-
-
-
-
-
-
-
-    transform-origin: top left; /* Aide à la capture d'image */
-
-
-
-
-
-
-
+    box-sizing: border-box;
+    margin-bottom: 50px; /* Petit espace en bas du scroll pour le confort */
+    transform-origin: top center;
 }
 
 
@@ -1043,142 +882,39 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 
 
       @media print {
-
-
-
-       /* 1. On cache absolument tout ce qui n'est pas le document */
-
-
-
-       #input-panel, .back-link, button, #dynamic-tabs, .portal-logo {
-
-
-
-           display: none !important;
-
-
-
-       }
-
-
-
-
-
-
-
-       /* 2. On réinitialise le corps de la page pour qu'il ne soit plus en "flex" */
-
-
-
-       body {
-
-
-
-           display: block !important;
-
-
-
-           background: white !important;
-
-
-
-           overflow: visible !important;
-
-
-
-       }
-
-
-
-
-
-
-
-       /* 3. On force la zone de prévisualisation à prendre toute la largeur */
-
-
-
-       #preview-area {
-
-
-
-          overflow: visible !important;
-
-
-
-           display: block !important;
-
-
-
-           position: absolute;
-
-
-
-           top: 0;
-
-
-
-           left: 0;
-
-
-
-           width: 100% !important;
-
-
-
-           padding: 0 !important;
-
-
-
-           margin: 0 !important;
-
-
-
-       }
-
-
-
-
-
-
-
-       /* 4. On fixe le document au format A4 réel pour éviter qu'il soit coupé */
-
-
-
-       #document {
-
-
-
-           width: 210mm !important;
-
-
-
-           min-width: 210mm !important;
-
-
-
-           margin: 0 auto !important;
-
-
-
-           padding: 20mm !important;
-
-
-
-           box-shadow: none !important;
-
-
-
-           border: none !important;
-
-
-
-       }
-
-
-
-   }
+    #input-panel, .back-link, button, #dynamic-tabs, .portal-logo, .mode-selector, hr {
+        display: none !important;
+    }
+
+    body {
+        display: block !important;
+        background: white !important;
+        overflow: visible !important;
+    }
+
+    #preview-area {
+        overflow: visible !important; /* Désactive le scroll pour le PDF */
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: white !important;
+    }
+
+    #document {
+        width: 210mm !important; /* Largeur A4 réelle */
+        min-width: 210mm !important;
+        margin: 0 auto !important;
+        padding: 15mm !important;
+        box-shadow: none !important;
+        border: none !important;
+        height: auto !important;
+    }
+
+    /* Force chaque section à ne pas être coupée en plein milieu d'une ligne */
+    .section {
+        page-break-inside: avoid;
+    }
+}
 
 
 
@@ -1411,4 +1147,5 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 
 
 }
+
 
