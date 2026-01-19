@@ -61,6 +61,15 @@ const database = {
     ]
 };
 
+const causesData = {
+    "Neurologique": ["Hémorragie méningée", "Hémorragie intracérébrale massive", "Infarctus cérébral massif", "Traumatisme cranien sévère", "Etat de mal épileptique"],
+    "Hémorragique": ["Hémorragie interne massive", "Hémorragie externe incontrôlable", "Rupture d'anévrisme", "Hémorragie obstétricale sévère"],
+    "Infectieuse / Métabolique": ["Choc septique", "Défaillance multiviscérale", "Méningite bactérienne fulminante", "Acidocétose diabétique sévère", "Insuffisance hépatique aiguë"],
+    "Cardio-respiratoire": ["Arrêt cardio-respiratoire", "Fibrillation / TV", "Infarctus aigu du myocarde", "Embolie pulmonaire massive", "Oedème aigu du poumon", "Noyade"],
+    "Traumatique": ["Polytraumatisme avec choc hémorragique", "Ecrasement thoraco-abdominal", "Section médullaire haute", "Brulures étendues"],
+    "Toxique": ["Intoxication médicamenteuse massive", "Overdose opioïdes / cocaïne", "Intoxication monoxyde de carbone", "Empoisonnement chimique"]
+};
+
 // ==========================================
 // 2. INITIALISATION ET MISES À JOUR
 // ==========================================
@@ -92,8 +101,17 @@ function init() {
     }
 }
 
-function up(id, val) { const el = document.getElementById(id); if(el) el.innerText = val || "..."; }
-function upDate(id, val) { if(!val) return; const [y,m,d] = val.split('-'); const el = document.getElementById(id); if(el) el.innerText = `${d}/${m}/${y}`; }
+function up(id, val) {
+    const el = document.getElementById(id);
+    if(el) el.innerText = val || "...";
+}
+
+function upDate(id, val) {
+    if(!val) return;
+    const [y,m,d] = val.split('-');
+    const el = document.getElementById(id);
+    if(el) el.innerText = `${d}/${m}/${y}`;
+}
 
 // ==========================================
 // 3. LOGIQUE MÉDICALE
@@ -132,6 +150,36 @@ function analyserTout() {
     document.getElementById('auto-concl-area').value = concl;
     document.getElementById('d-concl').innerText = concl;
 }
+
+let typeSelectionne = "";
+
+function updateCausesSub(type) {
+    typeSelectionne = type;
+    const select = document.getElementById('cause-precision');
+    if(!select) return;
+
+    select.innerHTML = '<option value="">-- Sélectionner --</option>';
+    if (causesData[type]) {
+        causesData[type].forEach(c => {
+            select.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+    }
+}
+
+function updateCauseFinale(precision) {
+    const blocAffichage = document.getElementById('d-cause');
+    if (blocAffichage && precision !== "") {
+        blocAffichage.innerText = `${typeSelectionne} — ${precision}`;
+    }
+}
+
+function genererReference() {
+    const n = new Date();
+    const ref = `${n.getDate()}${n.getMonth()+1}${n.getHours()}${n.getMinutes()}`;
+    const el = document.getElementById('d-ref');
+    if(el) el.innerText = ref;
+}
+
 
 // ==========================================
 // 4. GÉNÉRATEUR AUTO
@@ -186,3 +234,4 @@ function determinerGroupeAleatoire() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
