@@ -9,6 +9,7 @@ const causesData = {
 
 let typeSelectionne = "";
 
+// Gère le deuxième menu déroulant (Précisions)
 function updateCausesSub(type) {
     typeSelectionne = type;
     const select = document.getElementById('cause-precision');
@@ -24,23 +25,33 @@ function updateCausesSub(type) {
     }
 }
 
+// Affiche la cause finale sur le document
 function updateCauseFinale(precision) {
     const el = document.getElementById('d-cause');
     el.innerText = precision ? `${typeSelectionne} — ${precision}` : "...";
 }
 
+// Génère la référence au format JOUR MOIS HEURE MINUTE (JJMMHHMM)
 function genererReference() {
-    const now = new Date();
-    const ref = "OMC-DEC-" + now.getTime().toString().slice(-6);
+    const n = new Date();
+    const jj = n.getDate().toString().padStart(2, '0');
+    const mm = (n.getMonth() + 1).toString().padStart(2, '0');
+    const hh = n.getHours().toString().padStart(2, '0');
+    const min = n.getMinutes().toString().padStart(2, '0');
+    
+    const ref = `${jj}${mm}${hh}${min}`;
+    
+    // Mise à jour du texte et du QR Code
     document.getElementById('d-ref').innerText = ref;
-    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ref}`;
+    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${ref}`;
 }
 
+// Fonction d'envoi Discord
 async function envoyerDiscord() {
-    const url = "TA_WEBHOOK_DISCORD_ICI"; // Remplace par ton URL
+    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
     const btn = document.getElementById('discord-btn');
     btn.disabled = true;
-    btn.innerText = "ENVOI EN COURS...";
+    btn.innerText = "ENVOI...";
 
     try {
         const canvas = await html2canvas(document.getElementById('document'), { scale: 2 });
@@ -48,20 +59,20 @@ async function envoyerDiscord() {
             const formData = new FormData();
             const nom = document.getElementById('d-nom').innerText;
             formData.append("payload_json", JSON.stringify({
-                content: `🚨 **Nouvel Acte de Décès établi**\n👤 Défunt: ${nom}`
+                content: `📄 **Nouvel Acte de Décès**\n👤 Défunt : ${nom}`
             }));
-            formData.append("file", blob, "certificat-deces.png");
+            formData.append("file", blob, `deces_${nom}.png`);
             
             await fetch(url, { method: 'POST', body: formData });
-            alert("✅ Certificat envoyé sur Discord !");
+            alert("✅ Envoyé sur l'intranet !");
             btn.innerText = "ENVOYÉ";
         }, 'image/png');
     } catch (e) {
-        alert("❌ Erreur lors de l'envoi.");
+        alert("❌ Erreur capture.");
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
     }
 }
 
-// Lancement automatique
+// Initialisation au chargement
 document.addEventListener('DOMContentLoaded', genererReference);
