@@ -40,7 +40,16 @@ function genererReference() {
     const min = n.getMinutes().toString().padStart(2, '0');
     
     const ref = `${jj}${mm}${hh}${min}`;
-    
+
+    // Référence en NOIR (plus de bleu)
+    const refEl = document.getElementById('d-ref');
+    if(refEl) {
+        refEl.innerText = ref;
+        refEl.style.color = "#1e293b";
+    }
+    const qrImg = document.getElementById('qr-ref');
+    if(qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${ref}`;
+}
     // Mise à jour du texte et du QR Code
     document.getElementById('d-ref').innerText = ref;
     document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${ref}`;
