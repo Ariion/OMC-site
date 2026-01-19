@@ -1,66 +1,78 @@
 // ==========================================
-// 1. BASES DE DONNÉES & INITIALISATION
+// 1. BASES DE DONNÉES
 // ==========================================
 const database = {
     "Hématologie (Sang)": [
-        { id: "gb", label: "Leucocytes (Globules Blancs)", unit: "G/L", norm: "4.0 - 10.0", help: "Infection ou inflammation." },
-        { id: "hb", label: "Hémoglobine", unit: "g/dL", norm: "13.0 - 17.0", help: "Anémie ou hémorragie." },
-        { id: "ht", label: "Hématocrite", unit: "%", norm: "40 - 52", help: "Volume des globules rouges." },
+        { id: "gb", label: "Leucocytes (Globules Blancs)", unit: "G/L", norm: "4.0 - 10.0", help: "Infection." },
+        { id: "hb", label: "Hémoglobine", unit: "g/dL", norm: "13.0 - 17.0", help: "Anémie." },
+        { id: "ht", label: "Hématocrite", unit: "%", norm: "40 - 52", help: "Volume." },
         { id: "pla", label: "Plaquettes", unit: "G/L", norm: "150 - 400", help: "Coagulation." },
-        { id: "vgm", label: "VGM", unit: "fL", norm: "80 - 100", help: "Taille des globules rouges." },
-        { id: "tcmh", label: "TCMH", unit: "pg", norm: "27 - 32", help: "Teneur en hémoglobine." },
-        { id: "poly_n", label: "Polynucléaires Neutrophiles", unit: "%", norm: "40 - 75", help: "Infection bactérienne." },
-        { id: "lympho", label: "Lymphocytes", unit: "%", norm: "20 - 45", help: "Infection virale / Immunité." }
+        { id: "vgm", label: "VGM", unit: "fL", norm: "80 - 100", help: "Taille." },
+        { id: "tcmh", label: "TCMH", unit: "pg", norm: "27 - 32", help: "Hémoglobine." },
+        { id: "poly_n", label: "Polynucléaires Neutrophiles", unit: "%", norm: "40 - 75", help: "Bactéries." },
+        { id: "lympho", label: "Lymphocytes", unit: "%", norm: "20 - 45", help: "Virus." }
     ],
     "Coagulation": [
-        { id: "tp", label: "Taux de Prothrombine (TP)", unit: "%", norm: "70 - 100", help: "Vitesse de coagulation." },
-        { id: "inr", label: "INR", unit: "-", norm: "0.8 - 1.2", help: "Suivi traitement anticoagulant." },
-        { id: "tca", label: "TCA", unit: "sec", norm: "24 - 38", help: "Temps de céphaline activée." },
-        { id: "fibri", label: "Fibrinogène", unit: "g/L", norm: "2.0 - 4.0", help: "Facteur de coagulation." }
+        { id: "tp", label: "Taux de Prothrombine (TP)", unit: "%", norm: "70 - 100", help: "Vitesse." },
+        { id: "inr", label: "INR", unit: "-", norm: "0.8 - 1.2", help: "Suivi." },
+        { id: "tca", label: "TCA", unit: "sec", norm: "24 - 38", help: "Temps." },
+        { id: "fibri", label: "Fibrinogène", unit: "g/L", norm: "2.0 - 4.0", help: "Facteur." }
     ],
     "Biochimie Métabolique": [
-        { id: "gly", label: "Glycémie à jeun", unit: "g/L", norm: "0.70 - 1.10", help: "Taux de sucre (Diabète)." },
-        { id: "uree", label: "Urée", unit: "g/L", norm: "0.15 - 0.45", help: "Déchets azotés." },
-        { id: "crea", label: "Créatinine", unit: "mg/L", norm: "7.0 - 12.0", help: "Filtration des reins." },
-        { id: "crp", label: "CRP", unit: "mg/L", norm: "0 - 5.0", help: "Inflammation aiguë." },
-        { id: "vs", label: "Vitesse Sédimentation", unit: "mm/h", norm: "0 - 20", help: "Inflammation chronique." }
+        { id: "gly", label: "Glycémie à jeun", unit: "g/L", norm: "0.70 - 1.10", help: "Sucre." },
+        { id: "uree", label: "Urée", unit: "g/L", norm: "0.15 - 0.45", help: "Déchets." },
+        { id: "crea", label: "Créatinine", unit: "mg/L", norm: "7.0 - 12.0", help: "Reins." },
+        { id: "crp", label: "CRP", unit: "mg/L", norm: "0 - 5.0", help: "Inflammation." },
+        { id: "vs", label: "Vitesse Sédimentation", unit: "mm/h", norm: "0 - 20", help: "Chronique." }
     ],
     "Ionogramme (Sels)": [
-        { id: "na", label: "Sodium (Na+)", unit: "mmol/L", norm: "135 - 145", help: "Hydratation." },
-        { id: "k", label: "Potassium (K+)", unit: "mmol/L", norm: "3.5 - 5.0", help: "Danger cardiaque si anormal." },
-        { id: "cl", label: "Chlore (Cl-)", unit: "mmol/L", norm: "95 - 105", help: "Équilibre acido-basique." },
-        { id: "ca", label: "Calcium", unit: "mg/L", norm: "85 - 105", help: "Os et muscles." }
+        { id: "na", label: "Sodium (Na+)", unit: "mmol/L", norm: "135 - 145", help: "Sels." },
+        { id: "k", label: "Potassium (K+)", unit: "mmol/L", norm: "3.5 - 5.0", help: "Cœur." },
+        { id: "cl", label: "Chlore (Cl-)", unit: "mmol/L", norm: "95 - 105", help: "Acide." },
+        { id: "ca", label: "Calcium", unit: "mg/L", norm: "85 - 105", help: "Os." }
     ],
     "Bilan Hépatique (Foie)": [
-        { id: "asat", label: "ASAT (TGO)", unit: "UI/L", norm: "0 - 35", help: "Lésion hépatique." },
-        { id: "alat", label: "ALAT (TGP)", unit: "UI/L", norm: "0 - 45", help: "Inflammation foie." },
-        { id: "ggt", label: "Gamma-GT", unit: "UI/L", norm: "0 - 55", help: "Alcool ou voies biliaires." },
-        { id: "bili_t", label: "Bilirubine Totale", unit: "mg/L", norm: "0 - 12", help: "Jaunisse (Ictère)." }
+        { id: "asat", label: "ASAT (TGO)", unit: "UI/L", norm: "0 - 35", help: "Foie." },
+        { id: "alat", label: "ALAT (TGP)", unit: "UI/L", norm: "0 - 45", help: "Foie." },
+        { id: "ggt", label: "Gamma-GT", unit: "UI/L", norm: "0 - 55", help: "Alcool." },
+        { id: "bili_t", label: "Bilirubine Totale", unit: "mg/L", norm: "0 - 12", help: "Jaunisse." }
     ],
     "Marqueurs Cardiaques": [
-        { id: "tropo", label: "Troponine I", unit: "ng/L", norm: "0 - 15", help: "Diagnostic Infarctus." },
-        { id: "bnp", label: "BNP", unit: "pg/mL", norm: "0 - 100", help: "Insuffisance cardiaque." }
+        { id: "tropo", label: "Troponine I", unit: "ng/L", norm: "0 - 15", help: "Infarctus." },
+        { id: "bnp", label: "BNP", unit: "pg/mL", norm: "0 - 100", help: "Cœur." }
     ],
     "Gaz du Sang (AA)": [
-        { id: "ph", label: "pH Artériel", unit: "", norm: "7.38 - 7.42", help: "Acidité sanguine." },
-        { id: "pco2", label: "PCO2", unit: "mmHg", norm: "35 - 45", help: "Respiration (CO2)." },
-        { id: "po2", label: "PO2", unit: "mmHg", norm: "80 - 100", help: "Oxygénation." },
-        { id: "lact", label: "Lactates", unit: "mmol/L", norm: "0.5 - 2.0", help: "Souffrance des tissus." }
+        { id: "ph", label: "pH Artériel", unit: "", norm: "7.38 - 7.42", help: "Acidité." },
+        { id: "pco2", label: "PCO2", unit: "mmHg", norm: "35 - 45", help: "CO2." },
+        { id: "po2", label: "PO2", unit: "mmHg", norm: "80 - 100", help: "Oxygène." },
+        { id: "lact", label: "Lactates", unit: "mmol/L", norm: "0.5 - 2.0", help: "Choc." }
     ],
     "Toxicologie (LSPD/BCSO)": [
-        { id: "alc", label: "Alcoolémie", unit: "g/L", norm: "0 - 0.10", help: "Taux d'alcool." },
-        { id: "thc", label: "Cannabis (THC)", unit: "-", norm: "Négatif", help: "Dépistage stupéfiant." },
-        { id: "coc", label: "Cocaïne", unit: "-", norm: "Négatif", help: "Dépistage stupéfiant." },
-        { id: "amp", label: "Amphétamines", unit: "-", norm: "Négatif", help: "Dépistage stupéfiant." }
+        { id: "alc", label: "Alcoolémie", unit: "g/L", norm: "0 - 0.10", help: "Alcool." },
+        { id: "thc", label: "Cannabis (THC)", unit: "-", norm: "Négatif", help: "Drogue." },
+        { id: "coc", label: "Cocaïne", unit: "-", norm: "Négatif", help: "Drogue." },
+        { id: "amp", label: "Amphétamines", unit: "-", norm: "Négatif", help: "Drogue." }
     ],
     "Endocrinologie & Divers": [
         { id: "tsh", label: "TSH", unit: "mUI/L", norm: "0.4 - 4.0", help: "Thyroïde." },
-        { id: "hcg", label: "Bêta-HCG", unit: "mUI/mL", norm: "0 - 5", help: "Test de grossesse." },
-        { id: "vitd", label: "Vitamine D", unit: "ng/mL", norm: "30 - 60", help: "Solidité osseuse." },
-        { id: "adn", label: "Compatibilité ADN", unit: "%", norm: "100", help: "Identification criminelle." }
+        { id: "hcg", label: "Bêta-HCG", unit: "mUI/mL", norm: "0 - 5", help: "Grossesse." },
+        { id: "vitd", label: "Vitamine D", unit: "ng/mL", norm: "30 - 60", help: "Os." },
+        { id: "adn", label: "Compatibilité ADN", unit: "%", norm: "100", help: "ADN." }
     ]
 };
 
+const causesData = {
+    "Neurologique": ["Hémorragie méningée", "Traumatisme cranien sévère"],
+    "Hémorragique": ["Hémorragie interne massive", "Rupture d'anévrisme"],
+    "Infectieuse / Métabolique": ["Choc septique", "Défaillance multiviscérale"],
+    "Cardio-respiratoire": ["Arrêt cardio-respiratoire", "Infarctus aigu"],
+    "Traumatique": ["Polytraumatisme", "Ecrasement thoraco-abdominal"],
+    "Toxique": ["Overdose opioïdes", "Intoxication monoxyde"]
+};
+
+// ==========================================
+// 2. INITIALISATION ET MISES À JOUR
+// ==========================================
 function init() {
     const tabsContainer = document.getElementById('dynamic-tabs');
     const sectionsContainer = document.getElementById('dynamic-sections');
@@ -99,9 +111,6 @@ function init() {
     }
 }
 
-// ==========================================
-// 2. LOGIQUE D'AFFICHAGE & NAVIGATION
-// ==========================================
 function up(id, val) {
     const el = document.getElementById(id);
     if(el) el.innerText = val || (id==='d-sig' ? "NOM DOCTEUR" : "...");
@@ -114,6 +123,9 @@ function upDate(id, val) {
     if(el) el.innerText = `${d}/${m}/${y}`;
 }
 
+// ==========================================
+// 3. LOGIQUE GÉNÉRATEUR AUTO & MODES
+// ==========================================
 function switchMode(mode) {
     document.getElementById('panel-auto').style.display = (mode === 'auto' ? 'block' : 'none');
     document.getElementById('panel-manual').style.display = (mode === 'manual' ? 'block' : 'none');
@@ -121,28 +133,21 @@ function switchMode(mode) {
     event.currentTarget.classList.add('active');
 }
 
-// ==========================================
-// 3. GENERATION AUTOMATIQUE
-// ==========================================
 function lancerGenerationAuto() {
     const grav = parseInt(document.getElementById('gravity-range').value);
     const scenarios = Array.from(document.querySelectorAll('.scenario-grid input:checked')).map(i => i.value);
-    if(scenarios.length === 0) return alert("Coche au moins un scénario !");
+    if(scenarios.length === 0) return alert("Coche un scénario !");
 
-    // Valeurs de base normales
     let results = { hb: 14.5, ht: 45, lact: 1.0, ph: 7.40, pco2: 40, po2: 95, crea: 9.0, hcg: 0, alc: 0, gb: 6.0 };
 
     scenarios.forEach(s => {
         if(s === 'acc-route' || s === 'arme-feu' || s === 'arme-blanche') {
-            results.hb -= (grav * 0.85); // Hémorragie plus violente
+            results.hb -= (grav * 0.9);
             results.ht -= (grav * 2.5);
-            results.lact += (grav * 0.5);
-            if(s === 'arme-feu') results.gb += (grav * 0.6);
+            results.lact += (grav * 0.6);
         }
-        if(s === 'overdose') { results.ph -= (grav * 0.04); results.pco2 += (grav * 3); }
+        if(s === 'overdose') { results.ph -= (grav * 0.05); results.alc = (grav * 0.4); }
         if(s === 'grossesse') { results.hcg = (grav * 5000); }
-        if(s === 'diabete') { results.ph -= (grav * 0.03); }
-        if(s === 'renal') { results.crea += (grav * 6); }
     });
 
     for(let id in results) {
@@ -153,16 +158,22 @@ function lancerGenerationAuto() {
         for(let c in database) { if(database[c].find(i => i.id === id)) cat = c; }
         
         const input = document.querySelector(`[data-id="${id}"]`);
-        if(input) {
-            input.value = finalVal;
-            res(id, finalVal, cat);
-        }
+        if(input) { input.value = finalVal; res(id, finalVal, cat); }
     }
-    analyserTout();
+}
+
+function resetSeulementBio() {
+    if(!confirm("Vider les analyses ?")) return;
+    document.querySelectorAll('.analysis-input').forEach(el => el.value = "");
+    document.querySelectorAll('.scenario-grid input').forEach(el => el.checked = false);
+    document.querySelectorAll('.row').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    document.getElementById('auto-concl-area').value = "";
+    document.getElementById('d-concl').innerText = "...";
 }
 
 // ==========================================
-// 4. RESET & ANALYSE
+// 4. LOGIQUE MÉDICALE & ANALYSE
 // ==========================================
 function res(id, val, cat) {
     const row = document.getElementById('row-'+id);
@@ -192,33 +203,52 @@ function analyserTout() {
             let valNum = parseFloat(valText), [min, max] = norm.split('-').map(n => parseFloat(n));
             if (valNum < min) anomalies.push(`${label} bas`);
             if (valNum > max) anomalies.push(`${label} élevé`);
-        } else if (norm === "Négatif" && valText.toLowerCase() === "positif") { anomalies.push(`${label} POSITIF`); }
+        }
     });
-    let autoConcl = anomalies.length > 0 ? "Points d'attention : " + anomalies.join(', ') + "." : "Bilan biologique satisfaisant.";
-    document.getElementById('auto-concl-area').value = autoConcl;
-    document.getElementById('d-concl').innerText = autoConcl;
-}
-
-function resetTout() {
-    if(!confirm("Réinitialiser UNIQUEMENT les analyses ? Les infos patient resteront.")) return;
-    document.querySelectorAll('.analysis-input').forEach(el => el.value = "");
-    document.querySelectorAll('.scenario-grid input').forEach(el => el.checked = false);
-    document.querySelectorAll('.row').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    document.getElementById('auto-concl-area').value = "";
-    document.getElementById('d-concl').innerText = "...";
+    let concl = anomalies.length > 0 ? "Alertes : " + anomalies.join(', ') + "." : "RAS.";
+    document.getElementById('auto-concl-area').value = concl;
+    document.getElementById('d-concl').innerText = concl;
 }
 
 // ==========================================
-// 5. LANCEMENT
+// 5. DISCORD & DÉCÈS
 // ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    init();
-});
+async function capturerEtEnvoyer(webhookURL, fileName, contentMsg, patientId) {
+    const docElement = document.getElementById('document');
+    const btn = document.getElementById('discord-btn');
+    btn.innerText = "📸 ENVOI...";
+    btn.disabled = true;
+
+    try {
+        const canvas = await html2canvas(docElement, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+        canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            const patientName = document.getElementById(patientId)?.innerText || "Inconnu";
+            formData.append("payload_json", JSON.stringify({ content: contentMsg + ` **${patientName}**` }));
+            formData.append("file", blob, `${fileName}.png`);
+            await fetch(webhookURL, { method: 'POST', body: formData });
+            alert("✅ RÉUSSI !");
+        }, 'image/png');
+    } catch (e) { alert("Erreur capture."); }
+    finally { btn.innerText = "ENVOYER SUR DISCORD"; btn.disabled = false; }
+}
+
+function envoyerDiscord() {
+    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
+    capturerEtEnvoyer(url, "labo", "Rapport Labo :", "d-nom");
+}
 
 function determinerGroupeAleatoire() {
     const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-    const resultat = groupes[Math.floor(Math.random() * groupes.length)];
-    document.getElementById('d-groupe').innerText = resultat;
-    document.getElementById('select-groupe').value = resultat;
+    const res = groupes[Math.floor(Math.random() * groupes.length)];
+    document.getElementById('d-groupe').innerText = res;
+    document.getElementById('select-groupe').value = res;
 }
+
+// ==========================================
+// 6. LANCEMENT
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    if(typeof genererReference === "function") genererReference();
+});
