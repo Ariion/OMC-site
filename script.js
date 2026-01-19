@@ -306,3 +306,57 @@ function determinerGroupeAleatoire() {
         select.value = resultat;
     }
 }
+
+// --- LOGIQUE GÉNÉRATEUR AUTO ---
+
+function switchMode(mode) {
+    document.getElementById('panel-auto').style.display = (mode === 'auto' ? 'block' : 'none');
+    document.getElementById('panel-manual').style.display = (mode === 'manual' ? 'block' : 'none');
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+}
+
+function lancerGenerationAuto() {
+    const grav = parseInt(document.getElementById('gravity-range').value);
+    const scenarios = Array.from(document.querySelectorAll('.scenario-grid input:checked')).map(i => i.value);
+    
+    if(scenarios.length === 0) return alert("Coche au moins un scénario !");
+
+    // Valeurs de base (normales)
+    let results = { hb: 14.5, ht: 45, lact: 1.0, ph: 7.40, pco2: 40, po2: 95, crea: 9.0, hcg: 0, alc: 0, gb: 6.0 };
+
+    scenarios.forEach(s => {
+        if(s === 'acc-route' || s === 'arme-feu' || s === 'arme-blanche') {
+            results.hb -= (grav * 0.7);
+            results.ht -= (grav * 2);
+            results.lact += (grav * 0.4);
+            if(s === 'arme-feu') results.gb += (grav * 0.5);
+        }
+        if(s === 'overdose') { results.ph -= (grav * 0.03); results.pco2 += (grav * 2); }
+        if(s === 'grossesse') { results.hcg = (grav * 5000); }
+        if(s === 'diabete') { results.ph -= (grav * 0.02); }
+        if(s === 'renal') { results.crea += (grav * 5); }
+    });
+
+    // Injection dans le système manuel et affichage
+    for(let id in results) {
+        let finalVal = results[id].toFixed(id === 'ph' ? 2 : 1);
+        if(id === 'hcg') finalVal = results[id] > 5 ? "POSITIF ("+results[id]+")" : "Négatif";
+        
+        // On trouve la catégorie pour la fonction res()
+        let cat = "";
+        for(let c in database) { if(database[c].find(i => i.id === id)) cat = c; }
+        
+        // On remplit l'input manuel (caché) et on lance la mise à jour visuelle
+        const input = document.querySelector(`[data-id="${id}"]`);
+        if(input) {
+            input.value = finalVal;
+            res(id, finalVal, cat);
+        }
+    }
+    
+    // On repasse en manuel pour voir les détails
+    switchMode('manual');
+    analyserTout();
+}
+
