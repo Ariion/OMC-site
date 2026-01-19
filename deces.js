@@ -13,6 +13,8 @@ let typeSelectionne = "";
 function updateCausesSub(type) {
     typeSelectionne = type;
     const select = document.getElementById('cause-precision');
+    if(!select) return;
+    
     select.innerHTML = '<option value="">-- Sélectionner la précision --</option>';
     
     if (causesData[type]) {
@@ -28,7 +30,9 @@ function updateCausesSub(type) {
 // Affiche la cause finale sur le document
 function updateCauseFinale(precision) {
     const el = document.getElementById('d-cause');
-    el.innerText = precision ? `${typeSelectionne} — ${precision}` : "...";
+    if(el) {
+        el.innerText = precision ? `${typeSelectionne} — ${precision}` : "...";
+    }
 }
 
 // Génère la référence au format JOUR MOIS HEURE MINUTE (JJMMHHMM)
@@ -41,32 +45,37 @@ function genererReference() {
     
     const ref = `${jj}${mm}${hh}${min}`;
 
-    // Référence en NOIR (plus de bleu)
+    // Mise à jour de la référence texte
     const refEl = document.getElementById('d-ref');
     if(refEl) {
         refEl.innerText = ref;
-        refEl.style.color = "#1e293b";
+        refEl.style.color = "#1e293b"; // Noir/Gris foncé
     }
+
+    // Mise à jour du QR Code
     const qrImg = document.getElementById('qr-ref');
-    if(qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${ref}`;
-}
-    // Mise à jour du texte et du QR Code
-    document.getElementById('d-ref').innerText = ref;
-    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${ref}`;
+    if(qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${ref}`;
+    }
 }
 
 // Fonction d'envoi Discord
 async function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
     const btn = document.getElementById('discord-btn');
+    const doc = document.getElementById('document');
+    
+    if(!doc) return alert("Erreur : Document introuvable");
+    
     btn.disabled = true;
     btn.innerText = "ENVOI...";
 
     try {
-        const canvas = await html2canvas(document.getElementById('document'), { scale: 2 });
+        const canvas = await html2canvas(doc, { scale: 2 });
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const nom = document.getElementById('d-nom').innerText;
+            
             formData.append("payload_json", JSON.stringify({
                 content: `📄 **Nouvel Acte de Décès**\n👤 Défunt : ${nom}`
             }));
@@ -77,6 +86,7 @@ async function envoyerDiscord() {
             btn.innerText = "ENVOYÉ";
         }, 'image/png');
     } catch (e) {
+        console.error(e);
         alert("❌ Erreur capture.");
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
