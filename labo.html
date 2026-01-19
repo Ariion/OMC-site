@@ -11,9 +11,43 @@
         <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
         <h2>OMC LABORATOIRE</h2>
 
+        <div id="fixed-patient-data">
+            <div class="input-group">
+                <label>Nom & Prénom</label>
+                <input type="text" oninput="up('d-nom', this.value)" placeholder="FREEMAN Garret ">
+            </div>
+            <div class="input-group">
+                <label>Date de Naissance</label>
+                <input type="date" oninput="upDate('d-ddn', this.value)">
+            </div>
+            <div class="input-group">
+                <label>Date Prélèvement</label>
+                <input type="date" oninput="upDate('d-date', this.value)">
+            </div>
+            <div class="input-group">
+                <label>Médecin Prescripteur</label>
+                <input type="text" oninput="up('d-presc', this.value)">
+            </div>
+            <div class="input-group">
+                <label>Groupe Sanguin</label>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-sub">🎲 ALÉATOIRE</button>
+                    <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex: 1;">
+                        <option value="...">-- Manuel --</option>
+                        <option value="A+">A+</option><option value="A-">A-</option>
+                        <option value="B+">B+</option><option value="B-">B-</option>
+                        <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        <option value="O+">O+</option><option value="O-">O-</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <hr style="border: 0.5px solid #233554; margin: 20px 0; opacity: 0.3;">
+
         <div class="mode-selector">
-            <button type="button" class="mode-btn active" onclick="switchMode('auto')">🤖 AUTO</button>
-            <button type="button" class="mode-btn" onclick="switchMode('manual')">✍️ MANUEL</button>
+            <button type="button" id="btn-auto" class="mode-btn active" onclick="switchMode('auto')">🤖 AUTO</button>
+            <button type="button" id="btn-manual" class="mode-btn" onclick="switchMode('manual')">✍️ MANUEL</button>
         </div>
 
         <div id="panel-auto">
@@ -37,36 +71,14 @@
                 <label class="scenario-item"><input type="checkbox" value="poison"><span>🧪 Poison</span></label>
             </div>
             <button type="button" onclick="lancerGenerationAuto()" class="btn-generate">GÉNÉRER LE BILAN</button>
+            <button type="button" onclick="resetTout()" class="btn-reset">🗑️ RÉINITIALISER TOUT</button>
         </div>
 
         <div id="panel-manual" style="display:none">
-            <div class="input-group">
-                <label>Nom & Prénom</label><input type="text" oninput="up('d-nom', this.value)" placeholder="FREEMAN Garret ">
-            </div>
-            <div class="input-group">
-                <label>Date de Naissance</label><input type="date" oninput="upDate('d-ddn', this.value)">
-            </div>
-            <div class="input-group">
-                <label>Date Prélèvement</label><input type="date" oninput="upDate('d-date', this.value)">
-            </div>
-            <div class="input-group">
-                <label>Médecin Prescripteur</label><input type="text" oninput="up('d-presc', this.value)">
-            </div>
-            <div class="input-group">
-                <label>Groupe Sanguin</label>
-                <div style="display: flex; gap: 10px;">
-                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-sub">🎲 ALÉATOIRE</button>
-                    <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex: 1;">
-                        <option value="...">-- Manuel --</option>
-                        <option value="A+">A+</option><option value="A-">A-</option>
-                        <option value="B+">B+</option><option value="B-">B-</option>
-                        <option value="AB+">AB+</option><option value="AB-">AB-</option>
-                        <option value="O+">O+</option><option value="O-">O-</option>
-                    </select>
-                </div>
-            </div>
             <div id="dynamic-tabs"></div>
         </div>
+
+        <hr style="border: 0.5px solid #233554; margin: 20px 0; opacity: 0.3;">
 
         <textarea oninput="up('d-concl', this.value)" id="auto-concl-area" placeholder="Conclusion médicale..." rows="3"></textarea>
         <input type="text" oninput="up('d-sig', this.value)" placeholder="Nom du Docteur" style="margin-top:10px">
@@ -91,18 +103,18 @@
             </div>
 
             <div class="patient-card">
-    <div>
-        <div>Patient : <span id="d-nom">...</span></div>
-        <div>Médecin : <span id="d-presc">...</span></div>
-    </div>
-    <div>
-        <div>Date de naissance : <span id="d-ddn">...</span></div>
-        <div>Date du prélèvement : <span id="d-date">...</span></div>
-        <div style="margin-top: 5px;">
-            Groupe Sanguin : <span id="d-groupe" style="font-weight: bold;">...</span>
-        </div>
-    </div>
-</div>
+                <div>
+                    <div>Patient : <span id="d-nom">...</span></div>
+                    <div>Médecin : <span id="d-presc">...</span></div>
+                </div>
+                <div>
+                    <div>Date de naissance : <span id="d-ddn">...</span></div>
+                    <div>Date du prélèvement : <span id="d-date">...</span></div>
+                    <div style="margin-top: 5px;">
+                        Groupe Sanguin : <span id="d-groupe" style="font-weight: bold;">...</span>
+                    </div>
+                </div>
+            </div>
 
             <div id="dynamic-sections"></div>
 
@@ -117,4 +129,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
