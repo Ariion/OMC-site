@@ -470,18 +470,14 @@ function init() {
 
 
 
+// Mise à jour des textes simples (Nom, Date, etc.)
 function up(id, val) {
-
-
-
     const el = document.getElementById(id);
-
-
-
-    if(el) el.innerText = val || (id==='d-sig' ? "NOM DOCTEUR" : "...");
-
-
-
+    if(el) {
+        el.innerText = val || "...";
+        // Correction spécifique pour la signature
+        if(id === 'd-sig' && !val) el.innerText = "NOM DU DOCTEUR";
+    }
 }
 
 
@@ -534,78 +530,41 @@ function upDate(id, val) {
 
 
 
+// Mise à jour des analyses de laboratoire
 function res(id, val, cat) {
+    const row = document.getElementById('row-' + id);
+    const valSpan = document.getElementById('val-' + id);
+    const section = document.getElementById('sec-' + cat);
 
+    if (valSpan) {
+        valSpan.innerText = val;
+        
+        // Logique de couleur (Rouge si hors norme)
+        const itemData = Object.values(database).flat().find(i => i.id === id);
+        if (val.trim() !== "" && itemData && itemData.norm !== "Négatif") {
+            const valNum = parseFloat(val.replace(',', '.'));
+            const normParts = itemData.norm.split('-');
+            if(normParts.length === 2) {
+                const min = parseFloat(normParts[0]);
+                const max = parseFloat(normParts[1]);
+                valSpan.style.color = (valNum < min || valNum > max) ? "red" : "green";
+            }
+        }
+    }
 
-
-    const row = document.getElementById('row-'+id);
-
-
-
-    const valSpan = document.getElementById('val-'+id);
-
-
-
-    if(valSpan) valSpan.innerText = val;
-
-
-
-
-
-
-
-    const itemData = Object.values(database).flat().find(i => i.id === id);
-
-
-
-    if (val.trim() !== "" && itemData && itemData.norm !== "Négatif" && itemData.norm !== "Conforme") {
-
-
-
-        const valNum = parseFloat(val.replace(',', '.'));
-
-
-
-        const [min, max] = itemData.norm.replace('0 - ', '0-').split('-').map(n => parseFloat(n));
-
-
-
-        valSpan.style.color = (valNum < min || valNum > max) ? "red" : "green";
-
-
-
-    } else if (val.toLowerCase() === "positif") { valSpan.style.color = "red"; }
-
-
-
-    else if (val.toLowerCase() === "négatif" || val.toLowerCase() === "conforme") { valSpan.style.color = "green"; }
-
-
-
-
-
-
-
-    if(val.trim() !== "") row.classList.add('active'); else row.classList.remove('active');
-
-
-
-    const section = document.getElementById('sec-'+cat);
-
-
-
-    if(section) section.classList.toggle('active', section.querySelectorAll('.row.active').length > 0);
-
-
-
-
-
-
+    // --- CETTE PARTIE EST CRUCIALE POUR L'AFFICHAGE ---
+    if (val.trim() !== "") {
+        if(row) row.classList.add('active');
+        if(section) section.classList.add('active');
+    } else {
+        if(row) row.classList.remove('active');
+        // On ne cache la section que si plus aucune ligne n'est active dedans
+        if(section && section.querySelectorAll('.row.active').length === 0) {
+            section.classList.remove('active');
+        }
+    }
 
     analyserTout();
-
-
-
 }
 
 
@@ -1495,4 +1454,5 @@ function resetSeulementBio() {
 
 
 }
+
 
