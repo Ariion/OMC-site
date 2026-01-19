@@ -310,10 +310,22 @@ function determinerGroupeAleatoire() {
 // --- LOGIQUE GÉNÉRATEUR AUTO ---
 
 function switchMode(mode) {
-    document.getElementById('panel-auto').style.display = (mode === 'auto' ? 'block' : 'none');
-    document.getElementById('panel-manual').style.display = (mode === 'manual' ? 'block' : 'none');
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    const panelAuto = document.getElementById('panel-auto');
+    const panelManual = document.getElementById('panel-manual');
+    const btnAuto = document.getElementById('btn-auto');
+    const btnManual = document.getElementById('btn-manual');
+
+    if (mode === 'auto') {
+        panelAuto.style.display = 'block';
+        panelManual.style.display = 'none';
+        btnAuto.classList.add('active');
+        btnManual.classList.remove('active');
+    } else {
+        panelAuto.style.display = 'none';
+        panelManual.style.display = 'block';
+        btnAuto.classList.remove('active');
+        btnManual.classList.add('active');
+    }
 }
 
 function lancerGenerationAuto() {
@@ -358,5 +370,31 @@ function lancerGenerationAuto() {
     // On repasse en manuel pour voir les détails
     switchMode('manual');
     analyserTout();
+}
+
+function resetTout() {
+    if(!confirm("Voulez-vous vraiment tout effacer ?")) return;
+
+    // 1. Vider les inputs textes et dates
+    document.querySelectorAll('#input-panel input[type="text"], #input-panel input[type="date"], #input-panel textarea').forEach(el => el.value = "");
+    
+    // 2. Décocher les scénarios et reset slider
+    document.querySelectorAll('.scenario-grid input').forEach(el => el.checked = false);
+    document.getElementById('gravity-range').value = 5;
+    document.getElementById('grav-display').innerText = "5";
+
+    // 3. Réinitialiser le document de droite
+    document.querySelectorAll('#document span[id^="d-"]').forEach(el => el.innerText = "...");
+    document.getElementById('d-sig').innerText = "NOM DU DOCTEUR";
+    
+    // 4. Cacher les lignes de résultats
+    document.querySelectorAll('.row').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    
+    // 5. Reset sélecteur groupe
+    document.getElementById('select-groupe').value = "...";
+    
+    analyserTout(); // Remet la conclusion par défaut
+    alert("Interface réinitialisée.");
 }
 
