@@ -324,6 +324,35 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 
 #gravity-range { accent-color: var(--omc-cyan); margin-top: 10px; }
 
+/* Bouton Reset */
+.btn-reset { 
+    width: 100%; padding: 10px; background: #4b5563; border: none; color: white; 
+    font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; 
+}
+.btn-reset:hover { background: #374151; }
+
+/* Gestion du débordement et des pages */
+#document {
+    height: auto !important; /* Laisse le document grandir */
+    min-height: 297mm; /* Hauteur A4 minimum */
+    overflow: visible !important;
+}
+
+.section {
+    page-break-inside: avoid; /* Évite de couper une section au milieu */
+    margin-bottom: 20px;
+}
+
+@media print {
+    #document {
+        box-shadow: none !important;
+        width: 210mm !important;
+    }
+    .section {
+        page-break-after: auto;
+    }
+}
+
 
 
 
