@@ -57,8 +57,8 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 #document {
     width: 800px !important;
     min-width: 800px !important;
-    height: auto !important; /* Expansion automatique selon les résultats */
-    min-height: 1122px; /* Taille A4 de base */
+    height: auto !important;
+    min-height: 1122px;
     background: white !important;
     padding: 40px !important;
     color: #111 !important;
@@ -85,7 +85,7 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 .signature-line { margin-top: 60px; font-weight: bold; border-top: 2px solid #000; display: inline-block; min-width: 220px; padding-top: 10px; float: right; text-align: center; }
 
 @media print {
-    #input-panel, .back-link, button { display: none !important; }
+    #input-panel, .back-link, button, .mode-selector { display: none !important; }
     body { display: block !important; background: white !important; overflow: visible !important; }
     #preview-area { display: block !important; padding: 0 !important; overflow: visible !important; }
     #document { width: 210mm !important; margin: 0 auto !important; box-shadow: none !important; border: none !important; }
