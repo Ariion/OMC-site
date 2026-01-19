@@ -11,38 +11,62 @@
         <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
         <h2>OMC LABORATOIRE</h2>
 
+        <div class="mode-selector">
+            <button type="button" class="mode-btn active" onclick="switchMode('auto')">🤖 AUTO</button>
+            <button type="button" class="mode-btn" onclick="switchMode('manual')">✍️ MANUEL</button>
+        </div>
 
-
-        <div class="input-group">
-            <label>Nom & Prénom</label><input type="text" oninput="up('d-nom', this.value)" placeholder="FREEMAN Garret ">
-        </div>
-        <div class="input-group">
-            <label>Date de Naissance</label><input type="date" oninput="upDate('d-ddn', this.value)">
-        </div>
-        <div class="input-group">
-            <label>Date Prélèvement</label><input type="date" oninput="upDate('d-date', this.value)">
-        </div>
-        <div class="input-group">
-            <label>Médecin Prescripteur</label><input type="text" oninput="up('d-presc', this.value)">
-        </div>
-        <div class="input-group">
-            <label>Groupe Sanguin</label>
-            <div style="display: flex; gap: 10px;">
-                <button type="button" onclick="determinerGroupeAleatoire()" style="flex: 1; padding: 8px; font-size: 11px; cursor: pointer; background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 4px;">🎲 ALÉATOIRE</button>
-                <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex: 1;">
-                    <option value="...">-- Manuel --</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                </select>
+        <div id="panel-auto">
+            <div class="input-group">
+                <label>GRAVITÉ DE L'ÉTAT : <span id="grav-display" style="color:var(--omc-cyan)">5</span>/10</label>
+                <input type="range" id="gravity-range" min="1" max="10" value="5" oninput="document.getElementById('grav-display').innerText=this.value">
             </div>
+
+            <div class="scenario-grid">
+                <label class="scenario-item"><input type="checkbox" value="acc-route"><span>🚗 Accident</span></label>
+                <label class="scenario-item"><input type="checkbox" value="arme-feu"><span>🔫 Arme à feu</span></label>
+                <label class="scenario-item"><input type="checkbox" value="arme-blanche"><span>🔪 Arme blanche</span></label>
+                <label class="scenario-item"><input type="checkbox" value="overdose"><span>💊 Overdose</span></label>
+                <label class="scenario-item"><input type="checkbox" value="cardiaque"><span>❤️ Cardiaque</span></label>
+                <label class="scenario-item"><input type="checkbox" value="grossesse"><span>👶 Grossesse</span></label>
+                <label class="scenario-item"><input type="checkbox" value="infection"><span>🦠 Infection</span></label>
+                <label class="scenario-item"><input type="checkbox" value="diabete"><span>🍭 Diabète</span></label>
+                <label class="scenario-item"><input type="checkbox" value="renal"><span>💧 Rénal</span></label>
+                <label class="scenario-item"><input type="checkbox" value="gaz"><span>☁️ Gaz/Chimique</span></label>
+                <label class="scenario-item"><input type="checkbox" value="virus"><span>⚠️ Virus Rare</span></label>
+                <label class="scenario-item"><input type="checkbox" value="poison"><span>🧪 Poison</span></label>
+            </div>
+            <button type="button" onclick="lancerGenerationAuto()" class="btn-generate">GÉNÉRER LE BILAN</button>
         </div>
-        <div id="dynamic-tabs"></div>
+
+        <div id="panel-manual" style="display:none">
+            <div class="input-group">
+                <label>Nom & Prénom</label><input type="text" oninput="up('d-nom', this.value)" placeholder="FREEMAN Garret ">
+            </div>
+            <div class="input-group">
+                <label>Date de Naissance</label><input type="date" oninput="upDate('d-ddn', this.value)">
+            </div>
+            <div class="input-group">
+                <label>Date Prélèvement</label><input type="date" oninput="upDate('d-date', this.value)">
+            </div>
+            <div class="input-group">
+                <label>Médecin Prescripteur</label><input type="text" oninput="up('d-presc', this.value)">
+            </div>
+            <div class="input-group">
+                <label>Groupe Sanguin</label>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-sub">🎲 ALÉATOIRE</button>
+                    <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex: 1;">
+                        <option value="...">-- Manuel --</option>
+                        <option value="A+">A+</option><option value="A-">A-</option>
+                        <option value="B+">B+</option><option value="B-">B-</option>
+                        <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        <option value="O+">O+</option><option value="O-">O-</option>
+                    </select>
+                </div>
+            </div>
+            <div id="dynamic-tabs"></div>
+        </div>
 
         <textarea oninput="up('d-concl', this.value)" id="auto-concl-area" placeholder="Conclusion médicale..." rows="3"></textarea>
         <input type="text" oninput="up('d-sig', this.value)" placeholder="Nom du Docteur" style="margin-top:10px">
@@ -93,3 +117,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
