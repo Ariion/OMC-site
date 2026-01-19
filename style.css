@@ -513,16 +513,14 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 
 
 
-.section { display: none; margin-top: 25px; }
-
-
-
-
-
-
-
-.section.active { display: block; }
-
+/* S'assurer que les sections s'affichent quand elles sont actives */
+.section { 
+    display: none; 
+    margin-top: 25px; 
+}
+.section.active { 
+    display: block !important; 
+}
 
 
 
@@ -545,15 +543,17 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 
 
 
-.row { display: none; grid-template-columns: 2fr 1fr 1.5fr; padding: 6px 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
-
-
-
-
-
-
-
-.row.active { display: grid; }
+/* S'assurer que les lignes de résultats s'affichent */
+.row { 
+    display: none; 
+    grid-template-columns: 2fr 1fr 1.5fr; 
+    padding: 6px 15px; 
+    border-bottom: 1px solid #f1f5f9; 
+    font-size: 13px; 
+}
+.row.active { 
+    display: grid !important; 
+}
 
 
 
@@ -1071,21 +1071,14 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 
 
 #document {
-
-
-
     height: auto !important; /* Laisse le document grandir */
-
-
-
     min-height: 297mm; /* Hauteur A4 minimum */
-
-
-
     overflow: visible !important;
-
-
-
+}
+/* Force l'affichage du texte dans les spans du document */
+#document span {
+    min-width: 5px;
+    display: inline-block;
 }
 
 
@@ -1147,5 +1140,6 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 
 
 }
+
 
 
