@@ -131,12 +131,15 @@
 
 /* Bouton Générer Image (Plus pro) */
 .btn-image {
-    background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%) !important;
-    color: #1e293b !important;
-    border: 1px solid #cbd5e1 !important;
-    font-weight: 800 !important;
-    box-shadow: 0 4px 0 #94a3b8 !important;
-    margin-top: 20px !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #ccc !important;
+    text-transform: uppercase;
+    font-size: 11px;
+    padding: 10px !important;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 15px;
 }
 
 .btn-image:hover { background: #f8fafc !important; }
