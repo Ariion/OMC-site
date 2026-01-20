@@ -77,10 +77,28 @@ const grossesseData = {
     "neg": { hcg: "0-5", gb: "4.5-10.0", fer: "50-150", label: "Test Négatif" }
 };
 
+// Configuration : 1 Mois de grossesse = 1 Semaine réelle
+const grossesseData = {
+    1: { hcg: "50-500", gb: "5.5-10.5", fer: "80-150", label: "1er Mois" },
+    2: { hcg: "500-5000", gb: "6.0-11.5", fer: "70-140", label: "2ème Mois" },
+    3: { hcg: "30000-150000", gb: "7.5-12.5", fer: "60-130", label: "3ème Mois (Pic hormonal)" },
+    4: { hcg: "100000-250000", gb: "8.5-13.5", fer: "50-110", label: "4ème Mois" },
+    5: { hcg: "20000-100000", gb: "9.5-14.5", fer: "40-90", label: "5ème Mois" },
+    6: { hcg: "15000-60000", gb: "10.0-15.5", fer: "30-75", label: "6ème Mois" },
+    7: { hcg: "10000-50000", gb: "11.0-16.5", fer: "20-60", label: "7ème Mois" },
+    8: { hcg: "10000-40000", gb: "11.5-17.5", fer: "15-50", label: "8ème Mois" },
+    9: { hcg: "8000-35000", gb: "12.0-18.5", fer: "10-40", label: "9ème Mois (Terme)" },
+    "neg": { hcg: "0-5", gb: "4.5-10.0", fer: "50-150", label: "Test Négatif" }
+};
+
 function genererGrossesse(mois) {
+    // Logique Aléatoire pour le bouton "Test"
+    if (mois === 'aleatoire') {
+        // 50% de chance d'être enceinte (1er mois) ou négatif
+        mois = (Math.random() > 0.5) ? 1 : 'neg';
+    }
+
     const data = grossesseData[mois];
-    
-    // Générateur de valeurs aléatoires réalistes
     const rand = (range) => {
         const [min, max] = range.split('-').map(Number);
         return (Math.random() * (max - min) + min).toFixed(1);
@@ -90,42 +108,27 @@ function genererGrossesse(mois) {
     const vGb = rand(data.gb);
     const vFer = rand(data.fer);
 
-    // Mise à jour automatique des analyses sur le document et les inputs
-    res('hcg', vHcg, 'SUIVI DE GROSSESSE');
-    res('v_gb', vGb, 'SUIVI DE GROSSESSE');
-    res('fer', vFer, 'SUIVI DE GROSSESSE');
+    // AFFICHAGE DES RÉSULTATS DANS LE DOCUMENT (C'est ici que ça manquait)
+    // res(id_technique, valeur, section_titre, unité, norme)
+    res('hcg', vHcg, 'ENDOCRINOLOGIE & MATERNITÉ', 'mUI/mL', '0 - 5');
+    res('v_gb', vGb, 'HÉMATOLOGIE', 'G/L', '4.0 - 10.0');
+    res('fer', vFer, 'BIOCHIMIE', 'µg/dL', '50 - 150');
 
-    // Construction de la conclusion médicale immersive
+    // Conclusion médicale
     let concl = "";
     if (mois === "neg") {
         concl = "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif.";
     } else {
         concl = `Bilan de maternité - ${data.label} : Présence d'hormone HCG (${vHcg} mUI/mL). `;
         
-        // Logique de datation et symptômes
-        if(mois >= 7) {
-            concl += "Fin de troisième trimestre. Surveillance du fer et de la tension recommandée avant l'accouchement. ";
-        } else if(mois == 3 || mois == 4) {
-            concl += "Pic hormonal atteint. Symptômes de nausées et fatigue possibles. ";
-        } else {
-            concl += "Début de grossesse confirmé. Évolution normale des constantes. ";
-        }
+        if(mois >= 7) concl += "Fin de troisième trimestre. Surveillance du fer et de la tension recommandée avant l'accouchement. ";
+        else if(mois == 3 || mois == 4) concl += "Pic hormonal atteint. Symptômes de nausées possibles. ";
+        else concl += "Début de grossesse confirmé. Évolution normale des constantes. ";
 
-        // Analyse de la santé de la patiente
-        if (vFer < 20) {
-            concl += "Note : Anémie ferriprive détectée (réserve de fer basse). Supplémentation recommandée. ";
-        } else if (vFer < 40) {
-            concl += "Note : Réserves en fer à surveiller. ";
-        }
-        
-        if (vGb > 15) {
-            concl += "Hyperleucocytose physiologique confirmée (normale pour ce stade gestationnel). ";
-        }
-        
+        if (vFer < 30) concl += "Note : Réserves en fer basses. ";
         concl += "Évolution clinique favorable.";
     }
     
-    // Affichage dans les zones de texte
     document.getElementById('auto-concl-area').value = concl;
     document.getElementById('d-concl').innerText = concl;
 }
