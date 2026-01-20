@@ -5,7 +5,7 @@ function updateCertif() {
     const sideEnt = document.getElementById('side-entreprise-block');
     const sideConcl = document.getElementById('side-concl-block');
     const sideDiv = document.getElementById('side-divers-block');
-    
+     
     // Document elements
     const docEnt = document.getElementById('doc-entreprise-block');
     const docConcl = document.getElementById('doc-concl-block');
