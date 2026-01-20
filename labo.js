@@ -1,3 +1,6 @@
+const IMGBB_API_KEY = "64c39f1315b9c666579f65d6666e511c";
+
+
 // ==========================================
 // 1. BASE DE DONNÉES MÉDICALE
 // ==========================================
@@ -11,6 +14,11 @@ const database = {
         { id: "tcmh", label: "TCMH", unit: "pg", norm: "27 - 32", help: "Hémoglobine." },
         { id: "poly_n", label: "Polynucléaires Neutrophiles", unit: "%", norm: "40 - 75", help: "Bactéries." },
         { id: "lympho", label: "Lymphocytes", unit: "%", norm: "20 - 45", help: "Virus." }
+    ],
+    "SUIVI DE GROSSESSE": [
+        { id: "hcg", label: "Bêta-HCG (Hormone de grossesse)", unit: "mUI/mL", norm: "0 - 5", help: "Diagnostic et datation." },
+        { id: "v_gb", label: "Volume Leucocytaire (Femme enceinte)", unit: "G/L", norm: "5.0 - 15.0", help: "Augmentation physiologique." },
+        { id: "iron", label: "Ferritine", unit: "ng/mL", norm: "20 - 200", help: "Réserve en fer." }
     ],
     "COAGULATION": [
         { id: "tp", label: "Taux de Prothrombine (TP)", unit: "%", norm: "70 - 100", help: "Vitesse." },
@@ -68,17 +76,12 @@ function init() {
     const tabsContainer = document.getElementById('dynamic-tabs');
     const sectionsContainer = document.getElementById('dynamic-sections');
     if (!tabsContainer || !sectionsContainer) return;
-
-    tabsContainer.innerHTML = "";
-    sectionsContainer.innerHTML = "";
+    tabsContainer.innerHTML = ""; sectionsContainer.innerHTML = "";
 
     for (let cat in database) {
-        // Bouton Accordéon
         let btn = document.createElement('button');
         btn.className = 'category-btn';
         btn.innerHTML = `<span>${cat.toUpperCase()}</span> <span>▼</span>`;
-        
-        // Conteneur contenu (Masqué par défaut)
         let contentDiv = document.createElement('div');
         contentDiv.className = 'category-content';
         contentDiv.id = 't-' + cat;
@@ -90,24 +93,18 @@ function init() {
             if (!isOpen) contentDiv.classList.add('active');
         };
 
-        // Section sur le document (Droite)
         let sec = document.createElement('div');
         sec.id = 'sec-' + cat;
         sec.className = 'section';
         sec.innerHTML = `<div class="section-title">${cat}</div>`;
 
         database[cat].forEach(item => {
-            // Inputs Manuels
             contentDiv.innerHTML += `
                 <div class="input-group-manual">
                     <label class="manual-label">${item.label}</label>
                     <span class="manual-help">Norme : ${item.norm} ${item.unit} | ${item.help}</span>
-                    <input type="text" class="analysis-input" 
-                        data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" 
-                        oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
+                    <input type="text" class="analysis-input" data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
                 </div>`;
-
-            // Lignes Document
             sec.innerHTML += `
                 <div class="row" id="row-${item.id}">
                     <span>${item.label}</span>
@@ -115,10 +112,7 @@ function init() {
                     <span class="norme">${item.norm} ${item.unit}</span>
                 </div>`;
         });
-
-        tabsContainer.appendChild(btn);
-        tabsContainer.appendChild(contentDiv);
-        sectionsContainer.appendChild(sec);
+        tabsContainer.appendChild(btn); tabsContainer.appendChild(contentDiv); sectionsContainer.appendChild(sec);
     }
 }
 
@@ -154,25 +148,42 @@ function res(id, val, cat) {
     analyserTout();
 }
 
+// CONCLUSION GRADUÉE SELON GRAVITÉ
 function analyserTout() {
-    let anomalies = [];
+    let anomaliesBas = [], anomaliesHaut = [], anomaliesCritiques = [];
+    let isEnceinte = false;
+
     document.querySelectorAll('.analysis-input').forEach(input => {
         let valText = input.value.trim().replace(',', '.');
         if (!valText) return;
-        let label = input.getAttribute('data-label');
-        let norm = input.getAttribute('data-norm');
+        let val = parseFloat(valText);
+        let label = input.getAttribute('data-label'), norm = input.getAttribute('data-norm');
+
+        if (input.getAttribute('data-id') === 'hcg' && val > 5) isEnceinte = true;
+
         if (norm.includes('-')) {
-            let valNum = parseFloat(valText);
             let [min, max] = norm.split('-').map(n => parseFloat(n));
-            if (valNum < min) anomalies.push(label + " BAS");
-            if (valNum > max) anomalies.push(label + " ÉLEVÉ");
-        } else if (norm === "Négatif" && valText.toLowerCase() === "positif") {
-            anomalies.push(label + " POSITIF");
+            let ecart = (val > max) ? (val / max) : (val < min) ? (min / val) : 1;
+
+            if (ecart > 2.5) anomaliesCritiques.push(label);
+            else if (val > max) anomaliesHaut.push(label);
+            else if (val < min) anomaliesBas.push(label);
         }
     });
-    let concl = anomalies.length > 0 ? "Points d'attention : " + anomalies.join(', ') + "." : "Bilan biologique satisfaisant.";
-    if(document.getElementById('auto-concl-area')) document.getElementById('auto-concl-area').value = concl;
-    if(document.getElementById('d-concl')) document.getElementById('d-concl').innerText = concl;
+
+    let concl = "";
+    if (isEnceinte) {
+        const hcgVal = parseFloat(document.querySelector('[data-id="hcg"]').value);
+        concl = `Grossesse confirmée. Taux HCG compatible avec un suivi de routine. `;
+        if (hcgVal > 100000) concl = `Grossesse confirmée. Taux HCG très élevé (Pic du 1er trimestre). `;
+    }
+
+    if (anomaliesCritiques.length > 0) concl += `ALERTE CRITIQUE : Déséquilibre majeur pour ${anomaliesCritiques.join(', ')}. Hospitalisation immédiate requise.`;
+    else if (anomaliesHaut.length > 0 || anomaliesBas.length > 0) concl += `Bilan perturbé : Anomalies détectées sur ${[...anomaliesHaut, ...anomaliesBas].join(', ')}.`;
+    else if (!concl) concl = "Bilan biologique satisfaisant. Absence d'anomalie majeure.";
+
+    document.getElementById('auto-concl-area').value = concl;
+    document.getElementById('d-concl').innerText = concl;
 }
 
 // ==========================================
@@ -272,33 +283,37 @@ function resetSeulementBio() {
 // ==========================================
 // 5. EXPORT IMAGE
 // ==========================================
-// Fonction d'export d'image (Crop automatique et Popup)
+// GÉNÉRATEUR D'IMAGE AVEC POPUP
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
-    btn.innerText = "GÉNÉRATION...";
-    btn.disabled = true;
+    btn.innerText = "GÉNÉRATION..."; btn.disabled = true;
 
     try {
-        const canvas = await html2canvas(doc, { 
-            scale: 2,
-            useCORS: true,
-            height: doc.offsetHeight,
-            windowHeight: doc.offsetHeight
-        });
+        const canvas = await html2canvas(doc, { scale: 2, useCORS: true, height: doc.offsetHeight });
+        const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+        const formData = new FormData(); formData.append("image", imageData);
 
-        const imgData = canvas.toDataURL('image/jpeg', 0.9);
-        // Ouvre l'image dans un nouvel onglet pour sauvegarde directe
-        const win = window.open();
-        win.document.write(`<iframe src="${imgData}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
-        
-    } catch (e) {
-        alert("Erreur capture image");
-    } finally {
-        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)";
-        btn.disabled = false;
-    }
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+        const result = await response.json();
+
+        if (result.success) {
+            document.getElementById('direct-link').value = result.data.url;
+            document.getElementById('preview-img-result').src = result.data.url;
+            document.getElementById('image-popup').style.display = 'flex';
+        }
+    } catch (e) { alert("Erreur génération image."); }
+    finally { btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)"; btn.disabled = false; }
 }
+
+function copyLink() {
+    const copyText = document.getElementById("direct-link");
+    copyText.select(); document.execCommand("copy"); alert("Lien copié !");
+}
+
+function closePopup() { document.getElementById('image-popup').style.display = 'none'; }
+
+// RESTE DES FONCTIONS (res, switchMode, determinerGroupeAleatoire, etc.)
 
 
 document.addEventListener('DOMContentLoaded', init);
