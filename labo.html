@@ -28,22 +28,14 @@
                     <input type="time" oninput="up('d-heure-prel', this.value)" style="flex: 1;">
                 </div>
             </div>
-            <div class="patient-card">
-    <div>
-        Patient : <strong id="d-nom">...</strong><br>
-        Naissance : <span id="d-ddn">...</span><br>
-        Groupe : <strong id="d-groupe">...</strong>
-    </div>
-    <div style="text-align:right;">
-        Prélèvement le : <span id="d-date-prel">...</span><br>
-        Heure : <span id="d-heure-prel">--:--</span><br>
-        Médecin : <span id="d-presc">...</span>
-    </div>
-</div>
+            <div class="input-group">
+                <label>Médecin Prescripteur</label>
+                <input type="text" oninput="up('d-presc', this.value)" placeholder="ex: Dr. House">
+            </div>
             <div class="input-group">
                 <label>Groupe Sanguin</label>
                 <div style="display:flex; gap:10px">
-                    <button type="button" onclick="determinerGroupeAleatoire()" style="width:auto; padding:5px; font-size:10px;">🎲</button>
+                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-dice">🎲</button>
                     <select id="select-groupe" onchange="up('d-groupe', this.value)">
                         <option value="...">--</option>
                         <option value="A+">A+</option><option value="A-">A-</option>
@@ -56,24 +48,42 @@
         </div>
 
         <div class="mode-selector">
-            <button type="button" class="mode-btn active" onclick="switchMode('auto')">🤖 AUTO</button>
-            <button type="button" class="mode-btn" onclick="switchMode('manual')">✍️ MANUEL</button>
+            <button type="button" id="btn-auto" class="mode-btn active" onclick="switchMode('auto')">🤖 AUTO</button>
+            <button type="button" id="btn-manual" class="mode-btn" onclick="switchMode('manual')">✍️ MANUEL</button>
         </div>
 
         <div id="panel-auto">
             <div class="input-group">
-                <label>GRAVITÉ : <span id="grav-display">5</span>/10</label>
+                <label>GRAVITÉ DE L'ÉTAT : <span id="grav-display">5</span>/10</label>
                 <input type="range" id="gravity-range" min="1" max="10" value="5" oninput="document.getElementById('grav-display').innerText=this.value">
             </div>
             <div class="scenario-grid">
-                <label class="scenario-item"><input type="checkbox" value="acc-route"> Accident</label>
-                <label class="scenario-item"><input type="checkbox" value="arme-feu"> Balle</label>
-                <label class="scenario-item"><input type="checkbox" value="overdose"> Overdose</label>
-                <label class="scenario-item"><input type="checkbox" value="grossesse"> Grossesse</label>
-                <label class="scenario-item"><input type="checkbox" value="diabete"> Diabète</label>
-                <label class="scenario-item"><input type="checkbox" value="renal"> Rénal</label>
+                <label class="check-container">Accident (Trauma)
+                    <input type="checkbox" value="acc-route">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="check-container">Plaie par Balle
+                    <input type="checkbox" value="arme-feu">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="check-container">Overdose
+                    <input type="checkbox" value="overdose">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="check-container">Grossesse
+                    <input type="checkbox" value="grossesse">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="check-container">Diabète (Crise)
+                    <input type="checkbox" value="diabete">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="check-container">Insuffisance Rénale
+                    <input type="checkbox" value="renal">
+                    <span class="checkmark"></span>
+                </label>
             </div>
-            <button type="button" onclick="lancerGenerationAuto()" class="btn-generate">GÉNÉRER</button>
+            <button type="button" onclick="lancerGenerationAuto()" class="btn-generate">GÉNÉRER LE BILAN</button>
             <button type="button" onclick="resetSeulementBio()" class="btn-reset">🗑️ VIDER ANALYSES</button>
         </div>
 
@@ -81,37 +91,43 @@
             <div id="dynamic-tabs"></div>
         </div>
 
-        <textarea id="auto-concl-area" oninput="up('d-concl', this.value)" placeholder="Conclusion médicale..." rows="3" style="margin-top:20px"></textarea>
+        <textarea id="auto-concl-area" oninput="up('d-concl', this.value)" placeholder="Conclusion médicale..." rows="3"></textarea>
         <input type="text" oninput="up('d-sig', this.value)" placeholder="Nom du Docteur" style="margin-top:10px">
         
         <button onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE (CROP)</button>
-        <button onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
+        <button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
     </div>
 
     <div id="preview-area">
         <div id="document">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eee; padding-bottom:10px;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <img src="assets/logo_omc.png" alt="Logo" style="height:40px;">
-                    <h1 style="font-size:20px; margin:0;">Bilan Biologique</h1>
+            <div class="header-lab">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <img src="assets/logo_omc.png" alt="Logo" style="height:50px;">
+                    <h1 style="margin:0; font-size:24px;">Bilan Biologique</h1>
                 </div>
-                <div style="font-size:10px; text-align:right; color:#666;">#OMC-LAB-2026</div>
+                <div style="text-align:right; font-size:10px; color:#777;">#OMC-LAB-2026</div>
             </div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; background:#f8fafc; padding:15px; border-radius:5px; margin-top:20px; font-size:13px;">
-                <div>Patient : <strong id="d-nom">...</strong><br>Naissance : <span id="d-ddn">...</span></div>
-                <div style="text-align:right;">Groupe : <strong id="d-groupe">...</strong><br>Date : <span id="d-date">...</span></div>
+            <div class="patient-card">
+                <div>
+                    Patient : <strong id="d-nom">...</strong><br>
+                    Naissance : <span id="d-ddn">...</span><br>
+                    Groupe : <strong id="d-groupe">...</strong>
+                </div>
+                <div style="text-align:right;">
+                    Prélèvement : <span id="d-date-prel">...</span><br>
+                    Heure : <span id="d-heure-prel">--:--</span><br>
+                    Médecin : <span id="d-presc">...</span>
+                </div>
             </div>
 
             <div id="dynamic-sections"></div>
 
-            <div style="margin-top:30px; border-top:1px solid #eee; padding-top:10px;">
+            <div class="conclusion-box">
                 <strong>Conclusion :</strong>
-                <p id="d-concl" style="font-style:italic; font-size:13px;">...</p>
+                <p id="d-concl" style="font-style:italic; font-size:13px; margin-top:5px;">...</p>
             </div>
-            <div style="margin-top:40px; text-align:right; font-weight:bold; border-top:2px solid #000; display:inline-block; float:right; min-width:200px;" id="d-sig">
-                NOM DU DOCTEUR
-            </div>
+            <div class="signature-line" id="d-sig">NOM DU DOCTEUR</div>
         </div>
     </div>
 
@@ -119,4 +135,3 @@
     <script src="labo.js"></script>
 </body>
 </html>
-
