@@ -2,17 +2,18 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>OMC - Certificat médical</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMC - Certificat Médical d'Aptitude</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="certificat.css">
-    <style>
-        </style>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
 </head>
 <body class="labo-body">
 
     <div class="interface-container">
+        
         <aside class="sidebar">
-            <a href="index.html" class="back-link">← RETOUR</a>
+            <a href="index.html" class="back-link">← RETOUR PORTAIL</a>
             <h1 class="sidebar-title">CERTIFICAT MÉDICAL</h1>
 
             <div class="form-group">
@@ -40,62 +41,66 @@
             </div>
 
             <div class="form-group">
-                <label>Conclusion</label>
+                <label>Conclusion médicale</label>
                 <div class="radio-nav">
                     <label><input type="radio" name="concl" value="Apte" checked onclick="updateCertif()"> Apte</label>
-                    <label><input type="radio" name="concl" value="Apte avec réserve" onclick="updateCertif()"> Avec réserve</label>
+                    <label><input type="radio" name="concl" value="Apte avec réserve" onclick="updateCertif()"> Réserve</label>
                     <label><input type="radio" name="concl" value="Inapte" onclick="updateCertif()"> Inapte</label>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Docteur Signataire</label>
-                <input type="text" id="f-medecin" placeholder="Nom du médecin" oninput="updateCertif()">
+                <label>Médecin Signataire</label>
+                <input type="text" id="f-medecin" placeholder="Dr. Nom" oninput="updateCertif()">
             </div>
 
-            <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE (CROP)</button>
-            <button class="btn-discord" onclick="envoyerDiscord()" style="margin-top:10px; width:100%;">ENVOYER SUR DISCORD</button>
+            <div class="sidebar-actions">
+                <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
+                <button class="btn-discord" onclick="envoyerDiscord()"> envoyé sur discord </button>
+            </div>
         </aside>
 
         <main class="preview-area">
             <div id="document" class="certif-doc">
-                <div class="certif-header">
-                    <img src="assets/logo_omc.png" alt="Logo">
-                    <div>
-                        <strong style="display:block; letter-spacing: 2px;">OCEAN MEDICAL CENTER</strong>
-                        <h2 id="d-titre-doc" style="margin:0; font-size: 1.2rem;">Certificat médical d'aptitude</h2>
+                
+                <header class="certif-header">
+                    <img src="assets/logo_omc.png" alt="Logo OMC" class="doc-logo">
+                    <div class="header-title-block">
+                        <span>OCEAN MEDICAL CENTER</span>
+                        <h2 id="d-titre-doc">CERTIFICAT MÉDICAL</h2>
                     </div>
-                </div>
+                </header>
 
                 <div class="certif-grid">
                     <div class="box"><label>Patient</label><span id="d-nom">...</span></div>
-                    <div class="box"><label>Naissance</label><span id="d-naiss">...</span></div>
-                    <div class="box"><label>Date du jour</label><span id="d-date">20/01/2026</span></div>
-                    <div class="box"><label>Réf. Dossier</label><span id="d-ref">20011957</span></div>
-                    <div class="box" style="grid-column: span 2;"><label>Entreprise / Objet</label><span id="d-entreprise">...</span></div>
+                    <div class="box"><label>Date de Naissance</label><span id="d-naiss">...</span></div>
+                    <div class="box"><label>Date d'établissement</label><span id="d-date">20/01/2026</span></div>
+                    <div class="box"><label>Référence Dossier</label><span id="d-ref">#APT-2026-01</span></div>
+                    <div class="box full-width"><label>Entreprise / Objet de la visite</label><span id="d-entreprise">...</span></div>
                 </div>
 
                 <div class="concl-area">
-                    <label style="display:block; font-size: 10px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 10px;">Conclusion médicale</label>
+                    <label class="concl-label">Conclusion de l'examen clinique</label>
                     <strong id="d-concl">Apte — L'examen clinique ne présente aucune contre-indication.</strong>
                 </div>
 
-                <div class="certif-footer">
-    <div class="footer-left-signature">
-        <div class="signature-label">Signature du Praticien :</div>
-        <div id="d-medecin" class="signature-space">DOCTEUR</div>
-        <p style="font-size: 9px; margin-top: 5px; color: #7f8c8d;">Validé numériquement par OMC Systems</p>
-    </div>
-    
-    <div class="footer-right-qr">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CERTIF-VALID" class="qr-code" alt="QR Validation">
-        <div class="qr-label">Certification</div>
-    </div>
-</div>
+                <footer class="footer-layout">
+                    <div class="footer-left-signature">
+                        <span class="sig-label">Signature du Praticien :</span>
+                        <div id="d-medecin" class="signature-space">DOCTEUR</div>
+                        <p class="sig-valide">Validé numériquement par OMC Systems</p>
+                    </div>
+                    
+                    <div class="footer-right-qr">
+                        <div class="qr-block">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CERTIF-VALID" class="qr-code" alt="QR Validation">
+                            <div class="qr-label">CERTIFICATION</div>
+                        </div>
+                    </div>
+                </footer>
                 
-                <p style="font-size: 8px; color: #bdc3c7; margin-top: 40px; text-align: justify;">
-                    Ce certificat est délivré à la demande de l'intéressé pour faire valoir ce que de droit. 
-                    Il est basé sur un examen clinique instantané et ne saurait engager la responsabilité de l'établissement au-delà de la date constatée.
+                <p class="legal-mention">
+                    Ce certificat est délivré à la demande de l'intéressé pour faire valoir ce que de droit. Il est basé sur un examen clinique instantané et ne saurait engager la responsabilité de l'établissement au-delà de la date constatée. Toute falsification expose à des poursuites.
                 </p>
             </div>
         </main>
@@ -103,10 +108,11 @@
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
         <div class="popup-content">
-            <img id="preview-img-result" src="">
+            <h3 style="color:white; margin-bottom:15px;">Aperçu du Certificat</h3>
+            <img id="preview-img-result" src="" alt="Résultat">
             <div class="popup-actions">
-                <input type="text" id="direct-link" readonly>
-                <button onclick="closePopup()">FERMER</button>
+                <input type="text" id="direct-link" readonly onclick="this.select()">
+                <button onclick="closePopup()" class="btn-close">FERMER</button>
             </div>
         </div>
     </div>
