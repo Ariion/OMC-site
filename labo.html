@@ -84,7 +84,7 @@
                 </label>
             </div>
             <button type="button" onclick="lancerGenerationAuto()" class="btn-generate">GÉNÉRER LE BILAN</button>
-            <button type="button" onclick="resetSeulementBio()" class="btn-reset">🗑️ VIDER ANALYSES</button>
+            <button type="button" onclick="resetSeulementBio()" class="btn-reset">🗑️ VIDER LES ANALYSES</button>
         </div>
 
         <div id="panel-manual" style="display:none">
@@ -123,15 +123,17 @@
 
             <div id="dynamic-sections"></div>
 
-            <div class="conclusion-box">
-                <strong>Conclusion :</strong>
-                <p id="d-concl" style="font-style:italic; font-size:13px; margin-top:5px;">...</p>
-            </div>
-            <div class="signature-line" id="d-sig">NOM DU DOCTEUR</div>
+        <div class="conclusion-box">
+            <strong>Conclusion :</strong>
+            <p id="d-concl" style="font-style:italic; font-size:13px; margin-top:5px;">...</p>
         </div>
+        
+        <div class="signature-line" id="d-sig">NOM DU DOCTEUR</div>
     </div>
+</div>
 
     <script src="global.js"></script>
     <script src="labo.js"></script>
 </body>
 </html>
+
