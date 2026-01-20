@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMC - Certificat Médical d'Aptitude</title>
+    <title>OMC - Certificat Médical</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="certificat.css">
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
@@ -21,7 +21,8 @@
                 <select id="f-type" oninput="updateCertif()">
                     <option value="Aptitude professionnelle">Aptitude professionnelle</option>
                     <option value="Aptitude au sport">Aptitude au sport</option>
-                    <option value="Port d'arme (PPA)">Certificat médical PPA</option>
+                    <option value="Port d'arme (PPA)">Capacité examen PPA</option>
+                    <option value="Divers">Divers / Texte libre</option>
                 </select>
             </div>
 
@@ -32,26 +33,31 @@
 
             <div class="form-group">
                 <label>Date de naissance</label>
-                <input type="date" id="f-naiss-val" oninput="upDate('d-naiss', this.value)">
+                <input type="date" oninput="upDate('d-naiss', this.value)">
             </div>
 
             <div class="form-group">
                 <label>Date de Visite Médicale</label>
-                <input type="date" id="f-date-val" oninput="upDate('d-date', this.value)">
+                <input type="date" oninput="upDate('d-date', this.value)">
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="f-entreprise-group">
                 <label>Entreprise / Organisation</label>
                 <input type="text" id="f-entreprise" placeholder="ex: Ron Oil" oninput="updateCertif()">
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="f-concl-group">
                 <label>Conclusion médicale</label>
                 <div class="radio-nav">
                     <label><input type="radio" name="concl" value="Apte" checked onclick="updateCertif()"> Apte</label>
                     <label><input type="radio" name="concl" value="Apte avec réserve" onclick="updateCertif()"> Réserve</label>
                     <label><input type="radio" name="concl" value="Inapte" onclick="updateCertif()"> Inapte</label>
                 </div>
+            </div>
+
+            <div class="form-group" id="f-divers-group" style="display:none;">
+                <label>Observations / Texte libre</label>
+                <textarea id="f-divers" rows="5" oninput="updateCertif()" style="width:100%; background:#121c2f; border:1px solid #1e293b; color:white; padding:10px; border-radius:4px; font-family: inherit;"></textarea>
             </div>
 
             <div class="form-group">
@@ -61,7 +67,7 @@
 
             <div class="sidebar-actions">
                 <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
-                <button class="btn-discord" onclick="envoyerDiscord()">Envoyer sur Discord</button>
+                <button class="btn-discord" onclick="envoyerDiscord()">ENVOYER SUR DISCORD</button>
             </div>
         </aside>
 
@@ -80,21 +86,29 @@
                     <div class="box"><label>Patient</label><span id="d-nom">...</span></div>
                     <div class="box"><label>Date de Naissance</label><span id="d-naiss">...</span></div>
                     <div class="box"><label>Date d'établissement</label><span id="d-date">20/01/2026</span></div>
-                    <div class="box"><label>Référence Dossier</label><span id="d-ref">#REF-GENEREE</span></div>
-                    <div class="box full-width"><label>Entreprise / Objet de la visite</label><span id="d-entreprise">...</span></div>
+                    <div class="box"><label>Référence Dossier</label><span id="d-ref">#REF</span></div>
+                    
+                    <div class="box full-width" id="d-box-entreprise">
+                        <label>Entreprise / Objet de la visite</label>
+                        <span id="d-entreprise">...</span>
+                    </div>
                 </div>
 
-                <div class="concl-area">
+                <div class="concl-area" id="d-concl-area">
                     <label style="display:block; font-size: 10px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 10px;">Conclusion médicale</label>
-                    <strong id="d-concl" style="font-size: 1.1rem; color: #1e293b;">
-                        Veuillez remplir le formulaire...
-                    </strong>
+                    <strong id="d-concl" style="font-size: 1.1rem; color: #1e293b;">Apte — L'examen clinique ne présente aucune contre-indication.</strong>
+                </div>
+
+                <div class="concl-area" id="d-divers-area" style="display:none;">
+                    <label style="display:block; font-size: 10px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 10px;">Observations médicales</label>
+                    <div id="d-divers-text" style="font-size: 1rem; color: #1e293b; white-space: pre-wrap; line-height: 1.4;">...</div>
                 </div>
 
                 <footer class="footer-layout">
                     <div class="footer-left-signature">
                         <span class="sig-label">Signature du Praticien :</span>
                         <div id="d-medecin" class="signature-space">Dr. </div>
+                        <p style="font-size: 9px; margin-top: 5px; color: #7f8c8d;">Validé par signature numérique</p>
                     </div>
                     
                     <div class="footer-right-qr">
@@ -114,7 +128,7 @@
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
         <div class="popup-content">
-            <h3 style="color:white; margin-bottom:15px;">Prévisualisation du Certificat</h3>
+            <h3 style="color:white; margin-bottom:15px;">Aperçu du Certificat</h3>
             <img id="preview-img-result" src="">
             <div class="popup-actions">
                 <input type="text" id="direct-link" readonly>
