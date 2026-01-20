@@ -35,7 +35,7 @@
             <div class="input-group">
                 <label>Groupe Sanguin</label>
                 <div style="display:flex; gap:10px">
-                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-dice">🎲</button>
+                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-dice">🎲Aléatoire</button>
                     <select id="select-groupe" onchange="up('d-groupe', this.value)">
                         <option value="...">--</option>
                         <option value="A+">A+</option><option value="A-">A-</option>
@@ -125,7 +125,7 @@
                 <div>
                     Patient : <strong id="d-nom">...</strong><br>
                     Naissance : <span id="d-ddn">...</span><br>
-                    Groupe : <strong id="d-groupe">...</strong>
+                    Groupe Sanguin : <strong id="d-groupe">...</strong>
                 </div>
                 <div style="text-align:right;">
                     Prélèvement : <span id="d-date-prel">...</span><br>
@@ -149,5 +149,6 @@
     <script src="labo.js"></script>
 </body>
 </html>
+
 
 
