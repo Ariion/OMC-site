@@ -65,22 +65,24 @@ const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
-    btn.innerText = "GÉNÉRATION ET HÉBERGEMENT...";
+    btn.innerText = "CROP & UPLOAD...";
     btn.disabled = true;
 
     try {
+        // html2canvas va maintenant suivre la hauteur réelle de l'élément #document
         const canvas = await html2canvas(doc, { 
-            scale: 2,
-            useCORS: true,
-            allowTaint: true
+            scale: 2,           // Haute qualité
+            useCORS: true,      // Pour le QR Code
+            backgroundColor: "#ffffff",
+            height: doc.offsetHeight, // Force la capture à la hauteur réelle du texte
+            windowHeight: doc.offsetHeight
         });
 
-        // Conversion en base64 pour ImgBB
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-
         const formData = new FormData();
         formData.append("image", imageData);
 
+        // Envoi à ImgBB
         const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
             method: "POST",
             body: formData
@@ -92,15 +94,13 @@ async function genererImage() {
             document.getElementById('direct-link').value = result.data.url;
             document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
-        } else {
-            alert("Erreur d'hébergement.");
         }
 
     } catch (e) {
         console.error(e);
-        alert("Erreur lors de la création de l'image.");
+        alert("Erreur lors du crop de l'image.");
     } finally {
-        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (LIEN)";
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)";
         btn.disabled = false;
     }
 }
