@@ -25,7 +25,7 @@
 }
 
 .portal-logo {
-    height: 150px; /* Passage de 100px à 150px */
+    height: 20%; /* Passage de 100px à 150px */
     width: auto;
     margin-bottom: 20px;
     filter: drop-shadow(0 0 15px rgba(100, 255, 218, 0.4));
