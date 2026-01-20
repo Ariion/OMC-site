@@ -1,17 +1,63 @@
 const database = {
     "Hématologie (Sang)": [
-        { id: "gb", label: "Leucocytes", unit: "G/L", norm: "4.0-10.0" },
-        { id: "hb", label: "Hémoglobine", unit: "g/dL", norm: "13.0-17.0" },
-        { id: "ht", label: "Hématocrite", unit: "%", norm: "40-52" },
-        { id: "pla", label: "Plaquettes", unit: "G/L", norm: "150-400" }
+        { id: "gb", label: "Leucocytes (Globules Blancs)", unit: "G/L", norm: "4.0 - 10.0", help: "Infection." },
+        { id: "hb", label: "Hémoglobine", unit: "g/dL", norm: "13.0 - 17.0", help: "Anémie." },
+        { id: "ht", label: "Hématocrite", unit: "%", norm: "40 - 52", help: "Volume." },
+        { id: "pla", label: "Plaquettes", unit: "G/L", norm: "150 - 400", help: "Coagulation." },
+        { id: "vgm", label: "VGM", unit: "fL", norm: "80 - 100", help: "Taille." },
+        { id: "tcmh", label: "TCMH", unit: "pg", norm: "27 - 32", help: "Hémoglobine." },
+        { id: "poly_n", label: "Polynucléaires Neutrophiles", unit: "%", norm: "40 - 75", help: "Bactéries." },
+        { id: "lympho", label: "Lymphocytes", unit: "%", norm: "20 - 45", help: "Virus." }
     ],
-    "Biochimie": [
-        { id: "gly", label: "Glycémie", unit: "g/L", norm: "0.70-1.10" },
-        { id: "crea", label: "Créatinine", unit: "mg/L", norm: "7.0-12.0" },
-        { id: "crp", label: "CRP", unit: "mg/L", norm: "0-5.0" }
+    "Coagulation": [
+        { id: "tp", label: "Taux de Prothrombine (TP)", unit: "%", norm: "70 - 100", help: "Vitesse." },
+        { id: "inr", label: "INR", unit: "-", norm: "0.8 - 1.2", help: "Suivi." },
+        { id: "tca", label: "TCA", unit: "sec", norm: "24 - 38", help: "Temps." },
+        { id: "fibri", label: "Fibrinogène", unit: "g/L", norm: "2.0 - 4.0", help: "Facteur." }
+    ],
+    "Biochimie Métabolique": [
+        { id: "gly", label: "Glycémie à jeun", unit: "g/L", norm: "0.70 - 1.10", help: "Sucre." },
+        { id: "uree", label: "Urée", unit: "g/L", norm: "0.15 - 0.45", help: "Déchets." },
+        { id: "crea", label: "Créatinine", unit: "mg/L", norm: "7.0 - 12.0", help: "Reins." },
+        { id: "crp", label: "CRP", unit: "mg/L", norm: "0 - 5.0", help: "Inflammation." },
+        { id: "vs", label: "Vitesse Sédimentation", unit: "mm/h", norm: "0 - 20", help: "Chronique." }
+    ],
+    "Ionogramme (Sels)": [
+        { id: "na", label: "Sodium (Na+)", unit: "mmol/L", norm: "135 - 145", help: "Hydratation." },
+        { id: "k", label: "Potassium (K+)", unit: "mmol/L", norm: "3.5 - 5.0", help: "Cœur." },
+        { id: "cl", label: "Chlore (Cl-)", unit: "mmol/L", norm: "95 - 105", help: "Acide." },
+        { id: "ca", label: "Calcium", unit: "mg/L", norm: "85 - 105", help: "Os." }
+    ],
+    "Bilan Hépatique (Foie)": [
+        { id: "asat", label: "ASAT (TGO)", unit: "UI/L", norm: "0 - 35", help: "Foie." },
+        { id: "alat", label: "ALAT (TGP)", unit: "UI/L", norm: "0 - 45", help: "Foie." },
+        { id: "ggt", label: "Gamma-GT", unit: "UI/L", norm: "0 - 55", help: "Alcool." },
+        { id: "bili_t", label: "Bilirubine Totale", unit: "mg/L", norm: "0 - 12", help: "Jaunisse." }
+    ],
+    "Marqueurs Cardiaques": [
+        { id: "tropo", label: "Troponine I", unit: "ng/L", norm: "0 - 15", help: "Infarctus." },
+        { id: "bnp", label: "BNP", unit: "pg/mL", norm: "0 - 100", help: "Insuffisance." }
+    ],
+    "Gaz du Sang (AA)": [
+        { id: "ph", label: "pH Artériel", unit: "", norm: "7.38 - 7.42", help: "Acidité." },
+        { id: "pco2", label: "PCO2", unit: "mmHg", norm: "35 - 45", help: "CO2." },
+        { id: "po2", label: "PO2", unit: "mmHg", norm: "80 - 100", help: "Oxygène." },
+        { id: "lact", label: "Lactates", unit: "mmol/L", norm: "0.5 - 2.0", help: "Choc." }
+    ],
+    "Toxicologie (LSPD/BCSO)": [
+        { id: "alc", label: "Alcoolémie", unit: "g/L", norm: "0 - 0.10", help: "Alcool." },
+        { id: "thc", label: "Cannabis (THC)", unit: "-", norm: "Négatif", help: "Drogue." },
+        { id: "coc", label: "Cocaïne", unit: "-", norm: "Négatif", help: "Drogue." },
+        { id: "amp", label: "Amphétamines", unit: "-", norm: "Négatif", help: "Drogue." }
+    ],
+    "Endocrinologie & Divers": [
+        { id: "tsh", label: "TSH", unit: "mUI/L", norm: "0.4 - 4.0", help: "Thyroïde." },
+        { id: "hcg", label: "Bêta-HCG", unit: "mUI/mL", norm: "0 - 5", help: "Grossesse." },
+        { id: "vitd", label: "Vitamine D", unit: "ng/mL", norm: "30 - 60", help: "Os." },
+        { id: "adn", label: "Compatibilité ADN", unit: "%", norm: "100", help: "Identification." }
     ]
-    /* Complète avec tes autres données ici */
 };
+
 
 function init() {
     const tabs = document.getElementById('dynamic-tabs');
@@ -42,6 +88,14 @@ function res(id, val, cat) {
     const valSpan = document.getElementById('val-'+id);
     const section = document.getElementById('sec-'+cat);
     if(valSpan) valSpan.innerText = val;
+
+    const itemData = Object.values(database).flat().find(i => i.id === id);
+    if (val.trim() !== "" && itemData && itemData.norm.includes('-')) {
+        const valNum = parseFloat(val.replace(',', '.'));
+        const [min, max] = itemData.norm.split('-').map(n => parseFloat(n));
+        valSpan.style.color = (valNum < min || valNum > max) ? "red" : "green";
+    }
+
     if(val.trim() !== "") { row.classList.add('active'); section.classList.add('active'); }
     else { row.classList.remove('active'); if(section.querySelectorAll('.row.active').length === 0) section.classList.remove('active'); }
     analyserTout();
@@ -85,6 +139,13 @@ function resetSeulementBio() {
     document.querySelectorAll('.analysis-input').forEach(el => el.value = "");
     document.querySelectorAll('.row, .section').forEach(el => el.classList.remove('active'));
     document.getElementById('auto-concl-area').value = ""; document.getElementById('d-concl').innerText = "...";
+}
+async function genererImage() {
+    const doc = document.getElementById('document');
+    const canvas = await html2canvas(doc, { scale: 2, useCORS: true, height: doc.scrollHeight });
+    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+    // Ici tu peux ajouter ton upload ImgBB
+    window.open().document.write('<img src="' + imgData + '">');
 }
 
 function determinerGroupeAleatoire() {
