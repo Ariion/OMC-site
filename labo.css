@@ -15,3 +15,5 @@
 .row { display: none; grid-template-columns: 2fr 1fr 1.5fr; padding: 6px 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
 .row.active { display: grid !important; }
 .val { font-weight: bold; text-align: center; }
+.patient-card { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; padding: 20px; border: 1px solid #e2e8f0; margin-top: 25px; font-size: 14px; }
+.signature-line { margin-top: 60px; font-weight: bold; border-top: 2px solid #000; display: inline-block; min-width: 220px; padding-top: 10px; float: right; text-align: center; }
