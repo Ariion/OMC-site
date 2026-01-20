@@ -38,6 +38,19 @@ body {
     transform: rotate(-1.5deg) translateY(-2px);
 }
 
+/* Cache les sections et lignes non utilisées */
+.section { display: none; }
+.section.active { display: block !important; margin-bottom: 20px; }
+
+.row { display: none; }
+.row.active { 
+    display: grid !important; 
+    grid-template-columns: 2fr 1fr 1.5fr;
+    padding: 5px 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+
 #input-panel { width: 480px; background: var(--omc-dark); color: white; padding: 25px; overflow-y: auto; border-right: 1px solid #233554; }
 .back-link { color: var(--omc-cyan); text-decoration: none; font-size: 11px; font-weight: bold; margin-bottom: 15px; display: inline-block; }
 .input-group { margin-bottom: 15px; border-bottom: 1px solid #1d3354; padding-bottom: 10px; }
