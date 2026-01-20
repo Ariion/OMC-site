@@ -22,6 +22,25 @@
                 <input type="date" oninput="upDate('d-ddn', this.value)">
             </div>
             <div class="input-group">
+                <label>Date & Heure du Prélèvement</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="date" oninput="upDate('d-date-prel', this.value)" style="flex: 2;">
+                    <input type="time" oninput="up('d-heure-prel', this.value)" style="flex: 1;">
+                </div>
+            </div>
+            <div class="patient-card">
+    <div>
+        Patient : <strong id="d-nom">...</strong><br>
+        Naissance : <span id="d-ddn">...</span><br>
+        Groupe : <strong id="d-groupe">...</strong>
+    </div>
+    <div style="text-align:right;">
+        Prélèvement le : <span id="d-date-prel">...</span><br>
+        Heure : <span id="d-heure-prel">--:--</span><br>
+        Médecin : <span id="d-presc">...</span>
+    </div>
+</div>
+            <div class="input-group">
                 <label>Groupe Sanguin</label>
                 <div style="display:flex; gap:10px">
                     <button type="button" onclick="determinerGroupeAleatoire()" style="width:auto; padding:5px; font-size:10px;">🎲</button>
@@ -100,3 +119,4 @@
     <script src="labo.js"></script>
 </body>
 </html>
+
