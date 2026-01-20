@@ -1,4 +1,3 @@
-const IMGBB_API_KEY = "64c39f1315b9c666579f65d6666e511c";
 
 
 // ==========================================
@@ -284,17 +283,34 @@ function resetSeulementBio() {
 // 5. EXPORT IMAGE
 // ==========================================
 // GÉNÉRATEUR D'IMAGE AVEC POPUP
+const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
+
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
-    btn.innerText = "GÉNÉRATION..."; btn.disabled = true;
+    btn.innerText = "CROP & UPLOAD...";
+    btn.disabled = true;
 
     try {
-        const canvas = await html2canvas(doc, { scale: 2, useCORS: true, height: doc.offsetHeight });
-        const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-        const formData = new FormData(); formData.append("image", imageData);
+        // html2canvas va maintenant suivre la hauteur réelle de l'élément #document
+        const canvas = await html2canvas(doc, { 
+            scale: 2,           // Haute qualité
+            useCORS: true,      // Pour le QR Code
+            backgroundColor: "#ffffff",
+            height: doc.offsetHeight, // Force la capture à la hauteur réelle du texte
+            windowHeight: doc.offsetHeight
+        });
 
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+        const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+        const formData = new FormData();
+        formData.append("image", imageData);
+
+        // Envoi à ImgBB
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: "POST",
+            body: formData
+        });
+
         const result = await response.json();
 
         if (result.success) {
@@ -302,16 +318,26 @@ async function genererImage() {
             document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
         }
-    } catch (e) { alert("Erreur génération image."); }
-    finally { btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)"; btn.disabled = false; }
+
+    } catch (e) {
+        console.error(e);
+        alert("Erreur lors du crop de l'image.");
+    } finally {
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)";
+        btn.disabled = false;
+    }
 }
 
 function copyLink() {
     const copyText = document.getElementById("direct-link");
-    copyText.select(); document.execCommand("copy"); alert("Lien copié !");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Lien copié ! Vous pouvez le coller en jeu.");
 }
 
-function closePopup() { document.getElementById('image-popup').style.display = 'none'; }
+function closePopup() {
+    document.getElementById('image-popup').style.display = 'none';
+}
 
 // RESTE DES FONCTIONS (res, switchMode, determinerGroupeAleatoire, etc.)
 
