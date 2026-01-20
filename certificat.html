@@ -33,12 +33,12 @@
 
             <div class="form-group">
                 <label>Date de naissance</label>
-                <input type="date" oninput="upDate('d-naiss', this.value)">
+                <input type="date" id="f-naiss-input" oninput="upDate('d-naiss', this.value)">
             </div>
 
             <div class="form-group">
                 <label>Date de Visite Médicale</label>
-                <input type="date" oninput="upDate('d-date', this.value)">
+                <input type="date" id="f-date-input" oninput="upDate('d-date', this.value)">
             </div>
 
             <div class="form-group" id="f-entreprise-group">
@@ -89,7 +89,7 @@
                     <div class="box"><label>Référence Dossier</label><span id="d-ref">#REF</span></div>
                     
                     <div class="box full-width" id="d-box-entreprise">
-                        <label>Entreprise / Objet de la visite</label>
+                        <label>Entreprise / Objet</label>
                         <span id="d-entreprise">...</span>
                     </div>
                 </div>
@@ -108,33 +108,19 @@
                     <div class="footer-left-signature">
                         <span class="sig-label">Signature du Praticien :</span>
                         <div id="d-medecin" class="signature-space">Dr. </div>
-                        <p style="font-size: 9px; margin-top: 5px; color: #7f8c8d;">Validé par signature numérique</p>
                     </div>
                     
                     <div class="footer-right-qr">
                         <div class="qr-block">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CERTIF-VALID" class="qr-code" alt="QR Validation">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CERTIF-VALID" class="qr-code">
                             <div class="qr-label">CERTIFICATION</div>
                         </div>
                     </div>
                 </footer>
                 
-                <p class="legal-mention">
-                    Ce certificat est délivré à la demande de l'intéressé pour faire valoir ce que de droit. Il est basé sur un examen clinique instantané et ne saurait engager la responsabilité de l'établissement au-delà de la date constatée. Toute falsification expose à des poursuites.
-                </p>
+                <p class="legal-mention">Ce certificat est établi sur la base des constatations cliniques du jour. Toute falsification expose à des poursuites.</p>
             </div>
         </main>
-    </div>
-
-    <div id="image-popup" class="popup-overlay" style="display:none;">
-        <div class="popup-content">
-            <h3 style="color:white; margin-bottom:15px;">Aperçu du Certificat</h3>
-            <img id="preview-img-result" src="">
-            <div class="popup-actions">
-                <input type="text" id="direct-link" readonly>
-                <button onclick="closePopup()">FERMER</button>
-            </div>
-        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
