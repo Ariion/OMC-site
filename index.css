@@ -25,9 +25,11 @@
 }
 
 .portal-logo {
-    height: 100px;
-    margin-bottom: 15px;
-    filter: drop-shadow(0 0 10px rgba(100, 255, 218, 0.3));
+    height: 150px; /* Passage de 100px à 150px */
+    width: auto;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 15px rgba(100, 255, 218, 0.4));
+    transition: transform 0.3s ease;
 }
 
 h1 {
@@ -56,9 +58,9 @@ h1 {
 
 /* --- CARTES BLANCHES --- */
 .menu-card {
-    background: #ffffff; /* Fond blanc pur */
+    background: #ffffff !important; /* Force le fond blanc */
     border-radius: 12px;
-    padding: 30px 20px;
+    padding: 35px 25px;
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -69,6 +71,7 @@ h1 {
 }
 
 .menu-card:hover {
+    background: #ffffff !important; /* Force le fond blanc */
     transform: translateY(-10px);
     border-color: #64ffda;
     box-shadow: 0 15px 30px rgba(100, 255, 218, 0.2);
