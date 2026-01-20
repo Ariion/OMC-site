@@ -124,3 +124,61 @@
     border-radius: 5px;
     margin-top: 10px;
 }
+
+
+/* --- FOOTER : SIGNATURE À GAUCHE, QR CODE À DROITE --- */
+.certif-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end; /* Aligne le bas de la signature avec le bas du QR code */
+    margin-top: auto;      /* Pousse le footer tout en bas du document */
+    padding-top: 40px;
+}
+
+/* Bloc de gauche : Signature */
+.footer-left-signature {
+    text-align: left;
+    min-width: 250px;
+}
+
+.signature-label {
+    font-size: 11px;
+    font-weight: bold;
+    color: #7f8c8d;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.signature-space {
+    font-family: 'Alex Brush', cursive;
+    font-size: 32px;
+    border-bottom: 2px solid #0a192f; /* Ligne sous la signature */
+    padding-bottom: 5px;
+    margin-top: 10px;
+    color: #0a192f;
+    display: inline-block;
+    min-width: 200px;
+}
+
+/* Bloc de droite : QR Code */
+.footer-right-qr {
+    text-align: center;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.qr-code {
+    width: 90px;
+    height: 90px;
+    display: block;
+}
+
+.qr-label {
+    font-size: 8px;
+    margin-top: 5px;
+    color: #95a5a6;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
