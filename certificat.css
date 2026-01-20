@@ -1,10 +1,11 @@
-/* --- BASE & COULEURS --- */
+/* --- STRUCTURE GLOBALE --- */
 .labo-body {
-    background-color: #0d1117; /* Fond sombre extérieur */
+    background-color: #0d1117;
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     height: 100vh;
+    overflow: hidden;
 }
 
 .interface-container {
@@ -12,29 +13,33 @@
     width: 100%;
 }
 
-/* --- SIDEBAR GAUCHE (Clone Décès) --- */
+/* --- SIDEBAR STYLE DÉCÈS --- */
 .sidebar {
     width: 420px;
-    background-color: #0a1324; /* Bleu nuit exact */
+    background-color: #0a1324;
     padding: 25px;
     display: flex;
     flex-direction: column;
     border-right: 1px solid #1e293b;
     color: white;
+    overflow-y: auto;
 }
 
 .sidebar-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
-    margin-bottom: 30px;
-    text-transform: uppercase;
+    margin-bottom: 25px;
+    color: #ffffff;
+    letter-spacing: 1px;
 }
 
-.form-group { margin-bottom: 20px; }
+.form-group { margin-bottom: 18px; }
 .form-group label {
     display: block;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
+    color: #94a3b8;
+    text-transform: uppercase;
     margin-bottom: 8px;
 }
 
@@ -45,33 +50,46 @@
     border: 1px solid #1e293b;
     color: white;
     border-radius: 4px;
+    outline: none;
 }
 
-/* Boutons contrastés */
+.radio-nav {
+    display: flex;
+    gap: 10px;
+    background: #121c2f;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #1e293b;
+}
+
+/* Boutons */
 .btn-image {
     background-color: white;
     color: black;
     border: none;
-    padding: 12px;
+    padding: 14px;
     font-weight: bold;
     cursor: pointer;
     margin-top: 10px;
+    width: 100%;
 }
 
 .btn-discord {
-    background-color: #5865f2; /* Violet Discord exact */
+    background-color: #5865f2;
     color: white;
     border: none;
-    padding: 12px;
+    padding: 14px;
     font-weight: bold;
     cursor: pointer;
     margin-top: 10px;
+    width: 100%;
+    text-transform: uppercase;
 }
 
-/* --- ZONE DE DROITE (DOCUMENT) --- */
+/* --- ZONE PREVIEW --- */
 .preview-area {
     flex: 1;
-    background-color: #d1d5db; /* Gris clair extérieur */
+    background-color: #d1d5db;
     padding: 40px;
     overflow-y: auto;
     display: flex;
@@ -81,28 +99,26 @@
 #document {
     background: white;
     width: 210mm;
+    min-height: 250mm;
     padding: 60px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-/* Entête avec barre noire */
+/* Header avec barre noire */
 .certif-header {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 25px;
     margin-bottom: 40px;
 }
 
-.doc-logo { height: 60px; }
+.doc-logo { height: 70px; }
 
-.header-title-block {
-    flex-grow: 1;
-}
-
+.header-title-block { flex-grow: 1; }
 .header-title-block span {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: bold;
     color: #0a1324;
     display: block;
@@ -110,12 +126,13 @@
 
 .header-title-block h2 {
     margin: 0;
-    font-size: 28px;
-    border-top: 8px solid #0a1324; /* La barre noire épaisse */
+    font-size: 32px;
+    border-top: 10px solid #0a1324;
     padding-top: 5px;
+    text-transform: uppercase;
 }
 
-/* Grille d'infos */
+/* Grille */
 .certif-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -124,8 +141,8 @@
 
 .box {
     border: 1px solid #e2e8f0;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 12px;
+    border-radius: 6px;
 }
 
 .box label {
@@ -136,18 +153,20 @@
     text-transform: uppercase;
 }
 
-.box span { font-weight: bold; color: #1e293b; }
+.box span { font-weight: bold; color: #1e293b; font-size: 14px; }
+.full-width { grid-column: span 2; }
 
 .concl-area {
     margin-top: 20px;
+    background: #f8fafc;
     border: 1px solid #e2e8f0;
     padding: 20px;
     border-radius: 8px;
 }
 
-/* --- FOOTER : SIGNATURE ET QR CODE --- */
+/* Footer Signature & QR */
 .footer-layout {
-    margin-top: auto; /* Pousse vers le bas */
+    margin-top: auto;
     padding-top: 60px;
     display: flex;
     justify-content: space-between;
@@ -155,37 +174,34 @@
 }
 
 .footer-left-signature {
-    width: 60%;
-    border-top: 1px solid #e2e8f0; /* Ligne fine au dessus signature */
+    width: 50%;
+    border-top: 2px solid #0a1324;
     padding-top: 15px;
 }
 
-.signature-label { font-size: 12px; font-weight: bold; font-style: italic; }
+.sig-label { font-size: 12px; font-weight: bold; font-style: italic; }
 
 .signature-space {
     font-family: 'Alex Brush', cursive;
-    font-size: 32px;
+    font-size: 38px;
     color: #0a1324;
     margin: 10px 0;
-}
-
-.footer-right-qr {
-    text-align: right;
 }
 
 .qr-block {
     border: 2px solid black;
     padding: 8px;
-    border-radius: 15px;
-    display: inline-block;
+    border-radius: 12px;
+    text-align: center;
 }
 
-.qr-code { width: 100px; height: 100px; }
-.qr-label { font-size: 9px; font-weight: bold; text-align: center; margin-top: 5px; }
+.qr-code { width: 90px; height: 90px; }
+.qr-label { font-size: 9px; font-weight: bold; margin-top: 5px; }
 
 .legal-mention {
     font-size: 9px;
     color: #94a3b8;
-    margin-top: 40px;
+    margin-top: 30px;
     text-align: justify;
+    line-height: 1.4;
 }
