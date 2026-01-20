@@ -1,0 +1,7 @@
+.portal-body { justify-content: center; align-items: center; width: 100vw; }
+.portal-container { text-align: center; max-width: 900px; margin: auto; }
+.portal-logo { height: 150px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--omc-cyan)); }
+.portal-container h1 { color: var(--omc-cyan); font-size: 2.8em; font-weight: 800; letter-spacing: 6px; }
+.menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 50px; }
+.menu-card { background: var(--omc-card); padding: 40px; border-radius: 12px; text-decoration: none; color: white; border: 1px solid transparent; transition: 0.3s; }
+.menu-card:hover:not(.locked) { border-color: var(--omc-cyan); transform: translateY(-5px); background: #172a45; }
