@@ -32,12 +32,16 @@
 
             <div class="form-group">
                 <label>Date de naissance</label>
-                <input type="text" id="f-naiss" placeholder="jj/mm/aaaa" oninput="updateCertif()">
+                <input type="date" oninput="upDate('d-ddn', this.value)">
             </div>
+            <div class="form-group">
+            <label>Date de Visite Médicale</label>
+            <input type="date" oninput="upDate('d-ddn', this.value)">
+        </div>
 
             <div class="form-group">
                 <label>Entreprise / Organisation</label>
-                <input type="text" id="f-entreprise" placeholder="ex: Gruppe Sechs" oninput="updateCertif()">
+                <input type="text" id="f-entreprise" placeholder="ex: Ron Oil" oninput="updateCertif()">
             </div>
 
             <div class="form-group">
@@ -89,7 +93,7 @@
                 <footer class="footer-layout">
                     <div class="footer-left-signature">
                         <span class="sig-label">Signature du Praticien :</span>
-                        <div id="d-medecin" class="signature-space">DOCTEUR</div>
+                        <div id="d-medecin" class="signature-space">Dr. </div>
                         <p class="sig-valide">Validé numériquement par OMC Systems</p>
                     </div>
                     
