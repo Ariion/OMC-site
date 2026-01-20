@@ -178,11 +178,25 @@ function analyserTout() {
 // ==========================================
 // 4. GÉNÉRATEUR AUTO ET GRAVITÉ
 // ==========================================
+// Correction de la génération aléatoire du groupe sanguin
+function determinerGroupeAleatoire() {
+    const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+    const resultat = groupes[Math.floor(Math.random() * groupes.length)];
+    
+    const afficheur = document.getElementById('d-groupe');
+    const select = document.getElementById('select-groupe');
+    
+    if(afficheur) afficheur.innerText = resultat;
+    if(select) select.value = resultat;
+}
+
 function lancerGenerationAuto() {
-    const grav = parseInt(document.getElementById('gravity-range').value);
+    const grav = parseInt(document.getElementById('gravity-range').value); // 1-10
     const scenarios = Array.from(document.querySelectorAll('.scenario-grid input:checked')).map(i => i.value);
+    
     if (scenarios.length === 0) return alert("Coche au moins un scénario !");
 
+    // Valeurs de base saines
     let results = { gb: 6.0, hb: 14.5, ht: 45.0, pla: 250, gly: 0.90, crea: 9.0, crp: 1.5, ph: 7.40, pco2: 40, po2: 95, lact: 1.0, hcg: 0, alc: 0 };
     let extraMsg = "";
 
@@ -194,7 +208,8 @@ function lancerGenerationAuto() {
             if(grav > 7) results.ph -= 0.15;
         }
         if (s === 'overdose') {
-            results.ph -= (0.08 * factor); results.pco2 += (6 * factor); results.po2 -= (10 * factor);
+            results.alc = (0.4 * factor).toFixed(2);
+            results.ph -= (0.08 * factor);
         }
         if (s === 'diabete') {
             results.gly += (0.8 * factor); results.ph -= (0.05 * factor);
@@ -203,22 +218,40 @@ function lancerGenerationAuto() {
             results.crea += (8 * factor);
         }
         if (s === 'grossesse') {
-            results.hcg = (grav * 8000);
-            extraMsg = ` (Grossesse estimée : ~${grav * 2} semaines)`;
+            // Logique : 1 niveau de gravité = 1 mois réel = 4 semaines de grossesse
+            // Le taux HCG augmente de façon exponentielle
+            const semaines = grav * 4;
+            results.hcg = Math.floor(1000 * Math.pow(1.8, grav)); 
+            extraMsg = ` (Grossesse confirmée : environ ${semaines} SA / ${grav} mois)`;
         }
     });
 
     for (let id in results) {
-        let finalVal = results[id].toFixed(id === 'ph' ? 2 : 1);
-        if(id === 'hcg') finalVal = results[id] > 5 ? "POSITIF" : "Négatif";
+        let finalVal = results[id];
+        
+        // Conversion des résultats HCG en données chiffrées concrètes
+        if(id === 'hcg') {
+            finalVal = results[id] > 5 ? `${results[id]} mUI/mL` : "5 mUI/mL (Négatif)";
+        } else {
+            finalVal = results[id].toFixed(id === 'ph' ? 2 : 1);
+        }
+        
         let catFound = "";
-        for (let c in database) { if (database[c].find(i => i.id === id)) catFound = c; }
+        for (let c in database) {
+            if (database[c].find(i => i.id === id)) catFound = c;
+        }
+
         const input = document.querySelector(`[data-id="${id}"]`);
-        if (input) { input.value = finalVal; res(id, finalVal, catFound); }
+        if (input) {
+            input.value = finalVal;
+            res(id, finalVal, catFound); 
+        }
     }
+    
     if(extraMsg) {
-        document.getElementById('auto-concl-area').value += extraMsg;
-        document.getElementById('d-concl').innerText += extraMsg;
+        const inputConcl = document.getElementById('auto-concl-area');
+        inputConcl.value = "Analyse hormonale positive." + extraMsg;
+        analyserTout(); 
     }
 }
 
@@ -236,5 +269,36 @@ function resetSeulementBio() {
     document.querySelectorAll('.scenario-grid input').forEach(el => el.checked = false);
     document.querySelectorAll('.row, .section').forEach(el => el.classList.remove('active'));
 }
+// ==========================================
+// 5. EXPORT IMAGE
+// ==========================================
+// Fonction d'export d'image (Crop automatique et Popup)
+async function genererImage() {
+    const doc = document.getElementById('document');
+    const btn = event.target;
+    btn.innerText = "GÉNÉRATION...";
+    btn.disabled = true;
+
+    try {
+        const canvas = await html2canvas(doc, { 
+            scale: 2,
+            useCORS: true,
+            height: doc.offsetHeight,
+            windowHeight: doc.offsetHeight
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+        // Ouvre l'image dans un nouvel onglet pour sauvegarde directe
+        const win = window.open();
+        win.document.write(`<iframe src="${imgData}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+        
+    } catch (e) {
+        alert("Erreur capture image");
+    } finally {
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)";
+        btn.disabled = false;
+    }
+}
+
 
 document.addEventListener('DOMContentLoaded', init);
