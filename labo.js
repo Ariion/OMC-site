@@ -64,28 +64,58 @@ function init() {
     const sectionsContainer = document.getElementById('dynamic-sections');
     if (!tabsContainer || !sectionsContainer) return;
 
-    tabsContainer.innerHTML = ""; sectionsContainer.innerHTML = "";
+    tabsContainer.innerHTML = "";
+    sectionsContainer.innerHTML = "";
 
     for (let cat in database) {
+        // 1. Créer le bouton de catégorie (Accordéon)
         let btn = document.createElement('button');
-        btn.className = 'tab-btn'; btn.innerHTML = `${cat} ▼`;
-        btn.onclick = (e) => { e.preventDefault(); document.getElementById('t-' + cat).classList.toggle('active'); };
-        tabsContainer.appendChild(btn);
+        btn.className = 'category-btn'; // Classe pour le style premium
+        btn.innerHTML = `${cat.toUpperCase()} ▼`;
+        
+        // 2. Créer le conteneur des champs (caché par défaut)
+        let contentDiv = document.createElement('div');
+        contentDiv.id = 't-' + cat;
+        contentDiv.className = 'category-content'; // Masqué en CSS de base
 
-        let div = document.createElement('div'); div.id = 't-' + cat; div.className = 'tab-content';
-        let sec = document.createElement('div'); sec.id = 'sec-' + cat; sec.className = 'section';
-        sec.innerHTML = `<div class="section-title">${cat}</div>`;
+        // Action de clic pour ouvrir/fermer
+        btn.onclick = (e) => {
+            e.preventDefault();
+            const isOpen = contentDiv.classList.contains('active');
+            // Fermer les autres (optionnel, pour faire propre)
+            document.querySelectorAll('.category-content').forEach(el => el.classList.remove('active'));
+            // Basculer l'état actuel
+            if (!isOpen) contentDiv.classList.add('active');
+        };
 
+        // 3. Créer la section sur le document (à droite)
+        let docSec = document.createElement('div');
+        docSec.id = 'sec-' + cat;
+        docSec.className = 'section';
+        docSec.innerHTML = `<div class="section-title">${cat}</div>`;
+
+        // Remplir la catégorie
         database[cat].forEach(item => {
-            div.innerHTML += `
-            <div class="input-group">
-                <label>${item.label}</label>
-                <span class="help-norm">Norme : ${item.norm} ${item.unit} | ${item.help}</span>
-                <input type="text" class="analysis-input" data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
-            </div>`;
-            sec.innerHTML += `<div class="row" id="row-${item.id}"><span>${item.label}</span><span class="val" id="val-${item.id}"></span><span class="norme">${item.norm} ${item.unit}</span></div>`;
+            contentDiv.innerHTML += `
+                <div class="input-group-manual">
+                    <label class="manual-label">${item.label}</label>
+                    <span class="manual-help">Norme : ${item.norm} ${item.unit} | ${item.help}</span>
+                    <input type="text" class="analysis-input" 
+                        data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" 
+                        oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
+                </div>`;
+
+            docSec.innerHTML += `
+                <div class="row" id="row-${item.id}">
+                    <span>${item.label}</span>
+                    <span class="val" id="val-${item.id}"></span>
+                    <span class="norme">${item.norm} ${item.unit}</span>
+                </div>`;
         });
-        tabsContainer.appendChild(div); sectionsContainer.appendChild(sec);
+
+        tabsContainer.appendChild(btn);
+        tabsContainer.appendChild(contentDiv);
+        sectionsContainer.appendChild(docSec);
     }
 }
 
