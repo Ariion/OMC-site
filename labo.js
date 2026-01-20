@@ -63,53 +63,69 @@ const database = {
     ]
 };
 
-// Configuration : 1 Mois RP = 1 Semaine Réelle
+// Configuration : 1 Mois de grossesse = 1 Semaine réelle
 const grossesseData = {
-    1: { hcg: "50 - 500", gb: "5.0 - 10.0", fer: "50 - 150", label: "Mois 1 (Semaine 1)" },
-    2: { hcg: "500 - 5000", gb: "6.0 - 11.0", fer: "45 - 140", label: "Mois 2 (Semaine 2)" },
-    3: { hcg: "30000 - 150000", gb: "7.0 - 12.0", fer: "40 - 130", label: "Mois 3 (Semaine 3 - PIC)" },
-    4: { hcg: "100000 - 250000", gb: "8.0 - 13.0", fer: "30 - 110", label: "Mois 4 (Semaine 4)" },
-    5: { hcg: "20000 - 100000", gb: "9.0 - 14.0", fer: "25 - 90", label: "Mois 5 (Semaine 5)" },
-    6: { hcg: "15000 - 60000", gb: "10.0 - 15.0", fer: "20 - 70", label: "Mois 6 (Semaine 6)" },
-    7: { hcg: "10000 - 50000", gb: "10.0 - 16.0", fer: "15 - 60", label: "Mois 7 (Semaine 7)" },
-    8: { hcg: "10000 - 40000", gb: "11.0 - 17.0", fer: "10 - 50", label: "Mois 8 (Semaine 8)" },
-    9: { hcg: "8000 - 35000", gb: "12.0 - 18.0", fer: "10 - 40", label: "Mois 9 (Semaine 9 - Terme)" },
-    "neg": { hcg: "0 - 5", gb: "4.0 - 10.0", fer: "50 - 150", label: "Test Négatif" }
+    1: { hcg: "50-500", gb: "5.5-10.5", fer: "80-150", label: "1er Mois" },
+    2: { hcg: "500-5000", gb: "6.0-11.5", fer: "70-140", label: "2ème Mois" },
+    3: { hcg: "30000-150000", gb: "7.5-12.5", fer: "60-130", label: "3ème Mois (Pic hormonal)" },
+    4: { hcg: "100000-250000", gb: "8.5-13.5", fer: "50-110", label: "4ème Mois" },
+    5: { hcg: "20000-100000", gb: "9.5-14.5", fer: "40-90", label: "5ème Mois" },
+    6: { hcg: "15000-60000", gb: "10.0-15.5", fer: "30-75", label: "6ème Mois" },
+    7: { hcg: "10000-50000", gb: "11.0-16.5", fer: "20-60", label: "7ème Mois" },
+    8: { hcg: "10000-40000", gb: "11.5-17.5", fer: "15-50", label: "8ème Mois" },
+    9: { hcg: "8000-35000", gb: "12.0-18.5", fer: "10-40", label: "9ème Mois (Terme)" },
+    "neg": { hcg: "0-5", gb: "4.5-10.0", fer: "50-150", label: "Test Négatif" }
 };
 
 function genererGrossesse(mois) {
     const data = grossesseData[mois];
-    const inputs = {
-        hcg: document.querySelector('[data-id="hcg"]'),
-        v_gb: document.querySelector('[data-id="v_gb"]'),
-        fer: document.querySelector('[data-id="fer"]')
-    };
-
-    const getVal = (range) => {
-        const [min, max] = range.split(' - ').map(n => parseFloat(n));
+    
+    // Générateur de valeurs aléatoires réalistes
+    const rand = (range) => {
+        const [min, max] = range.split('-').map(Number);
         return (Math.random() * (max - min) + min).toFixed(1);
     };
 
-    // Attribution des valeurs
-    const vHcg = getVal(data.hcg);
-    const vGb = getVal(data.gb);
-    const vFer = getVal(data.fer);
+    const vHcg = rand(data.hcg);
+    const vGb = rand(data.gb);
+    const vFer = rand(data.fer);
 
-    if(inputs.hcg) { inputs.hcg.value = vHcg; res('hcg', vHcg, 'SUIVI DE GROSSESSE'); }
-    if(inputs.v_gb) { inputs.v_gb.value = vGb; res('v_gb', vGb, 'SUIVI DE GROSSESSE'); }
-    if(inputs.fer) { inputs.fer.value = vFer; res('fer', vFer, 'SUIVI DE GROSSESSE'); }
+    // Mise à jour automatique des analyses sur le document et les inputs
+    res('hcg', vHcg, 'SUIVI DE GROSSESSE');
+    res('v_gb', vGb, 'SUIVI DE GROSSESSE');
+    res('fer', vFer, 'SUIVI DE GROSSESSE');
 
-    // Conclusion dynamique sans "Alerte" si c'est normal
+    // Construction de la conclusion médicale immersive
     let concl = "";
     if (mois === "neg") {
         concl = "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif.";
     } else {
         concl = `Bilan de maternité - ${data.label} : Présence d'hormone HCG (${vHcg} mUI/mL). `;
-        if(mois >= 7) concl += "Fin de troisième trimestre RP. Surveillance du fer et de la tension recommandée avant l'accouchement.";
-        else if(mois == 3 || mois == 4) concl += "Pic hormonal atteint. Symptômes de nausées possibles.";
-        else concl += "Début de grossesse confirmé. Évolution normale des constantes.";
+        
+        // Logique de datation et symptômes
+        if(mois >= 7) {
+            concl += "Fin de troisième trimestre. Surveillance du fer et de la tension recommandée avant l'accouchement. ";
+        } else if(mois == 3 || mois == 4) {
+            concl += "Pic hormonal atteint. Symptômes de nausées et fatigue possibles. ";
+        } else {
+            concl += "Début de grossesse confirmé. Évolution normale des constantes. ";
+        }
+
+        // Analyse de la santé de la patiente
+        if (vFer < 20) {
+            concl += "Note : Anémie ferriprive détectée (réserve de fer basse). Supplémentation recommandée. ";
+        } else if (vFer < 40) {
+            concl += "Note : Réserves en fer à surveiller. ";
+        }
+        
+        if (vGb > 15) {
+            concl += "Hyperleucocytose physiologique confirmée (normale pour ce stade gestationnel). ";
+        }
+        
+        concl += "Évolution clinique favorable.";
     }
     
+    // Affichage dans les zones de texte
     document.getElementById('auto-concl-area').value = concl;
     document.getElementById('d-concl').innerText = concl;
 }
