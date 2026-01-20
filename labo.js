@@ -77,30 +77,12 @@ const grossesseData = {
     "neg": { hcg: "0-5", gb: "4.5-10.0", fer: "50-150", label: "Test Négatif" }
 };
 
-// Configuration : 1 Mois de grossesse = 1 Semaine réelle
-const grossesseData = {
-    1: { hcg: "50-500", gb: "5.5-10.5", fer: "80-150", label: "1er Mois" },
-    2: { hcg: "500-5000", gb: "6.0-11.5", fer: "70-140", label: "2ème Mois" },
-    3: { hcg: "30000-150000", gb: "7.5-12.5", fer: "60-130", label: "3ème Mois (Pic hormonal)" },
-    4: { hcg: "100000-250000", gb: "8.5-13.5", fer: "50-110", label: "4ème Mois" },
-    5: { hcg: "20000-100000", gb: "9.5-14.5", fer: "40-90", label: "5ème Mois" },
-    6: { hcg: "15000-60000", gb: "10.0-15.5", fer: "30-75", label: "6ème Mois" },
-    7: { hcg: "10000-50000", gb: "11.0-16.5", fer: "20-60", label: "7ème Mois" },
-    8: { hcg: "10000-40000", gb: "11.5-17.5", fer: "15-50", label: "8ème Mois" },
-    9: { hcg: "8000-35000", gb: "12.0-18.5", fer: "10-40", label: "9ème Mois (Terme)" },
-    "neg": { hcg: "0-5", gb: "4.5-10.0", fer: "50-150", label: "Test Négatif" }
-};
-
 function genererGrossesse(mois) {
-    // Logique Aléatoire pour le bouton "Test"
     if (mois === 'aleatoire') {
-        // 50% de chance d'être enceinte (résultats du Mois 1) ou négatif
         mois = (Math.random() > 0.5) ? 1 : 'neg';
     }
 
     const data = grossesseData[mois];
-    
-    // Fonction pour générer un chiffre aléatoire précis dans la fourchette
     const rand = (range) => {
         const [min, max] = range.split('-').map(Number);
         return (Math.random() * (max - min) + min).toFixed(1);
@@ -110,30 +92,18 @@ function genererGrossesse(mois) {
     const vGb = rand(data.gb);
     const vFer = rand(data.fer);
 
-    // LIAISON AVEC LE DOCUMENT (res appelle l'ID technique, la valeur, et le NOM EXACT de la catégorie)
-    // Assurez-vous que ces noms de catégories sont IDENTIQUES à votre objet 'database'
-    res('hcg', vHcg, 'ENDOCRINOLOGIE & DIVERS'); 
+    // Mise à jour des résultats avec les noms EXACTS des catégories de la database
+    res('hcg', vHcg, 'ENDOCRINOLOGIE & DIVERS');
     res('gb', vGb, 'HÉMATOLOGIE (SANG)');
-    res('vitd', vFer, 'ENDOCRINOLOGIE & DIVERS'); // On utilise l'ID vitd ou adn pour le fer si non défini
+    res('vitd', vFer, 'ENDOCRINOLOGIE & DIVERS');
 
-    // Mise à jour de la conclusion médicale
     let concl = "";
     if (mois === "neg") {
         concl = "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif.";
     } else {
         concl = `Bilan de maternité - ${data.label} : Présence d'hormone HCG (${vHcg} mUI/mL). `;
-        
-        if(mois >= 7) {
-            concl += "Fin de troisième trimestre. Surveillance du fer et de la tension recommandée avant l'accouchement. ";
-        } else if(mois == 3 || mois == 4) {
-            concl += "Pic hormonal atteint. Symptômes de nausées possibles. ";
-        } else {
-            concl += "Début de grossesse confirmé. Évolution normale des constantes. ";
-        }
-
-        if (parseFloat(vFer) < 30) {
-            concl += "Note : Réserves en fer basses. ";
-        }
+        if(mois >= 7) concl += "Surveillance du fer recommandée avant l'accouchement. ";
+        else if(mois == 3 || mois == 4) concl += "Pic hormonal atteint. Nausées possibles. ";
         concl += "Évolution clinique favorable.";
     }
     
@@ -148,12 +118,15 @@ function init() {
     const tabsContainer = document.getElementById('dynamic-tabs');
     const sectionsContainer = document.getElementById('dynamic-sections');
     if (!tabsContainer || !sectionsContainer) return;
-    tabsContainer.innerHTML = ""; sectionsContainer.innerHTML = "";
+
+    tabsContainer.innerHTML = "";
+    sectionsContainer.innerHTML = "";
 
     for (let cat in database) {
         let btn = document.createElement('button');
         btn.className = 'category-btn';
         btn.innerHTML = `<span>${cat.toUpperCase()}</span> <span>▼</span>`;
+        
         let contentDiv = document.createElement('div');
         contentDiv.className = 'category-content';
         contentDiv.id = 't-' + cat;
@@ -177,12 +150,7 @@ function init() {
                     <span class="manual-help">Norme : ${item.norm} ${item.unit} | ${item.help}</span>
                     <input type="text" class="analysis-input" data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
                 </div>`;
-            sec.innerHTML += `
-                <div class="row" id="row-${item.id}">
-                    <span>${item.label}</span>
-                    <span class="val" id="val-${item.id}"></span>
-                    <span class="norme">${item.norm} ${item.unit}</span>
-                </div>`;
+            sec.innerHTML += `<div class="row" id="row-${item.id}"><span>${item.label}</span><span class="val" id="val-${item.id}"></span><span class="norme">${item.norm} ${item.unit}</span></div>`;
         });
         tabsContainer.appendChild(btn); tabsContainer.appendChild(contentDiv); sectionsContainer.appendChild(sec);
     }
@@ -198,24 +166,20 @@ function res(id, val, cat) {
 
     if (valSpan) {
         valSpan.innerText = val;
-        const itemData = Object.values(database).flat().find(i => i.id === id);
-        if (val.trim() !== "" && itemData && itemData.norm.includes('-')) {
-            const valNum = parseFloat(val.replace(',', '.'));
-            const [min, max] = itemData.norm.split('-').map(n => parseFloat(n));
-            valSpan.style.color = (valNum < min || valNum > max) ? "#ef4444" : "#22c55e";
-        } else if (val.toLowerCase() === "positif") {
-            valSpan.style.color = "#ef4444";
-        } else if (val.toLowerCase() === "négatif") {
-            valSpan.style.color = "#22c55e";
+        const item = Object.values(database).flat().find(i => i.id === id);
+        if (item && val.trim() !== "" && item.norm.includes('-')) {
+            const [min, max] = item.norm.split('-').map(n => parseFloat(n));
+            const v = parseFloat(val.replace(',', '.'));
+            valSpan.style.color = (v < min || v > max) ? "#ef4444" : "#22c55e";
         }
     }
 
-    if (val.trim() !== "") {
-        if(row) row.classList.add('active');
-        if(section) section.classList.add('active');
+    if (val.trim() !== "" && val !== "...") {
+        if (row) row.classList.add('active');
+        if (section) section.classList.add('active');
     } else {
-        if(row) row.classList.remove('active');
-        if(section && section.querySelectorAll('.row.active').length === 0) section.classList.remove('active');
+        if (row) row.classList.remove('active');
+        if (section && section.querySelectorAll('.row.active').length === 0) section.classList.remove('active');
     }
     analyserTout();
 }
@@ -412,7 +376,5 @@ function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
 }
 
-// RESTE DES FONCTIONS (res, switchMode, determinerGroupeAleatoire, etc.)
-
-
+// Reste des fonctions (analyserTout, lancerGenerationAuto, genererImage, etc.) à garder intactes...
 document.addEventListener('DOMContentLoaded', init);
