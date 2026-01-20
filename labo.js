@@ -123,21 +123,26 @@ function res(id, val, cat) {
     const row = document.getElementById('row-' + id);
     const valSpan = document.getElementById('val-' + id);
     const section = document.getElementById('sec-' + cat);
-    if (valSpan) valSpan.innerText = val;
 
-    const itemData = Object.values(database).flat().find(i => i.id === id);
-    if (val.trim() !== "" && itemData && itemData.norm.includes('-')) {
-        const valNum = parseFloat(val.replace(',', '.'));
-        const [min, max] = itemData.norm.split('-').map(n => parseFloat(n));
-        valSpan.style.color = (valNum < min || valNum > max) ? "#ef4444" : "#22c55e";
+    if (valSpan) {
+        valSpan.innerText = val;
+        // Détection auto de la couleur selon la norme
+        const item = Object.values(database).flat().find(i => i.id === id);
+        if (item && val.trim() !== "") {
+            if (item.norm.includes('-')) {
+                const [min, max] = item.norm.split('-').map(n => parseFloat(n));
+                const v = parseFloat(val.replace(',', '.'));
+                valSpan.style.color = (v < min || v > max) ? "#ef4444" : "#22c55e";
+            }
+        }
     }
 
     if (val.trim() !== "") {
-        if(row) row.classList.add('active');
-        if(section) section.classList.add('active');
+        row.classList.add('active');
+        section.classList.add('active');
     } else {
-        if(row) row.classList.remove('active');
-        if(section && section.querySelectorAll('.row.active').length === 0) section.classList.remove('active');
+        row.classList.remove('active');
+        if (section.querySelectorAll('.row.active').length === 0) section.classList.remove('active');
     }
     analyserTout();
 }
