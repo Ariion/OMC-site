@@ -32,12 +32,13 @@
 
             <div class="form-group">
                 <label>Date de naissance</label>
-                <input type="date" oninput="upDate('d-ddn', this.value)">
+                <input type="date" id="f-naiss-val" oninput="upDate('d-naiss', this.value)">
             </div>
+
             <div class="form-group">
-            <label>Date de Visite Médicale</label>
-            <input type="date" oninput="upDate('d-ddn', this.value)">
-        </div>
+                <label>Date de Visite Médicale</label>
+                <input type="date" id="f-date-val" oninput="upDate('d-date', this.value)">
+            </div>
 
             <div class="form-group">
                 <label>Entreprise / Organisation</label>
@@ -60,7 +61,7 @@
 
             <div class="sidebar-actions">
                 <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
-                <button class="btn-discord" onclick="envoyerDiscord()"> envoyé sur discord </button>
+                <button class="btn-discord" onclick="envoyerDiscord()">Envoyer sur Discord</button>
             </div>
         </aside>
 
@@ -79,21 +80,22 @@
                     <div class="box"><label>Patient</label><span id="d-nom">...</span></div>
                     <div class="box"><label>Date de Naissance</label><span id="d-naiss">...</span></div>
                     <div class="box"><label>Date d'établissement</label><span id="d-date">20/01/2026</span></div>
-                    <div class="box"><label>Référence Dossier</label><span id="d-ref">#APT-2026-01</span></div>
+                    <div class="box"><label>Référence Dossier</label><span id="d-ref">#REF-GENEREE</span></div>
                     <div class="box full-width"><label>Entreprise / Objet de la visite</label><span id="d-entreprise">...</span></div>
                 </div>
 
                 <div class="concl-area">
-    <label style="display:block; font-size: 10px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 10px;">Conclusion médicale</label>
-    <strong id="d-concl" style="font-size: 1.1rem; color: #1e293b;">
-        Apte — L'examen clinique ne présente aucune contre-indication.
-    </strong>
-</div>
+                    <label style="display:block; font-size: 10px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 10px;">Conclusion médicale</label>
+                    <strong id="d-concl" style="font-size: 1.1rem; color: #1e293b;">
+                        Veuillez remplir le formulaire...
+                    </strong>
+                </div>
 
                 <footer class="footer-layout">
                     <div class="footer-left-signature">
                         <span class="sig-label">Signature du Praticien :</span>
                         <div id="d-medecin" class="signature-space">Dr. </div>
+                        <p style="font-size: 9px; margin-top: 5px; color: #7f8c8d;">Validé par signature numérique</p>
                     </div>
                     
                     <div class="footer-right-qr">
@@ -113,11 +115,11 @@
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
         <div class="popup-content">
-            <h3 style="color:white; margin-bottom:15px;">Aperçu du Certificat</h3>
-            <img id="preview-img-result" src="" alt="Résultat">
+            <h3 style="color:white; margin-bottom:15px;">Prévisualisation du Certificat</h3>
+            <img id="preview-img-result" src="">
             <div class="popup-actions">
-                <input type="text" id="direct-link" readonly onclick="this.select()">
-                <button onclick="closePopup()" class="btn-close">FERMER</button>
+                <input type="text" id="direct-link" readonly>
+                <button onclick="closePopup()">FERMER</button>
             </div>
         </div>
     </div>
