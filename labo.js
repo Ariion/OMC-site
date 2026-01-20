@@ -58,7 +58,7 @@ const database = {
     ]
 };
 
-// INITIALISATION : Génération des onglets et de l'aide
+// Initialisation : Création des accordéons avec les classes du CSS
 function init() {
     const tabsContainer = document.getElementById('dynamic-tabs');
     const sectionsContainer = document.getElementById('dynamic-sections');
@@ -68,33 +68,33 @@ function init() {
     sectionsContainer.innerHTML = "";
 
     for (let cat in database) {
-        // 1. Créer le bouton de catégorie (Accordéon)
+        // Création du bouton accordéon (Style dégradé bleu)
         let btn = document.createElement('button');
-        btn.className = 'category-btn'; // Classe pour le style premium
-        btn.innerHTML = `${cat.toUpperCase()} ▼`;
+        btn.className = 'category-btn';
+        btn.innerHTML = `<span>${cat.toUpperCase()}</span> <span>▼</span>`;
         
-        // 2. Créer le conteneur des champs (caché par défaut)
+        // Création du conteneur de contenu (Caché par défaut)
         let contentDiv = document.createElement('div');
+        contentDiv.className = 'category-content';
         contentDiv.id = 't-' + cat;
-        contentDiv.className = 'category-content'; // Masqué en CSS de base
 
-        // Action de clic pour ouvrir/fermer
+        // Logique d'ouverture/fermeture
         btn.onclick = (e) => {
             e.preventDefault();
             const isOpen = contentDiv.classList.contains('active');
-            // Fermer les autres (optionnel, pour faire propre)
+            // Ferme les autres pour un effet propre
             document.querySelectorAll('.category-content').forEach(el => el.classList.remove('active'));
-            // Basculer l'état actuel
+            // Ouvre celui-ci
             if (!isOpen) contentDiv.classList.add('active');
         };
 
-        // 3. Créer la section sur le document (à droite)
-        let docSec = document.createElement('div');
-        docSec.id = 'sec-' + cat;
-        docSec.className = 'section';
-        docSec.innerHTML = `<div class="section-title">${cat}</div>`;
+        // Création de la section sur le document (à droite)
+        let sec = document.createElement('div');
+        sec.id = 'sec-' + cat;
+        sec.className = 'section';
+        sec.innerHTML = `<div class="section-title">${cat}</div>`;
 
-        // Remplir la catégorie
+        // Remplissage des champs
         database[cat].forEach(item => {
             contentDiv.innerHTML += `
                 <div class="input-group-manual">
@@ -105,7 +105,7 @@ function init() {
                         oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
                 </div>`;
 
-            docSec.innerHTML += `
+            sec.innerHTML += `
                 <div class="row" id="row-${item.id}">
                     <span>${item.label}</span>
                     <span class="val" id="val-${item.id}"></span>
@@ -115,7 +115,7 @@ function init() {
 
         tabsContainer.appendChild(btn);
         tabsContainer.appendChild(contentDiv);
-        sectionsContainer.appendChild(docSec);
+        sectionsContainer.appendChild(sec);
     }
 }
 
