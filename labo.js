@@ -438,7 +438,7 @@ async function genererImage() {
 }
 
 function envoyerDiscord() {
-    const webhook = "TON_WEBHOOK_ICI"; // À remplacer par ton lien
+    const webhook = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy"; // À remplacer par ton lien
     const nomPatient = document.getElementById('d-nom').innerText;
     
     if (!lastImageUrl) {
