@@ -1,4 +1,4 @@
-/* Boutons de mode et actions */
+/* Boutons de mode et actions 
 .mode-selector { display: flex; gap: 5px; margin-bottom: 20px; background: #112240; padding: 5px; border-radius: 8px; }
 .mode-btn { 
     flex: 1; padding: 10px; border: none; background: transparent; 
@@ -10,16 +10,16 @@
 .btn-generate:hover { background: #16a34a !important; }
 .btn-reset { background: #ef4444 !important; color: white !important; font-weight: bold; border-radius: 6px; margin-top: 10px; }
 
-/* Aide à la saisie (Texte Orange) */
+/* Aide à la saisie (Texte Orange) 
 .help-norm {
     display: block;
     font-size: 10px;
-    color: #ffa500; /* Orange */
+    color: #ffa500; /* Orange 
     margin-bottom: 5px;
     font-style: italic;
 }
 
-/* Onglets manuels */
+/* Onglets manuels 
 .tab-btn { 
     width: 100%; background: #172a45; color: var(--omc-cyan); 
     border: none; padding: 12px; text-align: left; cursor: pointer; 
@@ -28,7 +28,7 @@
 .tab-content { display: none; padding: 15px; background: #112240; border-radius: 0 0 5px 5px; }
 .tab-content.active { display: block; }
 
-/* Document à droite */
+/* Document à droite 
 .section { display: none; margin-top: 25px; }
 .section.active { display: block !important; }
 .section-title { 
@@ -48,7 +48,51 @@
 }
 
 .signature-line { 
-    margin-top: 60px; font-weight: bold; border-top: 2px solid #000; 
+    margin-top: 60px; font-weight: bold; border-top: 2px solid #000; */
+
+
+/* Alignement et Header */
+.header-lab { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+
+/* Design des Checkboxes (Plus propres) */
+.check-container {
+    display: block; position: relative; padding-left: 30px; margin-bottom: 12px;
+    cursor: pointer; font-size: 13px; user-select: none; color: #ccd6f6;
+}
+.check-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+.checkmark {
+    position: absolute; top: 0; left: 0; height: 18px; width: 18px;
+    background-color: #0a192f; border: 1px solid #233554; border-radius: 4px;
+}
+.check-container:hover input ~ .checkmark { background-color: #172a45; }
+.check-container input:checked ~ .checkmark { background-color: var(--omc-cyan); border-color: var(--omc-cyan); }
+.checkmark:after {
+    content: ""; position: absolute; display: none;
+    left: 6px; top: 2px; width: 5px; height: 10px;
+    border: solid var(--omc-dark); border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.check-container input:checked ~ .checkmark:after { display: block; }
+
+/* Boutons */
+.mode-btn { background: #172a45; color: #8892b0; }
+.mode-btn.active { background: var(--omc-cyan) !important; color: var(--omc-dark) !important; font-weight: bold; }
+.btn-dice { width: 40px !important; background: #233554; color: white; padding: 5px !important; margin: 0 !important; }
+.btn-generate { background: #22c55e !important; color: white !important; margin-top: 20px !important; }
+
+/* Aide à la saisie */
+.help-norm { display: block; font-size: 10px; color: #ffa500; margin-bottom: 8px; font-style: italic; }
+
+/* Document Sections */
+.section { display: none; margin-top: 25px; border-top: 1px solid #eee; padding-top: 10px; }
+.section.active { display: block !important; }
+.section-title { background: #f1f5f9; padding: 5px 10px; font-weight: bold; border-left: 5px solid var(--omc-dark); font-size: 12px; margin-bottom: 10px; color: #111; }
+.row { display: none; grid-template-columns: 2fr 1fr 1.5fr; padding: 5px 10px; border-bottom: 1px solid #f9f9f9; font-size: 13px; }
+.row.active { display: grid !important; }
+.val { font-weight: bold; text-align: center; }
+
+/* Conclusion & Signature */
+.conclusion-box { margin-top: 30px; padding: 10px; background: #fcfcfc; border-radius: 4px; }
+.signature-line { margin-top: 50px; font-weight: bold; border-top: 2px solid #000; display: inline-block; min-width: 220px; float: right; text-align: center; padding-top: 10px; }
     display: inline-block; min-width: 220px; padding-top: 10px; 
     float: right; text-align: center; 
 }
