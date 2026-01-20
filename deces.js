@@ -59,6 +59,63 @@ function genererReference() {
     }
 }
 
+// Clé API ImgBB (Remplace par la tienne pour que ça marche à 100%)
+const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
+
+async function genererImage() {
+    const doc = document.getElementById('document');
+    const btn = event.target;
+    btn.innerText = "GÉNÉRATION ET HÉBERGEMENT...";
+    btn.disabled = true;
+
+    try {
+        const canvas = await html2canvas(doc, { 
+            scale: 2,
+            useCORS: true,
+            allowTaint: true
+        });
+
+        // Conversion en base64 pour ImgBB
+        const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+
+        const formData = new FormData();
+        formData.append("image", imageData);
+
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            document.getElementById('direct-link').value = result.data.url;
+            document.getElementById('preview-img-result').src = result.data.url;
+            document.getElementById('image-popup').style.display = 'flex';
+        } else {
+            alert("Erreur d'hébergement.");
+        }
+
+    } catch (e) {
+        console.error(e);
+        alert("Erreur lors de la création de l'image.");
+    } finally {
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (LIEN)";
+        btn.disabled = false;
+    }
+}
+
+function copyLink() {
+    const copyText = document.getElementById("direct-link");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Lien copié ! Vous pouvez le coller en jeu.");
+}
+
+function closePopup() {
+    document.getElementById('image-popup').style.display = 'none';
+}
+
 // Fonction d'envoi Discord
 async function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
