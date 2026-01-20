@@ -395,5 +395,78 @@ function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
 }
 
+// Variable globale pour stocker l'URL de l'image
+let lastImageUrl = "";
+
+async function genererImage() {
+    const doc = document.getElementById('document');
+    const btn = event.target;
+    btn.innerText = "GÉNÉRATION...";
+    btn.disabled = true;
+
+    try {
+        const canvas = await html2canvas(doc, { 
+            scale: 2, 
+            useCORS: true, 
+            height: doc.offsetHeight 
+        });
+        
+        const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+        const formData = new FormData();
+        formData.append("image", imageData);
+
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            lastImageUrl = result.data.url; // On stocke l'URL ici
+            document.getElementById('direct-link').value = lastImageUrl;
+            document.getElementById('preview-img-result').src = lastImageUrl;
+            document.getElementById('image-popup').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Bloque le scroll arrière
+        }
+    } catch (e) {
+        alert("Erreur génération image.");
+    } finally {
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)";
+        btn.disabled = false;
+    }
+}
+
+function envoyerDiscord() {
+    const webhook = "TON_WEBHOOK_ICI"; // À remplacer par ton lien
+    const nomPatient = document.getElementById('d-nom').innerText;
+    
+    if (!lastImageUrl) {
+        return alert("Génère d'abord l'image avant d'envoyer sur Discord !");
+    }
+
+    const payload = {
+        username: "OMC - Laboratoire",
+        embeds: [{
+            title: `Nouveau Bilan Biologique : ${nomPatient}`,
+            color: 65500, // Couleur Cyan
+            image: { url: lastImageUrl },
+            footer: { text: "Olympus Medical Center - Los Santos" },
+            timestamp: new Date()
+        }]
+    };
+
+    fetch(webhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).then(() => alert("Rapport envoyé sur Discord !"));
+}
+
+function closePopup() {
+    document.getElementById('image-popup').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Réactive le scroll du site
+}
+
 // Reste des fonctions (analyserTout, lancerGenerationAuto, genererImage, etc.) à garder intactes...
 document.addEventListener('DOMContentLoaded', init);
