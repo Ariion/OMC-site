@@ -6,42 +6,78 @@
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="index.css">
     <style>
-        .sih-frame-container {
+        /* On force la page à occuper 100% de la fenêtre sans scroll */
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background-color: #0a192f;
+        }
+
+        .sih-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
             padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            box-sizing: border-box;
         }
-        .sheet-card {
+
+        .sih-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .sih-header h1 {
+            color: #ffffff;
+            font-size: 1.4rem;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        /* Le conteneur du Google Sheet */
+        .sheet-container {
+            flex-grow: 1; /* Prend tout l'espace disponible */
             background: #ffffff;
-            border-radius: 15px;
-            padding: 10px;
+            border-radius: 12px;
             border: 4px solid #64ffda;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            height: 85vh; /* Presque toute la hauteur de l'écran */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            overflow: hidden;
+            position: relative;
         }
+
         iframe {
-            border-radius: 8px;
             width: 100%;
             height: 100%;
             border: none;
         }
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 15px;
+
+        .back-link {
             color: #64ffda;
             text-decoration: none;
             font-weight: bold;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            text-shadow: 0 0 10px #64ffda;
         }
     </style>
 </head>
 <body class="portal-body">
-    <div class="sih-frame-container">
-        <a href="index.html" class="back-btn">← RETOUR PORTAIL</a>
-        <h1 style="font-size: 1.5rem; margin-bottom: 10px;">SYSTÈME D'APTITUDE MÉDICALE</h1>
+
+    <div class="sih-wrapper">
+        <div class="sih-header">
+            <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
+            <h1>VISITE D'APTITUDE AU TRAVAIL</h1>
+        </div>
         
-        <div class="sheet-card">
+        <div class="sheet-container">
             <iframe src="https://docs.google.com/spreadsheets/d/16Xmc55b00qe_o2bdnK8iBX4DDcW0uVRTZrDcvkBa3IU/edit?usp=sharing"></iframe>
         </div>
     </div>
+
 </body>
 </html>
