@@ -347,21 +347,24 @@ async function genererImage() {
     btn.innerText = "CROP & UPLOAD...";
     btn.disabled = true;
 
+    // On s'assure que le scroll est en haut pour une capture propre
+    window.scrollTo(0,0);
+
     try {
-        // html2canvas va maintenant suivre la hauteur réelle de l'élément #document
         const canvas = await html2canvas(doc, { 
-            scale: 2,           // Haute qualité
-            useCORS: true,      // Pour le QR Code
+            scale: 2,           // Haute qualité pour impression
+            useCORS: true,      // Pour les images externes
             backgroundColor: "#ffffff",
-            height: doc.offsetHeight, // Force la capture à la hauteur réelle du texte
-            windowHeight: doc.offsetHeight
+            // LE CROP : On prend la hauteur exacte du contenu
+            height: doc.scrollHeight, 
+            windowHeight: doc.scrollHeight,
+            y: 0 
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
         const formData = new FormData();
         formData.append("image", imageData);
 
-        // Envoi à ImgBB
         const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
             method: "POST",
             body: formData
@@ -370,8 +373,9 @@ async function genererImage() {
         const result = await response.json();
 
         if (result.success) {
-            document.getElementById('direct-link').value = result.data.url;
-            document.getElementById('preview-img-result').src = result.data.url;
+            lastImageUrl = result.data.url;
+            document.getElementById('direct-link').value = lastImageUrl;
+            document.getElementById('preview-img-result').src = lastImageUrl;
             document.getElementById('image-popup').style.display = 'flex';
         }
 
