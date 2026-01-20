@@ -13,26 +13,51 @@ function generateRef() {
 }
 
 function updateCertif() {
-    // 1. Identité & Entreprise
+    const type = document.getElementById('f-type').value;
+    const blocEntreprise = document.getElementById('box-entreprise');
+    const blocConclRadio = document.getElementById('concl-radio-group'); // Le groupe radio dans la sidebar
+    const blocConclDoc = document.getElementById('concl-area-doc'); // La zone conclusion sur le doc
+    const blocDiversDoc = document.getElementById('divers-area-doc'); // Nouveau bloc texte libre
+    const inputDivers = document.getElementById('f-divers-group'); // Groupe input sidebar
+
+    // Reset l'affichage par défaut
+    blocEntreprise.style.display = "block";
+    blocConclDoc.style.display = "block";
+    inputDivers.style.display = "none";
+    if(blocDiversDoc) blocDiversDoc.style.display = "none";
+
+    // 1. Logique selon le type
+    if (type === "Port d'arme (PPA)") {
+        blocEntreprise.style.display = "none";
+        document.getElementById('d-titre-doc').innerText = "EXAMEN CAPACITÉ PPA";
+    } 
+    else if (type === "Divers") {
+        blocEntreprise.style.display = "none";
+        blocConclDoc.style.display = "none"; // On enlève les 3 points (Apte/Inapte)
+        inputDivers.style.display = "block"; // On affiche le champ de texte libre
+        if(blocDiversDoc) blocDiversDoc.style.display = "block";
+        document.getElementById('d-titre-doc').innerText = "CERTIFICAT MÉDICAL";
+    } 
+    else {
+        document.getElementById('d-titre-doc').innerText = type.toUpperCase();
+    }
+
+    // 2. Mise à jour des textes
     document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
     document.getElementById('d-entreprise').innerText = document.getElementById('f-entreprise').value || "...";
     document.getElementById('d-medecin').innerText = "Dr. " + (document.getElementById('f-medecin').value || "");
-
-    // 2. Type de certificat (Titre)
-    const type = document.getElementById('f-type').value;
-    document.getElementById('d-titre-doc').innerText = type.toUpperCase();
-
-    // 3. Conclusion médicale
-    const concl = document.querySelector('input[name="concl"]:checked').value;
-    let texteConcl = "";
-    if(concl === "Apte") texteConcl = "Apte — L'examen clinique ne présente aucune contre-indication.";
-    else if(concl === "Inapte") texteConcl = "Inapte — Le sujet présente des contre-indications cliniques majeures.";
-    else texteConcl = "Apte avec réserve — Nécessite un aménagement de poste ou un suivi régulier.";
-    
-    document.getElementById('d-concl').innerText = texteConcl;
-
-    // 4. Mise à jour automatique de la Référence
     document.getElementById('d-ref').innerText = "#" + generateRef();
+
+    // Gestion de la conclusion (si pas en mode Divers)
+    if (type !== "Divers") {
+        const concl = document.querySelector('input[name="concl"]:checked').value;
+        document.getElementById('d-concl').innerText = (concl === "Apte") ? 
+            "Apte — L'examen clinique ne présente aucune contre-indication." : 
+            (concl === "Inapte" ? "Inapte — Contre-indications cliniques majeures." : "Apte avec réserve.");
+    } else {
+        // Texte libre pour le mode Divers
+        document.getElementById('d-divers-text').innerText = document.getElementById('f-divers').value || "...";
+    }
 }
 
 // Fonction pour les dates (DDN et Visite)
