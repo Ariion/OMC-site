@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMC - Certificat Médical</title>
+    <title>OMC - Certificats Médicaux</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="certificat.css">
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
@@ -17,36 +17,35 @@
             <h1 class="sidebar-title">CERTIFICAT MÉDICAL</h1>
 
             <div class="form-group">
-                <label>Type de certificat</label>
+                <label>Type de document</label>
                 <select id="f-type" oninput="updateCertif()">
                     <option value="Aptitude professionnelle">Aptitude professionnelle</option>
-                    <option value="Aptitude au sport">Aptitude au sport</option>
                     <option value="Port d'arme (PPA)">Capacité examen PPA</option>
-                    <option value="Divers">Divers / Texte libre</option>
+                    <option value="Divers">Divers</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label>Patient (Nom Prénom)</label>
-                <input type="text" id="f-nom" placeholder="ex: John Doe" oninput="updateCertif()">
+                <input type="text" id="f-nom" placeholder="John Doe" oninput="updateCertif()">
             </div>
 
             <div class="form-group">
                 <label>Date de naissance</label>
-                <input type="date" id="f-naiss-input" oninput="upDate('d-naiss', this.value)">
+                <input type="date" oninput="upDate('d-naiss', this.value)">
             </div>
 
             <div class="form-group">
-                <label>Date de Visite Médicale</label>
-                <input type="date" id="f-date-input" oninput="upDate('d-date', this.value)">
+                <label>Date d'établissement</label>
+                <input type="date" oninput="upDate('d-date', this.value)">
             </div>
 
-            <div class="form-group" id="f-entreprise-group">
+            <div class="form-group" id="side-entreprise-block">
                 <label>Entreprise / Organisation</label>
                 <input type="text" id="f-entreprise" placeholder="ex: Ron Oil" oninput="updateCertif()">
             </div>
 
-            <div class="form-group" id="f-concl-group">
+            <div class="form-group" id="side-concl-block">
                 <label>Conclusion médicale</label>
                 <div class="radio-nav">
                     <label><input type="radio" name="concl" value="Apte" checked onclick="updateCertif()"> Apte</label>
@@ -55,9 +54,9 @@
                 </div>
             </div>
 
-            <div class="form-group" id="f-divers-group" style="display:none;">
-                <label>Observations / Texte libre</label>
-                <textarea id="f-divers" rows="5" oninput="updateCertif()" style="width:100%; background:#121c2f; border:1px solid #1e293b; color:white; padding:10px; border-radius:4px; font-family: inherit;"></textarea>
+            <div class="form-group" id="side-divers-block" style="display:none;">
+                <label>Observations / Rapport médical</label>
+                <textarea id="f-divers" rows="6" oninput="updateCertif()" style="width:100%; background:#121c2f; border:1px solid #1e293b; color:white; padding:10px; border-radius:4px;"></textarea>
             </div>
 
             <div class="form-group">
@@ -67,7 +66,7 @@
 
             <div class="sidebar-actions">
                 <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
-                <button class="btn-discord" onclick="envoyerDiscord()">ENVOYER SUR DISCORD</button>
+                <button class="btn-discord" onclick="envoyerDiscord()">Envoyer sur Discord</button>
             </div>
         </aside>
 
@@ -85,22 +84,22 @@
                 <div class="certif-grid">
                     <div class="box"><label>Patient</label><span id="d-nom">...</span></div>
                     <div class="box"><label>Date de Naissance</label><span id="d-naiss">...</span></div>
-                    <div class="box"><label>Date d'établissement</label><span id="d-date">20/01/2026</span></div>
+                    <div class="box"><label>Date d'établissement</label><span id="d-date">...</span></div>
                     <div class="box"><label>Référence Dossier</label><span id="d-ref">#REF</span></div>
                     
-                    <div class="box full-width" id="d-box-entreprise">
-                        <label>Entreprise / Objet</label>
+                    <div class="box full-width" id="doc-entreprise-block">
+                        <label>Entreprise / Organisation</label>
                         <span id="d-entreprise">...</span>
                     </div>
                 </div>
 
-                <div class="concl-area" id="d-concl-area">
-                    <label style="display:block; font-size: 10px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 10px;">Conclusion médicale</label>
-                    <strong id="d-concl" style="font-size: 1.1rem; color: #1e293b;">Apte — L'examen clinique ne présente aucune contre-indication.</strong>
+                <div class="concl-area" id="doc-concl-block">
+                    <label style="display:block; font-size: 10px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 5px;">Conclusion médicale</label>
+                    <strong id="d-concl" style="font-size: 1.1rem; color: #1e293b;">...</strong>
                 </div>
 
-                <div class="concl-area" id="d-divers-area" style="display:none;">
-                    <label style="display:block; font-size: 10px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 10px;">Observations médicales</label>
+                <div class="concl-area" id="doc-divers-block" style="display:none;">
+                    <label style="display:block; font-size: 10px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 5px;">Rapport d'examen</label>
                     <div id="d-divers-text" style="font-size: 1rem; color: #1e293b; white-space: pre-wrap; line-height: 1.4;">...</div>
                 </div>
 
@@ -109,16 +108,13 @@
                         <span class="sig-label">Signature du Praticien :</span>
                         <div id="d-medecin" class="signature-space">Dr. </div>
                     </div>
-                    
                     <div class="footer-right-qr">
                         <div class="qr-block">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CERTIF-VALID" class="qr-code">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-VALID" class="qr-code">
                             <div class="qr-label">CERTIFICATION</div>
                         </div>
                     </div>
                 </footer>
-                
-                <p class="legal-mention">Ce certificat est établi sur la base des constatations cliniques du jour. Toute falsification expose à des poursuites.</p>
             </div>
         </main>
     </div>
