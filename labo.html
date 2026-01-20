@@ -106,7 +106,7 @@
         <textarea id="auto-concl-area" oninput="up('d-concl', this.value)" placeholder="Conclusion médicale..." rows="3" style="margin-top:20px"></textarea>
         <input type="text" oninput="up('d-sig', this.value)" placeholder="Nom du Docteur" style="margin-top:10px">
         
-        <button onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
+        <button type="button" onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE (lien)</button>
 
         <div id="image-popup" class="popup-overlay" style="display:none;">
             <div class="popup-content">
@@ -161,5 +161,6 @@
     <script src="labo.js"></script>
 </body>
 </html>
+
 
 
