@@ -154,4 +154,78 @@ function determinerGroupeAleatoire() {
     document.getElementById('d-groupe').innerText = res; document.getElementById('select-groupe').value = res;
 }
 
+// On ajoute 'help' et 'norm' dans l'affichage manuel
+function init() {
+    const tabs = document.getElementById('dynamic-tabs');
+    const sections = document.getElementById('dynamic-sections');
+    if (!tabs || !sections) return;
+    tabs.innerHTML = ""; sections.innerHTML = "";
+
+    for (let cat in database) {
+        let btn = document.createElement('button');
+        btn.className = 'tab-btn'; btn.innerHTML = `${cat.toUpperCase()} ▼`;
+        btn.onclick = (e) => { e.preventDefault(); document.getElementById('t-'+cat).classList.toggle('active'); };
+        tabs.appendChild(btn);
+
+        let div = document.createElement('div'); div.id = 't-'+cat; div.className = 'tab-content';
+        let sec = document.createElement('div'); sec.id = 'sec-'+cat; sec.className = 'section';
+        sec.innerHTML = `<div class="section-title">${cat}</div>`;
+
+        database[cat].forEach(item => {
+            // AJOUT DE L'AIDE ICI
+            div.innerHTML += `
+            <div class="input-group">
+                <label>${item.label}</label>
+                <span class="help-norm">Norme : ${item.norm} ${item.unit} | ${item.help}</span>
+                <input type="text" class="analysis-input" 
+                    data-id="${item.id}" 
+                    data-label="${item.label}" 
+                    data-norm="${item.norm}" 
+                    oninput="res('${item.id}', this.value, '${cat}')" 
+                    placeholder="Valeur...">
+            </div>`;
+            
+            sec.innerHTML += `<div class="row" id="row-${item.id}"><span>${item.label}</span><span class="val" id="val-${item.id}"></span><span class="norme">${item.norm} ${item.unit}</span></div>`;
+        });
+        tabs.appendChild(div); sections.appendChild(sec);
+    }
+}
+
+// CONCLUSION AUTOMATIQUE INTELLIGENTE
+function analyserTout() {
+    let anomalies = [];
+    document.querySelectorAll('.analysis-input').forEach(input => {
+        let valText = input.value.trim().replace(',', '.');
+        if (!valText) return;
+        
+        let label = input.getAttribute('data-label');
+        let norm = input.getAttribute('data-norm');
+        
+        if (norm.includes('-')) {
+            let valNum = parseFloat(valText);
+            let [min, max] = norm.split('-').map(n => parseFloat(n));
+            if (valNum < min) anomalies.push(label + " BAS");
+            if (valNum > max) anomalies.push(label + " ÉLEVÉ");
+        } else if (norm === "Négatif" && valText.toLowerCase() === "positif") {
+            anomalies.push(label + " POSITIF");
+        }
+    });
+
+    let conclFinal = "";
+    if (anomalies.length > 0) {
+        conclFinal = "Points d'attention : " + anomalies.join(', ') + ". Une surveillance médicale est recommandée.";
+    } else {
+        conclFinal = "Bilan biologique satisfaisant. Absence d'anomalie majeure détectée.";
+    }
+
+    // Mise à jour des deux zones (Input et Document)
+    document.getElementById('auto-concl-area').value = conclFinal;
+    document.getElementById('d-concl').innerText = conclFinal;
+}
+
+// N'oublie pas d'appeler analyserTout() à la fin de ta fonction res() !
+
+
 document.addEventListener('DOMContentLoaded', init);
+
+
