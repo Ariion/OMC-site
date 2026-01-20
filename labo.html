@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>OMC - Laboratoire de Biologie</title>
-   <!-- <link rel="stylesheet" href="style.css"> -->
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="labo.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -13,29 +12,21 @@
         <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
         <h2>OMC LABORATOIRE</h2>
 
-        <div id="fixed-patient-data">
+        <div class="fixed-info">
             <div class="input-group">
                 <label>Nom & Prénom</label>
-                <input type="text" oninput="up('d-nom', this.value)" placeholder="FREEMAN Garret ">
+                <input type="text" oninput="up('d-nom', this.value)" placeholder="ex: Garret Freeman">
             </div>
             <div class="input-group">
                 <label>Date de Naissance</label>
                 <input type="date" oninput="upDate('d-ddn', this.value)">
             </div>
             <div class="input-group">
-                <label>Date Prélèvement</label>
-                <input type="date" oninput="upDate('d-date', this.value)">
-            </div>
-            <div class="input-group">
-                <label>Médecin Prescripteur</label>
-                <input type="text" oninput="up('d-presc', this.value)">
-            </div>
-            <div class="input-group">
                 <label>Groupe Sanguin</label>
-                <div style="display: flex; gap: 10px;">
-                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-sub">🎲 ALÉATOIRE</button>
-                    <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex: 1;">
-                        <option value="...">-- Manuel --</option>
+                <div style="display:flex; gap:10px">
+                    <button type="button" onclick="determinerGroupeAleatoire()" style="width:auto; padding:5px; font-size:10px;">🎲</button>
+                    <select id="select-groupe" onchange="up('d-groupe', this.value)">
+                        <option value="...">--</option>
                         <option value="A+">A+</option><option value="A-">A-</option>
                         <option value="B+">B+</option><option value="B-">B-</option>
                         <option value="AB+">AB+</option><option value="AB-">AB-</option>
@@ -45,93 +36,67 @@
             </div>
         </div>
 
-        <hr style="border: 0.5px solid #233554; margin: 20px 0; opacity: 0.3;">
-
         <div class="mode-selector">
-            <button type="button" id="btn-auto" class="mode-btn active" onclick="switchMode('auto')">🤖 AUTO</button>
-            <button type="button" id="btn-manual" class="mode-btn" onclick="switchMode('manual')">✍️ MANUEL</button>
+            <button type="button" class="mode-btn active" onclick="switchMode('auto')">🤖 AUTO</button>
+            <button type="button" class="mode-btn" onclick="switchMode('manual')">✍️ MANUEL</button>
         </div>
 
         <div id="panel-auto">
             <div class="input-group">
-                <label>GRAVITÉ DE L'ÉTAT : <span id="grav-display" style="color:var(--omc-cyan)">5</span>/10</label>
+                <label>GRAVITÉ : <span id="grav-display">5</span>/10</label>
                 <input type="range" id="gravity-range" min="1" max="10" value="5" oninput="document.getElementById('grav-display').innerText=this.value">
             </div>
-
             <div class="scenario-grid">
-                <label class="scenario-item"><input type="checkbox" value="acc-route"><span>🚗 Accident</span></label>
-                <label class="scenario-item"><input type="checkbox" value="arme-feu"><span>🔫 Arme à feu</span></label>
-                <label class="scenario-item"><input type="checkbox" value="arme-blanche"><span>🔪 Arme blanche</span></label>
-                <label class="scenario-item"><input type="checkbox" value="overdose"><span>💊 Overdose</span></label>
-                <label class="scenario-item"><input type="checkbox" value="cardiaque"><span>❤️ Cardiaque</span></label>
-                <label class="scenario-item"><input type="checkbox" value="grossesse"><span>👶 Grossesse</span></label>
-                <label class="scenario-item"><input type="checkbox" value="infection"><span>🦠 Infection</span></label>
-                <label class="scenario-item"><input type="checkbox" value="diabete"><span>🍭 Diabète</span></label>
-                <label class="scenario-item"><input type="checkbox" value="renal"><span>💧 Rénal</span></label>
-                <label class="scenario-item"><input type="checkbox" value="gaz"><span>☁️ Gaz/Chimique</span></label>
-                <label class="scenario-item"><input type="checkbox" value="virus"><span>⚠️ Virus Rare</span></label>
-                <label class="scenario-item"><input type="checkbox" value="poison"><span>🧪 Poison</span></label>
+                <label class="scenario-item"><input type="checkbox" value="acc-route"> Accident</label>
+                <label class="scenario-item"><input type="checkbox" value="arme-feu"> Balle</label>
+                <label class="scenario-item"><input type="checkbox" value="overdose"> Overdose</label>
+                <label class="scenario-item"><input type="checkbox" value="grossesse"> Grossesse</label>
+                <label class="scenario-item"><input type="checkbox" value="diabete"> Diabète</label>
+                <label class="scenario-item"><input type="checkbox" value="renal"> Rénal</label>
             </div>
-            <button type="button" onclick="lancerGenerationAuto()" class="btn-generate">GÉNÉRER LE BILAN</button>
-            <button type="button" onclick="resetSeulementBio()" class="btn-reset">🗑️ VIDER LES ANALYSES</button>
+            <button type="button" onclick="lancerGenerationAuto()" class="btn-generate">GÉNÉRER</button>
+            <button type="button" onclick="resetSeulementBio()" class="btn-reset">🗑️ VIDER ANALYSES</button>
         </div>
 
         <div id="panel-manual" style="display:none">
             <div id="dynamic-tabs"></div>
         </div>
 
-        <hr style="border: 0.5px solid #233554; margin: 20px 0; opacity: 0.3;">
-
-        <textarea oninput="up('d-concl', this.value)" id="auto-concl-area" placeholder="Conclusion médicale..." rows="3"></textarea>
+        <textarea id="auto-concl-area" oninput="up('d-concl', this.value)" placeholder="Conclusion médicale..." rows="3" style="margin-top:20px"></textarea>
         <input type="text" oninput="up('d-sig', this.value)" placeholder="Nom du Docteur" style="margin-top:10px">
-
-        <button onclick="window.print()" id="print-btn">IMPRIMER LE RAPPORT (PDF)</button>
-        <button onclick="envoyerDiscord()" id="discord-btn">ENVOYER SUR L'INTRANET (DISCORD)</button>
+        
+        <button onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE (CROP)</button>
+        <button onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
     </div>
 
     <div id="preview-area">
         <div id="document">
-            <div class="header">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <img src="assets/logo_omc.png" alt="Logo OMC" style="height: 50px; width: auto;">
-                    <div class="cert-title-block">
-                        <span class="cert-tag">OCEAN MEDICAL CENTER</span>
-                        <h1 class="cert-main-title">Bilan Sanguin</h1>
-                    </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eee; padding-bottom:10px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="assets/logo_omc.png" alt="Logo" style="height:40px;">
+                    <h1 style="font-size:20px; margin:0;">Bilan Biologique</h1>
                 </div>
-                <div style="text-align:right; font-size:10px; color: #777;">
-                    Réf : #OMC-2026-LAB<br>Los Santos, San Andreas
-                </div>
+                <div style="font-size:10px; text-align:right; color:#666;">#OMC-LAB-2026</div>
             </div>
 
-            <div class="patient-card">
-                <div>
-                    <div>Patient : <span id="d-nom">...</span></div>
-                    <div>Médecin : <span id="d-presc">...</span></div>
-                </div>
-                <div>
-                    <div>Date de naissance : <span id="d-ddn">...</span></div>
-                    <div>Date du prélèvement : <span id="d-date">...</span></div>
-                    <div style="margin-top: 5px;">
-                        Groupe Sanguin : <span id="d-groupe" style="font-weight: bold;">...</span>
-                    </div>
-                </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; background:#f8fafc; padding:15px; border-radius:5px; margin-top:20px; font-size:13px;">
+                <div>Patient : <strong id="d-nom">...</strong><br>Naissance : <span id="d-ddn">...</span></div>
+                <div style="text-align:right;">Groupe : <strong id="d-groupe">...</strong><br>Date : <span id="d-date">...</span></div>
             </div>
 
             <div id="dynamic-sections"></div>
 
-            <div style="margin-top:30px">
+            <div style="margin-top:30px; border-top:1px solid #eee; padding-top:10px;">
                 <strong>Conclusion :</strong>
-                <p id="d-concl" style="font-style:italic; font-size:13px">...</p>
+                <p id="d-concl" style="font-style:italic; font-size:13px;">...</p>
             </div>
-            <div class="signature-line" id="d-sig">NOM DU DOCTEUR</div>
+            <div style="margin-top:40px; text-align:right; font-weight:bold; border-top:2px solid #000; display:inline-block; float:right; min-width:200px;" id="d-sig">
+                NOM DU DOCTEUR
+            </div>
         </div>
     </div>
 
-   <!-- <script src="script.js"></script>-->
     <script src="global.js"></script>
     <script src="labo.js"></script>
 </body>
 </html>
-
-
