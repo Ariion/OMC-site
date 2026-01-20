@@ -1,19 +1,54 @@
+/* Boutons de mode et actions */
 .mode-selector { display: flex; gap: 5px; margin-bottom: 20px; background: #112240; padding: 5px; border-radius: 8px; }
-.mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: white; cursor: pointer; font-weight: bold; border-radius: 5px; }
+.mode-btn { 
+    flex: 1; padding: 10px; border: none; background: transparent; 
+    color: #8892b0; cursor: pointer; font-weight: bold; border-radius: 5px; transition: 0.3s;
+}
 .mode-btn.active { background: var(--omc-cyan); color: var(--omc-dark); }
-.scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 15px 0; }
-.scenario-item { background: #172a45; padding: 10px; border-radius: 6px; cursor: pointer; border: 1px solid #233554; display: flex; align-items: center; gap: 8px; font-size: 11px; }
-.scenario-item input { width: auto !important; }
-.btn-generate { background: #22c55e; color: white; }
-.btn-reset { background: #4b5563; color: white; }
-.tab-btn { width: 100%; background: #172a45; color: var(--omc-cyan); border: none; padding: 12px; text-align: left; cursor: pointer; margin-top: 8px; font-weight: bold; border-radius: 4px; }
-.tab-content { display: none; padding: 15px; background: #112240; }
+
+.btn-generate { background: #22c55e !important; color: white !important; font-weight: bold; border-radius: 6px; }
+.btn-generate:hover { background: #16a34a !important; }
+.btn-reset { background: #ef4444 !important; color: white !important; font-weight: bold; border-radius: 6px; margin-top: 10px; }
+
+/* Aide à la saisie (Texte Orange) */
+.help-norm {
+    display: block;
+    font-size: 10px;
+    color: #ffa500; /* Orange */
+    margin-bottom: 5px;
+    font-style: italic;
+}
+
+/* Onglets manuels */
+.tab-btn { 
+    width: 100%; background: #172a45; color: var(--omc-cyan); 
+    border: none; padding: 12px; text-align: left; cursor: pointer; 
+    margin-top: 8px; font-weight: bold; border-radius: 4px; 
+}
+.tab-content { display: none; padding: 15px; background: #112240; border-radius: 0 0 5px 5px; }
 .tab-content.active { display: block; }
+
+/* Document à droite */
 .section { display: none; margin-top: 25px; }
 .section.active { display: block !important; }
-.section-title { background: #f1f5f9; padding: 8px 15px; font-weight: bold; border-left: 5px solid var(--omc-dark); font-size: 13px; text-transform: uppercase; }
+.section-title { 
+    background: #f1f5f9; padding: 8px 15px; font-weight: bold; 
+    border-left: 5px solid var(--omc-dark); font-size: 13px; 
+    text-transform: uppercase; color: var(--omc-dark); 
+}
+
 .row { display: none; grid-template-columns: 2fr 1fr 1.5fr; padding: 6px 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
 .row.active { display: grid !important; }
 .val { font-weight: bold; text-align: center; }
-.patient-card { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; padding: 20px; border: 1px solid #e2e8f0; margin-top: 25px; font-size: 14px; }
-.signature-line { margin-top: 60px; font-weight: bold; border-top: 2px solid #000; display: inline-block; min-width: 220px; padding-top: 10px; float: right; text-align: center; }
+
+.patient-card { 
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; 
+    background: #f8fafc; padding: 20px; border: 1px solid #e2e8f0; 
+    margin-top: 25px; font-size: 14px; color: #1e293b;
+}
+
+.signature-line { 
+    margin-top: 60px; font-weight: bold; border-top: 2px solid #000; 
+    display: inline-block; min-width: 220px; padding-top: 10px; 
+    float: right; text-align: center; 
+}
