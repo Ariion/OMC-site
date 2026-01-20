@@ -1,35 +1,52 @@
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
-const webhook = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy"; // À remplacer par ton lien
+const IMGBB_API_KEY = "TA_CLE_IMGBB";
+const DISCORD_WEBHOOK = "TON_WEBHOOK_DISCORD";
 let lastImageUrl = "";
 
-function updateCertif() {
-    const nom = document.getElementById('f-nom').value || "...";
-    const naiss = document.getElementById('f-naiss').value || "...";
-    const entreprise = document.getElementById('f-entreprise').value || "...";
-    const medecin = document.getElementById('f-medecin').value || "DOCTEUR";
-    const type = document.getElementById('f-type').value;
-    const concl = document.querySelector('input[name="concl"]:checked').value;
-
-    document.getElementById('d-nom').innerText = nom;
-    document.getElementById('d-naiss').innerText = naiss;
-    document.getElementById('d-entreprise').innerText = entreprise;
-    document.getElementById('d-medecin').innerText = medecin.toUpperCase();
-    document.getElementById('d-titre-doc').innerText = "Certificat : " + type;
-
-    let texte = "";
-    if(concl === "Apte") texte = "Apte — L'examen clinique ne présente aucune contre-indication à l'activité citée.";
-    else if(concl === "Inapte") texte = "Inapte — Le sujet présente des contre-indications médicales majeures pour cette activité.";
-    else texte = "Apte avec réserve — Nécessite un aménagement de poste ou un suivi médical régulier.";
-    
-    document.getElementById('d-concl').innerText = texte;
+// Fonction pour générer la référence (JOUR MOIS HEURE MINUTE)
+function generateRef() {
+    const now = new Date();
+    const j = String(now.getDate()).padStart(2, '0');
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const h = String(now.getHours()).padStart(2, '0');
+    const min = String(now.getMinutes()).padStart(2, '0');
+    return j + m + h + min;
 }
 
+function updateCertif() {
+    // 1. Identité & Entreprise
+    document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
+    document.getElementById('d-entreprise').innerText = document.getElementById('f-entreprise').value || "...";
+    document.getElementById('d-medecin').innerText = "Dr. " + (document.getElementById('f-medecin').value || "");
+
+    // 2. Type de certificat (Titre)
+    const type = document.getElementById('f-type').value;
+    document.getElementById('d-titre-doc').innerText = type.toUpperCase();
+
+    // 3. Conclusion médicale
+    const concl = document.querySelector('input[name="concl"]:checked').value;
+    let texteConcl = "";
+    if(concl === "Apte") texteConcl = "Apte — L'examen clinique ne présente aucune contre-indication.";
+    else if(concl === "Inapte") texteConcl = "Inapte — Le sujet présente des contre-indications cliniques majeures.";
+    else texteConcl = "Apte avec réserve — Nécessite un aménagement de poste ou un suivi régulier.";
+    
+    document.getElementById('d-concl').innerText = texteConcl;
+
+    // 4. Mise à jour automatique de la Référence
+    document.getElementById('d-ref').innerText = "#" + generateRef();
+}
+
+// Fonction pour les dates (DDN et Visite)
+function upDate(targetId, val) {
+    if(!val) return;
+    const date = new Date(val);
+    const formatted = date.toLocaleDateString('fr-FR');
+    document.getElementById(targetId).innerText = formatted;
+}
+
+// Génération Image
 async function genererImage() {
     const doc = document.getElementById('document');
-    const btn = event.target;
-    btn.innerText = "CHARGEMENT...";
-    
-    const canvas = await html2canvas(doc, { scale: 2, backgroundColor: "#ffffff" });
+    const canvas = await html2canvas(doc, { scale: 2 });
     const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
 
     const formData = new FormData();
@@ -47,9 +64,9 @@ async function genererImage() {
         document.getElementById('direct-link').value = lastImageUrl;
         document.getElementById('image-popup').style.display = 'flex';
     }
-    btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)";
 }
 
+// Envoi Discord
 function envoyerDiscord() {
     if(!lastImageUrl) return alert("Génère l'image d'abord !");
     
@@ -59,15 +76,18 @@ function envoyerDiscord() {
         body: JSON.stringify({
             embeds: [{
                 title: "Nouveau Certificat Médical",
-                description: `Patient: ${document.getElementById('d-nom').innerText}`,
+                fields: [
+                    { name: "Patient", value: document.getElementById('d-nom').innerText, inline: true },
+                    { name: "Médecin", value: document.getElementById('d-medecin').innerText, inline: true }
+                ],
                 image: { url: lastImageUrl },
                 color: 3447003
             }]
         })
-    }).then(() => alert("Envoyé !"));
+    }).then(() => alert("Certificat envoyé avec succès !"));
 }
 
 function closePopup() { document.getElementById('image-popup').style.display = 'none'; }
 
-// Initialisation de la date
-document.getElementById('d-date').innerText = new Date().toLocaleDateString();
+// Init Date du jour à l'ouverture
+document.getElementById('d-date').innerText = new Date().toLocaleDateString('fr-FR');
