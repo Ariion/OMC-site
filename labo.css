@@ -55,9 +55,23 @@
 .header-lab { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
 
 /* Design des Checkboxes (Plus propres) */
+.scenario-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
 .check-container {
-    display: block; position: relative; padding-left: 30px; margin-bottom: 12px;
-    cursor: pointer; font-size: 13px; user-select: none; color: #ccd6f6;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    color: #ccd6f6;
+}
+.check-container input {
+    width: 20px !important;
+    height: 20px !important;
+    cursor: pointer;
 }
 .check-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
 .checkmark {
@@ -80,18 +94,18 @@
 .btn-generate {
     background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%) !important;
     color: white !important;
-    border: none;
-    padding: 12px;
-    border-radius: 6px;
-    font-weight: 800;
-    box-shadow: 0 4px 0 #14532d;
+    height: 50px !important;
+    font-size: 14px !important;
+    box-shadow: 0 4px 0 #14532d !important;
+    border: none !important;
 }
 .btn-generate:active { transform: translateY(2px); box-shadow: 0 2px 0 #14532d; }
 
 .btn-reset {
     background: linear-gradient(90deg, #ef4444 0%, #b91c1c 100%) !important;
-    box-shadow: 0 4px 0 #7f1d1d;
-    font-weight: 800;
+    height: 50px !important;
+    box-shadow: 0 4px 0 #7f1d1d !important;
+    border: none !important;
 }
 /* Aide à la saisie */
 .help-norm { display: block; font-size: 10px; color: #ffa500; margin-bottom: 8px; font-style: italic; }
@@ -112,22 +126,26 @@
 }
 
 /* --- BOUTONS DE CATÉGORIES (ACCORDÉONS) --- */
-.category-btn {
-    width: 100%;
-    padding: 12px 15px;
-    margin-top: 8px;
-    background: linear-gradient(180deg, #1a2c4e 0%, #0d192f 100%);
-    color: #00d2ff;
-    border: 1px solid #233554;
-    border-radius: 6px;
-    text-align: left;
-    font-weight: bold;
-    cursor: pointer;
+#dynamic-tabs {
     display: flex;
-    justify-content: space-between;
-    transition: 0.2s;
+    flex-direction: column;
+    gap: 5px;
 }
-
+.category-btn {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center;
+    padding: 12px 15px !important;
+    background: linear-gradient(180deg, #1a2c4e 0%, #0d192f 100%) !important;
+    color: #00d2ff !important;
+    border: 1px solid #233554 !important;
+    border-radius: 6px !important;
+    font-weight: bold !important;
+    cursor: pointer;
+    text-align: left;
+    margin: 0 !important;
+}
 .category-btn:hover {
     border-color: #00d2ff;
     box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
@@ -135,16 +153,16 @@
 
 /* --- CONTENU DES CATÉGORIES (MASQUÉ PAR DÉFAUT) --- */
 .category-content {
-    display: none; /* C'est ça qui manquait ! */
+    display: none;
     padding: 15px;
-    background: rgba(10, 25, 47, 0.5);
+    background: rgba(10, 25, 47, 0.8);
     border: 1px solid #1d3354;
     border-top: none;
-    border-radius: 0 0 6px 6px;
+    margin-bottom: 5px;
 }
 
 .category-content.active {
-    display: block; /* S'affiche au clic */
+    display: block !important;
 }
 
 /* --- LABELS ET TEXTES D'AIDE (Comme sur ta capture) --- */
