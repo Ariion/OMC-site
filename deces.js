@@ -68,7 +68,7 @@ async function envoyerDiscord() {
     if(!doc) return alert("Erreur : Document introuvable");
     
     btn.disabled = true;
-    btn.innerText = "ENVOI...";
+    btn.innerText = "CAPTURING...";
 
     try {
         // On utilise useCORS pour autoriser la capture d'images venant d'autres sites (comme le QR Code)
