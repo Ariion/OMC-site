@@ -10,25 +10,28 @@ body {
     height: 100vh; display: flex; overflow: hidden;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+/* Importation de la police Great Vibes via Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
-/* Style de la zone de signature */
 .signature-line {
-    margin-top: 50px;
-    font-weight: bold;
-    border-top: 2px solid #000;
+    margin-top: 60px;
+    /* La ligne de signature reste en noir solide */
+    border-top: 2px solid #000; 
     display: inline-block;
     min-width: 250px;
     float: right;
     text-align: right;
-    padding-top: 10px;
+    padding-top: 5px;
     clear: both;
     
-    /* Nouvelle Typographie "Fait main" */
-    font-family: 'Dancing Script', cursive;
-    font-size: 22px; /* Un peu plus grand pour la lisibilité */
-    color: #1a1a1a;
-    letter-spacing: 1px;
+    /* Typographie "Great Vibes" */
+    font-family: 'Great Vibes', cursive;
+    font-size: 32px; /* Augmenté car Great Vibes est une police assez fine */
+    font-weight: 400; /* Pas besoin de gras, elle est plus naturelle ainsi */
+    color: #0d1b2a; /* Un bleu-noir très profond pour l'effet encre */
+    letter-spacing: 0.5px;
+    /* Inclinaison légère pour plus de naturel */
+    transform: rotate(-1deg); 
 }
 
 #input-panel { width: 480px; background: var(--omc-dark); color: white; padding: 25px; overflow-y: auto; border-right: 1px solid #233554; }
