@@ -60,7 +60,23 @@
             <input type="text" oninput="up('d-sig', this.value)" placeholder="Nom du médecin">
         </div>
 
-        <button onclick="window.print()" class="btn-print">IMPRIMER / PDF</button>
+        <button onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE (LIEN)</button>
+<button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
+
+<div id="image-popup" class="popup-overlay" style="display:none;">
+    <div class="popup-content">
+        <h3>Image Générée</h3>
+        <p>L'image a été hébergée avec succès :</p>
+        <input type="text" id="direct-link" readonly onclick="this.select()">
+        <div class="popup-buttons">
+            <button onclick="copyLink()" class="btn-copy">Copier le lien</button>
+            <button onclick="closePopup()" class="btn-close">Fermer</button>
+        </div>
+        <div id="image-preview-container">
+            <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px; border-radius: 5px;">
+        </div>
+    </div>
+</div>
         <button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
     </div>
 
@@ -123,3 +139,4 @@
     <script src="deces.js"></script>
 </body>
 </html>
+
