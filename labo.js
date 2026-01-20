@@ -94,11 +94,13 @@ const grossesseData = {
 function genererGrossesse(mois) {
     // Logique Aléatoire pour le bouton "Test"
     if (mois === 'aleatoire') {
-        // 50% de chance d'être enceinte (1er mois) ou négatif
+        // 50% de chance d'être enceinte (résultats du Mois 1) ou négatif
         mois = (Math.random() > 0.5) ? 1 : 'neg';
     }
 
     const data = grossesseData[mois];
+    
+    // Fonction pour générer un chiffre aléatoire précis dans la fourchette
     const rand = (range) => {
         const [min, max] = range.split('-').map(Number);
         return (Math.random() * (max - min) + min).toFixed(1);
@@ -108,24 +110,30 @@ function genererGrossesse(mois) {
     const vGb = rand(data.gb);
     const vFer = rand(data.fer);
 
-    // AFFICHAGE DES RÉSULTATS DANS LE DOCUMENT (C'est ici que ça manquait)
-    // res(id_technique, valeur, section_titre, unité, norme)
-    res('hcg', vHcg, 'ENDOCRINOLOGIE & MATERNITÉ', 'mUI/mL', '0 - 5');
-    res('v_gb', vGb, 'HÉMATOLOGIE', 'G/L', '4.0 - 10.0');
-    res('fer', vFer, 'BIOCHIMIE', 'µg/dL', '50 - 150');
+    // LIAISON AVEC LE DOCUMENT (res appelle l'ID technique, la valeur, et le NOM EXACT de la catégorie)
+    // Assurez-vous que ces noms de catégories sont IDENTIQUES à votre objet 'database'
+    res('hcg', vHcg, 'ENDOCRINOLOGIE & DIVERS'); 
+    res('gb', vGb, 'HÉMATOLOGIE (SANG)');
+    res('vitd', vFer, 'ENDOCRINOLOGIE & DIVERS'); // On utilise l'ID vitd ou adn pour le fer si non défini
 
-    // Conclusion médicale
+    // Mise à jour de la conclusion médicale
     let concl = "";
     if (mois === "neg") {
         concl = "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif.";
     } else {
         concl = `Bilan de maternité - ${data.label} : Présence d'hormone HCG (${vHcg} mUI/mL). `;
         
-        if(mois >= 7) concl += "Fin de troisième trimestre. Surveillance du fer et de la tension recommandée avant l'accouchement. ";
-        else if(mois == 3 || mois == 4) concl += "Pic hormonal atteint. Symptômes de nausées possibles. ";
-        else concl += "Début de grossesse confirmé. Évolution normale des constantes. ";
+        if(mois >= 7) {
+            concl += "Fin de troisième trimestre. Surveillance du fer et de la tension recommandée avant l'accouchement. ";
+        } else if(mois == 3 || mois == 4) {
+            concl += "Pic hormonal atteint. Symptômes de nausées possibles. ";
+        } else {
+            concl += "Début de grossesse confirmé. Évolution normale des constantes. ";
+        }
 
-        if (vFer < 30) concl += "Note : Réserves en fer basses. ";
+        if (parseFloat(vFer) < 30) {
+            concl += "Note : Réserves en fer basses. ";
+        }
         concl += "Évolution clinique favorable.";
     }
     
