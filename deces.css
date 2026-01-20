@@ -13,3 +13,40 @@
 .qr-code { width: 100px; height: 100px; margin-bottom: 5px; }
 
 .legal-text { font-size: 10px; color: #94a3b8; line-height: 1.6; margin-top: 60px; border-top: 1px dotted #e2e8f0; padding-top: 20px; text-align: justify; }
+.btn-image {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #ccc !important;
+    text-transform: uppercase;
+    font-size: 11px;
+    padding: 10px !important;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 15px;
+}
+
+/* Styles Popup */
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+.popup-content {
+    background: #112240;
+    padding: 25px;
+    border-radius: 10px;
+    width: 500px;
+    text-align: center;
+    border: 1px solid var(--omc-cyan);
+}
+#direct-link {
+    margin: 15px 0;
+    background: #0a192f;
+    border: 1px solid #233554;
+    color: var(--omc-cyan);
+    text-align: center;
+}
+.btn-copy { background: var(--omc-cyan); color: var(--omc-dark); width: 48%; }
+.btn-close { background: #4b5563; color: white; width: 48%; }
