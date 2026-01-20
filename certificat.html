@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>OMC - Certificat d'Aptitude</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="labo.css"> </head>
+<body class="labo-body">
+
+    <div class="interface-container">
+        <aside class="sidebar">
+            <a href="index.html" class="back-btn">← RETOUR</a>
+            <h2>CERTIFICAT MÉDICAL</h2>
+            
+            <div class="form-group">
+                <label>Type de certificat</label>
+                <select id="f-type" oninput="updateCertif()">
+                    <option value="Aptitude professionnelle">Aptitude professionnelle</option>
+                    <option value="Aptitude au sport">Aptitude au sport</option>
+                    <option value="Port d'arme (PPA)">Certificat médical PPA</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Patient (Nom Prénom)</label>
+                <input type="text" id="f-nom" placeholder="John Doe" oninput="updateCertif()">
+            </div>
+
+            <div class="form-group">
+                <label>Date de naissance</label>
+                <input type="text" id="f-naiss" placeholder="01/01/1995" oninput="updateCertif()">
+            </div>
+
+            <div class="form-group">
+                <label>Entreprise / Organisation</label>
+                <input type="text" id="f-entreprise" placeholder="Gruppe Sechs, LTD" oninput="updateCertif()">
+            </div>
+
+            <div class="form-group">
+                <label>Conclusion</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="concl" value="Apte" checked onclick="updateCertif()"> Apte</label>
+                    <label><input type="radio" name="concl" value="Apte avec réserve" onclick="updateCertif()"> Apte avec réserve</label>
+                    <label><input type="radio" name="concl" value="Inapte" onclick="updateCertif()"> Inapte</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Médecin signataire</label>
+                <input type="text" id="f-medecin" placeholder="Dr. Jane Smith" oninput="updateCertif()">
+            </div>
+
+            <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE (CROP)</button>
+        </aside>
+
+        <main class="preview-area">
+            <div id="document" class="certif-doc">
+                <header class="doc-header">
+                    <img src="assets/logo_omc.png" class="doc-logo">
+                    <div class="header-tag">OCEAN MEDICAL CENTER — APTITUDE PRO</div>
+                    <h1>Certificat médical d’aptitude professionnelle</h1>
+                </header>
+
+                <div class="certif-grid">
+                    <div class="info-box">
+                        <label>Patient</label>
+                        <span id="d-nom">—</span>
+                    </div>
+                    <div class="info-box">
+                        <label>Naissance</label>
+                        <span id="d-naiss">—</span>
+                    </div>
+                    <div class="info-box">
+                        <label>Date du jour</label>
+                        <span id="d-date">20/01/2026</span>
+                    </div>
+                    <div class="info-box">
+                        <label>Référence dossier</label>
+                        <span id="d-ref">20011952</span>
+                    </div>
+                    <div class="info-box full">
+                        <label>Entreprise</label>
+                        <span id="d-entreprise">—</span>
+                    </div>
+                </div>
+
+                <div class="conclusion-box">
+                    <label>Objet / Conclusion</label>
+                    <p id="d-concl">Apte — examen clinique sans contre-indication.</p>
+                </div>
+
+                <div class="footer-sign">
+                    <div class="signature-block">
+                        <label>Établi par</label>
+                        <span id="d-medecin" class="sig-name">—</span>
+                    </div>
+                    <div class="stamp-area">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=VALID_OMC_2026" class="qr-code">
+                        <div class="round-stamp">
+                            <span>OCEAN MEDICAL</span>
+                            <strong id="d-ref-stamp">20011952</strong>
+                            <span>CENTER</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="legal-mention">Ce document est établi sur la base des éléments fournis par le patient et de l'examen clinique réalisé à la date indiquée. Il ne constitue pas un diagnostic global de santé et n'est valable qu'au jour de son établissement.</p>
+            </div>
+        </main>
+    </div>
+
+    <div id="image-popup" class="popup-overlay" style="display:none;">
+        <div class="popup-content">
+            <h3>PRÉVISUALISATION DU CERTIFICAT</h3>
+            <img id="preview-img-result" src="" alt="Aptitude">
+            <div class="popup-actions">
+                <input type="text" id="direct-link" readonly onclick="this.select()">
+                <button onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
+                <button onclick="closePopup()" class="btn-close">FERMER</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="certificat.js"></script>
+</body>
+</html>
