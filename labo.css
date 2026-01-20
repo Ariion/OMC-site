@@ -155,3 +155,48 @@
     width: 100%; margin: 15px 0; background: #0a192f; border: 1px solid #233554;
     color: var(--omc-cyan); text-align: center; padding: 10px;
 }
+
+/* Suivi grossesse */
+
+.grossesse-panel {
+    background: #112240;
+    padding: 15px;
+    border: 1px solid #233554;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.grossesse-panel h3 {
+    color: var(--omc-cyan);
+    font-size: 12px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.pregnancy-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
+    gap: 5px;
+}
+
+.btn-preg {
+    background: #172a45;
+    color: white;
+    border: 1px solid #233554;
+    padding: 10px 5px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-preg:hover {
+    background: var(--omc-cyan);
+    color: #0a192f;
+}
+
+.btn-preg.neg {
+    grid-column: span 3; /* Prend toute la largeur en bas */
+    background: #7f1d1d;
+    margin-top: 5px;
+}
