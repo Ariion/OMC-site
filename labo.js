@@ -238,67 +238,84 @@ function determinerGroupeAleatoire() {
 }
 
 function lancerGenerationAuto() {
-    const grav = parseInt(document.getElementById('gravity-range').value); // 1-10
+    const grav = parseInt(document.getElementById('gravity-range').value);
     const scenarios = Array.from(document.querySelectorAll('.scenario-grid input:checked')).map(i => i.value);
     
     if (scenarios.length === 0) return alert("Coche au moins un scénario !");
 
-    // Valeurs de base saines
-    let results = { gb: 6.0, hb: 14.5, ht: 45.0, pla: 250, gly: 0.90, crea: 9.0, crp: 1.5, ph: 7.40, pco2: 40, po2: 95, lact: 1.0, hcg: 0, alc: 0 };
-    let extraMsg = "";
+    // 1. On vide tout avant de générer pour ne pas mélanger les rapports
+    resetSeulementBio(false); 
 
+    // 2. Valeurs de base (Saines)
+    let results = { 
+        gb: 7.2, hb: 14.8, ht: 44, pla: 280, vgm: 88, // Hémato de base
+        gly: 0.95, uree: 0.30, crea: 9.2, crp: 1.2,    // Bioch de base
+        na: 140, k: 4.1, cl: 102, ca: 95              // Iono de base
+    };
+
+    let categoriesToShow = ["HÉMATOLOGIE (SANG)", "BIOCHIMIE MÉTABOLIQUE", "IONOGRAMME (SELS)"];
+
+    // 3. Application des Scénarios (Logique Cumulative)
     scenarios.forEach(s => {
-        let factor = grav / 5; 
+        let f = grav / 5; // Facteur de gravité
+
         if (s === 'acc-route' || s === 'arme-feu') {
-            results.hb -= (2.5 * factor); results.ht -= (8 * factor); results.lact += (1.5 * factor);
-            results.po2 -= (6 * factor); results.gb += (2 * factor);
-            if(grav > 7) results.ph -= 0.15;
+            categoriesToShow.push("GAZ DU SANG (AA)", "COAGULATION", "MARQUEURS CARDIAQUES");
+            // Hémorragie
+            results.hb = (14.5 - (3.5 * f)).toFixed(1);
+            results.ht = (45 - (10 * f)).toFixed(1);
+            results.pla = (250 - (50 * f)).toFixed(0);
+            // Choc et Gaz du sang
+            results.lact = (1.1 + (2.5 * f)).toFixed(1);
+            results.ph = (7.40 - (0.12 * f)).toFixed(2);
+            results.po2 = (95 - (15 * f)).toFixed(0);
+            // Marqueurs cardiaques (souffrance liée au choc)
+            results.tropo = (2 + (25 * f)).toFixed(0);
+            results.tp = (90 - (20 * f)).toFixed(0);
         }
+
         if (s === 'overdose') {
-            results.alc = (0.4 * factor).toFixed(2);
-            results.ph -= (0.08 * factor);
+            categoriesToShow.push("TOXICOLOGIE (LSPD/BCSO)", "GAZ DU SANG (AA)");
+            results.alc = (0.2 + (0.8 * f)).toFixed(2);
+            results.ph = (7.38 - (0.15 * f)).toFixed(2);
+            results.pco2 = (40 + (15 * f)).toFixed(0);
+            results.thc = grav > 6 ? "POSITIF" : "Négatif";
         }
+
         if (s === 'diabete') {
-            results.gly += (0.8 * factor); results.ph -= (0.05 * factor);
+            results.gly = (1.10 + (2.5 * f)).toFixed(2);
+            results.ph = (7.40 - (0.10 * f)).toFixed(2);
+            if (grav > 8) results.crea = (10 + (5 * f)).toFixed(1); // Impact rénal
         }
+
         if (s === 'renal') {
-            results.crea += (8 * factor);
-        }
-        if (s === 'grossesse') {
-            // Logique : 1 niveau de gravité = 1 mois réel = 4 semaines de grossesse
-            // Le taux HCG augmente de façon exponentielle
-            const semaines = grav * 4;
-            results.hcg = Math.floor(1000 * Math.pow(1.8, grav)); 
-            extraMsg = ` (Grossesse confirmée : environ ${semaines} SA / ${grav} mois)`;
+            results.crea = (12 + (25 * f)).toFixed(1);
+            results.uree = (0.45 + (1.2 * f)).toFixed(2);
+            results.k = (4.5 + (1.5 * f)).toFixed(1); // Hyperkaliémie dangereuse
         }
     });
 
+    // 4. Injection et Affichage
     for (let id in results) {
-        let finalVal = results[id];
-        
-        // Conversion des résultats HCG en données chiffrées concrètes
-        if(id === 'hcg') {
-            finalVal = results[id] > 5 ? `${results[id]} mUI/mL` : "5 mUI/mL (Négatif)";
-        } else {
-            finalVal = results[id].toFixed(id === 'ph' ? 2 : 1);
-        }
-        
+        let val = results[id];
         let catFound = "";
+        
+        // Trouver la catégorie associée dans la database
         for (let c in database) {
             if (database[c].find(i => i.id === id)) catFound = c;
         }
 
-        const input = document.querySelector(`[data-id="${id}"]`);
-        if (input) {
-            input.value = finalVal;
-            res(id, finalVal, catFound); 
+        if (catFound) {
+            // On n'affiche que si la catégorie est dans notre liste de scénario
+            if (categoriesToShow.includes(catFound)) {
+                // Remplir l'input à gauche
+                const input = document.querySelector(`[data-id="${id}"]`);
+                if (input) input.value = val;
+                
+                // Envoyer au document à droite
+                res(id, val.toString(), catFound);
+            }
         }
-    }
-    
-    if(extraMsg) {
-        const inputConcl = document.getElementById('auto-concl-area');
-        inputConcl.value = "Analyse hormonale positive." + extraMsg;
-        analyserTout(); 
     }
 }
 
@@ -310,11 +327,13 @@ function switchMode(mode) {
     else document.getElementById('btn-manual').classList.add('active');
 }
 
-function resetSeulementBio() {
-    if (!confirm("Vider les analyses ?")) return;
+// Version modifiée du Reset pour pouvoir vider sans confirmation lors de l'auto-gén
+function resetSeulementBio(confirmNeeded = true) {
+    if (confirmNeeded && !confirm("Vider les analyses ?")) return;
     document.querySelectorAll('.analysis-input').forEach(el => el.value = "");
-    document.querySelectorAll('.scenario-grid input').forEach(el => el.checked = false);
     document.querySelectorAll('.row, .section').forEach(el => el.classList.remove('active'));
+    document.getElementById('auto-concl-area').value = "";
+    document.getElementById('d-concl').innerText = "...";
 }
 // ==========================================
 // 5. EXPORT IMAGE
