@@ -1,3 +1,35 @@
+/* Permet au contenu de défiler si la grille dépasse */
+.interface-container, .portal-wrapper {
+    height: 100vh;
+    overflow-y: auto; /* Active le scroll vertical */
+    padding-bottom: 50px; /* Marge de sécurité en bas */
+}
+
+/* Optionnel : Rendre la scrollbar plus esthétique (style Dark) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #0f172a; 
+}
+::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #334155;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    /* Empêche la grille de s'écraser */
+    align-content: start; 
+}
+
+
+
 .portal-body { justify-content: center; align-items: center; width: 100vw; }
 .portal-container { text-align: center; max-width: 900px; margin: auto; }
 .portal-logo { height: 150px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--omc-cyan)); }
