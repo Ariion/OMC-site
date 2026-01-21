@@ -1,3 +1,7 @@
+// Clé API ImgBB
+const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
+let lastImageUrl = ""; // Stocke l'URL de l'image générée
+
 function updateCertif() { 
     const type = document.getElementById('f-type').value;
     
@@ -12,7 +16,6 @@ function updateCertif() {
     const docDiv = document.getElementById('doc-divers-block');
 
     // --- LOGIQUE DE FILTRAGE ---
-    
     if (type === "Aptitude professionnelle") {
         sideEnt.style.display = "block"; sideConcl.style.display = "block"; sideDiv.style.display = "none";
         docEnt.style.display = "block"; docConcl.style.display = "block"; docDiv.style.display = "none";
@@ -52,30 +55,24 @@ function upDate(targetId, val) {
     if(!val) return;
     document.getElementById(targetId).innerText = new Date(val).toLocaleDateString('fr-FR');
 }
-// Clé API ImgBB (Remplace par la tienne pour que ça marche à 100%)
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
 
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
-    btn.innerText = "CROP & UPLOAD...";
+    btn.innerText = "GÉNÉRATION...";
     btn.disabled = true;
 
     try {
-        // html2canvas va maintenant suivre la hauteur réelle de l'élément #document
         const canvas = await html2canvas(doc, { 
-            scale: 2,           // Haute qualité
-            useCORS: true,      // Pour le QR Code
-            backgroundColor: "#ffffff",
-            height: doc.offsetHeight, // Force la capture à la hauteur réelle du texte
-            windowHeight: doc.offsetHeight
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff"
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
         const formData = new FormData();
         formData.append("image", imageData);
 
-        // Envoi à ImgBB
         const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
             method: "POST",
             body: formData
@@ -84,75 +81,69 @@ async function genererImage() {
         const result = await response.json();
 
         if (result.success) {
-            document.getElementById('direct-link').value = result.data.url;
-            document.getElementById('preview-img-result').src = result.data.url;
+            lastImageUrl = result.data.url;
+            document.getElementById('direct-link').value = lastImageUrl;
+            document.getElementById('preview-img-result').src = lastImageUrl;
             document.getElementById('image-popup').style.display = 'flex';
         }
 
     } catch (e) {
         console.error(e);
-        alert("Erreur lors du crop de l'image.");
+        alert("Erreur lors de la création de l'image.");
     } finally {
-        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)";
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
-}
-
-function copyLink() {
-    const copyText = document.getElementById("direct-link");
-    copyText.select();
-    document.execCommand("copy");
-    alert("Lien copié ! Vous pouvez le coller en jeu.");
 }
 
 function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
 }
 
-// Fonction d'envoi Discord
 async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    const btn = document.getElementById('discord-btn');
-    const doc = document.getElementById('document');
-    
-    if(!doc) return alert("Erreur : Document introuvable");
-    
+    const webhookUrl = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
+    const btn = event.target;
+    const nomPatient = document.getElementById('d-nom').innerText;
+    const typeDoc = document.getElementById('d-titre-doc').innerText;
+
+    // On vérifie si l'image a été générée
+    if (!lastImageUrl) {
+        alert("❌ Veuillez d'abord cliquer sur 'GÉNÉRER L'IMAGE'");
+        return;
+    }
+
     btn.disabled = true;
-    btn.innerText = "CAPTURING...";
+    btn.innerText = "ENVOI EN COURS...";
 
     try {
-        // On utilise useCORS pour autoriser la capture d'images venant d'autres sites (comme le QR Code)
-        // On ajoute logging pour voir les erreurs en console si besoin
-        const canvas = await html2canvas(doc, { 
-            scale: 2,
-            useCORS: true, 
-            allowTaint: true,
-            logging: false
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                content: `📜 **NOUVEAU CERTIFICAT MÉDICAL**`,
+                embeds: [{
+                    title: typeDoc,
+                    color: 3066993, // Vert médical
+                    fields: [
+                        { name: "👤 Patient", value: nomPatient, inline: true },
+                        { name: "📅 Date", value: document.getElementById('d-date').innerText, inline: true }
+                    ],
+                    image: { url: lastImageUrl }
+                }]
+            })
         });
 
-        canvas.toBlob(async (blob) => {
-            const formData = new FormData();
-            const nom = document.getElementById('d-nom').innerText || "Inconnu";
-            
-            formData.append("payload_json", JSON.stringify({
-                content: `📄 **Nouvel Acte de Décès**\n👤 Défunt : ${nom}`
-            }));
-            formData.append("file", blob, `deces_${nom}.png`);
-            
-            const response = await fetch(url, { method: 'POST', body: formData });
-            
-            if (response.ok) {
-                alert("✅ Envoyé sur l'intranet !");
-                btn.innerText = "ENVOYÉ";
-            } else {
-                throw new Error("Erreur serveur Discord");
-            }
-        }, 'image/png');
-
+        if (response.ok) {
+            alert("✅ Certificat envoyé sur l'intranet !");
+            btn.innerText = "ENVOYÉ";
+        } else {
+            alert("❌ Erreur lors de l'envoi.");
+            btn.disabled = false;
+            btn.innerText = "Envoyer Discord";
+        }
     } catch (e) {
         console.error(e);
-        alert("❌ Erreur lors de l'envoi. Vérifiez votre connexion.");
+        alert("❌ Erreur de connexion.");
         btn.disabled = false;
-        btn.innerText = "RÉESSAYER";
     }
 }
