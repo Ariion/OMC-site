@@ -29,7 +29,7 @@
 /* --- ZONE DE DROITE (Fond gris clair comme deces) --- */
 .preview-area {
     flex-grow: 1;
-    background-color: #f1f5f9; /* Le gris léger de deces.html */
+    background-color: #d1d5db; /* Le gris léger de deces.html */
     display: flex;
     justify-content: center; /* Centre horizontalement */
     align-items: center;     /* Centre verticalement */
