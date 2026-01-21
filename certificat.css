@@ -30,11 +30,11 @@
 .preview-area {
     flex-grow: 1;
     background-color: #d1d5db; /* Le gris léger de deces.html */
-    display: flex;
+display: flex;
     justify-content: center; /* Centre horizontalement */
     align-items: center;     /* Centre verticalement */
-    overflow-y: auto;        /* Permet de scroller si l'écran est petit */
-    padding: 40px;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 /* --- LE DOCUMENT (La feuille blanche centrée) --- */
