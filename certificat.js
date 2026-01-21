@@ -1,6 +1,6 @@
 // Clé API ImgBB
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
-let lastImageUrl = ""; // Stocke l'URL de l'image générée
+let lastImageUrl = ""; 
 
 function updateCertif() { 
     const type = document.getElementById('f-type').value;
@@ -56,6 +56,7 @@ function upDate(targetId, val) {
     document.getElementById(targetId).innerText = new Date(val).toLocaleDateString('fr-FR');
 }
 
+// FONCTION GENERER IMAGE (POUR LE LIEN IN-GAME)
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
@@ -100,50 +101,68 @@ function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
 }
 
+// FONCTION DISCORD AUTONOME (CAPTURE ET ENVOIE DIRECT)
 async function envoyerDiscord() {
     const webhookUrl = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
     const btn = event.target;
-    const nomPatient = document.getElementById('d-nom').innerText;
-    const typeDoc = document.getElementById('d-titre-doc').innerText;
-
-    // On vérifie si l'image a été générée
-    if (!lastImageUrl) {
-        alert("❌ Veuillez d'abord cliquer sur 'GÉNÉRER L'IMAGE'");
-        return;
-    }
-
+    const doc = document.getElementById('document');
+    
+    if(!doc) return alert("Erreur : Document introuvable");
+    
     btn.disabled = true;
-    btn.innerText = "ENVOI EN COURS...";
+    btn.innerText = "CAPTURING...";
 
     try {
-        const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                content: `📜 **NOUVEAU CERTIFICAT MÉDICAL**`,
-                embeds: [{
-                    title: typeDoc,
-                    color: 3066993, // Vert médical
-                    fields: [
-                        { name: "👤 Patient", value: nomPatient, inline: true },
-                        { name: "📅 Date", value: document.getElementById('d-date').innerText, inline: true }
-                    ],
-                    image: { url: lastImageUrl }
-                }]
-            })
+        // On capture le document directement
+        const canvas = await html2canvas(doc, { 
+            scale: 2,
+            useCORS: true, 
+            allowTaint: true,
+            backgroundColor: "#ffffff"
         });
 
-        if (response.ok) {
-            alert("✅ Certificat envoyé sur l'intranet !");
-            btn.innerText = "ENVOYÉ";
-        } else {
-            alert("❌ Erreur lors de l'envoi.");
-            btn.disabled = false;
-            btn.innerText = "Envoyer Discord";
-        }
+        // On convertit en Blob pour l'envoi direct en fichier joint
+        canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            const nom = document.getElementById('d-nom').innerText || "Inconnu";
+            const typeDoc = document.getElementById('d-titre-doc').innerText;
+            
+            // Construction du message Discord
+            formData.append("payload_json", JSON.stringify({
+                content: `📜 **Nouveau Certificat Médical**`,
+                embeds: [{
+                    title: typeDoc,
+                    color: 3066993,
+                    fields: [
+                        { name: "👤 Patient", value: nom, inline: true },
+                        { name: "📅 Date", value: document.getElementById('d-date').innerText, inline: true }
+                    ],
+                    footer: { text: "Système Médical OMC" }
+                }]
+            }));
+            
+            // On joint le fichier image
+            formData.append("file", blob, `certificat_${nom}.png`);
+            
+            const response = await fetch(webhookUrl, { method: 'POST', body: formData });
+            
+            if (response.ok) {
+                alert("✅ Certificat envoyé sur l'intranet !");
+                btn.innerText = "ENVOYÉ";
+            } else {
+                throw new Error("Erreur serveur Discord");
+            }
+        }, 'image/png');
+
     } catch (e) {
         console.error(e);
-        alert("❌ Erreur de connexion.");
+        alert("❌ Erreur lors de l'envoi.");
         btn.disabled = false;
+        btn.innerText = "RÉESSAYER";
     }
 }
+
+// Initialisation au chargement
+window.onload = function() {
+    document.getElementById('d-date').innerText = new Date().toLocaleDateString('fr-FR');
+};
