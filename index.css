@@ -1,283 +1,121 @@
-/* Permet au contenu de défiler si la grille dépasse */
-
-.interface-container, .portal-wrapper {
-
-    height: 100vh;
-
-    overflow-y: auto; /* Active le scroll vertical */
-
-    padding-bottom: 50px; /* Marge de sécurité en bas */
-
-}
-
-
-
-/* Optionnel : Rendre la scrollbar plus esthétique (style Dark) */
-
+/* --- SCROLLBAR PERSONNALISÉE --- */
 ::-webkit-scrollbar {
-
     width: 8px;
-
 }
-
 ::-webkit-scrollbar-track {
-
-    background: #0f172a; 
-
+    background: #0a192f; 
 }
-
 ::-webkit-scrollbar-thumb {
-
     background: #1e293b;
-
     border-radius: 10px;
-
 }
-
 ::-webkit-scrollbar-thumb:hover {
-
     background: #334155;
-
 }
-
-
-
-.menu-grid {
-
-    display: grid;
-
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-
-    gap: 20px;
-
-    /* Empêche la grille de s'écraser */
-
-    align-content: start; 
-
-}
-
-
-
-
-
-
-
-.portal-body { justify-content: center; align-items: center; width: 100vw; }
-
-.portal-container { text-align: center; max-width: 900px; margin: auto; }
-
-.portal-logo { height: 150px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--omc-cyan)); }
-
-.portal-container h1 { color: var(--omc-cyan); font-size: 2.8em; font-weight: 800; letter-spacing: 6px; }
-
-.menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 50px; }
-
-.menu-card { background: var(--omc-card); padding: 40px; border-radius: 12px; text-decoration: none; color: white; border: 1px solid transparent; transition: 0.3s; }
-
-.menu-card:hover:not(.locked) { border-color: var(--omc-cyan); transform: translateY(-5px); background: #172a45; }
-
-
 
 /* --- CONFIGURATION DU PORTAIL --- */
-
 .portal-body {
-
-    background-color: #0a192f; /* Fond sombre profond */
-
+    background-color: #0a192f;
     display: flex;
-
     justify-content: center;
-
-    align-items: center;
-
+    /* CHANGEMENT ICI : flex-start permet au contenu de couler vers le bas pour déclencher le scroll */
+    align-items: flex-start; 
     min-height: 100vh;
-
+    height: 100%;
+    overflow-y: auto; 
     margin: 0;
-
     font-family: 'Segoe UI', Roboto, sans-serif;
-
 }
-
-
 
 .portal-container {
-
     text-align: center;
-
     width: 100%;
-
     max-width: 900px;
-
-    padding: 20px;
-
+    padding: 60px 20px; /* Padding haut/bas pour ne pas coller au bord */
+    box-sizing: border-box;
 }
-
-
 
 .portal-logo {
-
-    height: 350px; /* Passage de 100px à 150px */
-
+    height: 150px;
     width: auto;
-
     margin-bottom: 20px;
-
     filter: drop-shadow(0 0 15px rgba(100, 255, 218, 0.4));
-
     transition: transform 0.3s ease;
-
 }
-
-
 
 h1 {
-
-    color: #ffffff; /* Titre en Blanc */
-
+    color: #ffffff;
     letter-spacing: 4px;
-
     margin: 0;
-
     font-size: 2.2rem;
-
     font-weight: 800;
-
 }
-
-
 
 .portal-subtitle {
-
-    color: #64ffda; /* Cyan pour le sous-titre */
-
+    color: #64ffda;
     font-weight: bold;
-
     text-transform: uppercase;
-
     font-size: 0.9rem;
-
     margin-bottom: 40px;
-
     letter-spacing: 1px;
-
 }
-
-
 
 /* --- GRILLE DES CARTES --- */
-
 .menu-grid {
-
     display: grid;
-
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-
     gap: 20px;
-
 }
-
-
 
 /* --- CARTES BLANCHES --- */
-
 .menu-card {
-
-    background: #ffffff !important; /* Force le fond blanc */
-
+    background: #ffffff !important;
     border-radius: 12px;
-
     padding: 35px 25px;
-
     text-decoration: none;
-
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
     border: 4px solid transparent;
-
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-
 }
 
-
-
-.menu-card:hover {
-
-    background: #ffffff !important; /* Force le fond blanc */
-
+.menu-card:hover:not(.locked) {
+    background: #ffffff !important;
     transform: translateY(-10px);
-
     border-color: #64ffda;
-
     box-shadow: 0 15px 30px rgba(100, 255, 218, 0.2);
-
 }
-
-
 
 .card-icon {
-
     font-size: 2.5rem;
-
     margin-bottom: 15px;
-
 }
-
-
 
 .menu-card h3 {
-
-    color: #0a192f; /* Texte sombre sur fond blanc */
-
+    color: #0a192f;
     margin: 10px 0 5px 0;
-
     font-size: 1.3rem;
-
     font-weight: 800;
-
 }
-
-
 
 .menu-card p {
-
-    color: #4b5563; /* Gris foncé pour la description */
-
+    color: #4b5563;
     margin: 0;
-
     font-size: 0.85rem;
-
     font-weight: 500;
-
 }
-
-
 
 /* --- ÉTAT VERROUILLÉ --- */
-
 .menu-card.locked {
-
-    background: #e5e7eb; /* Gris clair pour les blocs fermés */
-
+    background: #e5e7eb;
     opacity: 0.7;
-
     cursor: not-allowed;
-
     filter: grayscale(1);
-
 }
 
-
-
 .menu-card.locked:hover {
-
     transform: none;
-
     border-color: transparent;
-
 }
