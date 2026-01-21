@@ -10,7 +10,6 @@ function updateCertif() {
     const docConcl = document.getElementById('doc-concl-block');
     const docDiv = document.getElementById('doc-divers-block');
 
-    // Visibilité sections
     sideEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
     docEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
     sideConcl.style.display = (type !== "Divers") ? "block" : "none";
@@ -18,7 +17,6 @@ function updateCertif() {
     sideDiv.style.display = (type === "Divers") ? "block" : "none";
     docDiv.style.display = (type === "Divers") ? "block" : "none";
 
-    // Titre
     const titres = {
         "Aptitude professionnelle": "APTITUDE PROFESSIONNELLE",
         "Port d'arme (PPA)": "CAPACITÉ EXAMEN PPA",
@@ -26,12 +24,10 @@ function updateCertif() {
     };
     document.getElementById('d-titre-doc').innerText = titres[type] || "CERTIFICAT MÉDICAL";
 
-    // Update Textes
     document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
     document.getElementById('d-entreprise').innerText = document.getElementById('f-entreprise').value || "...";
     document.getElementById('d-sig').innerText = document.getElementById('f-medecin').value || "DOCTEUR";
 
-    // Conclusion ou Divers
     if (type !== "Divers") {
         const c = document.querySelector('input[name="concl"]:checked').value;
         const mapping = {
@@ -53,7 +49,10 @@ function genererReference() {
     const min = n.getMinutes().toString().padStart(2, '0');
     const ref = `${jj}${mm}${hh}${min}`;
     
-    document.getElementById('d-ref').innerText = ref;
+    const refEl = document.getElementById('d-ref');
+    refEl.innerText = "#" + ref;
+    refEl.style.color = "#1e293b"; // Garantit que c'est foncé
+    
     document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
 }
 
@@ -73,8 +72,7 @@ async function genererImage() {
             scale: 2, 
             useCORS: true, 
             backgroundColor: "#ffffff",
-            height: doc.offsetHeight,
-            windowHeight: doc.offsetHeight
+            height: doc.offsetHeight
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
