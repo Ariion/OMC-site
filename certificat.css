@@ -2,224 +2,95 @@
 .labo-body { 
     background-color: #0d1117;
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
     display: flex;
     height: 100vh;
     overflow: hidden;
 }
 
-.interface-container {
-    display: flex;
-    width: 100%;
-} 
+.interface-container { display: flex; width: 100%; } 
 
-.legal-text {
-    margin-bottom: 0 !important; /* Évite de rajouter du vide inutile à la fin de l'image */
-}
-.legal-text { font-size: 10px; color: #94a3b8; line-height: 1.6; margin-top: 60px; border-top: 1px dotted #e2e8f0; padding-top: 20px; text-align: justify; }
-
-
-/* --- SIDEBAR STYLE DÉCÈS --- */
-.sidebar {
-    width: 420px;
-    background-color: #0a1324;
-    padding: 25px;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid #1e293b;
-    color: white;
-    overflow-y: auto;
-}
-
-.sidebar-title {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 25px;
-    color: #ffffff;
-    letter-spacing: 1px;
-}
-
-.form-group { margin-bottom: 18px; }
-.form-group label {
-    display: block;
-    font-size: 11px;
-    font-weight: bold;
-    color: #94a3b8;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-}
-
-.form-group input, .form-group select {
-    width: 100%;
-    padding: 10px;
-    background-color: #121c2f;
-    border: 1px solid #1e293b;
-    color: white;
-    border-radius: 4px;
-    outline: none;
-}
-
-.radio-nav {
-    display: flex;
-    gap: 10px;
-    background: #121c2f;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #1e293b;
-}
-
-/* Boutons */
-.btn-image {
-    background-color: white;
-    color: black;
-    border: none;
-    padding: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-    width: 100%;
-}
-
-.btn-discord {
-    background-color: #5865f2;
-    color: white;
-    border: none;
-    padding: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-    width: 100%;
-    text-transform: uppercase;
-}
-
-/* --- ZONE PREVIEW --- */
-.preview-area {
-    flex: 1;
-    background-color: #d1d5db;
-    padding: 40px;
-    overflow-y: auto;
-    display: flex;
-    justify-content: center;
-}
-
-/* Réduit la taille minimale pour éviter les vides immenses */
 #document {
     background: white;
     width: 210mm;
-    min-height: 150mm; /* Réduit de 250mm à 150mm */
+    min-height: 180mm;
     padding: 50px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     margin: 0 auto;
-}
-
-/* Header avec barre noire */
-.certif-header {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    margin-bottom: 40px;
-}
-
-.doc-logo { height: 70px; }
-
-.header-title-block { flex-grow: 1; }
-.header-title-block span {
-    font-size: 13px;
-    font-weight: bold;
     color: #0a1324;
-    display: block;
 }
 
-.header-title-block h2 {
-    margin: 0;
-    font-size: 32px;
-    border-top: 10px solid #0a1324;
-    padding-top: 5px;
-    text-transform: uppercase;
+/* --- SIDEBAR --- */
+.sidebar {
+    width: 420px;
+    background-color: #0a1324;
+    padding: 25px;
+    color: white;
+    overflow-y: auto;
+    border-right: 1px solid #1e293b;
 }
 
-/* Grille */
-.certif-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
+.sidebar-title { font-size: 22px; font-weight: bold; margin-bottom: 25px; text-transform: uppercase; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; }
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px; background: #121c2f; border: 1px solid #1e293b; color: white; border-radius: 4px;
 }
 
-.box {
-    border: 1px solid #e2e8f0;
-    padding: 12px;
-    border-radius: 6px;
-}
+/* --- DOCUMENT ELEMENTS --- */
+.certif-header { display: flex; align-items: center; gap: 25px; margin-bottom: 30px; }
+.doc-logo { height: 70px; }
+.header-title-block h2 { margin: 0; font-size: 28px; border-top: 10px solid #0a1324; padding-top: 5px; text-transform: uppercase; }
 
-.box label {
-    display: block;
-    font-size: 10px;
-    font-weight: bold;
-    color: #64748b;
-    text-transform: uppercase;
-}
-
-.box span { font-weight: bold; color: #1e293b; font-size: 14px; }
+.certif-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.box { border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; }
+.box label { font-size: 9px; font-weight: bold; color: #64748b; text-transform: uppercase; display: block; }
+.box span { font-weight: bold; font-size: 14px; }
 .full-width { grid-column: span 2; }
 
-.concl-area {
-    margin-top: 20px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    padding: 20px;
-    border-radius: 8px;
-}
+.concl-area { margin-top: 20px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; }
 
-/* Ajuste l'espace entre le rapport et la signature */
-.footer-layout {
-    margin-top: 30px; /* Espace fixe et court au lieu de 'auto' */
+/* FOOTER STYLE DÉCÈS */
+.cert-footer { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-end; 
+    margin-top: 40px; 
     padding-top: 20px;
-    border-top: 1px solid #eee; /* Optionnel: une ligne fine pour séparer */
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
 }
 
-.footer-left-signature {
-    width: 50%;
-    border-top: 2px solid #0a1324;
-    padding-top: 15px;
+.cert-signature { 
+    border-top: 2px solid #0a1324; 
+    min-width: 250px; 
+    padding-top: 10px; 
+    font-weight: bold; 
+    font-style: italic; 
+    font-size: 12px;
+}
+#d-sig { 
+    font-family: 'Alex Brush', cursive; 
+    font-size: 32px; 
+    font-style: normal; 
+    display: block; 
+    margin-top: 5px; 
 }
 
-.sig-label { font-size: 12px; font-weight: bold; font-style: italic; }
-
-.signature-space {
-    font-family: 'Alex Brush', cursive;
-    font-size: 38px;
-    color: #0a1324;
-    margin: 10px 0;
+.round-stamp { 
+    border: 2px solid #0a1324; 
+    border-radius: 12px; 
+    padding: 10px; 
+    text-align: center; 
+    font-size: 9px; 
+    font-weight: bold; 
+    width: 110px; 
 }
+.qr-code { width: 90px; height: 90px; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto; }
 
-.qr-block {
-    border: 2px solid black;
-    padding: 8px;
-    border-radius: 12px;
-    text-align: center;
-}
+.legal-text { font-size: 9px; color: #94a3b8; margin-top: 30px; border-top: 1px dotted #e2e8f0; padding-top: 15px; text-align: justify; }
 
-.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 60px; }
-.cert-signature { border-top: 1px solid #cbd5e1; min-width: 250px; padding-top: 10px; font-weight: bold; font-style: italic; }
-.round-stamp { border: 2px solid var(--omc-dark); border-radius: 15px; padding: 10px; text-align: center; font-size: 10px; font-weight: bold; color: var(--omc-dark); width: 120px; }
-.qr-code { width: 100px; height: 100px; margin-bottom: 5px; }
-.qr-label { font-size: 9px; font-weight: bold; margin-top: 5px; }
-
-.legal-mention {
-    font-size: 9px;
-    color: #94a3b8;
-    margin-top: 30px;
-    text-align: justify;
-    line-height: 1.4;
-}
-
-/* Pour le bloc Divers, on s'assure qu'il ne pousse pas tout */
-#doc-divers-block, #doc-concl-block {
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
+/* Popups */
+.popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.popup-content { background: #1e293b; padding: 20px; border-radius: 8px; text-align: center; max-width: 90%; }
+.popup-content img { max-width: 100%; max-height: 70vh; margin-bottom: 15px; border: 2px solid white; }
