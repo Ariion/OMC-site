@@ -102,11 +102,17 @@ async function genererImage() {
     btn.disabled = true;
 
     try {
+        // Correction du crop : On utilise les dimensions exactes du contenu
         const canvas = await html2canvas(doc, { 
             scale: 2, 
             useCORS: true, 
             backgroundColor: "#ffffff",
-            height: doc.offsetHeight
+            // Ces deux lignes règlent le problème du crop et du blanc inutile :
+            height: doc.scrollHeight, 
+            windowHeight: doc.scrollHeight,
+            y: 0,
+            scrollX: 0,
+            scrollY: 0
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
