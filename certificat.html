@@ -38,7 +38,7 @@
 
             <div class="form-group" id="side-divers-block" style="display:none;">
                 <label>Texte Libre</label>
-                <textarea id="f-divers" rows="6" oninput="updateCertif()"></textarea>
+                <textarea id="f-divers" rows="6" oninput="updateCertif()" style="width:100%; background:#121c2f; border:1px solid #1e293b; color:white; padding:10px;"></textarea>
             </div>
 
             <div class="form-group">
@@ -64,7 +64,7 @@
                     <div class="cert-box"><label>Patient</label><div id="d-nom" class="cert-val">...</div></div>
                     <div class="cert-box"><label>Naissance</label><div id="d-naiss" class="cert-val">...</div></div>
                     <div class="cert-box"><label>Date d'établissement</label><div id="d-date" class="cert-val">...</div></div>
-                    <div class="cert-box"><label>Référence dossier</label><div id="d-ref" class="cert-val" style="color: var(--omc-cyan);">#REF</div></div>
+                    <div class="cert-box"><label>Référence dossier</label><div id="d-ref" class="cert-val" style="color: #1e293b;">#REF</div></div>
                     <div class="cert-box" style="grid-column: span 2;" id="doc-entreprise-block"><label>Entreprise</label><div id="d-entreprise" class="cert-val">...</div></div>
                     
                     <div class="cert-box" style="grid-column: span 2;" id="doc-concl-block">
@@ -95,21 +95,22 @@
                     Toute reproduction ou usage détourné est strictement interdite sous peine de poursuites.
                 </p>
             </div>
-
-            <div id="image-popup" class="popup-overlay" style="display:none;">
-                <div class="popup-content">
-                    <h3>Image Générée</h3>
-                    <p>L'image a été hébergée avec succès :</p>
-                    <input type="text" id="direct-link" readonly onclick="this.select()">
-                    <div class="popup-buttons" style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                        <button onclick="copyLink()" class="btn-copy">Copier le lien</button>
-                        <button onclick="closePopup()" class="btn-close">Fermer</button>
-                    </div>
-                    <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px; border-radius: 5px; border: 1px solid #333;">
-                </div>
-            </div>
         </main>
     </div>
+
+    <div id="image-popup" class="popup-overlay" style="display:none;">
+        <div class="popup-content">
+            <h3>Image Générée</h3>
+            <p>L'image a été hébergée avec succès :</p>
+            <input type="text" id="direct-link" readonly onclick="this.select()">
+            <div class="popup-buttons" style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                <button onclick="copyLink()" class="btn-copy">Copier le lien</button>
+                <button onclick="closePopup()" class="btn-close">Fermer</button>
+            </div>
+            <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px; border-radius: 5px; border: 1px solid #333;">
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="certificat.js"></script>
 </body>
