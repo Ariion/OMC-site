@@ -51,9 +51,25 @@
 
 /* --- ELEMENTS DU DOCUMENT --- */
 .header-cert { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
-.cert-tag { background: #0a1324; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 1px; }
-.cert-main-title { font-size: 32px; margin: 5px 0; color: #0a1324; text-transform: uppercase; font-weight: 900; }
-
+.cert-tag { 
+    background: #0a1324; 
+    color: white; 
+    padding: 6px 15px; 
+    border-radius: 4px; 
+    font-size: 11px; 
+    font-weight: bold; 
+    letter-spacing: 2px; 
+    display: inline-block;
+    margin-bottom: 5px;
+}
+.cert-main-title { 
+    font-size: 28px; 
+    margin: 0; 
+    color: #0a1324; 
+    text-transform: uppercase; 
+    font-weight: 900; 
+    line-height: 1;
+}
 .cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .cert-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; background: #fff; }
 .cert-box label { color: #64748b; font-size: 10px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; display: block; text-align: left;}
