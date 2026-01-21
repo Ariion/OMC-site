@@ -8,6 +8,7 @@
 </head>
 <body class="labo-body">
     <div class="interface-container">
+        
         <aside class="sidebar">
             <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
             <h1 class="sidebar-title">CONSTAT LÉSIONNEL</h1>
@@ -27,18 +28,21 @@
                     </div>
             </div>
 
-            <div class="options-container" id="optionsBox">
+            <div class="form-group">
                 <label>Options : <span id="activeMarkerLabel">—</span></label>
                 <div id="pafBadge" class="paf-badge paf-hidden">PAF DÉTECTÉE</div>
                 <div id="lesionOptions" class="choices-grid"></div>
             </div>
 
-            <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
-            <button id="btnUndo" class="btn-secondary">ANNULER DERNIER POINT</button>
-            <button id="btnClear" class="btn-danger">EFFACER TOUT</button>
+            <div class="actions-group" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                <button class="btn-image" onclick="genererImage()" style="background: white; color: black; font-weight: bold;">🖼️ GÉNÉRER L'IMAGE</button>
+                <button id="btnUndo" class="btn-secondary" style="background: #334155; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">ANNULER DERNIER POINT</button>
+                <button id="btnClear" class="btn-danger" style="background: #991b1b; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">EFFACER TOUT</button>
+            </div>
         </aside>
 
         <main class="preview-area">
+            
             <div class="bodymap-container">
                 <div class="bodyframe" id="frame">
                     <img class="body-bg" src="assets/corps-humain.png" alt="Silhouette">
@@ -58,11 +62,11 @@
                     </div>
                 </div>
 
-                <div class="report-content">
-                    <div class="meta-info" id="reportMeta">Patient : — • Médecin : — • Date : —</div>
-                    <hr>
-                    <ol id="reportList"></ol>
-                    <div id="reportSummary"></div>
+                <div class="report-content" style="margin-top: 20px; text-align: left;">
+                    <div class="meta-info" id="reportMeta" style="font-size: 13px; color: #64748b;">Patient : — • Médecin : — • Date : —</div>
+                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+                    <h4 style="text-transform: uppercase; font-size: 14px; margin-bottom: 10px;">Observations :</h4>
+                    <ol id="reportList" style="padding-left: 20px; font-size: 14px; line-height: 1.6;"></ol>
                 </div>
 
                 <div class="cert-footer">
@@ -75,6 +79,10 @@
                         OMC MEDICAL CENTER
                     </div>
                 </div>
+                
+                <p class="legal-text" style="font-size: 10px; color: #94a3b8; margin-top: 40px; text-align: justify; border-top: 1px dotted #e2e8f0; padding-top: 10px;">
+                    Ce document est établi dans le cadre d'un constat médical d'imagerie. Toute reproduction ou usage détourné est strictement interdit.
+                </p>
             </div>
         </main>
     </div>
