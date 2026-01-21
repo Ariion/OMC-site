@@ -5,7 +5,6 @@
     <title>OMC - Certificat Médical</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="certificat.css">
-    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
 </head>
 <body class="labo-body">
     <div class="interface-container">
@@ -28,80 +27,87 @@
 
             <div class="form-group" id="side-entreprise-block"><label>Entreprise</label><input type="text" id="f-entreprise" oninput="updateCertif()"></div>
 
-<div class="form-group" id="side-concl-block">
-    <label>Conclusion médicale</label>
-    <div class="radio-nav-classic"> <label><input type="radio" name="concl" value="Apte" checked onclick="updateCertif()"> Apte</label>
-        <label><input type="radio" name="concl" value="Réserve" onclick="updateCertif()"> Réserve</label>
-        <label><input type="radio" name="concl" value="Inapte" onclick="updateCertif()"> Inapte</label>
-    </div>
-</div>
+            <div class="form-group" id="side-concl-block">
+                <label>Conclusion médicale</label>
+                <div class="radio-nav-classic"> 
+                    <label><input type="radio" name="concl" value="Apte" checked onclick="updateCertif()"> Apte</label>
+                    <label><input type="radio" name="concl" value="Réserve" onclick="updateCertif()"> Réserve</label>
+                    <label><input type="radio" name="concl" value="Inapte" onclick="updateCertif()"> Inapte</label>
+                </div>
+            </div>
 
             <div class="form-group" id="side-divers-block" style="display:none;">
                 <label>Texte Libre</label>
-                <textarea id="f-divers" rows="6" oninput="updateCertif()" style="width:100%; background:#121c2f; border:1px solid #1e293b; color:white; padding:10px;"></textarea>
+                <textarea id="f-divers" rows="6" oninput="updateCertif()"></textarea>
             </div>
 
             <div class="form-group">
-    <label>Médecin Signataire</label>
-    <input type="text" id="f-medecin" placeholder="Nom et Prénom" oninput="updateCertif()">
-</div>
+                <label>Médecin Signataire</label>
+                <input type="text" id="f-medecin" placeholder="Nom et Prénom" oninput="updateCertif()">
+            </div>
 
-            <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER</button>
-            <button class="btn-discord" onclick="envoyerDiscord()">Envoyer Discord</button>
+            <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE (lien)</button>
+            <button id="discord-btn" class="btn-discord" onclick="envoyerDiscord()">ENVOYER SUR DISCORD</button>
         </aside>
 
         <main class="preview-area">
             <div id="document">
-                <header class="certif-header">
-                    <img src="assets/logo_omc.png" class="doc-logo">
-                    <div class="header-title-block">
-                        <span>OCEAN MEDICAL CENTER</span>
-                        <h2 id="d-titre-doc">CERTIFICAT MÉDICAL</h2>
+                <div class="header-cert">
+                    <img src="assets/logo_omc.png" class="doc-logo" style="height: 60px;">
+                    <div>
+                        <div class="cert-tag">OCEAN MEDICAL CENTER</div>
+                        <h1 class="cert-main-title" id="d-titre-doc">CERTIFICAT MÉDICAL</h1>
                     </div>
-                </header>
-
-                <div class="certif-grid">
-                    <div class="box"><label>Patient</label><span id="d-nom">...</span></div>
-                    <div class="box"><label>Naissance</label><span id="d-naiss">...</span></div>
-                    <div class="box"><label>Date</label><span id="d-date">...</span></div>
-                    <div class="box"><label>Réf</label><span id="d-ref">#REF</span></div>
-                    <div class="box full-width" id="doc-entreprise-block"><label>Entreprise</label><span id="d-entreprise">...</span></div>
                 </div>
 
-                <div class="concl-area" id="doc-concl-block">
-                    <label>Conclusion</label><br><strong id="d-concl">...</strong>
-                </div>
+                <div class="cert-grid">
+                    <div class="cert-box"><label>Patient</label><div id="d-nom" class="cert-val">...</div></div>
+                    <div class="cert-box"><label>Naissance</label><div id="d-naiss" class="cert-val">...</div></div>
+                    <div class="cert-box"><label>Date d'établissement</label><div id="d-date" class="cert-val">...</div></div>
+                    <div class="cert-box"><label>Référence dossier</label><div id="d-ref" class="cert-val" style="color: var(--omc-cyan);">#REF</div></div>
+                    <div class="cert-box" style="grid-column: span 2;" id="doc-entreprise-block"><label>Entreprise</label><div id="d-entreprise" class="cert-val">...</div></div>
+                    
+                    <div class="cert-box" style="grid-column: span 2;" id="doc-concl-block">
+                        <label>Conclusion</label>
+                        <div id="d-concl" class="cert-val">...</div>
+                    </div>
 
-                <div class="concl-area" id="doc-divers-block" style="display:none;">
-                    <label>Rapport</label><div id="d-divers-text" style="white-space: pre-wrap;">...</div>
+                    <div class="cert-box" style="grid-column: span 2; display:none;" id="doc-divers-block">
+                        <label>Rapport / Texte Libre</label>
+                        <div id="d-divers-text" class="cert-val" style="white-space: pre-wrap; font-size: 14px;">...</div>
+                    </div>
                 </div>
 
                 <div class="cert-footer">
-                <div class="cert-signature">
-    Établi par :<br><br>
-    <span id="d-sig">...</span> </div>
-                <div class="round-stamp">
-                    <img id="qr-ref" class="qr-code" src="" alt="QR">
-                    OMC MEDICAL CENTER
+                    <div class="cert-signature">
+                        Établi par :<br><br>
+                        <span id="d-sig">DOCTEUR</span>
+                    </div>
+                    <div class="round-stamp">
+                        <img id="qr-ref" class="qr-code" src="" alt="QR">
+                        OMC MEDICAL CENTER
+                    </div>
                 </div>
+
+                <p class="legal-text">
+                    Ce document est établi sur la base des éléments fournis par le patient et de l’examen clinique réalisé à la date indiquée. 
+                    Il ne constitue pas un diagnostic global de santé et n’est valable qu’au jour de son établissement. 
+                    Toute reproduction ou usage détourné est strictement interdite sous peine de poursuites.
+                </p>
             </div>
 
-            <p class="legal-text">
-Ce document est établi sur la base des éléments fournis par le patient et de l’examen clinique réalisé à la date indiquée. 
-                Il ne constitue pas un diagnostic global de santé et n’est valable qu’au jour de son établissement. 
-                Toute reproduction ou altération sans autorisation est interdite. Le titulaire peut demander rectification des informations nominatives conformément à la réglementation applicable.
-            </p>
-            </div>
             <div id="image-popup" class="popup-overlay" style="display:none;">
-        <div class="popup-content">
-            <h3 style="color:white; margin-bottom:15px;">PRÉVISUALISATION DU CERTIFICAT</h3>
-            <img id="preview-img-result" src="" alt="Aptitude">
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                <input type="text" id="direct-link" readonly style="padding: 10px; border-radius: 4px; border: none; width: 60%;">
-                <button onclick="closePopup()" style="padding: 10px 20px; cursor: pointer; background: #64748b; color: white; border: none; border-radius: 4px;">FERMER</button>
+                <div class="popup-content">
+                    <h3>Image Générée</h3>
+                    <p>L'image a été hébergée avec succès :</p>
+                    <input type="text" id="direct-link" readonly onclick="this.select()">
+                    <div class="popup-buttons" style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                        <button onclick="copyLink()" class="btn-copy">Copier le lien</button>
+                        <button onclick="closePopup()" class="btn-close">Fermer</button>
+                    </div>
+                    <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px; border-radius: 5px; border: 1px solid #333;">
+                </div>
             </div>
-        </div>
-    </div>
         </main>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
