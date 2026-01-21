@@ -1,4 +1,3 @@
-// Clé API ImgBB
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
 let lastImageUrl = ""; 
 
@@ -11,17 +10,15 @@ function updateCertif() {
     const docConcl = document.getElementById('doc-concl-block');
     const docDiv = document.getElementById('doc-divers-block');
 
-    // Reset affichage
+    // Visibilité sections
     sideEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
     docEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
-    
     sideConcl.style.display = (type !== "Divers") ? "block" : "none";
     docConcl.style.display = (type !== "Divers") ? "block" : "none";
-    
     sideDiv.style.display = (type === "Divers") ? "block" : "none";
     docDiv.style.display = (type === "Divers") ? "block" : "none";
 
-    // Titre dynamique
+    // Titre
     const titres = {
         "Aptitude professionnelle": "APTITUDE PROFESSIONNELLE",
         "Port d'arme (PPA)": "CAPACITÉ EXAMEN PPA",
@@ -29,16 +26,10 @@ function updateCertif() {
     };
     document.getElementById('d-titre-doc').innerText = titres[type] || "CERTIFICAT MÉDICAL";
 
-    // Mise à jour textes (SANS LE Dr. FORCÉ)
+    // Update Textes
     document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
     document.getElementById('d-entreprise').innerText = document.getElementById('f-entreprise').value || "...";
-    document.getElementById('d-sig').innerText = document.getElementById('f-medecin').value || "...";
-    
-    // Référence & QR
-    const now = new Date();
-    const ref = String(now.getDate()).padStart(2,'0') + String(now.getMonth()+1).padStart(2,'0') + String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0');
-    document.getElementById('d-ref').innerText = "#" + ref;
-    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
+    document.getElementById('d-sig').innerText = document.getElementById('f-medecin').value || "DOCTEUR";
 
     // Conclusion ou Divers
     if (type !== "Divers") {
@@ -54,6 +45,18 @@ function updateCertif() {
     }
 }
 
+function genererReference() {
+    const n = new Date();
+    const jj = n.getDate().toString().padStart(2, '0');
+    const mm = (n.getMonth() + 1).toString().padStart(2, '0');
+    const hh = n.getHours().toString().padStart(2, '0');
+    const min = n.getMinutes().toString().padStart(2, '0');
+    const ref = `${jj}${mm}${hh}${min}`;
+    
+    document.getElementById('d-ref').innerText = ref;
+    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
+}
+
 function upDate(targetId, val) {
     if(!val) return;
     document.getElementById(targetId).innerText = new Date(val).toLocaleDateString('fr-FR');
@@ -61,17 +64,17 @@ function upDate(targetId, val) {
 
 async function genererImage() {
     const doc = document.getElementById('document');
-    const btn = event.currentTarget; // Correction du sélecteur de bouton
-    btn.innerText = "GÉNÉRATION...";
+    const btn = event.target;
+    btn.innerText = "CROP & UPLOAD...";
     btn.disabled = true;
 
     try {
         const canvas = await html2canvas(doc, { 
-            scale: 2,
-            useCORS: true,
-            logging: false,
+            scale: 2, 
+            useCORS: true, 
             backgroundColor: "#ffffff",
-            scrollY: -window.scrollY // Fix pour éviter les décalages si on a scrollé
+            height: doc.offsetHeight,
+            windowHeight: doc.offsetHeight
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
@@ -84,41 +87,30 @@ async function genererImage() {
         });
 
         const result = await response.json();
-
         if (result.success) {
             lastImageUrl = result.data.url;
-            // On vérifie si les éléments existent avant d'assigner
-            if(document.getElementById('direct-link')) document.getElementById('direct-link').value = lastImageUrl;
-            if(document.getElementById('preview-img-result')) document.getElementById('preview-img-result').src = lastImageUrl;
-            if(document.getElementById('image-popup')) document.getElementById('image-popup').style.display = 'flex';
-        } else {
-            alert("Erreur ImgBB: " + result.error.message);
+            document.getElementById('direct-link').value = lastImageUrl;
+            document.getElementById('preview-img-result').src = lastImageUrl;
+            document.getElementById('image-popup').style.display = 'flex';
         }
-
     } catch (e) {
-        console.error(e);
-        alert("Erreur technique lors de la capture.");
+        alert("Erreur lors de la génération.");
     } finally {
-        btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (lien)";
         btn.disabled = false;
     }
 }
 
 async function envoyerDiscord() {
     const webhookUrl = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    const btn = event.currentTarget;
+    const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
     
     btn.disabled = true;
-    btn.innerText = "ENVOI...";
+    btn.innerText = "CAPTURING...";
 
     try {
-        const canvas = await html2canvas(doc, { 
-            scale: 2,
-            useCORS: true, 
-            backgroundColor: "#ffffff"
-        });
-
+        const canvas = await html2canvas(doc, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const nom = document.getElementById('d-nom').innerText || "Inconnu";
@@ -128,8 +120,7 @@ async function envoyerDiscord() {
                 content: `📜 **NOUVEAU RAPPORT MÉDICAL**\n👤 **Patient :** ${nom}\n📋 **Type :** ${typeDoc}`,
                 embeds: [{
                     color: 3066993,
-                    image: { url: "attachment://certificat.png" },
-                    footer: { text: "Intranet Ocean Medical Center" }
+                    image: { url: "attachment://certificat.png" }
                 }]
             };
 
@@ -140,12 +131,18 @@ async function envoyerDiscord() {
             alert("✅ Envoyé avec succès !");
             btn.innerText = "ENVOYÉ";
         }, 'image/png');
-
     } catch (e) {
         alert("Erreur envoi Discord.");
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
     }
+}
+
+function copyLink() {
+    const copyText = document.getElementById("direct-link");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Lien copié !");
 }
 
 function closePopup() {
@@ -154,5 +151,6 @@ function closePopup() {
 
 window.onload = function() {
     document.getElementById('d-date').innerText = new Date().toLocaleDateString('fr-FR');
-    updateCertif(); // Force le rafraîchissement au chargement
+    genererReference();
+    updateCertif();
 };
