@@ -1,81 +1,30 @@
-/* Permet au contenu de défiler si la grille dépasse */
-.interface-container, .portal-wrapper {
-    height: 100vh;
-    overflow-y: auto; /* Active le scroll vertical */
-    padding-bottom: 50px; /* Marge de sécurité en bas */
+/* --- CONFIGURATION GLOBALE DU PORTAIL --- */
+.portal-body {
+    background-color: #0a192f; /* Fond sombre profond */
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    /* On retire display: flex ici pour libérer le défilement vertical */
+    overflow-y: auto; 
+    display: block;
 }
 
-/* Scrollbar esthétique pour ton thème sombre */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: #0a192f; 
-}
-::-webkit-scrollbar-thumb {
-    background: #1e293b;
-    border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #334155;
-}
-
-.menu-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    /* Empêche la grille de s'écraser */
-    align-content: start; 
-}
-
-
-
-/* --- LOGO ET TITRES --- */
-.portal-logo {
-    height: 150px; /* Taille raisonnable pour laisser de la place aux cartes */
-    width: auto;
-    margin-bottom: 20px;
-    filter: drop-shadow(0 0 15px rgba(100, 255, 218, 0.4));
-}
-
-/* Le conteneur doit gérer le centrage sans bloquer la hauteur */
+/* Conteneur principal qui gère le centrage horizontal sans bloquer le scroll */
 .portal-container {
     text-align: center;
     width: 100%;
-    max-width: 1100px; /* Un peu plus large pour les cartes */
-    margin: 0 auto;
-    padding: 60px 20px; /* Padding généreux en haut et bas pour le scroll */
+    max-width: 1100px;
+    margin: 0 auto; /* Centrage horizontal automatique */
+    padding: 60px 20px; /* Espace en haut et bas pour ne pas coller aux bords */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.portal-logo { height: 150px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--omc-cyan)); }
-.portal-container h1 { color: var(--omc-cyan); font-size: 2.8em; font-weight: 800; letter-spacing: 6px; }
-.menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 50px; }
-.menu-card { background: var(--omc-card); padding: 40px; border-radius: 12px; text-decoration: none; color: white; border: 1px solid transparent; transition: 0.3s; }
-.menu-card:hover:not(.locked) { border-color: var(--omc-cyan); transform: translateY(-5px); background: #172a45; }
 
-/* --- CONFIGURATION DU PORTAIL --- */
-.portal-body {
-    background-color: #0a192f; /* Fond sombre profond */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    font-family: 'Segoe UI', Roboto, sans-serif;
-}
-
-.portal-container {
-    text-align: center;
-    width: 100%;
-    max-width: 900px;
-    padding: 20px;
-}
-
+/* --- LOGO ET TITRES --- */
 .portal-logo {
-    height: 350px; /* Passage de 100px à 150px */
+    height: 150px; /* Taille fixée pour laisser de la place aux cartes */
     width: auto;
     margin-bottom: 20px;
     filter: drop-shadow(0 0 15px rgba(100, 255, 218, 0.4));
@@ -99,21 +48,22 @@ h1 {
     letter-spacing: 1px;
 }
 
-/* --- GRILLE DES CARTES (CORRIGÉE) --- */
+/* --- GRILLE DES CARTES (PETITS BLOCS) --- */
 .menu-grid {
     display: grid;
-    /* On utilise auto-fill pour que les cartes ne s'étirent pas trop */
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
+    /* On utilise auto-fit pour que les blocs restent compacts et s'empilent si besoin */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
     width: 100%;
     margin-top: 20px;
+    align-content: start;
 }
 
-/* --- CARTES --- */
+/* --- STYLE DES CARTES BLANCHES COMPACTES --- */
 .menu-card {
-    background: #ffffff !important;
+    background: #ffffff !important; /* Force le fond blanc */
     border-radius: 12px;
-    padding: 35px 25px;
+    padding: 25px 15px; /* Padding réduit pour l'aspect petit bloc */
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -121,46 +71,4 @@ h1 {
     align-items: center;
     border: 4px solid transparent;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.menu-card:hover:not(.locked) {
-    transform: translateY(-10px);
-    border-color: #64ffda;
-    box-shadow: 0 15px 30px rgba(100, 255, 218, 0.2);
-}
-
-.menu-card:hover {
-    background: #ffffff !important; /* Force le fond blanc */
-    transform: translateY(-10px);
-    border-color: #64ffda;
-    box-shadow: 0 15px 30px rgba(100, 255, 218, 0.2);
-}
-
-.card-icon { font-size: 2.5rem; margin-bottom: 15px; }
-
-.menu-card h3 {
-    color: #0a192f;
-    margin: 10px 0 5px 0;
-    font-size: 1.3rem;
-    font-weight: 800;
-}
-
-.menu-card p {
-    color: #4b5563;
-    margin: 0;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-/* --- ÉTAT VERROUILLÉ --- */
-.menu-card.locked {
-    background: #e5e7eb !important;
-    opacity: 0.7;
-    cursor: not-allowed;
-    filter: grayscale(1);
-}
-
-.menu-card.locked:hover {
-    transform: none;
-    border-color: transparent;
-}
+    box-sizing: border
