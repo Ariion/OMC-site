@@ -69,7 +69,9 @@
 
             <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
             <button id="discord-btn" class="btn-discord" onclick="envoyerDiscord()">ENVOYER SUR DISCORD</button>
-        </aside> <main class="preview-area">
+        </aside>
+
+        <main class="preview-area">
             <div id="document">
                 <div class="header-cert">
                     <img src="assets/logo_omc.png" class="doc-logo" style="height: 60px;">
@@ -123,4 +125,11 @@
                 <button onclick="copyLink()" class="btn-copy">Copier le lien</button>
                 <button onclick="closePopup()" class="btn-close">Fermer</button>
             </div>
-            <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px; border-radius: 5px; border: 1
+            <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px; border-radius: 5px; border: 1px solid #333;">
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="certificat.js"></script>
+</body>
+</html>
