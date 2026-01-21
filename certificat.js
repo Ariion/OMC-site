@@ -33,14 +33,23 @@ function updateCertif() {
     }
 
     // --- MISE À JOUR DES DONNÉES ---
-    document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
+    const nom = document.getElementById('f-nom').value || "...";
+    const medecin = document.getElementById('f-medecin').value || "DOCTEUR";
+    
+    document.getElementById('d-nom').innerText = nom;
     document.getElementById('d-entreprise').innerText = document.getElementById('f-entreprise').value || "...";
-    document.getElementById('d-medecin').innerText = "Dr. " + (document.getElementById('f-medecin').value || "");
+    document.getElementById('d-sig').innerText = "Dr. " + medecin.toUpperCase();
     
     // Référence JJMMHHmm
     const now = new Date();
     const ref = String(now.getDate()).padStart(2,'0') + String(now.getMonth()+1).padStart(2,'0') + String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0');
     document.getElementById('d-ref').innerText = "#" + ref;
+
+    // Mise à jour du QR CODE
+    const qrImg = document.getElementById('qr-ref');
+    if(qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
+    }
 
     // Conclusion ou Texte libre
     if (type !== "Divers") {
@@ -56,10 +65,9 @@ function upDate(targetId, val) {
     document.getElementById(targetId).innerText = new Date(val).toLocaleDateString('fr-FR');
 }
 
-// FONCTION GENERER IMAGE CORRIGÉE
 async function genererImage() {
     const doc = document.getElementById('document');
-    const btn = event.target;
+    const btn = event.currentTarget; // Correction du sélecteur de bouton
     btn.innerText = "GÉNÉRATION...";
     btn.disabled = true;
 
@@ -68,7 +76,8 @@ async function genererImage() {
             scale: 2,
             useCORS: true,
             logging: false,
-            backgroundColor: "#ffffff"
+            backgroundColor: "#ffffff",
+            scrollY: -window.scrollY // Fix pour éviter les décalages si on a scrollé
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
@@ -84,9 +93,10 @@ async function genererImage() {
 
         if (result.success) {
             lastImageUrl = result.data.url;
-            document.getElementById('direct-link').value = lastImageUrl;
-            document.getElementById('preview-img-result').src = lastImageUrl;
-            document.getElementById('image-popup').style.display = 'flex';
+            // On vérifie si les éléments existent avant d'assigner
+            if(document.getElementById('direct-link')) document.getElementById('direct-link').value = lastImageUrl;
+            if(document.getElementById('preview-img-result')) document.getElementById('preview-img-result').src = lastImageUrl;
+            if(document.getElementById('image-popup')) document.getElementById('image-popup').style.display = 'flex';
         } else {
             alert("Erreur ImgBB: " + result.error.message);
         }
@@ -99,14 +109,10 @@ async function genererImage() {
         btn.disabled = false;
     }
 }
-function closePopup() {
-    document.getElementById('image-popup').style.display = 'none';
-}
 
-// FONCTION DISCORD CORRIGÉE (Image en bas, texte en haut)
 async function envoyerDiscord() {
     const webhookUrl = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    const btn = event.target;
+    const btn = event.currentTarget;
     const doc = document.getElementById('document');
     
     btn.disabled = true;
@@ -124,12 +130,11 @@ async function envoyerDiscord() {
             const nom = document.getElementById('d-nom').innerText || "Inconnu";
             const typeDoc = document.getElementById('d-titre-doc').innerText;
             
-            // On prépare le JSON
             const payload = {
                 content: `📜 **NOUVEAU RAPPORT MÉDICAL**\n👤 **Patient :** ${nom}\n📋 **Type :** ${typeDoc}`,
                 embeds: [{
                     color: 3066993,
-                    image: { url: "attachment://certificat.png" }, // Force l'image dans l'embed
+                    image: { url: "attachment://certificat.png" },
                     footer: { text: "Intranet Ocean Medical Center" }
                 }]
             };
@@ -148,7 +153,12 @@ async function envoyerDiscord() {
         btn.innerText = "RÉESSAYER";
     }
 }
-// Initialisation au chargement
+
+function closePopup() {
+    document.getElementById('image-popup').style.display = 'none';
+}
+
 window.onload = function() {
     document.getElementById('d-date').innerText = new Date().toLocaleDateString('fr-FR');
+    updateCertif(); // Force le rafraîchissement au chargement
 };
