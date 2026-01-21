@@ -96,14 +96,16 @@
     justify-content: center;
 }
 
+/* Réduit la taille minimale pour éviter les vides immenses */
 #document {
     background: white;
     width: 210mm;
-    min-height: 250mm;
-    padding: 60px;
+    min-height: 150mm; /* Réduit de 250mm à 150mm */
+    padding: 50px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    margin: 0 auto;
 }
 
 /* Header avec barre noire */
@@ -164,10 +166,11 @@
     border-radius: 8px;
 }
 
-/* Footer Signature & QR */
+/* Ajuste l'espace entre le rapport et la signature */
 .footer-layout {
-    margin-top: auto;
-    padding-top: 60px;
+    margin-top: 30px; /* Espace fixe et court au lieu de 'auto' */
+    padding-top: 20px;
+    border-top: 1px solid #eee; /* Optionnel: une ligne fine pour séparer */
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -204,4 +207,10 @@
     margin-top: 30px;
     text-align: justify;
     line-height: 1.4;
+}
+
+/* Pour le bloc Divers, on s'assure qu'il ne pousse pas tout */
+#doc-divers-block, #doc-concl-block {
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
