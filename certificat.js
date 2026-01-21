@@ -1,6 +1,14 @@
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
 let lastImageUrl = ""; 
 
+// Affiche ou cache les menus de motifs selon la conclusion choisie
+function toggleMotifs() {
+    const concl = document.querySelector('input[name="concl"]:checked').value;
+    document.getElementById('motif-reserve-group').style.display = (concl === "Réserve") ? "block" : "none";
+    document.getElementById('motif-inapte-group').style.display = (concl === "Inapte") ? "block" : "none";
+    updateCertif();
+}
+
 function updateCertif() {
     const type = document.getElementById('f-type').value;
     const sideEnt = document.getElementById('side-entreprise-block');
@@ -10,6 +18,7 @@ function updateCertif() {
     const docConcl = document.getElementById('doc-concl-block');
     const docDiv = document.getElementById('doc-divers-block');
 
+    // Gestion de la visibilité des blocs
     sideEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
     docEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
     sideConcl.style.display = (type !== "Divers") ? "block" : "none";
@@ -17,25 +26,37 @@ function updateCertif() {
     sideDiv.style.display = (type === "Divers") ? "block" : "none";
     docDiv.style.display = (type === "Divers") ? "block" : "none";
 
+    // Mise à jour des TITRES DYNAMIQUES (Majuscules avec accents)
     const titres = {
-        "Aptitude professionnelle": "APTITUDE PROFESSIONNELLE",
-        "Port d'arme (PPA)": "CAPACITÉ EXAMEN PPA",
-        "Divers": "CERTIFICAT MÉDICAL DIVERS"
+        "Aptitude professionnelle": "CERTIFICAT D'APTITUDE PROFESSIONNELLE",
+        "Port d'arme (PPA)": "CERTIFICAT DE CAPACITÉ À PASSER L'EXAMEN DU PPA",
+        "Divers": "CERTIFICAT — DIVERS"
     };
     document.getElementById('d-titre-doc').innerText = titres[type] || "CERTIFICAT MÉDICAL";
 
+    // Mise à jour des informations patient et médecin
     document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
     document.getElementById('d-entreprise').innerText = document.getElementById('f-entreprise').value || "...";
     document.getElementById('d-sig').innerText = document.getElementById('f-medecin').value || "DOCTEUR";
 
+    // GESTION DE LA CONCLUSION ET DES MOTIFS RAPIDES
     if (type !== "Divers") {
-        const c = document.querySelector('input[name="concl"]:checked').value;
-        const mapping = {
-            "Apte": "Apte — Aucune contre-indication clinique.",
-            "Inapte": "Inapte — Contre-indications majeures.",
-            "Réserve": "Apte avec réserve — Nécessite un aménagement."
-        };
-        document.getElementById('d-concl').innerText = mapping[c];
+        const concl = document.querySelector('input[name="concl"]:checked').value;
+        let texteFinal = "";
+        
+        if (concl === "Apte") {
+            texteFinal = "Apte — Aucune contre-indication clinique.";
+        } 
+        else if (concl === "Réserve") {
+            const motif = document.getElementById('f-motif-reserve').value;
+            texteFinal = "Apte avec réserve" + (motif ? ` — ${motif}` : ".");
+        } 
+        else if (concl === "Inapte") {
+            const motif = document.getElementById('f-motif-inapte').value;
+            texteFinal = "Inapte" + (motif ? ` — ${motif}` : ".");
+        }
+        
+        document.getElementById('d-concl').innerText = texteFinal;
     } else {
         document.getElementById('d-divers-text').innerText = document.getElementById('f-divers').value || "...";
     }
@@ -51,7 +72,7 @@ function genererReference() {
     
     const refEl = document.getElementById('d-ref');
     refEl.innerText = "#" + ref;
-    refEl.style.color = "#1e293b"; // Garantit que c'est foncé
+    refEl.style.color = "#1e293b"; 
     
     document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
 }
@@ -100,55 +121,4 @@ async function genererImage() {
 }
 
 async function envoyerDiscord() {
-    const webhookUrl = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    const btn = document.getElementById('discord-btn');
-    const doc = document.getElementById('document');
-    
-    btn.disabled = true;
-    btn.innerText = "CAPTURING...";
-
-    try {
-        const canvas = await html2canvas(doc, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-        canvas.toBlob(async (blob) => {
-            const formData = new FormData();
-            const nom = document.getElementById('d-nom').innerText || "Inconnu";
-            const typeDoc = document.getElementById('d-titre-doc').innerText;
-            
-            const payload = {
-                content: `📜 **NOUVEAU RAPPORT MÉDICAL**\n👤 **Patient :** ${nom}\n📋 **Type :** ${typeDoc}`,
-                embeds: [{
-                    color: 3066993,
-                    image: { url: "attachment://certificat.png" }
-                }]
-            };
-
-            formData.append("payload_json", JSON.stringify(payload));
-            formData.append("file", blob, "certificat.png");
-            
-            await fetch(webhookUrl, { method: 'POST', body: formData });
-            alert("✅ Envoyé avec succès !");
-            btn.innerText = "ENVOYÉ";
-        }, 'image/png');
-    } catch (e) {
-        alert("Erreur envoi Discord.");
-        btn.disabled = false;
-        btn.innerText = "RÉESSAYER";
-    }
-}
-
-function copyLink() {
-    const copyText = document.getElementById("direct-link");
-    copyText.select();
-    document.execCommand("copy");
-    alert("Lien copié !");
-}
-
-function closePopup() {
-    document.getElementById('image-popup').style.display = 'none';
-}
-
-window.onload = function() {
-    document.getElementById('d-date').innerText = new Date().toLocaleDateString('fr-FR');
-    genererReference();
-    updateCertif();
-};
+    const webhookUrl = "
