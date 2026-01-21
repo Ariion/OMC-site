@@ -1,11 +1,18 @@
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
 let lastImageUrl = ""; 
 
-// Affiche ou cache les menus de motifs selon la conclusion choisie
+// Gère l'affichage des listes de motifs selon la conclusion cochée
 function toggleMotifs() {
     const concl = document.querySelector('input[name="concl"]:checked').value;
-    document.getElementById('motif-reserve-group').style.display = (concl === "Réserve") ? "block" : "none";
-    document.getElementById('motif-inapte-group').style.display = (concl === "Inapte") ? "block" : "none";
+    
+    // On affiche le menu correspondant à la sélection
+    if(document.getElementById('motif-reserve-group')) {
+        document.getElementById('motif-reserve-group').style.display = (concl === "Réserve") ? "block" : "none";
+    }
+    if(document.getElementById('motif-inapte-group')) {
+        document.getElementById('motif-inapte-group').style.display = (concl === "Inapte") ? "block" : "none";
+    }
+    
     updateCertif();
 }
 
@@ -18,7 +25,7 @@ function updateCertif() {
     const docConcl = document.getElementById('doc-concl-block');
     const docDiv = document.getElementById('doc-divers-block');
 
-    // Gestion de la visibilité des blocs
+    // Visibilité des blocs de saisie et de document
     sideEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
     docEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
     sideConcl.style.display = (type !== "Divers") ? "block" : "none";
@@ -26,7 +33,7 @@ function updateCertif() {
     sideDiv.style.display = (type === "Divers") ? "block" : "none";
     docDiv.style.display = (type === "Divers") ? "block" : "none";
 
-    // Mise à jour des TITRES DYNAMIQUES (Majuscules avec accents)
+    // RÉTABLISSEMENT DES TITRES EXACTS (Majuscules et Accents)
     const titres = {
         "Aptitude professionnelle": "CERTIFICAT D'APTITUDE PROFESSIONNELLE",
         "Port d'arme (PPA)": "CERTIFICAT DE CAPACITÉ À PASSER L'EXAMEN DU PPA",
@@ -34,28 +41,29 @@ function updateCertif() {
     };
     document.getElementById('d-titre-doc').innerText = titres[type] || "CERTIFICAT MÉDICAL";
 
-    // Mise à jour des informations patient et médecin
+    // Mise à jour des textes de base
     document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
     document.getElementById('d-entreprise').innerText = document.getElementById('f-entreprise').value || "...";
     document.getElementById('d-sig').innerText = document.getElementById('f-medecin').value || "DOCTEUR";
 
-    // GESTION DE LA CONCLUSION ET DES MOTIFS RAPIDES
+    // GESTION DES CONCLUSIONS AVEC MOTIFS RAPIDES
     if (type !== "Divers") {
-        const concl = document.querySelector('input[name="concl"]:checked').value;
+        const c = document.querySelector('input[name="concl"]:checked').value;
         let texteFinal = "";
-        
-        if (concl === "Apte") {
+
+        if (c === "Apte") {
             texteFinal = "Apte — Aucune contre-indication clinique.";
         } 
-        else if (concl === "Réserve") {
+        else if (c === "Réserve") {
             const motif = document.getElementById('f-motif-reserve').value;
+            // Si un motif est choisi, on l'ajoute à la phrase
             texteFinal = "Apte avec réserve" + (motif ? ` — ${motif}` : ".");
         } 
-        else if (concl === "Inapte") {
+        else if (c === "Inapte") {
             const motif = document.getElementById('f-motif-inapte').value;
+            // Si un motif est choisi, on l'ajoute à la phrase
             texteFinal = "Inapte" + (motif ? ` — ${motif}` : ".");
         }
-        
         document.getElementById('d-concl').innerText = texteFinal;
     } else {
         document.getElementById('d-divers-text').innerText = document.getElementById('f-divers').value || "...";
@@ -71,10 +79,15 @@ function genererReference() {
     const ref = `${jj}${mm}${hh}${min}`;
     
     const refEl = document.getElementById('d-ref');
-    refEl.innerText = "#" + ref;
-    refEl.style.color = "#1e293b"; 
+    if(refEl) {
+        refEl.innerText = "#" + ref;
+        refEl.style.color = "#1e293b"; 
+    }
     
-    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
+    const qrImg = document.getElementById('qr-ref');
+    if(qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
+    }
 }
 
 function upDate(targetId, val) {
@@ -121,4 +134,57 @@ async function genererImage() {
 }
 
 async function envoyerDiscord() {
-    const webhookUrl = "
+    const webhookUrl = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
+    const btn = document.getElementById('discord-btn');
+    const doc = document.getElementById('document');
+    
+    btn.disabled = true;
+    btn.innerText = "CAPTURING...";
+
+    try {
+        const canvas = await html2canvas(doc, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+        canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            const nom = document.getElementById('d-nom').innerText || "Inconnu";
+            const typeDoc = document.getElementById('d-titre-doc').innerText;
+            
+            const payload = {
+                content: `📜 **NOUVEAU RAPPORT MÉDICAL**\n👤 **Patient :** ${nom}\n📋 **Type :** ${typeDoc}`,
+                embeds: [{
+                    color: 3066993,
+                    image: { url: "attachment://certificat.png" }
+                }]
+            };
+
+            formData.append("payload_json", JSON.stringify(payload));
+            formData.append("file", blob, "certificat.png");
+            
+            await fetch(webhookUrl, { method: 'POST', body: formData });
+            alert("✅ Envoyé avec succès !");
+            btn.innerText = "ENVOYÉ";
+        }, 'image/png');
+    } catch (e) {
+        alert("Erreur envoi Discord.");
+        btn.disabled = false;
+        btn.innerText = "RÉESSAYER";
+    }
+}
+
+function copyLink() {
+    const copyText = document.getElementById("direct-link");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Lien copié !");
+}
+
+function closePopup() {
+    document.getElementById('image-popup').style.display = 'none';
+}
+
+window.onload = function() {
+    if(document.getElementById('d-date')) {
+        document.getElementById('d-date').innerText = new Date().toLocaleDateString('fr-FR');
+    }
+    genererReference();
+    toggleMotifs(); // Lance l'initialisation des titres et motifs
+};
