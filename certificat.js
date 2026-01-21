@@ -2,59 +2,53 @@
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
 let lastImageUrl = ""; 
 
-function updateCertif() { 
+function updateCertif() {
     const type = document.getElementById('f-type').value;
-    
-    // Sidebar elements
     const sideEnt = document.getElementById('side-entreprise-block');
     const sideConcl = document.getElementById('side-concl-block');
     const sideDiv = document.getElementById('side-divers-block');
-     
-    // Document elements
     const docEnt = document.getElementById('doc-entreprise-block');
     const docConcl = document.getElementById('doc-concl-block');
     const docDiv = document.getElementById('doc-divers-block');
 
-    // --- LOGIQUE DE FILTRAGE ---
-    if (type === "Aptitude professionnelle") {
-        sideEnt.style.display = "block"; sideConcl.style.display = "block"; sideDiv.style.display = "none";
-        docEnt.style.display = "block"; docConcl.style.display = "block"; docDiv.style.display = "none";
-        document.getElementById('d-titre-doc').innerText = "APTITUDE PROFESSIONNELLE";
-    } 
-    else if (type === "Port d'arme (PPA)") {
-        sideEnt.style.display = "none"; sideConcl.style.display = "block"; sideDiv.style.display = "none";
-        docEnt.style.display = "none"; docConcl.style.display = "block"; docDiv.style.display = "none";
-        document.getElementById('d-titre-doc').innerText = "CAPACITÉ EXAMEN PPA";
-    } 
-    else if (type === "Divers") {
-        sideEnt.style.display = "none"; sideConcl.style.display = "none"; sideDiv.style.display = "block";
-        docEnt.style.display = "none"; docConcl.style.display = "none"; docDiv.style.display = "block";
-        document.getElementById('d-titre-doc').innerText = "CERTIFICAT MÉDICAL DIVERS";
-    }
+    // Reset affichage
+    sideEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
+    docEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
+    
+    sideConcl.style.display = (type !== "Divers") ? "block" : "none";
+    docConcl.style.display = (type !== "Divers") ? "block" : "none";
+    
+    sideDiv.style.display = (type === "Divers") ? "block" : "none";
+    docDiv.style.display = (type === "Divers") ? "block" : "none";
 
-    // --- MISE À JOUR DES DONNÉES ---
-    const nom = document.getElementById('f-nom').value || "...";
-    const medecin = document.getElementById('f-medecin').value || "DOCTEUR";
-    
-    document.getElementById('d-nom').innerText = nom;
+    // Titre dynamique
+    const titres = {
+        "Aptitude professionnelle": "APTITUDE PROFESSIONNELLE",
+        "Port d'arme (PPA)": "CAPACITÉ EXAMEN PPA",
+        "Divers": "CERTIFICAT MÉDICAL DIVERS"
+    };
+    document.getElementById('d-titre-doc').innerText = titres[type] || "CERTIFICAT MÉDICAL";
+
+    // Mise à jour textes (SANS LE Dr. FORCÉ)
+    document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
     document.getElementById('d-entreprise').innerText = document.getElementById('f-entreprise').value || "...";
-    document.getElementById('d-sig').innerText = "Dr. " + medecin.toUpperCase();
+    document.getElementById('d-sig').innerText = document.getElementById('f-medecin').value || "...";
     
-    // Référence JJMMHHmm
+    // Référence & QR
     const now = new Date();
     const ref = String(now.getDate()).padStart(2,'0') + String(now.getMonth()+1).padStart(2,'0') + String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0');
     document.getElementById('d-ref').innerText = "#" + ref;
+    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
 
-    // Mise à jour du QR CODE
-    const qrImg = document.getElementById('qr-ref');
-    if(qrImg) {
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
-    }
-
-    // Conclusion ou Texte libre
+    // Conclusion ou Divers
     if (type !== "Divers") {
         const c = document.querySelector('input[name="concl"]:checked').value;
-        document.getElementById('d-concl').innerText = (c === "Apte") ? "Apte — Aucune contre-indication clinique." : (c === "Inapte" ? "Inapte — Contre-indications majeures." : "Apte avec réserve.");
+        const mapping = {
+            "Apte": "Apte — Aucune contre-indication clinique.",
+            "Inapte": "Inapte — Contre-indications majeures.",
+            "Réserve": "Apte avec réserve — Nécessite un aménagement."
+        };
+        document.getElementById('d-concl').innerText = mapping[c];
     } else {
         document.getElementById('d-divers-text').innerText = document.getElementById('f-divers').value || "...";
     }
