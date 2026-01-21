@@ -1,4 +1,4 @@
-function updateCertif() {
+function updateCertif() { 
     const type = document.getElementById('f-type').value;
     
     // Sidebar elements
