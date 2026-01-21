@@ -41,14 +41,16 @@ display: flex;
 #document {
     width: 800px !important;
     min-width: 800px !important;
+    height: auto !important;      /* Laisse la hauteur s'adapter au contenu */
+    min-height: 0 !important;     /* Supprime toute contrainte de hauteur */
     background: white !important;
     padding: 40px !important;
     color: #111 !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
     box-sizing: border-box;
-    /* Ne pas mettre de margin: 0 auto ici, le flex du parent s'en occupe */
+    margin: 0;
 }
-
 /* --- ELEMENTS DU DOCUMENT --- */
 .header-cert { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
 .cert-tag { 
@@ -75,13 +77,24 @@ display: flex;
 .cert-box label { color: #64748b; font-size: 10px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; display: block; text-align: left;}
 .cert-val { font-size: 16px; font-weight: 600; color: #1e293b; min-height: 1.2em; text-align: left;}
 
-.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 60px; }
-.cert-signature { border-top: 1px solid #cbd5e1; min-width: 250px; padding-top: 10px; font-weight: bold; font-style: italic; text-align: left;}
+.cert-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 40px; /* Espace avant le footer */
+}.cert-signature { border-top: 1px solid #cbd5e1; min-width: 250px; padding-top: 10px; font-weight: bold; font-style: italic; text-align: left;}
 .round-stamp { border: 2px solid #0a1324; border-radius: 15px; padding: 10px; text-align: center; font-size: 10px; font-weight: bold; color: #0a1324; width: 120px; }
 .qr-code { width: 100px; height: 100px; margin-bottom: 5px; display: block; margin: 0 auto;}
 
-.legal-text { font-size: 10px; color: #94a3b8; line-height: 1.6; margin-top: 60px; border-top: 1px dotted #e2e8f0; padding-top: 20px; text-align: justify; }
-
+.legal-text {
+    font-size: 10px;
+    color: #94a3b8;
+    margin-top: 30px;
+    margin-bottom: 0 !important; /* Supprime le blanc inutile en bas de l'image */
+    padding-top: 15px;
+    border-top: 1px dotted #e2e8f0;
+    text-align: justify;
+}
 /* --- BOUTONS SIDEBAR --- */
 .sidebar-title { font-size: 22px; font-weight: bold; margin-bottom: 25px; text-transform: uppercase; }
 .form-group { margin-bottom: 15px; }
