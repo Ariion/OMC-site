@@ -1,10 +1,3 @@
-const LESIONS = [
-    {key:'fracture', label:'Fracture', color:'#ef4444'},
-    {key:'plaie_laceration', label:'Plaie & lacération', color:'#a855f7'},
-    {key:'plaie_feu', label:'Plaie par arme à feu', color:'#b91c1c'},
-    {key:'brulure', label:'Brûlure', color:'#eab308'}
-];
-
 const REGIONS = [
     {"id":"tete","label":"Tête","points":[[215,20],[235,30],[245,45],[250,60],[250,75],[255,80],[255,95],[245,105],[240,120],[185,120],[180,105],[175,95],[170,80],[174,60],[175,45],[190,30],[200,20],[215,20]]},
     {"id":"cou","label":"Cou","points":[[185,125],[240,123],[240,146],[185,145],[185,125]]},
@@ -31,25 +24,16 @@ const REGIONS = [
     {"id":"main_droite","label":"Main Droite","points":[[80,520],[70,530],[55,530],[40,525],[45,495],[45,480],[35,495],[25,495],[30,480],[45,455],[60,455],[75,460],[85,470],[85,505],[85,515]]}
 ];
 
-// Fonction pour détecter si un clic (x,y) est à l'intérieur d'une zone
-function regionFrom(x, y) {
-    for (const r of REGIONS) {
-        let inside = false;
-        for (let i = 0, j = r.points.length - 1; i < r.points.length; j = i++) {
-            const xi = r.points[i][0], yi = r.points[i][1];
-            const xj = r.points[j][0], yj = r.points[j][1];
-            const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-            if (intersect) inside = !inside;
-        }
-        if (inside) return r.label;
-    }
-    return "Zone non définie";
-}
+const LESIONS = [
+    {key:'fracture', label:'Fracture', color:'#ef4444'},
+    {key:'plaie_laceration', label:'Plaie & lacération', color:'#a855f7'},
+    {key:'plaie_feu', label:'Plaie par arme à feu', color:'#b91c1c'},
+    {key:'brulure', label:'Brûlure', color:'#eab308'}
+];
 
 let activeType = 'fracture';
 let markers = [];
 
-// Initialisation de la palette
 function initPalette() {
     const grid = document.getElementById('lesionsGrid');
     LESIONS.forEach(l => {
@@ -65,7 +49,20 @@ function initPalette() {
     });
 }
 
-// Placement d'un point
+function regionFrom(x, y) {
+    for (const r of REGIONS) {
+        let inside = false;
+        for (let i = 0, j = r.points.length - 1; i < r.points.length; j = i++) {
+            const xi = r.points[i][0], yi = r.points[i][1];
+            const xj = r.points[j][0], yj = r.points[j][1];
+            const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        if (inside) return r.label;
+    }
+    return "Zone non définie";
+}
+
 document.getElementById('overlay').onclick = function(e) {
     const rect = this.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 418;
@@ -91,6 +88,8 @@ function drawMarkers() {
         circle.setAttribute('cy', m.y);
         circle.setAttribute('r', '10');
         circle.setAttribute('fill', config.color);
+        circle.setAttribute('stroke', 'white');
+        circle.setAttribute('stroke-width', '2');
         layer.appendChild(circle);
     });
 }
@@ -100,20 +99,31 @@ function updateReport() {
     list.innerHTML = '';
     markers.forEach((m) => {
         const config = LESIONS.find(l => l.key === m.type);
-        const zoneName = regionFrom(m.x, m.y); // Appel de la détection de zone
-        
+        const zone = regionFrom(m.x, m.y);
         const li = document.createElement('li');
-        li.innerText = `${config.label} située au niveau de : ${zoneName}.`;
+        li.innerText = `${config.label} constatée au niveau de : ${zone}.`;
         list.appendChild(li);
     });
+
+    document.getElementById('reportMeta').innerText = `Patient : ${document.getElementById('patientId').value || '—'} • Médecin : ${document.getElementById('doctorName').value || '—'} • Date : ${new Date().toLocaleDateString('fr-FR')}`;
     
-    // Check PAF badge
     const hasPAF = markers.some(m => m.type === 'plaie_feu');
     document.getElementById('pafBadge').className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
 }
 
-// Lancement
+function genererImage() {
+    // Logique html2canvas identique à tes autres pages
+    html2canvas(document.getElementById('document')).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'constat-lesionnel.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+}
+
 window.onload = () => {
     initPalette();
     updateReport();
+    // Génère un QR fictif pour le style
+    document.getElementById('qr-ref').src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CONSTAT";
 };
