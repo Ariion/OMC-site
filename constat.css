@@ -287,13 +287,6 @@
     margin-bottom: 10px;
 }
 
-/* Apparence du calque de debug */
-.debug-zone {
-    fill: rgba(30, 144, 255, 0.4); /* Augmenté à 0.4 pour plus de visibilité */
-    stroke: #ffffff;               /* Bordure blanche pour délimiter les zones */
-    stroke-width: 1px;
-    pointer-events: none;          /* Permet de cliquer à travers pour poser des points */
-}
 /* Cache le calque par défaut */
 #debugLayer text {
     fill: white;
@@ -301,6 +294,38 @@
     font-weight: bold;
     text-shadow: 1px 1px 2px black; /* Ombre pour lire sur fond bleu/blanc */
     pointer-events: none;
+}
+
+/* Container du Switch */
+.debug-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
+.debug-label { color: #94a3b8; font-size: 11px; font-weight: bold; }
+
+/* Le design du Switch (Slider) */
+.switch { position: relative; display: inline-block; width: 34px; height: 20px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #3b82f6; }
+input:checked + .slider:before { transform: translateX(14px); }
+
+/* Force l'affichage du calque au dessus */
+#debugLayer {
+    pointer-events: none;
+    z-index: 99;
+}
+.debug-zone {
+    fill: rgba(59, 130, 246, 0.4) !important; /* Bleu visible */
+    stroke: #ffffff;
+    stroke-width: 1px;
 }
 
 @keyframes blink { 50% { opacity: 0.5; } }
