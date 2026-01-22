@@ -175,37 +175,48 @@ function updateReport() {
 
 async function genererImage() {
     const captureZone = document.getElementById('capture-zone');
-    const btn = event.currentTarget; // On utilise currentTarget pour plus de stabilité
-
-    if (!captureZone) {
-        alert("Erreur : La zone de capture (capture-zone) est introuvable dans le HTML.");
-        return;
-    }
-
-    btn.innerText = "GÉNÉRATION EN COURS...";
+    const btn = event.currentTarget;
+    
+    btn.innerText = "UPLOAD EN COURS...";
     btn.disabled = true;
 
     try {
-        // Capture de la zone (Silhouette + Document)
+        // Capture la silhouette et le document
         const canvas = await html2canvas(captureZone, { 
             scale: 2, 
             useCORS: true,
-            backgroundColor: "#ffffff" // Force le fond blanc pour l'image finale
+            backgroundColor: "#ffffff" 
         });
+
+        // Conversion en base64 pour ImgBB
+        const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
         
-        // Conversion en image et téléchargement
-        const link = document.createElement('a');
-        link.download = `Constat_${document.getElementById('patientId').value || 'Patient'}.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-        
-        btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
+        const formData = new FormData();
+        formData.append("image", imageData);
+
+        // Envoi à ImgBB
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Remplit la popup avec les données reçues
+            document.getElementById('preview-img-result').src = result.data.url;
+            document.getElementById('direct-link').value = result.data.url;
+            document.getElementById('image-popup').style.display = 'flex';
+        } else {
+            alert("Erreur ImgBB : " + result.error.message);
+        }
+
     } catch (e) {
-        console.error("Erreur capture:", e);
-        alert("Une erreur est survenue lors de la génération de l'image.");
+        console.error(e);
+        alert("Erreur lors de la génération ou de l'upload.");
     } finally {
-        btn.disabled = false;
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
+        btn.disabled = false;
     }
 }
 // Fonction d'envoi Discord
@@ -254,6 +265,20 @@ async function envoyerDiscord() {
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
     }
+}
+
+// Fonction pour copier le lien
+function copyLink() {
+    const copyText = document.getElementById("direct-link");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // Pour mobile
+    navigator.clipboard.writeText(copyText.value);
+    alert("Lien copié dans le presse-papier !");
+}
+
+// Fonction pour fermer la popup
+function closePopup() {
+    document.getElementById('image-popup').style.display = 'none';
 }
 
 // Initialisation au chargement
