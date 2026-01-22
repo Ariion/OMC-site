@@ -28,6 +28,48 @@
     overflow-y: auto;
 }
 
+.report-header-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.info-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 15px;
+    min-height: 50px;
+}
+
+.info-box small {
+    display: block;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.info-box div {
+    color: #0f172a;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-group-row {
+    display: flex;
+    gap: 10px;
+}
+
+.readonly-input {
+    background: #1e293b !important;
+    color: #64ffda !important;
+    border: 1px solid #334155 !important;
+    text-align: center;
+}
+
 /* Zone qui sera photographiée */
 .work-zone {
     display: flex;
