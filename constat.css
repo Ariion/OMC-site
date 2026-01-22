@@ -325,4 +325,48 @@ input:checked + .slider:before { transform: translateX(14px); }
     letter-spacing: 0.5px;
 }
 
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.checkbox-item {
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.details-title {
+    color: #64ffda;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+    text-transform: uppercase;
+}
+
+.details-sub {
+    color: #94a3b8;
+    font-size: 10px;
+    margin: 8px 0 4px 0;
+    font-weight: bold;
+}
+
+/* Style spécifique pour le document blanc pour les nouvelles sections */
+.doc-section-title {
+    font-size: 12px;
+    font-weight: bold;
+    margin: 15px 0 5px 0;
+    text-decoration: underline;
+}
+.doc-item-list {
+    font-size: 11px;
+    margin: 0;
+    padding-left: 15px;
+}
+
 @keyframes blink { 50% { opacity: 0.5; } }
