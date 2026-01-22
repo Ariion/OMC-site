@@ -74,6 +74,7 @@ window.onload = () => {
     setupInteractions();
     setupDraggableSystem();
     updateReport();
+    initTraitements();
 
     // Création sécurisée du calque de zones
     const svg = document.getElementById('overlay'); 
@@ -232,44 +233,58 @@ function regionFrom(x, y) {
 }
 
 function updateReport() {
+    // 1. Liaison des Textes (Patient, Médecin, Date)
+    const patient = document.getElementById('patientId').value || "—";
+    const doctor = document.getElementById('doctorName').value || "—";
+    const dateTime = document.getElementById('constatDateTime').value;
+    
+    // Formatage de la date
+    let dateFormatted = "—";
+    if (dateTime) {
+        const d = new Date(dateTime);
+        dateFormatted = d.toLocaleDateString('fr-FR') + " à " + d.toLocaleTimeString('fr-FR', {hour: '2bit', minute:'2bit'});
+    }
+
+    document.getElementById('reportMeta').innerText = `Patient : ${patient} • Médecin : ${doctor} • Le : ${dateFormatted}`;
+
+    // 2. Gestion de la Signature
+    const sig = document.getElementById('doctorSig').value || "...";
+    document.getElementById('d-sig').innerText = sig;
+
+    // 3. Liste des Lésions
     const list = document.getElementById('reportList');
     list.innerHTML = markers.length ? "" : "<li>Aucune lésion.</li>";
 
     markers.forEach((m, i) => {
-    const config = LESIONS.find(l => l.key === m.type);
-    const zone = regionFrom(m.x, m.y);
-    const d = m.details;
-    
-    // Construction de la phrase
-    let texteLésion = `<strong>${config.label}</strong>`;
-    if (d.typeL) texteLésion += ` ${d.typeL}`;
-    if (d.origine && m.type !== 'brulure') texteLésion += ` d'origine ${d.origine}`;
-    if (m.type === 'brulure' && d.origine) texteLésion += ` ${d.origine}`;
-    if (d.extras) texteLésion += ` [${d.extras}]`;
-    
-    let associes = d.elements.length > 0 ? ` — éléments associés : ${d.elements.join(', ')}` : "";
-    
-    const li = document.createElement('li');
-    li.innerHTML = `${texteLésion}${associes} au niveau de : ${zone}.`;
-    list.appendChild(li);
-});
+        const config = LESIONS.find(l => l.key === m.type);
+        const zone = regionFrom(m.x, m.y);
+        const d = m.details || {}; // Sécurité si details est null
+        
+        let texteLésion = `<strong>${config.label}</strong>`;
+        if (d.typeL) texteLésion += ` (${d.typeL})`;
+        if (d.extras) texteLésion += ` [${d.extras}]`;
+        
+        let associes = (d.elements && d.elements.length > 0) ? ` — éléments associés : ${d.elements.join(', ')}` : "";
+        
+        const li = document.createElement('li');
+        li.innerHTML = `${texteLésion}${associes} au niveau de : ${zone}.`;
+        list.appendChild(li);
+    });
 
-    const patient = document.getElementById('patientId').value || "—";
-    const doctor = document.getElementById('doctorName').value || "—";
-    const sig = document.getElementById('doctorSig').value || "...";
+    // 4. Badge Arme à feu
+    const pafBadge = document.getElementById('pafBadge');
+    if (pafBadge) {
+        const hasPAF = markers.some(m => m.type === 'plaie_feu');
+        pafBadge.className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
+    }
 
-    document.getElementById('reportMeta').innerText = `Patient : ${patient} • Médecin : ${doctor} • Date : ${new Date().toLocaleDateString('fr-FR')}`;
-    document.getElementById('d-sig').innerText = sig;
-
-const pafBadge = document.getElementById('pafBadge');
-if (pafBadge) {
-    const hasPAF = markers.some(m => m.type === 'plaie_feu');
-    pafBadge.className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
-}
-
-    // QR Code stable basé sur l'heure de session
-    if (!window.sessionRef) window.sessionRef = Date.now().toString().slice(-6);
-    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CST-${window.sessionRef}`;
+    // 5. QR Code et Référence
+    if (!window.sessionRef) {
+        window.sessionRef = "OMC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+        document.getElementById('reportRef').value = window.sessionRef;
+    }
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${window.sessionRef}-${patient}`;
+    document.getElementById('qr-ref').src = qrUrl;
 }
 
 // Les boutons d'action (À mettre à la fin du fichier JS)
@@ -322,6 +337,30 @@ toggleDebug();
         btn.disabled = false;
     }
 }
+
+// Listes de données
+const LISTE_MEDS = ["Antalgique (Palier 1)", "Morphinique (Palier 3)", "Anti-inflammatoire", "Rappel Tétanos", "Anticoagulants", "Antibiotiques", "Plâtre", "Attelle / Écharpe", "Transfusion sanguine", "Pansement stérile"];
+const LISTE_CONSEILS = ["Restriction d'activité (Repos)", "Séances Kinésithérapie", "Surélévation du membre", "Contrôle imagerie (72h)", "Surveillance température", "Éviter contact avec l'eau", "Contrôle points de suture"];
+
+function initTraitements() {
+    const medsGrid = document.getElementById('medsGrid');
+    const preconsGrid = document.getElementById('preconsGrid');
+    
+    // Génère les Médicaments
+    medsGrid.innerHTML = LISTE_MEDS.map(m => `
+        <label class="checkbox-item">
+            <input type="checkbox" class="med-check" value="${m}" onchange="updateReport()"> ${m}
+        </label>
+    `).join('');
+
+    // Génère les Conseils
+    preconsGrid.innerHTML = LISTE_CONSEILS.map(c => `
+        <label class="checkbox-item">
+            <input type="checkbox" class="precon-check" value="${c}" onchange="updateReport()"> ${c}
+        </label>
+    `).join('');
+}
+
 
 // Envoi Discord
 async function envoyerDiscord() {
@@ -568,6 +607,19 @@ function updateReport() {
         const li = document.createElement('li');
         li.innerHTML = `<strong>${config.label}</strong>${detailText}${elementsText} au niveau de : ${zone}.`;
         list.appendChild(li);
+        // Gestion des affichages Traitements sur le doc
+    const selectedMeds = Array.from(document.querySelectorAll('.med-check:checked')).map(cb => cb.value);
+    const selectedPrecons = Array.from(document.querySelectorAll('.precon-check:checked')).map(cb => cb.value);
+
+    const divMeds = document.getElementById('sectionTraitements');
+    const listMeds = document.getElementById('docMedsList');
+    divMeds.style.display = selectedMeds.length ? 'block' : 'none';
+    listMeds.innerHTML = selectedMeds.map(m => `<li>${m}</li>`).join('');
+
+    const divPre = document.getElementById('sectionPrecons');
+    const listPre = document.getElementById('docPreconsList');
+    divPre.style.display = selectedPrecons.length ? 'block' : 'none';
+    listPre.innerHTML = selectedPrecons.map(c => `<li>${c}</li>`).join('');
     });
     
 }
