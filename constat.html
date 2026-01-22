@@ -15,14 +15,19 @@
             <h1 class="sidebar-title">CONSTAT LÉSIONNEL</h1>
 
             <div class="form-group">
-                <label>Patient</label>
-                <input id="patientId" type="text" placeholder="Nom du patient" oninput="updateReport()">
-            </div>
+    <label>DATE ET HEURE DU CONSTAT</label>
+    <input id="constatDateTime" type="datetime-local" oninput="updateReport()">
+</div>
 
-            <div class="form-group">
-                <label>Médecin</label> 
-                <input id="doctorName" type="text" placeholder="Dr. Nom" oninput="updateReport()">
-            </div>
+<div class="form-group">
+    <label>PATIENT</label>
+    <input id="patientId" type="text" placeholder="Nom du patient" oninput="updateReport()">
+</div>
+
+<div class="form-group">
+    <label>MÉDECIN</label>
+    <input id="doctorName" type="text" placeholder="Dr. Nom" oninput="updateReport()">
+</div>
 
             <div class="form-group">
                 <label>Type de lésion à placer</label>
@@ -104,6 +109,15 @@
                         </ol>
                         <div id="pafBadge" class="paf-badge paf-hidden">
     ⚠️ ALERTE : BLESSURE PAR ARME À FEU
+</div>
+                        <div id="sectionTraitements" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; display:none;">
+    <h5 style="margin: 0; color: #0a1324;">TRAITEMENT MÉDICAMENTEUX :</h5>
+    <ul id="docMedsList" style="font-size: 11px; margin: 5px 0;"></ul>
+</div>
+
+<div id="sectionPrecons" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; display:none;">
+    <h5 style="margin: 0; color: #0a1324;">PRÉCONISATIONS :</h5>
+    <ul id="docPreconsList" style="font-size: 11px; margin: 5px 0;"></ul>
 </div>
                     </div>
 
