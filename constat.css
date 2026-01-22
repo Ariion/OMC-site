@@ -71,7 +71,7 @@
     pointer-events: none;
     /* On baisse très légèrement l'opacité du corps quand le debug est ON 
        pour mieux voir les zones bleues si besoin */
-    opacity: 0.9; 
+    opacity: 0.85; 
 }
 
 .marker-point {
@@ -289,15 +289,18 @@
 
 /* Apparence du calque de debug */
 .debug-zone {
-    fill: rgba(30, 144, 255, 0.3); /* Bleu transparent */
-    stroke: #1e90ff;               /* Bordure bleue */
+    fill: rgba(30, 144, 255, 0.4); /* Augmenté à 0.4 pour plus de visibilité */
+    stroke: #ffffff;               /* Bordure blanche pour délimiter les zones */
     stroke-width: 1px;
-    pointer-events: none;          /* IMPORTANT : pour pouvoir cliquer à travers et poser des points */
+    pointer-events: none;          /* Permet de cliquer à travers pour poser des points */
 }
-
 /* Cache le calque par défaut */
-#debugLayer {
-    display: none;
+#debugLayer text {
+    fill: white;
+    font-size: 11px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black; /* Ombre pour lire sur fond bleu/blanc */
+    pointer-events: none;
 }
 
 @keyframes blink { 50% { opacity: 0.5; } }
