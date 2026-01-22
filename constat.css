@@ -287,15 +287,6 @@
     margin-bottom: 10px;
 }
 
-/* Cache le calque par défaut */
-#debugLayer text {
-    fill: white;
-    font-size: 11px;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px black; /* Ombre pour lire sur fond bleu/blanc */
-    pointer-events: none;
-}
-
 /* Container du Switch */
 .debug-container {
     display: flex;
@@ -323,9 +314,15 @@ input:checked + .slider:before { transform: translateX(14px); }
     z-index: 99;
 }
 .debug-zone {
-    fill: rgba(59, 130, 246, 0.4) !important; /* Bleu visible */
-    stroke: #ffffff;
-    stroke-width: 1px;
+    fill: rgba(30, 144, 255, 0.2); 
+    stroke: rgba(255, 255, 255, 0.4); /* Bordure blanche très fine */
+    stroke-width: 0.5px; 
+}
+
+#debugLayer text {
+    fill: #ffffff;
+    font-weight: 500; /* Moins gras pour plus de clarté */
+    letter-spacing: 0.5px;
 }
 
 @keyframes blink { 50% { opacity: 0.5; } }
