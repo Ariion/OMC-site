@@ -89,15 +89,61 @@
 .round-stamp { border: 2px solid #0a1324; border-radius: 10px; padding: 10px; text-align: center; width: 100px; font-size: 8px; font-weight: bold; }
 .qr-code { width: 70px; height: 70px; margin-bottom: 5px; }
 
-/* Sidebar & Autres */
-.lesions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-.chip { padding: 8px; background: #121c2f; border: 1px solid #1e293b; border-radius: 4px; cursor: pointer; font-size: 10px; text-align: center; }
-.chip.active { border-color: #3b82f6; background: #1e293b; }
+/* Grid des lésions */
+.lesions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.chip {
+    padding: 8px;
+    background: #121c2f;
+    border: 1px solid #1e293b;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.chip.active {
+    background: #1e293b;
+    border-color: #3b82f6;
+    color: white;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
 
 .edit-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
 .btn-secondary { background: #334155; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
 .btn-danger { background: #7f1d1d; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
-.btn-discord { background: #5865f2; color: white; border: none; padding: 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+
+/* Harmonisation des boutons Sidebar */
+.btn-image, .btn-discord {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+
+.btn-image {
+    background: #ffffff;
+    color: #0a1324;
+}
+
+.btn-image:hover { background: #e2e8f0; }
+
+.btn-discord {
+    background: #5865f2;
+    color: #ffffff;
+}
+
+.btn-discord:hover { background: #4752c4; }
 
 .paf-badge { background: #991b1b; color: white; padding: 5px; border-radius: 4px; font-size: 9px; margin-top: 10px; text-align: center; }
 .paf-hidden { display: none; }
@@ -111,6 +157,21 @@
 }
 
 /* Colonne Silhouette */
+/* Tooltip de survol */
+.cursor-tip {
+    position: fixed;
+    background: rgba(10, 19, 36, 0.9);
+    color: #64ffda;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 9999;
+    border: 1px solid #1e293b;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    display: none;
+}
 .doc-left-side {
     flex: 0 0 350px;
     background: #fafafa;
@@ -124,6 +185,17 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+}
+
+/* Fix Popup Image */
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
 }
 
 @keyframes blink { 50% { opacity: 0.5; } }
