@@ -26,7 +26,7 @@ const REGIONS = [
 
     // ZONE PELVIENNE & BASSIN
     {"id":"bassin","label":"Bassin / Crêtes Iliaques","points":[[140,410],[290,410],[295,445],[135,445]]},
-    {"id":"pubis","label":"Zone Pubienne / Organes","points":[[180,445],[250,445],[245,490],[185,490]]},  reproductrice
+    {"id":"pubis","label":"Zone Pubienne / Organes","points":[[180,445],[250,445],[245,490],[185,490]]},
     {"id":"hanche_d","label":"Hanche Droite","points":[[115,410],[140,410],[150,490],[115,490]]},
     {"id":"hanche_g","label":"Hanche Gauche","points":[[290,410],[315,410],[315,490],[280,490]]},
 
