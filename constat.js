@@ -67,7 +67,7 @@ window.onload = () => {
             const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
             g.id = "debugLayer";
             g.style.display = "none"; // Caché par défaut
-            svg.insertBefore(g, svg.firstChild); // Mis en arrière-plan
+            svg.appendChild(g);
         }
     }
 };
@@ -321,7 +321,10 @@ function toggleDebug() {
 
     // Affiche ou cache le groupe
     layer.style.display = isChecked ? 'block' : 'none';
-
+if (isChecked) {
+    const svg = document.getElementById('overlay');
+    svg.appendChild(layer); // On le déplace à la fin du SVG à chaque activation pour "forcer" le dessus
+}
     // Si on active et que c'est vide, on dessine
     if (isChecked && layer.innerHTML === "") {
         REGIONS.forEach(region => {
