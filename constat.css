@@ -426,4 +426,30 @@ input:checked + .slider:before { transform: translateX(14px); }
     padding-left: 15px;
 }
 
+
+.report-header-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.info-box {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+.info-box small {
+    font-size: 9px;
+    color: #64748b;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 2px;
+}
+.info-box div {
+    font-size: 13px;
+    color: #0f172a;
+    font-weight: 600;
+}
+
 @keyframes blink { 50% { opacity: 0.5; } }
