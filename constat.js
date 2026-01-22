@@ -59,15 +59,16 @@ window.onload = () => {
     setupDraggableSystem();
     updateReport();
 
-    // On cible directement l'ID 'overlay' qui est ton SVG
+    // Création sécurisée du calque de zones
     const svg = document.getElementById('overlay'); 
     if (svg) {
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.id = "debugLayer";
-        // On l'insère au début du SVG pour qu'il soit sous les marqueurs
-        svg.insertBefore(g, svg.firstChild); 
-    } else {
-        console.error("ERREUR : Le SVG avec l'id 'overlay' est introuvable !");
+        // On vérifie si le calque existe déjà pour éviter les doublons
+        if (!document.getElementById('debugLayer')) {
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            g.id = "debugLayer";
+            g.style.display = "none"; // Caché par défaut
+            svg.insertBefore(g, svg.firstChild); // Mis en arrière-plan
+        }
     }
 };
 
@@ -316,28 +317,35 @@ function toggleDebug() {
     const isChecked = document.getElementById('debugToggle').checked;
     const layer = document.getElementById('debugLayer');
     
-    if (!layer) return; // Sécurité si le calque n'existe pas
+    if (!layer) return;
 
+    // Affiche ou cache le groupe
     layer.style.display = isChecked ? 'block' : 'none';
-    
+
+    // Si on active et que c'est vide, on dessine
     if (isChecked && layer.innerHTML === "") {
-        console.log("Génération du calque de debug...");
-        
         REGIONS.forEach(region => {
+            // 1. Création du polygone bleu
             const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-            
-            // On s'assure que les points sont bien formatés
             const pointsString = region.points.map(p => p.join(",")).join(" ");
-            
             polygon.setAttribute("points", pointsString);
             polygon.setAttribute("class", "debug-zone");
-            
-            // On ajoute le nom pour le survol
-            const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-            title.textContent = region.label;
-            polygon.appendChild(title);
-            
             layer.appendChild(polygon);
+
+            // 2. Calcul du centre pour placer le texte du nom de la zone
+            const centerX = region.points.reduce((sum, p) => sum + p[0], 0) / region.points.length;
+            const centerY = region.points.reduce((sum, p) => sum + p[1], 0) / region.points.length;
+
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", centerX);
+            text.setAttribute("y", centerY);
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "10px");
+            text.setAttribute("font-weight", "bold");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("style", "pointer-events: none; text-shadow: 1px 1px 2px black;");
+            text.textContent = region.label;
+            layer.appendChild(text);
         });
     }
 }
