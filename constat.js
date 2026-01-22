@@ -52,11 +52,11 @@ const REGIONS = [
 let activeType = 'fracture';
 let markers = [];
 
-// --- CONFIGURATION DES LÉSIONS ---
 // Initialisation
 window.onload = () => {
     initPalette();
     setupInteractions();
+    setupDraggableSystem();
     updateReport();
 };
 
@@ -77,6 +77,7 @@ function initPalette() {
     });
 }
 
+// Tooltip de survol
 function setupInteractions() {
     const overlay = document.getElementById('overlay');
     const tip = document.getElementById('cursorTip');
@@ -85,35 +86,22 @@ function setupInteractions() {
         const rect = overlay.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 418;
         const y = ((e.clientY - rect.top) / rect.height) * 940;
-        
         const zone = regionFrom(x, y);
         tip.style.display = "block";
         tip.style.left = (e.clientX + 15) + "px";
         tip.style.top = (e.clientY + 15) + "px";
         tip.innerText = zone;
     };
-
     overlay.onmouseleave = () => tip.style.display = "none";
-
-    overlay.onclick = (e) => {
-        const rect = overlay.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 418;
-        const y = ((e.clientY - rect.top) / rect.height) * 940;
-        
-        markers.push({ id: Date.now(), x, y, type: activeType });
-        drawMarkers();
-        updateReport();
-    };
 }
 
-// Système de drag & drop
+// Système de placement et Drag & Drop
 function setupDraggableSystem() {
     const frame = document.getElementById('frame');
-    
     frame.onclick = (e) => {
-        if(e.target !== frame && e.target.parentNode !== frame) return;
+        if(e.target !== frame && !e.target.classList.contains('body-bg')) return;
         const rect = frame.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100; // En % pour la mobilité
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
         createMarker(x, y);
     };
@@ -122,7 +110,6 @@ function setupDraggableSystem() {
 function createMarker(x, y) {
     const config = LESIONS.find(l => l.key === activeType);
     const id = Date.now();
-    
     const markerEl = document.createElement('div');
     markerEl.className = 'marker-point';
     markerEl.id = `m-${id}`;
@@ -131,7 +118,6 @@ function createMarker(x, y) {
     markerEl.style.backgroundColor = config.color;
     markerEl.dataset.type = activeType;
 
-    // Rendre déplaçable
     markerEl.onmousedown = (e) => {
         e.stopPropagation();
         let shiftX = e.clientX - markerEl.getBoundingClientRect().left;
@@ -162,10 +148,9 @@ function updateMarkersData() {
     const frame = document.getElementById('frame');
     const allMarkers = frame.querySelectorAll('.marker-point');
     markers = [];
-    
     allMarkers.forEach(el => {
-        const x = parseFloat(el.style.left) * 4.18; // Reconvertit % en unités REGIONS
-        const y = parseFloat(el.style.top) * 9.40;
+        const x = (parseFloat(el.style.left) / 100) * 418;
+        const y = (parseFloat(el.style.top) / 100) * 940;
         markers.push({ x, y, type: el.dataset.type });
     });
     updateReport();
@@ -185,22 +170,6 @@ function regionFrom(x, y) {
     return "Zone indéterminée";
 }
 
-function drawMarkers() {
-    const layer = document.getElementById('markersLayer');
-    layer.innerHTML = '';
-    markers.forEach(m => {
-        const config = LESIONS.find(l => l.key === m.type);
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', m.x);
-        circle.setAttribute('cy', m.y);
-        circle.setAttribute('r', '12');
-        circle.setAttribute('fill', config.color);
-        circle.setAttribute('stroke', 'white');
-        circle.setAttribute('stroke-width', '2');
-        layer.appendChild(circle);
-    });
-}
-
 function updateReport() {
     const list = document.getElementById('reportList');
     list.innerHTML = markers.length ? "" : "<li>Aucune lésion.</li>";
@@ -213,27 +182,22 @@ function updateReport() {
         list.appendChild(li);
     });
 
-    document.getElementById('d-sig').innerText = document.getElementById('doctorSig').value || "...";
-    document.getElementById('reportMeta').innerText = `Patient: ${document.getElementById('patientId').value} • Médecin: ${document.getElementById('doctorName').value} • ${new Date().toLocaleDateString()}`;
-    
-    const hasPAF = markers.some(m => m.type === 'plaie_feu');
-    document.getElementById('pafBadge').className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
-}
-
-    // Signature et Admin
     const patient = document.getElementById('patientId').value || "—";
     const doctor = document.getElementById('doctorName').value || "—";
     const sig = document.getElementById('doctorSig').value || "...";
-    
+
     document.getElementById('reportMeta').innerText = `Patient : ${patient} • Médecin : ${doctor} • Date : ${new Date().toLocaleDateString('fr-FR')}`;
     document.getElementById('d-sig').innerText = sig;
 
-    // QR Code
-    const ref = Date.now().toString().slice(-6);
-    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CST-${ref}`;
+    const hasPAF = markers.some(m => m.type === 'plaie_feu');
+    document.getElementById('pafBadge').className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
+
+    // QR Code stable basé sur l'heure de session
+    if (!window.sessionRef) window.sessionRef = Date.now().toString().slice(-6);
+    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CST-${window.sessionRef}`;
 }
 
-// BOUTONS
+// BOUTONS ACTIONS
 document.getElementById('btnUndo').onclick = () => {
     const frame = document.getElementById('frame');
     if(frame.lastChild && frame.lastChild.className === 'marker-point') {
@@ -247,113 +211,76 @@ document.getElementById('btnClear').onclick = () => {
     updateMarkersData();
 };
 
+// Generation Image + ImgBB
 async function genererImage() {
     const captureZone = document.getElementById('capture-zone');
     const btn = event.currentTarget;
-    
     btn.innerText = "UPLOAD EN COURS...";
     btn.disabled = true;
 
     try {
-        // Capture la silhouette et le document
-        const canvas = await html2canvas(captureZone, { 
-            scale: 2, 
-            useCORS: true,
-            backgroundColor: "#ffffff" 
-        });
-
-        // Conversion en base64 pour ImgBB
+        const canvas = await html2canvas(captureZone, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-        
         const formData = new FormData();
         formData.append("image", imageData);
 
-        // Envoi à ImgBB
         const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
             method: "POST",
             body: formData
         });
 
         const result = await response.json();
-
         if (result.success) {
-            // Remplit la popup avec les données reçues
             document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('direct-link').value = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
-        } else {
-            alert("Erreur ImgBB : " + result.error.message);
         }
-
     } catch (e) {
-        console.error(e);
-        alert("Erreur lors de la génération ou de l'upload.");
+        alert("Erreur lors de l'envoi ImgBB.");
     } finally {
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
 }
-// Fonction d'envoi Discord
+
+// Envoi Discord
 async function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    const btn = document.getElementById('discord-btn');
-    const doc = document.getElementById('document');
-    
-    if(!doc) return alert("Erreur : Document introuvable");
+    const btn = event.currentTarget;
+    const captureZone = document.getElementById('capture-zone');
     
     btn.disabled = true;
-    btn.innerText = "CAPTURING...";
+    btn.innerText = "ENVOI...";
 
     try {
-        // On utilise useCORS pour autoriser la capture d'images venant d'autres sites (comme le QR Code)
-        // On ajoute logging pour voir les erreurs en console si besoin
-        const canvas = await html2canvas(doc, { 
-            scale: 2,
-            useCORS: true, 
-            allowTaint: true,
-            logging: false
-        });
-
+        const canvas = await html2canvas(captureZone, { scale: 2, useCORS: true });
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
-            const nom = document.getElementById('d-nom').innerText || "Inconnu";
-            
+            const nom = document.getElementById('patientId').value || "Anonyme";
             formData.append("payload_json", JSON.stringify({
-                content: `📄 **Nouvel Acte de Décès**\n👤 Défunt : ${nom}`
+                content: `📄 **Nouveau Constat Lésionnel**\n👤 Patient : ${nom}`
             }));
-            formData.append("file", blob, `deces_${nom}.png`);
+            formData.append("file", blob, `constat_${nom}.png`);
             
             const response = await fetch(url, { method: 'POST', body: formData });
-            
             if (response.ok) {
-                alert("✅ Envoyé sur l'intranet !");
+                alert("✅ Envoyé sur Discord !");
                 btn.innerText = "ENVOYÉ";
-            } else {
-                throw new Error("Erreur serveur Discord");
             }
         }, 'image/png');
-
     } catch (e) {
-        console.error(e);
-        alert("❌ Erreur lors de l'envoi. Vérifiez votre connexion.");
+        alert("Erreur Discord.");
         btn.disabled = false;
-        btn.innerText = "RÉESSAYER";
     }
 }
 
-// Fonction pour copier le lien
 function copyLink() {
     const copyText = document.getElementById("direct-link");
     copyText.select();
-    copyText.setSelectionRange(0, 99999); // Pour mobile
     navigator.clipboard.writeText(copyText.value);
-    alert("Lien copié dans le presse-papier !");
+    alert("Lien copié !");
 }
 
-// Fonction pour fermer la popup
 function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
 }
-
-// Initialisation au chargement
-document.addEventListener('DOMContentLoaded', genererReference);
