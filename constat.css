@@ -192,11 +192,28 @@
 .popup-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0, 0, 0, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 10000;
 }
 
+.popup-content {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    border: 1px solid #334155;
+}
+
+.popup-content img {
+    max-width: 100%;
+    max-height: 60vh;
+    border-radius: 4px;
+    border: 1px solid #64ffda;
+    margin-bottom: 10px;
+}
 @keyframes blink { 50% { opacity: 0.5; } }
