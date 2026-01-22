@@ -62,22 +62,18 @@ window.onload = () => {
     setupDraggableSystem();
     initTraitements();
     
-    // Init Date & Ref
-    const d = new Date();
-    const dateStr = d.toISOString().slice(2,10).replace(/-/g, '');
-    window.sessionRef = "#" + dateStr + Math.floor(Math.random() * 99).toString().padStart(2, '0');
+    // Génération Référence : JOUR MOIS HEURE MINUTE
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
     
-    document.getElementById('reportRef').value = window.sessionRef;
-    document.getElementById('constatDate').valueAsDate = d;
-
-    // Création calque debug
-    const svg = document.getElementById('overlay'); 
-    if (svg && !document.getElementById('debugLayer')) {
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.id = "debugLayer";
-        g.style.display = "none";
-        svg.appendChild(g);
-    }
+    window.sessionRef = `#${day}${month}${hours}${minutes}`;
+    
+    // On met la date du jour par défaut dans l'input
+    document.getElementById('constatDate').valueAsDate = now;
+    
     updateReport();
 };
 
@@ -258,38 +254,75 @@ function initTraitements() {
 }
 
 function updateReport() {
-    const patient = document.getElementById('patientId').value || "...";
-    const doctor = document.getElementById('doctorName').value || "...";
+    // 1. Récupération des éléments (Sidebar)
+    const patientVal = document.getElementById('patientId').value || "...";
+    const birthVal = document.getElementById('patientBirth').value || "...";
+    const doctorVal = document.getElementById('doctorName').value || "...";
     const dateVal = document.getElementById('constatDate').value;
-    const sig = document.getElementById('doctorSig').value || "...";
+    const sigVal = document.getElementById('doctorSig').value || "...";
 
-    document.getElementById('display-patient').innerText = patient;
-    document.getElementById('display-date').innerText = dateVal || "...";
-    document.getElementById('display-ref').innerText = window.sessionRef;
-    document.getElementById('reportMeta').innerText = `Patient : ${patient} • Médecin : ${doctor} • Dossier : ${window.sessionRef}`;
-    document.getElementById('d-sig').innerText = sig;
+    // 2. Mise à jour du Rapport (Boîtes grises à droite)
+    if(document.getElementById('display-patient')) document.getElementById('display-patient').innerText = patientVal;
+    if(document.getElementById('display-birth')) document.getElementById('display-birth').innerText = birthVal;
+    if(document.getElementById('display-ref')) document.getElementById('display-ref').innerText = window.sessionRef;
+    
+    const displayDate = document.getElementById('display-date');
+    if(displayDate) {
+        displayDate.innerText = dateVal ? new Date(dateVal).toLocaleDateString('fr-FR') : "...";
+    }
 
+    // 3. Signature et Meta
+    if(document.getElementById('d-sig')) document.getElementById('d-sig').innerText = sigVal;
+    if(document.getElementById('reportMeta')) {
+        document.getElementById('reportMeta').innerText = `Médecin référent : ${doctorVal}`;
+        document.getElementById('reportMeta').style.display = "block";
+    }
+
+    // 4. Liste des Observations Cliniques
     const list = document.getElementById('reportList');
-    list.innerHTML = markers.length ? "" : "<li>Aucune lésion sélectionnée.</li>";
-    markers.forEach((m, i) => {
-        const config = LESIONS.find(l => l.key === m.type);
-        const zone = regionFrom(m.x, m.y);
-        const d = m.details;
-        list.innerHTML += `<li><strong>${config.label}</strong> ${d.typeL ? '('+d.typeL+')' : ''} ${d.elements.length ? ' — '+d.elements.join(', ') : ''} [${zone}]</li>`;
-    });
+    if (list) {
+        list.innerHTML = markers.length ? "" : "<li>Aucune lésion sélectionnée.</li>";
+        markers.forEach((m, i) => {
+            const config = LESIONS.find(l => l.key === m.type);
+            const zone = regionFrom(m.x, m.y);
+            const d = m.details || { elements: [] };
+            
+            let detailTxt = d.typeL ? ` (${d.typeL})` : "";
+            let elementsTxt = (d.elements && d.elements.length > 0) ? ` — Eléments associés : ${d.elements.join(', ')}` : "";
+            
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${config.label}</strong>${detailTxt}${elementsTxt} localisée : <u>${zone}</u>.`;
+            list.appendChild(li);
+        });
+    }
 
-    const paf = document.getElementById('pafBadge');
-    if (paf) paf.style.display = markers.some(m => m.type === 'plaie_feu') ? 'block' : 'none';
+    // 5. Badge Arme à feu
+    const pafBadge = document.getElementById('pafBadge');
+    if (pafBadge) {
+        const hasPAF = markers.some(m => m.type === 'plaie_feu');
+        pafBadge.style.display = hasPAF ? 'block' : 'none';
+    }
 
-    const selMeds = Array.from(document.querySelectorAll('.med-check:checked')).map(c => c.value);
-    document.getElementById('sectionTraitements').style.display = selMeds.length ? 'block' : 'none';
-    document.getElementById('docMedsList').innerHTML = selMeds.map(m => `<li>${m}</li>`).join('');
+    // 6. Traitements & Préconisations
+    const selectedMeds = Array.from(document.querySelectorAll('.med-check:checked')).map(cb => cb.value);
+    const divMeds = document.getElementById('sectionTraitements');
+    if(divMeds) {
+        divMeds.style.display = selectedMeds.length ? 'block' : 'none';
+        document.getElementById('docMedsList').innerHTML = selectedMeds.map(m => `<li>${m}</li>`).join('');
+    }
 
-    const selPre = Array.from(document.querySelectorAll('.precon-check:checked')).map(c => c.value);
-    document.getElementById('sectionPrecons').style.display = selPre.length ? 'block' : 'none';
-    document.getElementById('docPreconsList').innerHTML = selPre.map(p => `<li>${p}</li>`).join('');
+    const selectedPrecons = Array.from(document.querySelectorAll('.precon-check:checked')).map(cb => cb.value);
+    const divPre = document.getElementById('sectionPrecons');
+    if(divPre) {
+        divPre.style.display = selectedPrecons.length ? 'block' : 'none';
+        document.getElementById('docPreconsList').innerHTML = selectedPrecons.map(c => `<li>${c}</li>`).join('');
+    }
 
-    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${window.sessionRef}`;
+    // 7. QR Code (utilisant la référence session)
+    const qrImg = document.getElementById('qr-ref');
+    if(qrImg && window.sessionRef) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${window.sessionRef}`;
+    }
 }
 
 document.getElementById('btnUndo').onclick = () => {
