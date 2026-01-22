@@ -26,24 +26,14 @@ const REGIONS = [
     {"id":"coude_d","label":"Coude Droit","points":[[85,345],[125,345],[125,385],[85,385]]},
     {"id":"avant_bras_d","label":"Avant-bras Droit","points":[[70,390],[115,390],[100,460],[55,460]]},
     {"id":"poignet_d","label":"Poignet Droit","points":[[55,465],[100,465],[100,485],[55,485]]},
-    {"id":"main_d","label":"Main Droite (Paume)","points":[[50,490],[95,490],[95,530],[50,530]]},
-    {"id":"pouce_d","label":"Pouce Droit","points":[[20,500],[55,500],[55,540],[20,540]]},
-    {"id":"index_d","label":"Index Droit","points":[[30,545],[50,545],[50,590],[30,590]]},
-    {"id":"majeur_d","label":"Majeur Droit","points":[[52,545],[70,545],[70,600],[52,600]]},
-    {"id":"annulaire_d","label":"Annulaire Droit","points":[[72,545],[88,545],[88,590],[72,590]]},
-    {"id":"auriculaire_d","label":"Auriculaire Droit","points":[[90,535],[110,535],[110,575],[90,575]]},
+    {"id":"main_d","label":"Main Droite","points":[[20,470],[110,470],[110,580],[20,580]]},
 
     // BRAS GAUCHE
     {"id":"bras_g_haut","label":"Bras Gauche (Biceps)","points":[[315,215],[345,215],[345,340],[305,340]]},
     {"id":"coude_g","label":"Coude Gauche","points":[[305,345],[345,345],[345,385],[305,385]]},
     {"id":"avant_bras_g","label":"Avant-bras Gauche","points":[[315,390],[360,390],[375,460],[330,460]]},
     {"id":"poignet_g","label":"Poignet Gauche","points":[[330,465],[375,465],[375,485],[330,485]]},
-    {"id":"main_g","label":"Main Gauche (Paume)","points":[[335,490],[380,490],[380,530],[335,530]]},
-    {"id":"pouce_g","label":"Pouce Gauche","points":[[375,500],[410,500],[410,540],[375,540]]},
-    {"id":"index_g","label":"Index Gauche","points":[[380,545],[400,545],[400,590],[380,590]]},
-    {"id":"majeur_g","label":"Majeur Gauche","points":[[360,545],[378,545],[378,600],[360,600]]},
-    {"id":"annulaire_g","label":"Annulaire Gauche","points":[[342,545],[358,545],[358,590],[342,590]]},
-    {"id":"auriculaire_g","label":"Auriculaire Gauche","points":[[320,535],[340,535],[340,575],[320,575]]},
+    {"id":"main_g","label":"Main Gauche","points":[[310,470],[400,470],[400,580],[310,580]]},
 
     // JAMBES
     {"id":"cuisse_d","label":"Cuisse Droite","points":[[135,480],[208,480],[205,620],[135,620]]},
@@ -116,6 +106,71 @@ function setupInteractions() {
     };
 }
 
+// Système de drag & drop
+function setupDraggableSystem() {
+    const frame = document.getElementById('frame');
+    
+    frame.onclick = (e) => {
+        if(e.target !== frame && e.target.parentNode !== frame) return;
+        const rect = frame.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100; // En % pour la mobilité
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        createMarker(x, y);
+    };
+}
+
+function createMarker(x, y) {
+    const config = LESIONS.find(l => l.key === activeType);
+    const id = Date.now();
+    
+    const markerEl = document.createElement('div');
+    markerEl.className = 'marker-point';
+    markerEl.id = `m-${id}`;
+    markerEl.style.left = x + "%";
+    markerEl.style.top = y + "%";
+    markerEl.style.backgroundColor = config.color;
+    markerEl.dataset.type = activeType;
+
+    // Rendre déplaçable
+    markerEl.onmousedown = (e) => {
+        e.stopPropagation();
+        let shiftX = e.clientX - markerEl.getBoundingClientRect().left;
+        let shiftY = e.clientY - markerEl.getBoundingClientRect().top;
+
+        function moveAt(pageX, pageY) {
+            let rect = document.getElementById('frame').getBoundingClientRect();
+            let newX = ((pageX - rect.left - shiftX) / rect.width) * 100;
+            let newY = ((pageY - rect.top - shiftY) / rect.height) * 100;
+            markerEl.style.left = newX + "%";
+            markerEl.style.top = newY + "%";
+            updateMarkersData();
+        }
+
+        function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
+        document.addEventListener('mousemove', onMouseMove);
+        document.onmouseup = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.onmouseup = null;
+        };
+    };
+
+    document.getElementById('frame').appendChild(markerEl);
+    updateMarkersData();
+}
+
+function updateMarkersData() {
+    const frame = document.getElementById('frame');
+    const allMarkers = frame.querySelectorAll('.marker-point');
+    markers = [];
+    
+    allMarkers.forEach(el => {
+        const x = parseFloat(el.style.left) * 4.18; // Reconvertit % en unités REGIONS
+        const y = parseFloat(el.style.top) * 9.40;
+        markers.push({ x, y, type: el.dataset.type });
+    });
+    updateReport();
+}
+
 function regionFrom(x, y) {
     for (const r of REGIONS) {
         let inside = false;
@@ -148,19 +203,22 @@ function drawMarkers() {
 
 function updateReport() {
     const list = document.getElementById('reportList');
-    list.innerHTML = "";
-    
-    if(markers.length === 0) {
-        list.innerHTML = "<li>Aucune lésion sélectionnée.</li>";
-    }
+    list.innerHTML = markers.length ? "" : "<li>Aucune lésion.</li>";
 
-    markers.forEach((m, index) => {
+    markers.forEach((m, i) => {
         const config = LESIONS.find(l => l.key === m.type);
         const zone = regionFrom(m.x, m.y);
         const li = document.createElement('li');
-        li.innerHTML = `<strong>Lésion #${index+1} :</strong> ${config.icon} ${config.label} située au niveau : ${zone}.`;
+        li.innerHTML = `<strong>#${i+1}</strong>: ${config.icon} ${config.label} (${zone})`;
         list.appendChild(li);
     });
+
+    document.getElementById('d-sig').innerText = document.getElementById('doctorSig').value || "...";
+    document.getElementById('reportMeta').innerText = `Patient: ${document.getElementById('patientId').value} • Médecin: ${document.getElementById('doctorName').value} • ${new Date().toLocaleDateString()}`;
+    
+    const hasPAF = markers.some(m => m.type === 'plaie_feu');
+    document.getElementById('pafBadge').className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
+}
 
     // Signature et Admin
     const patient = document.getElementById('patientId').value || "—";
@@ -174,6 +232,20 @@ function updateReport() {
     const ref = Date.now().toString().slice(-6);
     document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CST-${ref}`;
 }
+
+// BOUTONS
+document.getElementById('btnUndo').onclick = () => {
+    const frame = document.getElementById('frame');
+    if(frame.lastChild && frame.lastChild.className === 'marker-point') {
+        frame.removeChild(frame.lastChild);
+        updateMarkersData();
+    }
+};
+
+document.getElementById('btnClear').onclick = () => {
+    document.querySelectorAll('.marker-point').forEach(m => m.remove());
+    updateMarkersData();
+};
 
 async function genererImage() {
     const captureZone = document.getElementById('capture-zone');
