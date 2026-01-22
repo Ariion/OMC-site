@@ -3,12 +3,11 @@ const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 // Liste des lésions enrichie
 const LESIONS = [
     {key:'fracture', label:'Fracture / Entorse', color:'#ef4444', icon:'🦴'},
-    {key:'plaie_laceration', label:'Lacération / Coupure', color:'#a855f7', icon:'🔪'},
+    {key:'plaie_laceration', label:'Plaie & Lacération', color:'#a855f7', icon:'🔪'},
     {key:'plaie_feu', label:'Impact Arme à Feu', color:'#b91c1c', icon:'🔴'},
-    {key:'brulure', label:'Brûlure (Thermique/Chimique)', color:'#eab308', icon:'🔥'},
-    {key:'hematome', label:'Hématome / Bleu', color:'#3b82f6', icon:'🟣'},
-    {key:'abrasion', label:'Abrasion (Râpé)', color:'#10b981', icon:'🟢'},
-    {key:'ponction', label:'Point de ponction (Seringue)', color:'#6366f1', icon:'💉'}
+    {key:'brulure', label:'Brûlure', color:'#eab308', icon:'🔥'},
+    {key:'hematome', label:'Contusion & traumatisme fermé', color:'#3b82f6', icon:'🟣'},
+    {key:'abrasion', label:'Entorse & Luxation', color:'#10b981', icon:'🟢'},
 ];
 
 // Tes données de régions
@@ -499,30 +498,34 @@ function openDetails(markerId) {
     }
 
     // --- SECTION ÉLÉMENTS ASSOCIÉS (Commun à presque tout) ---
-    html += `<div class="details-sub">ÉLÉMENTS ASSOCIÉS :</div><div class="checkbox-grid">`;
-    const commonElements = ["Hémorragie", "Corps étranger", "Risque infectieux", "Hémorragie interne", "Oedème"];
-    commonElements.forEach(el => {
+    html += `<div class="details-sub">ÉLÉMENTS ASSOCIÉS :</div>`;
+html += `<div class="checkbox-grid">`; // Ouverture de la grille
+const commonElements = ["Hémorragie", "Corps étranger", "Risque infectieux", "Hémorragie interne", "Oedème"];
+commonElements.forEach(el => {
+    html += `
+        <label class="checkbox-item">
+            <input type="checkbox" onchange="updateMarkerElements(${m.id}, '${el}', this.checked)" ${m.details.elements.includes(el)?'checked':''}>
+            <span>${el}</span>
+        </label>
+    `;
+});
+html += `</div>`; // Fermeture de la grille
+
+    // --- SECTION ORGANES (Si abdomen/thorax) ---
+    const zone = regionFrom(m.x, m.y);
+   if (zone.includes("Abdomen") || zone.includes("Thorax") || zone.includes("Flanc")) {
+    html += `<div class="details-sub">LÉSION D'ORGANE :</div>`;
+    html += `<div class="checkbox-grid">`;
+    ["Cœur", "Estomach", "Foie", "Intestin", "Poumon", "Rate", "Rein"].forEach(org => {
         html += `
             <label class="checkbox-item">
-                <input type="checkbox" onchange="updateMarkerElements(${m.id}, '${el}', this.checked)" ${m.details.elements.includes(el)?'checked':''}> ${el}
+                <input type="checkbox" onchange="updateMarkerElements(${m.id}, '${org}', this.checked)" ${m.details.elements.includes(org)?'checked':''}>
+                <span>${org}</span>
             </label>
         `;
     });
     html += `</div>`;
-
-    // --- SECTION ORGANES (Si abdomen/thorax) ---
-    const zone = regionFrom(m.x, m.y);
-    if (zone.includes("Abdomen") || zone.includes("Thorax") || zone.includes("Flanc")) {
-        html += `<div class="details-sub">LÉSION D'ORGANE :</div><div class="checkbox-grid">`;
-        ["Cœur", "Estomac", "Foie", "Intestin", "Poumon", "Rate", "Rein"].forEach(org => {
-            html += `
-                <label class="checkbox-item">
-                    <input type="checkbox" onchange="updateMarkerElements(${m.id}, '${org}', this.checked)" ${m.details.elements.includes(org)?'checked':''}> ${org}
-                </label>
-            `;
-        });
-        html += `</div>`;
-    }
+}
 
     container.innerHTML = html;
     updateReport();
