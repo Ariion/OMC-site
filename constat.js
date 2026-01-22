@@ -95,37 +95,50 @@ function setupInteractions() {
     overlay.onmouseleave = () => tip.style.display = "none";
 }
 
-// Système de placement et Drag & Drop
 function setupDraggableSystem() {
     const frame = document.getElementById('frame');
-    frame.onclick = (e) => {
-        if(e.target !== frame && !e.target.classList.contains('body-bg')) return;
+    
+    // On écoute le clic sur le cadre de la silhouette
+    frame.addEventListener('click', function(e) {
+        // Si on clique sur un point déjà existant, on ne crée pas un nouveau point
+        if (e.target.classList.contains('marker-point')) return;
+
         const rect = frame.getBoundingClientRect();
+        
+        // Calcul de la position en pourcentage
         const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
+        
         createMarker(x, y);
-    };
+    });
 }
 
-// Modifie ta fonction createMarker pour qu'elle soit plus précise au placement
 function createMarker(x, y) {
     const config = LESIONS.find(l => l.key === activeType);
+    const frame = document.getElementById('frame');
+    
     const markerEl = document.createElement('div');
     markerEl.className = 'marker-point';
+    
+    // Style dynamique du point
     markerEl.style.left = x + "%";
     markerEl.style.top = y + "%";
     markerEl.style.backgroundColor = config.color;
     markerEl.dataset.type = activeType;
 
-    markerEl.onmousedown = (e) => {
-        e.stopPropagation();
+    // Drag & Drop du point
+    markerEl.onmousedown = function(e) {
+        e.stopPropagation(); // Empêche de créer un nouveau point par erreur
+        
         let shiftX = e.clientX - markerEl.getBoundingClientRect().left;
         let shiftY = e.clientY - markerEl.getBoundingClientRect().top;
 
         function moveAt(pageX, pageY) {
-            let rect = document.getElementById('frame').getBoundingClientRect();
-            let newX = ((pageX - rect.left - shiftX) / rect.width) * 100;
-            let newY = ((pageY - rect.top - shiftY) / rect.height) * 100;
+            let rectFrame = frame.getBoundingClientRect();
+            let newX = ((pageX - rectFrame.left - shiftX) / rectFrame.width) * 100;
+            let newY = ((pageY - rectFrame.top - shiftY) / rectFrame.height) * 100;
+            
+            // Limites
             markerEl.style.left = Math.max(0, Math.min(100, newX)) + "%";
             markerEl.style.top = Math.max(0, Math.min(100, newY)) + "%";
             updateMarkersData();
@@ -133,13 +146,14 @@ function createMarker(x, y) {
 
         function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
         document.addEventListener('mousemove', onMouseMove);
-        document.onmouseup = () => {
+
+        document.onmouseup = function() {
             document.removeEventListener('mousemove', onMouseMove);
             document.onmouseup = null;
         };
     };
 
-    document.getElementById('frame').appendChild(markerEl);
+    frame.appendChild(markerEl);
     updateMarkersData();
 }
 
@@ -197,18 +211,18 @@ function updateReport() {
 }
 
 // Les boutons d'action (À mettre à la fin du fichier JS)
-document.getElementById('btnUndo').onclick = () => {
+document.getElementById('btnUndo').onclick = function() {
     const frame = document.getElementById('frame');
     const points = frame.querySelectorAll('.marker-point');
-    if(points.length > 0) {
-        points[points.length - 1].remove(); // Efface le dernier
+    if (points.length > 0) {
+        points[points.length - 1].remove();
         updateMarkersData();
     }
 };
 
-document.getElementById('btnClear').onclick = () => {
-    if(confirm("Voulez-vous réinitialiser toute l'imagerie ?")) {
-        document.querySelectorAll('.marker-point').forEach(m => m.remove());
+document.getElementById('btnClear').onclick = function() {
+    if (confirm("Réinitialiser l'imagerie ?")) {
+        document.querySelectorAll('.marker-point').forEach(p => p.remove());
         updateMarkersData();
     }
 };
