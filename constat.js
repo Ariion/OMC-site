@@ -114,10 +114,14 @@ function setupInteractions() {
 
 function setupDraggableSystem() {
     const frame = document.getElementById('frame');
+    
     frame.addEventListener('click', function(e) {
-        if (e.target.classList.contains('marker-point') || e.target.id !== 'overlay') return;
-        const rect = frame.getBoundingClientRect();
-        createMarker(((e.clientX - rect.left) / rect.width) * 100, ((e.clientY - rect.top) / rect.height) * 100);
+        if (e.target.id === 'overlay') {
+            const rect = frame.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            createMarker(x, y);
+        }
     });
 }
 
@@ -136,36 +140,52 @@ function createMarker(x, y) {
     const markerEl = document.createElement('div');
     markerEl.className = 'marker-point';
     markerEl.id = `m-${id}`;
-    markerEl.dataset.id = id;
     markerEl.style.left = x + "%";
     markerEl.style.top = y + "%";
     markerEl.style.backgroundColor = config.color;
 
+    // SYSTÈME DE DÉPLACEMENT (DRAG)
     markerEl.onmousedown = function(e) {
         e.stopPropagation();
-        openDetails(id);
-        let isDragging = false;
+        const startX = e.clientX;
+        const startY = e.clientY;
+        let hasMoved = false;
+
+        const rect = frame.getBoundingClientRect();
         let shiftX = e.clientX - markerEl.getBoundingClientRect().left;
         let shiftY = e.clientY - markerEl.getBoundingClientRect().top;
 
-        function moveAt(pageX, pageY) {
-            isDragging = true;
-            let rect = frame.getBoundingClientRect();
-            markerEl.style.left = Math.max(0, Math.min(100, ((pageX - rect.left - shiftX) / rect.width) * 100)) + "%";
-            markerEl.style.top = Math.max(0, Math.min(100, ((pageY - rect.top - shiftY) / rect.height) * 100)) + "%";
-        }
-        document.addEventListener('mousemove', moveAt);
-        document.onmouseup = function() {
-            document.removeEventListener('mousemove', moveAt);
-            if (isDragging) {
-                newMarker.x = (parseFloat(markerEl.style.left) / 100) * 418;
-                newMarker.y = (parseFloat(markerEl.style.top) / 100) * 940;
-            }
+        function onMouseMove(moveEvent) {
+            hasMoved = true;
+            let newX = ((moveEvent.clientX - rect.left - shiftX) / rect.width) * 100;
+            let newY = ((moveEvent.clientY - rect.top - shiftY) / rect.height) * 100;
+            
+            // Bornes 0-100%
+            newX = Math.max(0, Math.min(100, newX));
+            newY = Math.max(0, Math.min(100, newY));
+
+            markerEl.style.left = newX + "%";
+            markerEl.style.top = newY + "%";
+
+            // Mise à jour des coordonnées réelles pour le calcul de zone
+            newMarker.x = (newX / 100) * 418;
+            newMarker.y = (newY / 100) * 940;
             updateReport();
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+
+        document.onmouseup = function() {
+            document.removeEventListener('mousemove', onMouseMove);
+            // Si on n'a pas bougé, c'est un clic simple : on ouvre les détails
+            if (!hasMoved) {
+                openDetails(id);
+            }
             document.onmouseup = null;
         };
     };
-    frame.appendChild(markerEl);
+
+    document.getElementById('frame').appendChild(markerEl);
     openDetails(id);
     updateReport();
 }
