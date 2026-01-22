@@ -214,8 +214,10 @@ function updateReport() {
     document.getElementById('reportMeta').innerText = `Patient : ${patient} • Médecin : ${doctor} • Date : ${new Date().toLocaleDateString('fr-FR')}`;
     document.getElementById('d-sig').innerText = sig;
 
-    const hasPAF = markers.some(m => m.type === 'plaie_feu');
-    document.getElementById('pafBadge').className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
+const pafBadge = document.getElementById('pafBadge');
+if (pafBadge) {
+    pafBadge.className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
+}
 
     // QR Code stable basé sur l'heure de session
     if (!window.sessionRef) window.sessionRef = Date.now().toString().slice(-6);
@@ -316,10 +318,15 @@ function closePopup() {
 function toggleDebug() {
     const isChecked = document.getElementById('debugToggle').checked;
     const layer = document.getElementById('debugLayer');
+    const svg = document.getElementById('overlay'); // On récupère le SVG parent
     
-    if (!layer) return;
+    if (!layer || !svg) return;
 
-    // Affiche ou cache le groupe
+    // A chaque activation, on déplace le calque à la fin pour qu'il soit au-dessus
+    if (isChecked) {
+        svg.appendChild(layer); 
+    }
+
     layer.style.display = isChecked ? 'block' : 'none';
 if (isChecked) {
     const svg = document.getElementById('overlay');
