@@ -1,3 +1,12 @@
+// Configuration des types de lésions (Basé sur ton LESIONS)
+const LESIONS = [
+    {key:'fracture', label:'Fracture', color:'#ef4444'},
+    {key:'plaie_laceration', label:'Plaie & lacération', color:'#a855f7'},
+    {key:'plaie_feu', label:'Plaie par arme à feu', color:'#b91c1c'},
+    {key:'brulure', label:'Brûlure', color:'#eab308'}
+];
+
+// Tes données de régions (Gardées telles quelles)
 const REGIONS = [
     {"id":"tete","label":"Tête","points":[[215,20],[235,30],[245,45],[250,60],[250,75],[255,80],[255,95],[245,105],[240,120],[185,120],[180,105],[175,95],[170,80],[174,60],[175,45],[190,30],[200,20],[215,20]]},
     {"id":"cou","label":"Cou","points":[[185,125],[240,123],[240,146],[185,145],[185,125]]},
@@ -24,18 +33,13 @@ const REGIONS = [
     {"id":"main_droite","label":"Main Droite","points":[[80,520],[70,530],[55,530],[40,525],[45,495],[45,480],[35,495],[25,495],[30,480],[45,455],[60,455],[75,460],[85,470],[85,505],[85,515]]}
 ];
 
-const LESIONS = [
-    {key:'fracture', label:'Fracture', color:'#ef4444'},
-    {key:'plaie_laceration', label:'Plaie & lacération', color:'#a855f7'},
-    {key:'plaie_feu', label:'Plaie par arme à feu', color:'#b91c1c'},
-    {key:'brulure', label:'Brûlure', color:'#eab308'}
-];
-
 let activeType = 'fracture';
 let markers = [];
 
+// Initialise la palette de sélection
 function initPalette() {
     const grid = document.getElementById('lesionsGrid');
+    grid.innerHTML = ""; // Nettoie avant de générer
     LESIONS.forEach(l => {
         const chip = document.createElement('div');
         chip.className = 'chip' + (l.key === activeType ? ' active' : '');
@@ -44,11 +48,13 @@ function initPalette() {
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
             chip.classList.add('active');
             activeType = l.key;
+            document.getElementById('activeMarkerLabel').innerText = l.label;
         };
         grid.appendChild(chip);
     });
 }
 
+// Calcule la zone cliquée
 function regionFrom(x, y) {
     for (const r of REGIONS) {
         let inside = false;
@@ -60,20 +66,19 @@ function regionFrom(x, y) {
         }
         if (inside) return r.label;
     }
-    return "Zone non définie";
+    return "Zone indéterminée";
 }
 
+// Clic sur la silhouette
 document.getElementById('overlay').onclick = function(e) {
     const rect = this.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 418;
     const y = ((e.clientY - rect.top) / rect.height) * 940;
-    
     addMarker(x, y, activeType);
 };
 
 function addMarker(x, y, type) {
-    const marker = { id: Date.now(), x, y, type };
-    markers.push(marker);
+    markers.push({ id: Date.now(), x, y, type });
     drawMarkers();
     updateReport();
 }
@@ -94,60 +99,65 @@ function drawMarkers() {
     });
 }
 
+// Met à jour la feuille de constat (Document)
 function updateReport() {
     const list = document.getElementById('reportList');
     list.innerHTML = '';
-    markers.forEach((m) => {
+    
+    markers.forEach((m, index) => {
         const config = LESIONS.find(l => l.key === m.type);
         const zone = regionFrom(m.x, m.y);
         const li = document.createElement('li');
-        li.innerText = `${config.label} constatée au niveau de : ${zone}.`;
+        li.innerHTML = `<strong>Lésion #${index + 1} :</strong> ${config.label} constatée au niveau de : ${zone}.`;
         list.appendChild(li);
     });
 
-    document.getElementById('reportMeta').innerText = `Patient : ${document.getElementById('patientId').value || '—'} • Médecin : ${document.getElementById('doctorName').value || '—'} • Date : ${new Date().toLocaleDateString('fr-FR')}`;
+    const nomPatient = document.getElementById('patientId').value || '—';
+    const nomMedecin = document.getElementById('doctorName').value || '—';
+    const dateExamen = new Date().toLocaleDateString('fr-FR');
+
+    // Update Meta-info et Signature
+    document.getElementById('reportMeta').innerText = `Patient : ${nomPatient} • Médecin : ${nomMedecin} • Date : ${dateExamen}`;
+    document.getElementById('d-sig').innerText = nomMedecin.toUpperCase();
     
+    // Badge PAF (Si arme à feu détectée)
     const hasPAF = markers.some(m => m.type === 'plaie_feu');
     document.getElementById('pafBadge').className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
-}
 
-function updateConstat() {
-    document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
-    document.getElementById('d-rapport').innerText = document.getElementById('f-rapport').value || "...";
-    document.getElementById('d-sig').innerText = document.getElementById('f-medecin').value || "...";
-    
-    // Date
-    const dateVal = document.getElementById('f-date-val').value;
-    document.getElementById('d-date').innerText = dateVal ? new Date(dateVal).toLocaleString('fr-FR') : "...";
-
-    // Référence
+    // Référence & QR Code
     const now = new Date();
-    const ref = String(now.getDate()).padStart(2,'0') + String(now.getMonth()+1).padStart(2,'0') + String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0');
-    document.getElementById('d-ref').innerText = "#CST-" + ref;
-    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CST-${ref}`;
+    const ref = String(now.getDate()).padStart(2,'0') + String(now.getMonth()+1).padStart(2,'0') + 
+                String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0');
+    
+    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CST-${ref}`;
 }
 
-// Ajout de texte via le corps
-function addText(txt) {
-    const area = document.getElementById('f-rapport');
-    area.value += txt;
-    updateConstat();
-    area.focus();
-}
+// Fonctions des boutons Sidebar
+document.getElementById('btnUndo').onclick = () => { markers.pop(); drawMarkers(); updateReport(); };
+document.getElementById('btnClear').onclick = () => { markers = []; drawMarkers(); updateReport(); };
 
-function genererImage() {
-    // Logique html2canvas identique à tes autres pages
-    html2canvas(document.getElementById('document')).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'constat-lesionnel.png';
-        link.href = canvas.toDataURL();
-        link.click();
+// Capture Image (Adaptée de tes autres pages)
+async function genererImage() {
+    const area = document.querySelector('.preview-area');
+    const btn = event.target;
+    btn.innerText = "CAPTURING...";
+
+    const canvas = await html2canvas(area, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#f1f5f9"
     });
+
+    const link = document.createElement('a');
+    link.download = `Constat_${document.getElementById('patientId').value || 'Anonyme'}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+    
+    btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
 }
 
+// Init au chargement
 window.onload = () => {
     initPalette();
     updateReport();
-    // Génère un QR fictif pour le style
-    document.getElementById('qr-ref').src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CONSTAT";
 };
