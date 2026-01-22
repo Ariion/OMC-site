@@ -68,7 +68,10 @@
     width: 100%;
     height: 100%;
     display: block;
-    pointer-events: none; /* L'image ne doit pas bloquer le clic du parent #frame */
+    pointer-events: none;
+    /* On baisse très légèrement l'opacité du corps quand le debug est ON 
+       pour mieux voir les zones bleues si besoin */
+    opacity: 0.9; 
 }
 
 .marker-point {
