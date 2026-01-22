@@ -2,40 +2,59 @@ const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 
 // Liste des lésions enrichie
 const LESIONS = [
-    {key:'fracture', label:'Fracture', color:'#ef4444', icon:'🦴'},
-    {key:'plaie_laceration', label:'Plaie & lacération', color:'#a855f7', icon:'🔪'},
-    {key:'plaie_feu', label:'Plaie par arme à feu', color:'#b91c1c', icon:'🔴'},
-    {key:'brulure', label:'Brûlure thermique', color:'#eab308', icon:'🔥'},
-    {key:'contusion', label:'Contusion / Hématome', color:'#3b82f6', icon:'🟣'},
-    {key:'abrasion', label:'Abrasion / Dermabrasion', color:'#10b981', icon:'🟢'},
-    {key:'oedeme', label:'Oedème / Gonflement', color:'#60a5fa', icon:'💧'}
+    {key:'fracture', label:'Fracture / Entorse', color:'#ef4444', icon:'🦴'},
+    {key:'plaie_laceration', label:'Lacération / Coupure', color:'#a855f7', icon:'🔪'},
+    {key:'plaie_feu', label:'Impact Arme à Feu', color:'#b91c1c', icon:'🔴'},
+    {key:'brulure', label:'Brûlure (Thermique/Chimique)', color:'#eab308', icon:'🔥'},
+    {key:'hematome', label:'Hématome / Bleu', color:'#3b82f6', icon:'🟣'},
+    {key:'abrasion', label:'Abrasion (Râpé)', color:'#10b981', icon:'🟢'},
+    {key:'ponction', label:'Point de ponction (Seringue)', color:'#6366f1', icon:'💉'}
 ];
 
 // Tes données de régions (Gardées telles quelles)
 const REGIONS = [
-    {"id":"tete","label":"Tête","points":[[215,20],[235,30],[245,45],[250,60],[250,75],[255,80],[255,95],[245,105],[240,120],[185,120],[180,105],[175,95],[170,80],[174,60],[175,45],[190,30],[200,20],[215,20]]},
-    {"id":"cou","label":"Cou","points":[[185,125],[240,123],[240,146],[185,145],[185,125]]},
-    {"id":"epaule_droite","label":"Épaule Droite","points":[[175,155],[140,170],[95,195],[135,265],[160,220],[175,175]]},
-    {"id":"epaule_gauche","label":"Épaule Gauche","points":[[250,150],[300,175],[320,185],[325,190],[290,265],[260,205],[250,150]]},
-    {"id":"thorax","label":"Thorax","points":[[180,155],[240,155],[253,217],[279,266],[275,305],[149,301],[145,265],[170,220]]},
-    {"id":"abdomen","label":"Abdomen","points":[[150,310],[275,314],[280,360],[285,395],[145,395],[145,315]]},
-    {"id":"hanche","label":"Hanche","points":[[140,400],[285,405],[295,440],[295,470],[130,470],[135,425]]},
-    {"id":"cuisse_gauche","label":"Cuisse Gauche","points":[[215,475],[295,475],[290,575],[285,620],[230,620],[220,540],[220,505]]},
-    {"id":"cuisse_droite","label":"Cuisse Droite","points":[[130,475],[205,475],[205,515],[200,575],[195,620],[140,620],[135,575],[130,525]]},
-    {"id":"genoux_gauche","label":"Genou Gauche","points":[[230,626],[285,626],[285,661],[235,656],[235,646]]},
-    {"id":"genoux_droit","label":"Genou Droit","points":[[140,625],[190,625],[190,660],[140,660],[140,640]]},
-    {"id":"jambe_gauche","label":"Jambe Gauche","points":[[235,664],[285,670],[285,750],[270,815],[270,825],[245,820],[240,765],[235,730],[235,695]]},
-    {"id":"jambe_droite","label":"Jambe Droite","points":[[140,665],[190,665],[190,730],[185,760],[180,795],[180,820],[155,815],[145,760],[140,725],[140,675]]},
-    {"id":"cheville_gauche","label":"Cheville Gauche","points":[[245,825],[270,830],[275,860],[245,875],[240,855],[245,835]]},
-    {"id":"cheville_droite","label":"Cheville Droite","points":[[155,825],[180,825],[185,855],[150,855],[155,840]]},
-    {"id":"pied_gauche","label":"Pied Gauche","points":[[280,860],[300,885],[295,895],[280,905],[260,905],[250,890],[250,880],[260,870]]},
-    {"id":"pied_droit","label":"Pied Droit","points":[[160,905],[135,900],[125,890],[130,875],[145,860],[165,860],[185,860],[180,875],[175,895],[170,900]]},
-    {"id":"bras_gauche","label":"Bras Gauche","points":[[335,425],[310,355],[305,310],[295,270],[330,195],[335,235],[335,285],[340,310],[350,340],[360,410],[365,430],[340,435]]},
-    {"id":"poignet_gauche","label":"Poignet Gauche","points":[[340,460],[380,455],[365,445],[365,435],[350,435],[340,445]]},
-    {"id":"main_gauche","label":"Main Gauche","points":[[385,530],[355,530],[345,520],[340,480],[340,465],[355,460],[370,460],[385,465],[400,485],[400,495],[385,485]]},
-    {"id":"bras_droit","label":"Bras Droit","points":[[90,430],[65,425],[70,385],[75,345],[85,315],[90,265],[95,220],[95,205],[130,270],[125,310],[120,345],[110,380]]},
-    {"id":"poignet_droit","label":"Poignet Droit","points":[[85,460],[50,450],[60,440],[60,430],[75,430],[80,430],[85,440]]},
-    {"id":"main_droite","label":"Main Droite","points":[[80,520],[70,530],[55,530],[40,525],[45,495],[45,480],[35,495],[25,495],[30,480],[45,455],[60,455],[75,460],[85,470],[85,505],[85,515]]}
+    {"id":"tete","label":"Tête / Crâne","points":[[215,20],[250,60],[255,100],[215,120],[175,100],[180,60]]},
+    {"id":"cou","label":"Région Cervicale (Cou)","points":[[185,125],[240,123],[240,146],[185,145]]},
+    {"id":"epaule_d","label":"Épaule Droite","points":[[175,155],[140,170],[95,195],[135,265],[160,220],[175,175]]},
+    {"id":"epaule_g","label":"Épaule Gauche","points":[[250,150],[300,175],[320,185],[325,190],[290,265],[260,205],[250,150]]},
+    {"id":"thorax","label":"Thorax / Cage Thoracique","points":[[180,155],[240,155],[253,217],[260,300],[160,300],[170,220]]},
+    {"id":"abdomen","label":"Abdomen / Ventre","points":[[160,305],[260,305],[270,400],[150,400]]},
+    {"id":"hanche","label":"Hanche / Bassin","points":[[140,400],[285,405],[295,440],[295,470],[130,470],[135,425]]},
+    
+    // BRAS DROIT
+    {"id":"bras_d_haut","label":"Bras Droit (Biceps)","points":[[95,205],[130,270],[125,310],[120,345],[85,315],[90,265]]},
+    {"id":"coude_d","label":"Coude Droit","points":[[110,360],[125,360],[125,385],[110,385]]},
+    {"id":"avant_bras_d","label":"Avant-bras Droit","points":[[75,400],[115,400],[100,450],[60,450]]},
+    {"id":"poignet_d","label":"Poignet Droit","points":[[85,460],[50,450],[60,430],[85,440]]},
+    {"id":"main_d","label":"Main Droite","points":[[80,520],[40,525],[45,455],[85,470]]},
+    {"id":"pouce_d","label":"Pouce Droit","points":[[30,500],[50,500],[50,520],[30,520]]},
+    {"id":"index_d","label":"Index Droit","points":[[35,530],[50,530],[50,555],[35,555]]},
+    {"id":"majeur_d","label":"Majeur Droit","points":[[55,540],[70,540],[70,570],[55,570]]},
+    {"id":"annulaire_d","label":"Annulaire Droit","points":[[75,535],[85,535],[85,560],[75,560]]},
+    {"id":"auriculaire_d","label":"Auriculaire Droit","points":[[90,520],[100,520],[100,545],[90,545]]},
+
+    // BRAS GAUCHE
+    {"id":"bras_g_haut","label":"Bras Gauche (Biceps)","points":[[320,205],[290,270],[295,310],[300,345],[335,315],[330,265]]},
+    {"id":"coude_g","label":"Coude Gauche","points":[[295,360],[310,360],[310,385],[295,385]]},
+    {"id":"avant_bras_g","label":"Avant-bras Gauche","points":[[305,400],[345,400],[360,450],[320,450]]},
+    {"id":"poignet_g","label":"Poignet Gauche","points":[[340,460],[375,455],[365,435],[340,445]]},
+    {"id":"main_g","label":"Main Gauche","points":[[340,480],[385,530],[400,485],[355,460]]},
+    {"id":"pouce_g","label":"Pouce Gauche","points":[[370,500],[390,500],[390,520],[370,520]]},
+    {"id":"index_g","label":"Index Gauche","points":[[370,530],[385,530],[385,555],[370,555]]},
+    {"id":"majeur_g","label":"Majeur Gauche","points":[[350,540],[365,540],[365,570],[350,570]]},
+    {"id":"annulaire_g","label":"Annulaire Gauche","points":[[335,535],[345,535],[345,560],[335,560]]},
+    {"id":"auriculaire_g","label":"Auriculaire Gauche","points":[[320,520],[330,520],[330,545],[320,545]]},
+
+    // JAMBES
+    {"id":"cuisse_d","label":"Cuisse Droite","points":[[130,475],[205,475],[205,515],[200,575],[195,620],[140,620]]},
+    {"id":"genou_d","label":"Genou Droit","points":[[140,625],[190,625],[190,660],[140,660]]},
+    {"id":"jambe_d","label":"Jambe Droite (Tibia)","points":[[140,665],[190,665],[180,820],[155,815]]},
+    {"id":"pied_d","label":"Pied Droit","points":[[160,905],[125,890],[145,860],[185,860]]},
+
+    {"id":"cuisse_g","label":"Cuisse Gauche","points":[[215,475],[295,475],[290,575],[230,620],[220,540]]},
+    {"id":"genou_g","label":"Genou Gauche","points":[[230,626],[285,626],[285,661],[235,656]]},
+    {"id":"jambe_g","label":"Jambe Gauche (Tibia)","points":[[235,664],[285,670],[270,825],[245,820]]},
+    {"id":"pied_g","label":"Pied Gauche","points":[[280,860],[300,885],[260,905],[250,880]]}
 ];
 
 let activeType = 'fracture';
@@ -155,23 +174,38 @@ function updateReport() {
 }
 
 async function genererImage() {
-    const captureZone = document.getElementById('capture-zone'); // Assurez-vous d'englober silhouette + doc dans une div
-    const canvas = await html2canvas(captureZone, { scale: 2, useCORS: true });
-    
-    const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-    const formData = new FormData();
-    formData.append("image", imageData);
+    const captureZone = document.getElementById('capture-zone');
+    const btn = event.currentTarget; // On utilise currentTarget pour plus de stabilité
 
-    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-        method: "POST",
-        body: formData
-    });
-    const result = await response.json();
+    if (!captureZone) {
+        alert("Erreur : La zone de capture (capture-zone) est introuvable dans le HTML.");
+        return;
+    }
 
-    if (result.success) {
-        document.getElementById('preview-img-result').src = result.data.url;
-        document.getElementById('direct-link').value = result.data.url;
-        document.getElementById('image-popup').style.display = 'flex';
+    btn.innerText = "GÉNÉRATION EN COURS...";
+    btn.disabled = true;
+
+    try {
+        // Capture de la zone (Silhouette + Document)
+        const canvas = await html2canvas(captureZone, { 
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: "#ffffff" // Force le fond blanc pour l'image finale
+        });
+        
+        // Conversion en image et téléchargement
+        const link = document.createElement('a');
+        link.download = `Constat_${document.getElementById('patientId').value || 'Patient'}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
+    } catch (e) {
+        console.error("Erreur capture:", e);
+        alert("Une erreur est survenue lors de la génération de l'image.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
     }
 }
 // Fonction d'envoi Discord
