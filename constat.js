@@ -75,7 +75,16 @@ window.onload = () => {
     setupDraggableSystem();
     updateReport();
     initTraitements();
-
+    
+const d = new Date();
+    const dateStr = d.toISOString().slice(2,10).replace(/-/g, '');
+    const ref = "#" + dateStr + Math.floor(Math.random() * 99).toString().padStart(2, '0');
+    document.getElementById('reportRef').value = ref;
+    document.getElementById('display-ref').innerText = ref;
+    document.getElementById('constatDate').valueAsDate = d;
+    
+    updateReport();
+};
     // Création sécurisée du calque de zones
     const svg = document.getElementById('overlay'); 
     if (svg) {
@@ -234,9 +243,21 @@ function regionFrom(x, y) {
 
 function updateReport() {
     // 1. Liaison des Textes (Patient, Médecin, Date)
-    const patient = document.getElementById('patientId').value || "—";
-    const doctor = document.getElementById('doctorName').value || "—";
-    const dateTime = document.getElementById('constatDateTime').value;
+const patient = document.getElementById('patientId').value || "...";
+    const doctor = document.getElementById('doctorName').value || "...";
+    const dateVal = document.getElementById('constatDate').value;
+    const ref = document.getElementById('reportRef').value;
+    const sig = document.getElementById('doctorSig').value || "...";
+
+    // 2. Mise à jour de l'affichage DOCUMENT (Boxes grises)
+    document.getElementById('display-patient').innerText = patient;
+    document.getElementById('display-date').innerText = dateVal ? new Date(dateVal).toLocaleDateString('fr-FR') : "...";
+    document.getElementById('display-ref').innerText = ref;
+
+    // 3. Texte meta sous le titre
+    document.getElementById('reportMeta').innerText = `Patient : ${patient} • Médecin : ${doctor} • Date : ${document.getElementById('display-date').innerText}`;
+    document.getElementById('d-sig').innerText = sig;
+
     
     // Formatage de la date
     let dateFormatted = "—";
@@ -244,8 +265,6 @@ function updateReport() {
         const d = new Date(dateTime);
         dateFormatted = d.toLocaleDateString('fr-FR') + " à " + d.toLocaleTimeString('fr-FR', {hour: '2bit', minute:'2bit'});
     }
-
-    document.getElementById('reportMeta').innerText = `Patient : ${patient} • Médecin : ${doctor} • Le : ${dateFormatted}`;
 
     // 2. Gestion de la Signature
     const sig = document.getElementById('doctorSig').value || "...";
@@ -277,6 +296,16 @@ function updateReport() {
         const hasPAF = markers.some(m => m.type === 'plaie_feu');
         pafBadge.className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
     }
+    updateMedicationDisplay();
+}
+    function updateMedicationDisplay() {
+    const selectedMeds = Array.from(document.querySelectorAll('.med-check:checked')).map(cb => cb.value);
+    const divMeds = document.getElementById('sectionTraitements');
+    if(divMeds) {
+        divMeds.style.display = selectedMeds.length ? 'block' : 'none';
+        document.getElementById('docMedsList').innerHTML = selectedMeds.map(m => `<li>${m}</li>`).join('');
+    }
+}
 
     // 5. QR Code et Référence
     if (!window.sessionRef) {
