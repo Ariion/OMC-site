@@ -58,6 +58,10 @@ window.onload = () => {
     setupInteractions();
     setupDraggableSystem();
     updateReport();
+    const svg = document.querySelector('#frame svg'); // On cible ton SVG existant
+const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+g.id = "debugLayer";
+svg.appendChild(g);
 };
 
 function initPalette() {
@@ -299,4 +303,30 @@ function copyLink() {
 
 function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
+}
+
+function toggleDebug() {
+    const isChecked = document.getElementById('debugToggle').checked;
+    const layer = document.getElementById('debugLayer');
+    
+    // On affiche ou on cache le calque
+    layer.style.display = isChecked ? 'block' : 'none';
+    
+    // Si on l'active, on dessine les zones (si ce n'est pas déjà fait)
+    if (isChecked && layer.innerHTML === "") {
+        REGIONS.forEach(region => {
+            const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+            const pointsString = region.points.map(p => p.join(",")).join(" ");
+            
+            polygon.setAttribute("points", pointsString);
+            polygon.setAttribute("class", "debug-zone");
+            
+            // Ajoute le nom de la zone au survol
+            const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+            title.textContent = region.label;
+            polygon.appendChild(title);
+            
+            layer.appendChild(polygon);
+        });
+    }
 }
