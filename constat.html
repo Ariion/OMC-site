@@ -14,21 +14,34 @@
             <a href="index.html" class="back-link">← RETOUR PORTAIL</a>
             <h1 class="sidebar-title">CONSTAT LÉSIONNEL</h1>
 
-            <div class="form-group">
-    <label>DATE ET HEURE DU CONSTAT</label>
-    <input id="constatDateTime" type="datetime-local" oninput="updateReport()">
+            <div class="form-group-row">
+    <div class="form-group">
+        <label>PATIENT</label>
+        <input id="patientId" type="text" placeholder="Ex: Garret Freeman" oninput="updateReport()">
+    </div>
+    <div class="form-group">
+        <label>NOM DU MÉDECIN</label>
+        <input id="doctorName" type="text" placeholder="Ex: Bill Hanson" oninput="updateReport()">
+    </div>
 </div>
 
-<div class="form-group">
-    <label>PATIENT</label>
-    <input id="patientId" type="text" placeholder="Nom du patient" oninput="updateReport()">
+<div class="form-group-row">
+    <div class="form-group">
+        <label>DATE D'ÉTABLISSEMENT</label>
+        <input id="constatDate" type="date" oninput="updateReport()">
+    </div>
+    <div class="form-group">
+        <label>RÉFÉRENCE DOSSIER</label>
+        <input id="reportRef" type="text" readonly class="readonly-input">
+    </div>
 </div>
 
-<div class="form-group">
-    <label>MÉDECIN</label>
-    <input id="doctorName" type="text" placeholder="Dr. Nom" oninput="updateReport()">
+<div class="report-header-grid">
+    <div class="info-box"><small>PATIENT</small><div id="display-patient">...</div></div>
+    <div class="info-box"><small>NAISSANCE</small><div id="display-birth">...</div></div>
+    <div class="info-box"><small>DATE D'ÉTABLISSEMENT</small><div id="display-date">22/01/2026</div></div>
+    <div class="info-box"><small>RÉFÉRENCE DOSSIER</small><div id="display-ref">#22012300</div></div>
 </div>
-
             <div class="form-group">
                 <label>Type de lésion à placer</label>
                 <div class="lesions-grid" id="lesionsGrid"></div>
