@@ -37,6 +37,25 @@
     padding: 20px;
 }
 
+/* Style des points mobiles */
+.marker-point {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: grab;
+    transform: translate(-50%, -50%); /* Centre le point sur le clic */
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    z-index: 10;
+}
+.marker-point:active { cursor: grabbing; }
+
+#frame {
+    position: relative; /* Important pour le placement des points */
+    user-select: none;
+}
+
 /* --- SILHOUETTE --- */
 .bodymap-container {
     background: #0b1223;
