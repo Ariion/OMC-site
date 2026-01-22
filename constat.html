@@ -19,35 +19,34 @@
                 <input id="patientId" type="text" placeholder="Nom du patient" oninput="updateReport()">
             </div>
             <div class="form-group">
-                <label>Médecin</label>
-                <input id="doctorName" type="text" placeholder="Nom du médecin" oninput="updateReport()">
+                <label>Médecin (Administratif)</label>
+                <input id="doctorName" type="text" placeholder="Dr. Nom" oninput="updateReport()">
             </div>
 
             <div class="form-group">
                 <label>Type de lésion à placer</label>
-                <div class="lesions-grid" id="lesionsGrid">
-                    </div>
+                <div class="lesions-grid" id="lesionsGrid"></div>
             </div>
 
             <div class="form-group">
-                <label>État : <span id="activeMarkerLabel">Fracture</span></label>
-                <div id="pafBadge" class="paf-badge paf-hidden">PAF DÉTECTÉE (ALERTE LSPD)</div>
+                <label>Signature du Praticien</label>
+                <input id="doctorSig" type="text" placeholder="Signature manuscrite" oninput="updateReport()">
             </div>
 
             <div class="actions-group">
                 <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
                 <button class="btn-discord" onclick="envoyerDiscord()">Envoyer sur Discord</button>
                 <div class="edit-btns">
-                    <button id="btnUndo" class="btn-secondary">ANNULER POINT</button>
-                    <button id="btnClear" class="btn-danger">EFFACER TOUT</button>
+                    <button id="btnUndo" class="btn-secondary">ANNULER</button>
+                    <button id="btnClear" class="btn-danger">EFFACER</button>
                 </div>
             </div>
         </aside>
 
         <main class="preview-area">
-            
-            <div class="work-zone" id="capture-zone">
-                <div class="bodymap-container">
+            <div id="capture-zone" class="document-final">
+                
+                <div class="doc-left-side">
                     <div class="bodyframe" id="frame">
                         <img class="body-bg" src="assets/corps-humain.png" alt="Silhouette">
                         <svg class="overlay" id="overlay" viewBox="0 0 418 940">
@@ -56,37 +55,37 @@
                     </div>
                 </div>
 
-                <div id="document">
-                    <div class="header-cert">
-                        <img src="assets/logo_omc.png" style="height: 60px;">
+                <div class="doc-right-side">
+                    <header class="header-cert">
+                        <img src="assets/logo_omc.png" style="height: 50px;">
                         <div>
                             <div class="cert-tag">OCEAN MEDICAL CENTER — INTRANET</div>
                             <h1 class="cert-main-title">CONSTAT LÉSIONNEL</h1>
                         </div>
-                    </div>
+                    </header>
 
                     <div class="report-content">
                         <div class="meta-info" id="reportMeta">Patient : — • Médecin : — • Date : —</div>
                         <hr class="doc-hr">
-                        <h4>Observations cliniques :</h4>
+                        <h4>OBSERVATIONS CLINIQUES :</h4>
                         <ol id="reportList">
-                            <li>Aucune lésion sélectionnée sur la silhouette.</li>
+                            <li>Aucune lésion sélectionnée.</li>
                         </ol>
                     </div>
 
                     <div class="cert-footer">
                         <div class="cert-signature">
                             Établi par :<br><br>
-                            <span id="d-sig">DOCTEUR</span>
+                            <span id="d-sig">...</span>
                         </div>
                         <div class="round-stamp">
-                            <img id="qr-ref" class="qr-code" src="" alt="QR">
-                            OMC MEDICAL CENTER
+                            <img id="qr-ref" class="qr-code" src="">
+                            <div class="stamp-text">OMC CERTIFIED</div>
                         </div>
                     </div>
-                    
+
                     <p class="legal-text">
-                        Ce document est établi dans le cadre d'un constat médical d'imagerie. Toute reproduction ou usage détourné est strictement interdit. Document certifié conforme par le système OMC.
+                        Ce document est établi dans le cadre d'un constat médical d'imagerie. Toute reproduction ou usage détourné est strictement interdit.
                     </p>
                 </div>
             </div>
