@@ -29,6 +29,11 @@
                 <div class="lesions-grid" id="lesionsGrid"></div>
             </div>
 
+            <div class="edit-btns-container">
+        <button id="btnUndo" class="btn-edit">EFFACER LE DERNIER POINT</button>
+        <button id="btnClear" class="btn-edit btn-danger-soft">RÉINITIALISER L'IMAGERIE</button>
+    </div>
+
             <div class="form-group">
                 <label>Signature du Praticien</label>
                 <input id="doctorSig" type="text" placeholder="Signature manuscrite" oninput="updateReport()">
@@ -37,10 +42,7 @@
             <div class="actions-group">
                 <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
                 <button class="btn-discord" onclick="envoyerDiscord()">Envoyer sur Discord</button>
-                <div class="edit-btns">
-                    <button id="btnUndo" class="btn-secondary">ANNULER</button>
-                    <button id="btnClear" class="btn-danger">EFFACER</button>
-                </div>
+                
             </div>
         </aside>
 
