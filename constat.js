@@ -216,6 +216,7 @@ function updateReport() {
 
 const pafBadge = document.getElementById('pafBadge');
 if (pafBadge) {
+    const hasPAF = markers.some(m => m.type === 'plaie_feu');
     pafBadge.className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
 }
 
@@ -318,42 +319,28 @@ function closePopup() {
 function toggleDebug() {
     const isChecked = document.getElementById('debugToggle').checked;
     const layer = document.getElementById('debugLayer');
-    const svg = document.getElementById('overlay'); // On récupère le SVG parent
+    const svg = document.getElementById('overlay');
     
     if (!layer || !svg) return;
 
-    // A chaque activation, on déplace le calque à la fin pour qu'il soit au-dessus
-    if (isChecked) {
-        svg.appendChild(layer); 
-    }
-
+    // A chaque clic, on le déplace à la fin du SVG pour qu'il soit devant l'image
+    svg.appendChild(layer); 
     layer.style.display = isChecked ? 'block' : 'none';
-if (isChecked) {
-    const svg = document.getElementById('overlay');
-    svg.appendChild(layer); // On le déplace à la fin du SVG à chaque activation pour "forcer" le dessus
-}
-    // Si on active et que c'est vide, on dessine
+
     if (isChecked && layer.innerHTML === "") {
         REGIONS.forEach(region => {
-            // 1. Création du polygone bleu
             const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-            const pointsString = region.points.map(p => p.join(",")).join(" ");
-            polygon.setAttribute("points", pointsString);
+            polygon.setAttribute("points", region.points.map(p => p.join(",")).join(" "));
             polygon.setAttribute("class", "debug-zone");
             layer.appendChild(polygon);
 
-            // 2. Calcul du centre pour placer le texte du nom de la zone
+            // Ajout du texte
             const centerX = region.points.reduce((sum, p) => sum + p[0], 0) / region.points.length;
             const centerY = region.points.reduce((sum, p) => sum + p[1], 0) / region.points.length;
-
             const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.setAttribute("x", centerX);
-            text.setAttribute("y", centerY);
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "10px");
-            text.setAttribute("font-weight", "bold");
-            text.setAttribute("text-anchor", "middle");
-            text.setAttribute("style", "pointer-events: none; text-shadow: 1px 1px 2px black;");
+            text.setAttribute("x", centerX); text.setAttribute("y", centerY);
+            text.setAttribute("fill", "white"); text.setAttribute("font-size", "10px");
+            text.setAttribute("text-anchor", "middle"); text.setAttribute("style", "text-shadow: 1px 1px 2px black;");
             text.textContent = region.label;
             layer.appendChild(text);
         });
