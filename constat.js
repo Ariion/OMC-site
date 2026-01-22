@@ -58,10 +58,17 @@ window.onload = () => {
     setupInteractions();
     setupDraggableSystem();
     updateReport();
-    const svg = document.querySelector('#frame svg'); // On cible ton SVG existant
-const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-g.id = "debugLayer";
-svg.appendChild(g);
+
+    // On cible directement l'ID 'overlay' qui est ton SVG
+    const svg = document.getElementById('overlay'); 
+    if (svg) {
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.id = "debugLayer";
+        // On l'insère au début du SVG pour qu'il soit sous les marqueurs
+        svg.insertBefore(g, svg.firstChild); 
+    } else {
+        console.error("ERREUR : Le SVG avec l'id 'overlay' est introuvable !");
+    }
 };
 
 function initPalette() {
@@ -309,19 +316,23 @@ function toggleDebug() {
     const isChecked = document.getElementById('debugToggle').checked;
     const layer = document.getElementById('debugLayer');
     
-    // On affiche ou on cache le calque
+    if (!layer) return; // Sécurité si le calque n'existe pas
+
     layer.style.display = isChecked ? 'block' : 'none';
     
-    // Si on l'active, on dessine les zones (si ce n'est pas déjà fait)
     if (isChecked && layer.innerHTML === "") {
+        console.log("Génération du calque de debug...");
+        
         REGIONS.forEach(region => {
             const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+            
+            // On s'assure que les points sont bien formatés
             const pointsString = region.points.map(p => p.join(",")).join(" ");
             
             polygon.setAttribute("points", pointsString);
             polygon.setAttribute("class", "debug-zone");
             
-            // Ajoute le nom de la zone au survol
+            // On ajoute le nom pour le survol
             const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
             title.textContent = region.label;
             polygon.appendChild(title);
