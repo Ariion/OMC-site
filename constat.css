@@ -327,16 +327,28 @@ input:checked + .slider:before { transform: translateX(14px); }
 
 .checkbox-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
-    margin-top: 10px;
+    grid-template-columns: repeat(2, 1fr); /* Force 2 colonnes égales */
+    gap: 10px 15px; /* Espace entre les lignes et colonnes */
+    margin: 10px 0;
+    align-items: center;
 }
 
+/* Style de chaque ligne (Case + Texte) */
 .checkbox-item {
-    font-size: 10px;
     display: flex;
-    align-items: center;
-    gap: 5px;
+    align-items: center; /* Aligne verticalement la case et le texte */
+    gap: 8px;            /* Espace fixe entre la case et le texte */
+    cursor: pointer;
+    font-size: 11px;
+    color: #94a3b8;
+    white-space: nowrap; /* Empêche le texte de passer à la ligne */
+}
+
+/* Taille fixe pour les cases à cocher pour éviter les décalages */
+.checkbox-item input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    margin: 0;
     cursor: pointer;
 }
 
@@ -350,12 +362,15 @@ input:checked + .slider:before { transform: translateX(14px); }
 }
 
 .details-sub {
-    color: #94a3b8;
+    grid-column: span 2; /* Le titre prend toute la largeur des 2 colonnes */
+    color: #64ffda;
     font-size: 10px;
-    margin: 8px 0 4px 0;
     font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 10px;
+    border-bottom: 1px solid rgba(100, 255, 218, 0.1);
+    padding-bottom: 3px;
 }
-
 /* Style spécifique pour le document blanc pour les nouvelles sections */
 .doc-section-title {
     font-size: 12px;
