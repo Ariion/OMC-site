@@ -36,14 +36,6 @@ const REGIONS = [
 let activeType = 'fracture';
 let markers = [];
 
-C'est normal, en réorganisant le code pour mettre la silhouette à l'intérieur du document blanc (pour que tout soit capturé sur une seule image), certains liens entre le JS et le HTML ont sauté.
-
-Voici le code JS corrigé et simplifié. J'ai remis la fonction regionFrom et je me suis assuré que chaque clic sur la silhouette met à jour la liste des conclusions à droite.
-
-1. Le JavaScript (constat.js)
-Remplace tout par ce bloc. Il contient les coordonnées des zones et la logique de mise à jour en temps réel.
-
-JavaScript
 // --- CONFIGURATION DES LÉSIONS ---
 const LESIONS = [
     {key:'fracture', label:'Fracture', color:'#ef4444', icon:'🦴'},
