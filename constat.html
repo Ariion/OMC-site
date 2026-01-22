@@ -28,6 +28,27 @@
                 <label>Type de lésion à placer</label>
                 <div class="lesions-grid" id="lesionsGrid"></div>
             </div>
+            <div class="form-group" id="detailsContainer" style="display:none; background: #111b2d; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-top: 15px;">
+    </div>
+
+<div class="form-group" style="border-top: 1px solid #1e293b; padding-top: 15px;">
+    <label>Traitement médicamenteux</label>
+    <div class="checkbox-grid" id="medsGrid">
+        </div>
+</div>
+
+<div class="form-group">
+    <label>Préconisations post-rapport</label>
+    <div class="checkbox-grid" id="preconsGrid">
+        </div>
+</div>
+
+<div id="lspdSection" class="form-group" style="display:none;">
+    <label style="color: #ef4444; font-size: 10px;">📋 DÉCLARATION INTER-SERVICES</label>
+    <label class="checkbox-item" style="font-size: 11px; color: #94a3b8;">
+        <input type="checkbox" id="lspdDeclare" onchange="updateReport()"> Déclaration LSPD / BCSO
+    </label>
+</div>
 
             <div class="edit-btns-container">
         <button id="btnUndo" class="btn-edit">EFFACER LE DERNIER POINT</button>
