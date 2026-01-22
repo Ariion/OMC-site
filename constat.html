@@ -18,8 +18,9 @@
                 <label>Patient</label>
                 <input id="patientId" type="text" placeholder="Nom du patient" oninput="updateReport()">
             </div>
+
             <div class="form-group">
-                <label>Médecin (Administratif)</label>
+                <label>Médecin</label> 
                 <input id="doctorName" type="text" placeholder="Dr. Nom" oninput="updateReport()">
             </div>
 
@@ -83,14 +84,13 @@
                             <div class="stamp-text">OMC CERTIFIED</div>
                         </div>
                     </div>
-
-                    <p class="legal-text">
-                        Ce document est établi dans le cadre d'un constat médical d'imagerie. Toute reproduction ou usage détourné est strictement interdit.
-                    </p>
+                    <p class="legal-text">Ce document est établi dans le cadre d'un constat médical d'imagerie.</p>
                 </div>
             </div>
         </main>
     </div>
+
+    <div id="cursorTip" class="cursor-tip"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="constat.js"></script>
