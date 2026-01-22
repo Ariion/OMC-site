@@ -284,12 +284,12 @@
     margin-bottom: 10px;
 }
 
-/* Style pour le calque de debug */
+/* Apparence du calque de debug */
 .debug-zone {
-    fill: rgba(30, 144, 255, 0.2); /* Bleu ciel très transparent */
-    stroke: rgba(30, 144, 255, 0.8); /* Bordure bleue */
+    fill: rgba(30, 144, 255, 0.3); /* Bleu transparent */
+    stroke: #1e90ff;               /* Bordure bleue */
     stroke-width: 1px;
-    pointer-events: none; /* Très important : laisse passer les clics pour poser les points */
+    pointer-events: none;          /* IMPORTANT : pour pouvoir cliquer à travers et poser des points */
 }
 
 /* Cache le calque par défaut */
