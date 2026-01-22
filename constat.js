@@ -111,6 +111,30 @@ function updateReport() {
     document.getElementById('pafBadge').className = hasPAF ? 'paf-badge' : 'paf-badge paf-hidden';
 }
 
+function updateConstat() {
+    document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
+    document.getElementById('d-rapport').innerText = document.getElementById('f-rapport').value || "...";
+    document.getElementById('d-sig').innerText = document.getElementById('f-medecin').value || "...";
+    
+    // Date
+    const dateVal = document.getElementById('f-date-val').value;
+    document.getElementById('d-date').innerText = dateVal ? new Date(dateVal).toLocaleString('fr-FR') : "...";
+
+    // Référence
+    const now = new Date();
+    const ref = String(now.getDate()).padStart(2,'0') + String(now.getMonth()+1).padStart(2,'0') + String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('d-ref').innerText = "#CST-" + ref;
+    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CST-${ref}`;
+}
+
+// Ajout de texte via le corps
+function addText(txt) {
+    const area = document.getElementById('f-rapport');
+    area.value += txt;
+    updateConstat();
+    area.focus();
+}
+
 function genererImage() {
     // Logique html2canvas identique à tes autres pages
     html2canvas(document.getElementById('document')).then(canvas => {
