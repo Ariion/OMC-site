@@ -11,47 +11,50 @@ const LESIONS = [
     {key:'ponction', label:'Point de ponction (Seringue)', color:'#6366f1', icon:'💉'}
 ];
 
-// Tes données de régions (Gardées telles quelles)
+// Tes données de régions
 const REGIONS = [
     {"id":"tete","label":"Tête / Crâne","points":[[175,20],[243,20],[258,60],[258,105],[215,125],[172,105],[172,60]]},
-    {"id":"cou","label":"Cou","points":[[185,123],[245,123],[245,150],[185,150]]},
+    {"id":"cou","label":"Cou / Cervicales","points":[[185,123],[245,123],[245,150],[185,150]]},
     
-    // TRONC - 
-    {"id":"thorax","label":"Thorax","points":[[175,155],[255,155],[270,300],[160,300]]},
+    // TRONC & JONCTIONS BRAS
+    {"id":"thorax","label":"Thorax / Poitrine","points":[[175,155],[255,155],[270,300],[160,300]]},
+    {"id":"aisselle_d","label":"Aisselle Droite","points":[[135,210],[165,210],[170,265],[140,265]]},
+    {"id":"aisselle_g","label":"Aisselle Gauche","points":[[265,210],[295,210],[290,265],[260,265]]},
     {"id":"abdomen","label":"Abdomen / Nombril","points":[[160,305],[270,305],[275,380],[155,380]]},
     {"id":"flanc_d","label":"Flanc Droit","points":[[135,270],[158,270],[153,400],[130,400]]},
     {"id":"flanc_g","label":"Flanc Gauche","points":[[272,270],[295,270],[300,400],[277,400]]},
-    {"id":"bassin","label":"Zone Pelvienne","points":[[155,385],[275,385],[285,440],[145,440]]},
-    {"id":"hanche_d","label":"Hanche Droite","points":[[130,410],[145,410],[135,475],[115,475]]},
-    {"id":"hanche_g","label":"Hanche Gauche","points":[[285,410],[300,410],[315,475],[295,475]]},
 
-    // BRAS DROIT - 
+    // ZONE PELVIENNE & BASSIN
+    {"id":"bassin","label":"Bassin / Crêtes Iliaques","points":[[140,410],[290,410],[295,445],[135,445]]},
+    {"id":"pubis","label":"Zone Pubienne / Organes","points":[[180,445],[250,445],[245,490],[185,490]]},  reproductrice
+    {"id":"hanche_d","label":"Hanche Droite","points":[[115,410],[140,410],[150,490],[115,490]]},
+    {"id":"hanche_g","label":"Hanche Gauche","points":[[290,410],[315,410],[315,490],[280,490]]},
+
+    // BRAS & MAINS (Inclus les pouces)
     {"id":"epaule_d","label":"Épaule Droite","points":[[110,165],[170,155],[160,210],[100,210]]},
-    {"id":"bras_d_haut","label":"Bras Droit (Haut)","points":[[90,215],[125,215],[125,320],[85,320]]},
+    {"id":"bras_d_haut","label":"Bras Droit (Biceps)","points":[[90,215],[125,215],[125,320],[85,320]]},
     {"id":"coude_d","label":"Coude Droit","points":[[85,325],[125,325],[125,365],[85,365]]},
     {"id":"avant_bras_d","label":"Avant-bras Droit","points":[[70,370],[115,370],[100,450],[60,450]]},
     {"id":"poignet_d","label":"Poignet Droit","points":[[55,455],[95,455],[95,480],[55,480]]},
-    {"id":"main_d","label":"Main Droite","points":[[40,485],[90,485],[85,550],[35,550]]}, // Diminué de 580 à 550
+    {"id":"main_d","label":"Main & Pouce Droits","points":[[20,485],[95,485],[90,560],[20,560]]}, 
 
-    // BRAS GAUCHE - 
     {"id":"epaule_g","label":"Épaule Gauche","points":[[260,155],[320,165],[330,210],[270,210]]},
-    {"id":"bras_g_haut","label":"Bras Gauche (Haut)","points":[[305,215],[340,215],[345,320],[305,320]]},
+    {"id":"bras_g_haut","label":"Bras Gauche (Biceps)","points":[[305,215],[340,215],[345,320],[305,320]]},
     {"id":"coude_g","label":"Coude Gauche","points":[[305,325],[345,325],[345,365],[305,365]]},
     {"id":"avant_bras_g","label":"Avant-bras Gauche","points":[[315,370],[360,370],[375,450],[330,450]]},
     {"id":"poignet_g","label":"Poignet Gauche","points":[[335,455],[375,455],[375,480],[335,480]]},
-    {"id":"main_g","label":"Main Gauche","points":[[340,485],[390,485],[395,550],[345,550]]}, // Diminué de 580 à 550
+    {"id":"main_g","label":"Main & Pouce Gauches","points":[[330,485],[405,485],[405,560],[330,560]]},
 
-    // JAMBES - 
-    {"id":"cuisse_d","label":"Cuisse Droite","points":[[135,480],[208,480],[205,620],[135,620]]},
+    // JAMBES
+    {"id":"cuisse_d","label":"Cuisse Droite","points":[[120,490],[200,495],[205,620],[135,620]]},
+    {"id":"cuisse_g","label":"Cuisse Gauche","points":[[215,495],[295,495],[285,620],[215,620]]},
     {"id":"genou_d","label":"Genou Droit","points":[[135,625],[205,625],[205,670],[135,670]]},
-    {"id":"jambe_d","label":"Jambe Droite (Tibia)","points":[[140,675],[195,675],[190,820],[150,820]]},
-    {"id":"cheville_d","label":"Cheville Droite","points":[[150,825],[190,825],[190,855],[150,855]]},
-    {"id":"pied_d","label":"Pied Droit","points":[[130,860],[195,860],[185,910],[120,910]]},
-
-    {"id":"cuisse_g","label":"Cuisse Gauche","points":[[212,480],[285,480],[285,620],[215,620]]},
     {"id":"genou_g","label":"Genou Gauche","points":[[215,625],[285,625],[285,670],[215,670]]},
+    {"id":"jambe_d","label":"Jambe Droite (Tibia)","points":[[140,675],[195,675],[190,820],[150,820]]},
     {"id":"jambe_g","label":"Jambe Gauche (Tibia)","points":[[225,675],[280,675],[270,820],[230,820]]},
+    {"id":"cheville_d","label":"Cheville Droite","points":[[150,825],[190,825],[190,855],[150,855]]},
     {"id":"cheville_g","label":"Cheville Gauche","points":[[230,825],[270,825],[270,855],[230,855]]},
+    {"id":"pied_d","label":"Pied Droit","points":[[130,860],[195,860],[185,910],[120,910]]},
     {"id":"pied_g","label":"Pied Gauche","points":[[225,860],[290,860],[305,910],[240,910]]}
 ];
 
