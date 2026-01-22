@@ -107,12 +107,11 @@ function setupDraggableSystem() {
     };
 }
 
+// Modifie ta fonction createMarker pour qu'elle soit plus précise au placement
 function createMarker(x, y) {
     const config = LESIONS.find(l => l.key === activeType);
-    const id = Date.now();
     const markerEl = document.createElement('div');
     markerEl.className = 'marker-point';
-    markerEl.id = `m-${id}`;
     markerEl.style.left = x + "%";
     markerEl.style.top = y + "%";
     markerEl.style.backgroundColor = config.color;
@@ -127,8 +126,8 @@ function createMarker(x, y) {
             let rect = document.getElementById('frame').getBoundingClientRect();
             let newX = ((pageX - rect.left - shiftX) / rect.width) * 100;
             let newY = ((pageY - rect.top - shiftY) / rect.height) * 100;
-            markerEl.style.left = newX + "%";
-            markerEl.style.top = newY + "%";
+            markerEl.style.left = Math.max(0, Math.min(100, newX)) + "%";
+            markerEl.style.top = Math.max(0, Math.min(100, newY)) + "%";
             updateMarkersData();
         }
 
@@ -197,18 +196,21 @@ function updateReport() {
     document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=OMC-CST-${window.sessionRef}`;
 }
 
-// BOUTONS ACTIONS
+// Les boutons d'action (À mettre à la fin du fichier JS)
 document.getElementById('btnUndo').onclick = () => {
     const frame = document.getElementById('frame');
-    if(frame.lastChild && frame.lastChild.className === 'marker-point') {
-        frame.removeChild(frame.lastChild);
+    const points = frame.querySelectorAll('.marker-point');
+    if(points.length > 0) {
+        points[points.length - 1].remove(); // Efface le dernier
         updateMarkersData();
     }
 };
 
 document.getElementById('btnClear').onclick = () => {
-    document.querySelectorAll('.marker-point').forEach(m => m.remove());
-    updateMarkersData();
+    if(confirm("Voulez-vous réinitialiser toute l'imagerie ?")) {
+        document.querySelectorAll('.marker-point').forEach(m => m.remove());
+        updateMarkersData();
+    }
 };
 
 // Generation Image + ImgBB
