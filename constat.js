@@ -63,6 +63,9 @@ const REGIONS = [
     {"id":"pied_g","label":"Pied Gauche","points":[[225,860],[290,860],[305,910],[240,910]]}
 ];
 
+const MEDS = ["Antalgique", "Anti-inflammatoire", "Rappel Tétanos", "Anticoagulants", "Antibiotiques", "Plâtre", "Attelle", "Transfusion", "Pansement stérile"];
+const PRECONS = ["Restriction d'activité", "Séances Kiné", "Surélévation", "Contrôle imagerie", "Consigne pansement", "Eviter eau"];
+
 let activeType = 'fracture';
 let markers = [];
 
@@ -123,15 +126,17 @@ function setupInteractions() {
 
 function setupDraggableSystem() {
     const frame = document.getElementById('frame');
-    
-    // On écoute le clic sur le cadre de la silhouette
-    frame.addEventListener('click', function(e) {
-        // Si on clique sur un point déjà existant, on ne crée pas un nouveau point
-        if (e.target.classList.contains('marker-point')) return;
+    frame.addEventListener('mousedown', function(e) {
+        if (e.target.classList.contains('marker-point')) {
+            // Clic sur un point existant : on ouvre ses détails
+            openDetails(e.target.dataset.id);
+        }
+    });
 
-        const rect = frame.getBoundingClientRect();
+    frame.addEventListener('click', function(e) {
+        if (e.target.classList.contains('marker-point') || e.target.id !== 'overlay') return;
         
-        // Calcul de la position en pourcentage
+        const rect = frame.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
         
@@ -141,46 +146,64 @@ function setupDraggableSystem() {
 
 function createMarker(x, y) {
     const config = LESIONS.find(l => l.key === activeType);
-    const frame = document.getElementById('frame');
+    const id = Date.now();
     
+    // Initialisation de l'objet marker avec des options vides
+    const newMarker = {
+        id: id,
+        x: (x / 100) * 418,
+        y: (y / 100) * 940,
+        type: activeType,
+        details: { typeL: "", elements: [], extras: "" } // Pour stocker les détails
+    };
+    
+    markers.push(newMarker);
+
     const markerEl = document.createElement('div');
     markerEl.className = 'marker-point';
-    
-    // Style dynamique du point
+    markerEl.id = `m-${id}`;
+    markerEl.dataset.id = id;
     markerEl.style.left = x + "%";
     markerEl.style.top = y + "%";
     markerEl.style.backgroundColor = config.color;
-    markerEl.dataset.type = activeType;
 
-    // Drag & Drop du point
+    // Logique de Drag (on désactive le clic pendant le déplacement)
     markerEl.onmousedown = function(e) {
-        e.stopPropagation(); // Empêche de créer un nouveau point par erreur
-        
+        e.stopPropagation();
+        let isDragging = false;
         let shiftX = e.clientX - markerEl.getBoundingClientRect().left;
         let shiftY = e.clientY - markerEl.getBoundingClientRect().top;
 
         function moveAt(pageX, pageY) {
-            let rectFrame = frame.getBoundingClientRect();
-            let newX = ((pageX - rectFrame.left - shiftX) / rectFrame.width) * 100;
-            let newY = ((pageY - rectFrame.top - shiftY) / rectFrame.height) * 100;
-            
-            // Limites
-            markerEl.style.left = Math.max(0, Math.min(100, newX)) + "%";
-            markerEl.style.top = Math.max(0, Math.min(100, newY)) + "%";
-            updateMarkersData();
+            isDragging = true;
+            let rect = document.getElementById('frame').getBoundingClientRect();
+            let nX = ((pageX - rect.left - shiftX) / rect.width) * 100;
+            let nY = ((pageY - rect.top - shiftY) / rect.height) * 100;
+            markerEl.style.left = nX + "%";
+            markerEl.style.top = nY + "%";
         }
 
         function onMouseMove(e) { moveAt(e.clientX, e.clientY); }
         document.addEventListener('mousemove', onMouseMove);
-
         document.onmouseup = function() {
             document.removeEventListener('mousemove', onMouseMove);
+            if (isDragging) updateMarkersCoordsFromEl(id, markerEl);
             document.onmouseup = null;
         };
     };
 
-    frame.appendChild(markerEl);
-    updateMarkersData();
+    document.getElementById('frame').appendChild(markerEl);
+    openDetails(id); // Ouvre le menu à la création
+    updateReport();
+}
+
+function updateMarkersCoordsFromEl(id, el) {
+    const m = markers.find(mark => mark.id == id);
+    if (m) {
+        m.x = (parseFloat(el.style.left) / 100) * 418;
+        m.y = (parseFloat(el.style.top) / 100) * 940;
+        updateReport();
+    }
 }
 
 function updateMarkersData() {
@@ -214,12 +237,23 @@ function updateReport() {
     list.innerHTML = markers.length ? "" : "<li>Aucune lésion.</li>";
 
     markers.forEach((m, i) => {
-        const config = LESIONS.find(l => l.key === m.type);
-        const zone = regionFrom(m.x, m.y);
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>#${i+1}</strong>: ${config.icon} ${config.label} (${zone})`;
-        list.appendChild(li);
-    });
+    const config = LESIONS.find(l => l.key === m.type);
+    const zone = regionFrom(m.x, m.y);
+    const d = m.details;
+    
+    // Construction de la phrase
+    let texteLésion = `<strong>${config.label}</strong>`;
+    if (d.typeL) texteLésion += ` ${d.typeL}`;
+    if (d.origine && m.type !== 'brulure') texteLésion += ` d'origine ${d.origine}`;
+    if (m.type === 'brulure' && d.origine) texteLésion += ` ${d.origine}`;
+    if (d.extras) texteLésion += ` [${d.extras}]`;
+    
+    let associes = d.elements.length > 0 ? ` — éléments associés : ${d.elements.join(', ')}` : "";
+    
+    const li = document.createElement('li');
+    li.innerHTML = `${texteLésion}${associes} au niveau de : ${zone}.`;
+    list.appendChild(li);
+});
 
     const patient = document.getElementById('patientId').value || "—";
     const doctor = document.getElementById('doctorName').value || "—";
@@ -258,6 +292,8 @@ document.getElementById('btnClear').onclick = function() {
 
 // Generation Image + ImgBB
 async function genererImage() {
+    document.getElementById('debugToggle').checked = false;
+toggleDebug();
     const captureZone = document.getElementById('capture-zone');
     const btn = event.currentTarget;
     btn.innerText = "UPLOAD EN COURS...";
@@ -290,6 +326,8 @@ async function genererImage() {
 
 // Envoi Discord
 async function envoyerDiscord() {
+    document.getElementById('debugToggle').checked = false;
+toggleDebug();
     const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
     const btn = event.currentTarget;
     const captureZone = document.getElementById('capture-zone');
@@ -359,4 +397,174 @@ function toggleDebug() {
             layer.appendChild(text);
         });
     }
+}
+
+function openDetails(markerId) {
+    const m = markers.find(mark => mark.id == markerId);
+    if (!m) return;
+
+    const container = document.getElementById('detailsContainer');
+    container.style.display = "block";
+    
+    // Titre dynamique avec l'icône de la lésion
+    const config = LESIONS.find(l => l.key === m.type);
+    let html = `<span class="details-title">${config.icon} OPTIONS : ${config.label}</span>`;
+
+    // --- BLOC FRACTURE / ENTORSE ---
+    if (m.type === 'fracture') {
+        html += `
+            <div class="details-sub">TYPE :</div>
+            <select onchange="updateMarkerDetail(${m.id}, 'typeL', this.value)">
+                <option value="">Choisir...</option>
+                <option value="Fermée non déplacée" ${m.details.typeL === 'Fermée non déplacée'?'selected':''}>Fermée non déplacée</option>
+                <option value="Fermée déplacée" ${m.details.typeL === 'Fermée déplacée'?'selected':''}>Fermée déplacée</option>
+                <option value="Ouverte" ${m.details.typeL === 'Ouverte'?'selected':''}>Ouverte</option>
+                <option value="Entorse légère" ${m.details.typeL === 'Entorse légère'?'selected':''}>Entorse légère</option>
+                <option value="Entorse sévère" ${m.details.typeL === 'Entorse sévère'?'selected':''}>Entorse sévère</option>
+                <option value="Luxation complète" ${m.details.typeL === 'Luxation complète'?'selected':''}>Luxation complète</option>
+            </select>
+        `;
+    }
+
+    // --- BLOC BRÛLURE ---
+    if (m.type === 'brulure') {
+        html += `
+            <div class="details-sub">DEGRÉ :</div>
+            <select onchange="updateMarkerDetail(${m.id}, 'typeL', this.value)">
+                <option value="">Choisir...</option>
+                <option value="1er degré (rougeurs)" ${m.details.typeL === '1er degré (rougeurs)'?'selected':''}>1er degré (rougeurs)</option>
+                <option value="2e degré (cloques)" ${m.details.typeL === '2e degré (cloques)'?'selected':''}>2e degré (cloques)</option>
+                <option value="3e degré (peau détruite)" ${m.details.typeL === '3e degré (peau détruite)'?'selected':''}>3e degré (peau détruite)</option>
+            </select>
+            <div class="details-sub">CAUSE :</div>
+            <select onchange="updateMarkerDetail(${m.id}, 'origine', this.value)">
+                <option value="Thermique" ${m.details.origine === 'Thermique'?'selected':''}>Thermique</option>
+                <option value="Chimique" ${m.details.origine === 'Chimique'?'selected':''}>Chimique</option>
+                <option value="Electrique" ${m.details.origine === 'Electrique'?'selected':''}>Electrique</option>
+            </select>
+            <div class="details-sub">ÉTENDUE :</div>
+            <select onchange="updateMarkerDetail(${m.id}, 'extras', this.value)">
+                <option value="< 5%" ${m.details.extras === '< 5%'?'selected':''}>Moins de 5%</option>
+                <option value="5% - 50%" ${m.details.extras === '5% - 50%'?'selected':''}>5% à 50%</option>
+                <option value="> 80%" ${m.details.extras === '> 80%'?'selected':''}>Plus de 80%</option>
+            </select>
+        `;
+    }
+
+    // --- BLOC LACÉRATION / COUPURE ---
+    if (m.type === 'plaie_laceration') {
+        html += `
+            <div class="details-sub">TYPE :</div>
+            <select onchange="updateMarkerDetail(${m.id}, 'typeL', this.value)">
+                <option value="Coupure superficielle" ${m.details.typeL === 'Coupure superficielle'?'selected':''}>Coupure superficielle</option>
+                <option value="Lacération profonde" ${m.details.typeL === 'Lacération profonde'?'selected':''}>Lacération profonde</option>
+                <option value="Perforation" ${m.details.typeL === 'Perforation'?'selected':''}>Perforation</option>
+            </select>
+            <div class="details-sub">ORIGINE :</div>
+            <select onchange="updateMarkerDetail(${m.id}, 'origine', this.value)">
+                <option value="Arme Blanche" ${m.details.origine === 'Arme Blanche'?'selected':''}>Arme Blanche</option>
+                <option value="Autre (environnement)" ${m.details.origine === 'Autre (environnement)'?'selected':''}>Autre (environnement)</option>
+            </select>
+        `;
+    }
+
+    // --- BLOC ARME À FEU (PAF) ---
+    if (m.type === 'plaie_feu') {
+        html += `
+            <div style="color:#ef4444; font-size:10px; font-weight:bold; margin-bottom:5px;">⚠️ DÉCLARATION LSPD/BCSO REQUISE</div>
+            <div class="details-sub">IMPACT :</div>
+            <select onchange="updateMarkerDetail(${m.id}, 'typeL', this.value)">
+                <option value="Entrée seule" ${m.details.typeL === 'Entrée seule'?'selected':''}>Entrée seule</option>
+                <option value="Entrée + sortie" ${m.details.typeL === 'Entrée + sortie'?'selected':''}>Entrée + sortie</option>
+            </select>
+            <div class="details-sub">GRAVITÉ :</div>
+            <select onchange="updateMarkerDetail(${m.id}, 'extras', this.value)">
+                <option value="Superficielle" ${m.details.extras === 'Superficielle'?'selected':''}>Superficielle</option>
+                <option value="Pénétrante" ${m.details.extras === 'Pénétrante'?'selected':''}>Pénétrante</option>
+                <option value="Traversante" ${m.details.extras === 'Traversante'?'selected':''}>Traversante</option>
+            </select>
+        `;
+    }
+
+    // --- BLOC CONTUSION / HEMATOME ---
+    if (m.type === 'hematome' || m.type === 'abrasion') {
+        html += `
+            <div class="details-sub">GRAVITÉ :</div>
+            <select onchange="updateMarkerDetail(${m.id}, 'extras', this.value)">
+                <option value="Légère" ${m.details.extras === 'Légère'?'selected':''}>Légère</option>
+                <option value="Moyenne" ${m.details.extras === 'Moyenne'?'selected':''}>Moyenne</option>
+                <option value="Sévère" ${m.details.extras === 'Sévère'?'selected':''}>Sévère</option>
+            </select>
+        `;
+    }
+
+    // --- SECTION ÉLÉMENTS ASSOCIÉS (Commun à presque tout) ---
+    html += `<div class="details-sub">ÉLÉMENTS ASSOCIÉS :</div><div class="checkbox-grid">`;
+    const commonElements = ["Hémorragie", "Corps étranger", "Risque infectieux", "Hémorragie interne", "Oedème"];
+    commonElements.forEach(el => {
+        html += `
+            <label class="checkbox-item">
+                <input type="checkbox" onchange="updateMarkerElements(${m.id}, '${el}', this.checked)" ${m.details.elements.includes(el)?'checked':''}> ${el}
+            </label>
+        `;
+    });
+    html += `</div>`;
+
+    // --- SECTION ORGANES (Si abdomen/thorax) ---
+    const zone = regionFrom(m.x, m.y);
+    if (zone.includes("Abdomen") || zone.includes("Thorax") || zone.includes("Flanc")) {
+        html += `<div class="details-sub">LÉSION D'ORGANE :</div><div class="checkbox-grid">`;
+        ["Cœur", "Estomac", "Foie", "Intestin", "Poumon", "Rate", "Rein"].forEach(org => {
+            html += `
+                <label class="checkbox-item">
+                    <input type="checkbox" onchange="updateMarkerElements(${m.id}, '${org}', this.checked)" ${m.details.elements.includes(org)?'checked':''}> ${org}
+                </label>
+            `;
+        });
+        html += `</div>`;
+    }
+
+    container.innerHTML = html;
+    updateReport();
+}
+
+// Fonctions de mise à jour des données du marqueur
+function updateMarkerDetail(id, field, value) {
+    const m = markers.find(mark => mark.id == id);
+    if (m) {
+        m.details[field] = value;
+        updateReport();
+    }
+}
+
+function updateMarkerElements(id, value, checked) {
+    const m = markers.find(mark => mark.id == id);
+    if (m) {
+        if (checked) {
+            if (!m.details.elements.includes(value)) m.details.elements.push(value);
+        } else {
+            m.details.elements = m.details.elements.filter(e => e !== value);
+        }
+        updateReport();
+    }
+}
+
+// 5. Modification de updateReport pour inclure les détails
+function updateReport() {
+    const list = document.getElementById('reportList');
+    list.innerHTML = markers.length ? "" : "<li>Aucune lésion.</li>";
+
+    markers.forEach((m, i) => {
+        const config = LESIONS.find(l => l.key === m.type);
+        const zone = regionFrom(m.x, m.y);
+        const det = m.details;
+        
+        let detailText = det.typeL ? ` <i>(${det.typeL})</i>` : "";
+        let elementsText = det.elements.length ? ` — éléments associés : ${det.elements.join(', ')}` : "";
+        
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${config.label}</strong>${detailText}${elementsText} au niveau de : ${zone}.`;
+        list.appendChild(li);
+    });
+    
 }
