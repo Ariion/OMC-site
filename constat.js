@@ -359,6 +359,17 @@ if (obsInput.trim() !== "") {
     if(qrImg && window.sessionRef) {
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${window.sessionRef}`;
     }
+    // Gestion de l'affichage dynamique de l'observation supplémentaire
+    const inputObs = document.getElementById('obsSupInput').value;
+const sectionObs = document.getElementById('sectionObsSup');
+const displayObs = document.getElementById('docObsSupText');
+
+if (inputObs && inputObs.trim() !== "") {
+    sectionObs.style.display = 'block'; // On montre le bloc à droite
+    displayObs.innerText = inputObs;    // On injecte le texte
+} else {
+    sectionObs.style.display = 'none';  // On cache si c'est vide
+}
 }
 
 document.getElementById('btnUndo').onclick = () => {
