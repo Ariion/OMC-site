@@ -165,4 +165,46 @@ async function envoyerDiscord() {
 }
 
 // Initialisation au chargement
-document.addEventListener('DOMContentLoaded', genererReference);
+document.addEventListener('DOMContentLoaded', () => {
+    genererReference();
+    // On force un premier rendu du QR Code à vide
+    updateQR();
+});
+
+// Fonction pour formater la date en français (ex: 24 Janvier 2026)
+function formatDateFR(dateStr) {
+    if (!dateStr) return "...";
+    const date = new Date(dateStr);
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    return date.toLocaleDateString('fr-FR', options);
+}
+
+// Fonction de mise à jour générique pour le texte
+function up(id, val) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = val || "...";
+        updateQR(); // Met à jour le QR Code si le nom ou le médecin change
+    }
+}
+
+// Fonction spécifique pour les dates (Naissance et Décès)
+function upDate(id, val) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = formatDateFR(val);
+        updateQR();
+    }
+}
+
+// Mise à jour dynamique du QR Code
+function updateQR() {
+    const ref = document.getElementById('d-ref').innerText;
+    const nom = document.getElementById('d-nom').innerText;
+    const qrImg = document.getElementById('qr-ref');
+    if(qrImg) {
+        // Encode le nom pour éviter les problèmes d'espaces dans l'URL du QR
+        const data = encodeURIComponent(`OMC-DECES|REF:${ref}|NOM:${nom}`);
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
+    }
+}
