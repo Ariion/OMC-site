@@ -204,6 +204,7 @@ function genererGrossesse(mois) {
     if (mois === 'aleatoire') mois = 1;
     const data = grossesseData[mois] || grossesseData["neg"];
     
+    // Valeurs bio (HCG et Globules Blancs)
     res('hcg', (Math.random() * (2000 - 500) + 500).toFixed(0), 'ENDOCRINOLOGIE & DIVERS');
     res('gb', "11.2", 'HÉMATOLOGIE (SANG)');
 
@@ -212,13 +213,16 @@ function genererGrossesse(mois) {
         : `Bilan de maternité - ${data.label} : Présence d'hormone HCG. Évolution clinique favorable.`;
 
     let actuelle = document.getElementById('auto-concl-area').value;
-    let finale = "";
     
-    if (actuelle.includes("Bilan de maternité") || actuelle.includes("Analyse immunologique")) {
-        finale = actuelle.replace(/.*(Bilan de maternité|Analyse immunologique).*/, texteGrossesse);
-    } else {
-        finale = actuelle ? actuelle + "\n" + texteGrossesse : texteGrossesse;
-    }
+    // On sépare le texte actuel par ligne
+    let lignes = actuelle.split('\n');
+    // On filtre pour enlever l'ancienne ligne de grossesse si elle existe
+    let autresLignes = lignes.filter(l => !l.includes("Bilan de maternité") && !l.includes("Analyse immunologique"));
+    
+    // On reconstruit : Les prélèvements existants + La nouvelle ligne de grossesse
+    let finale = autresLignes.join('\n');
+    if (finale) finale += "\n";
+    finale += texteGrossesse;
 
     document.getElementById('auto-concl-area').value = finale;
     document.getElementById('d-concl').innerText = finale;
