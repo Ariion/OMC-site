@@ -1,3 +1,10 @@
+// Initialisation au chargement
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    setAutoDate();
+    updateLiveQRCode();
+});
+
 // ==========================================
 // 1. BASE DE DONNÉES MÉDICALE
 // ==========================================
@@ -125,8 +132,9 @@ function genererGrossesse(mois) {
 }
 
 // ==========================================
-// 2. INITIALISATION ET ACCORDÉONS
+// 2. INITIALISATION ET AFFICHAGE
 // ==========================================
+
 function init() {
     const tabsContainer = document.getElementById('dynamic-tabs');
     const sectionsContainer = document.getElementById('dynamic-sections');
@@ -136,88 +144,61 @@ function init() {
     sectionsContainer.innerHTML = "";
 
     for (let cat in database) {
+        const cleanCatId = cat.replace(/\s+/g, '-').replace(/[()]/g, '');
+
+        // Bouton Menu Gauche
         let btn = document.createElement('button');
         btn.className = 'category-btn';
         btn.innerHTML = `<span>${cat.toUpperCase()}</span> <span>▼</span>`;
         
         let contentDiv = document.createElement('div');
         contentDiv.className = 'category-content';
-        contentDiv.id = 't-' + cat;
+        contentDiv.id = 't-' + cleanCatId;
 
         btn.onclick = (e) => {
             e.preventDefault();
-            const isOpen = contentDiv.classList.contains('active');
-            document.querySelectorAll('.category-content').forEach(el => el.classList.remove('active'));
-            if (!isOpen) contentDiv.classList.add('active');
+            contentDiv.classList.toggle('active');
         };
 
+        // Section Document Droite (C'est ici que l'affichage se joue)
         let sec = document.createElement('div');
-        sec.id = 'sec-' + cat;
+        sec.id = 'sec-' + cleanCatId;
         sec.className = 'section';
         sec.innerHTML = `<div class="section-title">${cat}</div>`;
 
         database[cat].forEach(item => {
+            // Ajout dans le menu manuel
             contentDiv.innerHTML += `
                 <div class="input-group-manual">
                     <label class="manual-label">${item.label}</label>
-                    <span class="manual-help">Norme : ${item.norm} ${item.unit} | ${item.help}</span>
                     <input type="text" class="analysis-input" data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
                 </div>`;
-            sec.innerHTML += `<div class="row" id="row-${item.id}"><span>${item.label}</span><span class="val" id="val-${item.id}"></span><span class="norme">${item.norm} ${item.unit}</span></div>`;
+            
+            // Ajout de la ligne invisible dans le rapport
+            sec.innerHTML += `
+                <div class="row" id="row-${item.id}">
+                    <span>${item.label}</span>
+                    <span class="val" id="val-${item.id}"></span>
+                    <span class="norme">${item.norm} ${item.unit}</span>
+                </div>`;
         });
-        tabsContainer.appendChild(btn); tabsContainer.appendChild(contentDiv); sectionsContainer.appendChild(sec);
+
+        tabsContainer.appendChild(btn);
+        tabsContainer.appendChild(contentDiv);
+        sectionsContainer.appendChild(sec);
     }
 }
 
-// Fonction pour mettre la date du jour au format local
-function setAutoDate() {
-    const today = new Date();
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    const dateString = today.toLocaleDateString('fr-FR', options);
-    
-    // Met à jour l'affichage dans le document
-    const dateElement = document.getElementById('d-date-prel');
-    if (dateElement) {
-        dateElement.innerText = dateString;
-    }
-    
-    // Met à jour le champ de saisie s'il existe
-    const inputDate = document.getElementById('date-prel');
-    if (inputDate) {
-        inputDate.value = dateString;
-    }
-}
-
-// Appeler la fonction au chargement
-window.addEventListener('load', () => {
-    setAutoDate();
-    updateLiveQRCode(); // Pour que le QR code soit aussi à jour dès le départ
-});
-
-// Génère un QR code basé sur un numéro de dossier fictif ou le nom du patient
-function mettreAJourQRCode(nomPatient) {
-    const qrImg = document.getElementById('qr-ref');
-    if (qrImg) {
-        const ref = "OMC-" + Math.floor(Math.random() * 999999);
-        // Utilisation d'une API gratuite de QR Code
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ref}-${nomPatient}`;
-    }
-}
-
-// ==========================================
-// 3. LOGIQUE MÉDICALE ET MISE À JOUR
-// ==========================================
+// REMPLISSAGE ET ACTIVATION DES LIGNES
 function res(id, val, cat) {
-    // On nettoie l'ID de la catégorie pour éviter les problèmes avec les parenthèses
     const cleanCatId = cat.replace(/\s+/g, '-').replace(/[()]/g, '');
-    
     const row = document.getElementById('row-' + id);
     const valSpan = document.getElementById('val-' + id);
     const section = document.getElementById('sec-' + cleanCatId);
 
     if (valSpan) {
         valSpan.innerText = val;
-        // Gestion couleur (Rouge si hors norme)
+        // Couleur selon norme
         const item = Object.values(database).flat().find(i => i.id === id);
         if (item && val.trim() !== "" && item.norm.includes('-')) {
             const [min, max] = item.norm.split('-').map(n => parseFloat(n));
@@ -226,7 +207,7 @@ function res(id, val, cat) {
         }
     }
 
-    // AFFICHAGE : On force l'ajout de la classe 'active'
+    // IMPORTANT : Active la visibilité
     if (val.trim() !== "" && val !== "...") {
         if (row) row.classList.add('active');
         if (section) section.classList.add('active');
@@ -235,155 +216,82 @@ function res(id, val, cat) {
         if (section && section.querySelectorAll('.row.active').length === 0) {
             section.classList.remove('active');
         }
-    analyserTout();
-}
-}
-
-// CONCLUSION GRADUÉE SELON GRAVITÉ
-function analyserTout() {
-    let anomaliesBas = [], anomaliesHaut = [], anomaliesCritiques = [];
-    let isEnceinte = false;
-
-    document.querySelectorAll('.analysis-input').forEach(input => {
-        let valText = input.value.trim().replace(',', '.');
-        if (!valText) return;
-        let val = parseFloat(valText);
-        let label = input.getAttribute('data-label'), norm = input.getAttribute('data-norm');
-
-        if (input.getAttribute('data-id') === 'hcg' && val > 5) isEnceinte = true;
-
-        if (norm.includes('-')) {
-            let [min, max] = norm.split('-').map(n => parseFloat(n));
-            let ecart = (val > max) ? (val / max) : (val < min) ? (min / val) : 1;
-
-            if (ecart > 2.5) anomaliesCritiques.push(label);
-            else if (val > max) anomaliesHaut.push(label);
-            else if (val < min) anomaliesBas.push(label);
-        }
-    });
-
-    let concl = "";
-    if (isEnceinte) {
-        const hcgVal = parseFloat(document.querySelector('[data-id="hcg"]').value);
-        concl = `Grossesse confirmée. Taux HCG compatible avec un suivi de routine. `;
-        if (hcgVal > 100000) concl = `Grossesse confirmée. Taux HCG très élevé (Pic du 1er trimestre). `;
     }
-
-    if (anomaliesCritiques.length > 0) concl += `ALERTE CRITIQUE : Déséquilibre majeur pour ${anomaliesCritiques.join(', ')}. Hospitalisation immédiate requise.`;
-    else if (anomaliesHaut.length > 0 || anomaliesBas.length > 0) concl += `Bilan perturbé : Anomalies détectées sur ${[...anomaliesHaut, ...anomaliesBas].join(', ')}.`;
-    else if (!concl) concl = "Bilan biologique satisfaisant. Absence d'anomalie majeure.";
-
-    document.getElementById('auto-concl-area').value = concl;
-    document.getElementById('d-concl').innerText = concl;
 }
 
 // ==========================================
-// 4. GÉNÉRATEUR AUTO ET GRAVITÉ
+// 3. GÉNÉRATEURS ET LOGIQUE
 // ==========================================
-// Correction de la génération aléatoire du groupe sanguin
-function determinerGroupeAleatoire() {
-    const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-    const resultat = groupes[Math.floor(Math.random() * groupes.length)];
-    
-    const afficheur = document.getElementById('d-groupe');
-    const select = document.getElementById('select-groupe');
-    
-    if(afficheur) afficheur.innerText = resultat;
-    if(select) select.value = resultat;
-}
 
 function lancerGenerationAuto() {
     const grav = parseInt(document.getElementById('gravity-range').value);
-    
-    // On récupère les scénarios cochés
     const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
     
-    if (scenarios.length === 0) return alert("Coche au moins un scénario !");
-
-    // On vide avant de générer pour éviter les mélanges
+    if (scenarios.length === 0) return alert("Coche un scénario !");
     resetSeulementBio(false); 
 
-    // Valeurs de base (Saines)
-    let results = { 
-        gb: 7.2, hb: 14.8, ht: 44, pla: 280, vgm: 88, 
-        gly: 0.95, uree: 0.30, crea: 9.2, crp: 1.2,    
-        na: 140, k: 4.1, cl: 102, ca: 95              
-    };
-
+    let results = { gb: 7.2, hb: 14.8, ht: 44, pla: 280, gly: 0.95, na: 140, k: 4.1 };
     let categoriesToShow = ["HÉMATOLOGIE (SANG)", "BIOCHIMIE MÉTABOLIQUE", "IONOGRAMME (SELS)"];
 
-    // Logique des scénarios
     scenarios.forEach(s => {
         let f = grav / 5; 
-
-        if (s === 'acc-route' || s === 'arme-feu') {
-            categoriesToShow.push("GAZ DU SANG (AA)", "COAGULATION", "MARQUEURS CARDIAQUES");
+        if (s === 'acc-route' || s === 'overdose') {
             results.hb = (14.5 - (3.5 * f)).toFixed(1);
-            results.ht = (45 - (10 * f)).toFixed(1);
-            results.lact = (1.1 + (2.5 * f)).toFixed(1);
-            results.ph = (7.40 - (0.12 * f)).toFixed(2);
-        }
-
-        if (s === 'overdose') {
-            categoriesToShow.push("TOXICOLOGIE (LSPD/BCSO)", "GAZ DU SANG (AA)");
             results.alc = (0.2 + (0.8 * f)).toFixed(2);
-            results.thc = grav > 6 ? "POSITIF" : "Négatif";
-        }
-
-        if (s === 'diabete') {
-            results.gly = (1.10 + (2.5 * f)).toFixed(2);
-        }
-
-        if (s === 'renal') {
-            results.crea = (12 + (25 * f)).toFixed(1);
-            results.k = (4.5 + (1.5 * f)).toFixed(1);
+            if (s === 'overdose') categoriesToShow.push("TOXICOLOGIE (LSPD/BCSO)");
         }
     });
 
-    // Injection finale dans le rapport à droite
     for (let id in results) {
         let catFound = "";
         for (let c in database) {
             if (database[c].find(i => i.id === id)) catFound = c;
         }
-
         if (catFound && categoriesToShow.includes(catFound)) {
-            // Affiche sur le document et met à jour les couleurs
             res(id, results[id].toString(), catFound);
         }
     }
-    
-    // Lance l'analyse automatique pour la conclusion globale
-    analyserTout(); 
-}
-function switchMode(mode) {
-    document.getElementById('panel-auto').style.display = (mode === 'auto' ? 'block' : 'none');
-    document.getElementById('panel-manual').style.display = (mode === 'manual' ? 'block' : 'none');
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    if(mode === 'auto') document.getElementById('btn-auto').classList.add('active');
-    else document.getElementById('btn-manual').classList.add('active');
+    analyserTout(); // Optionnel : met à jour la conclusion auto
 }
 
-// Version modifiée du Reset pour pouvoir vider sans confirmation lors de l'auto-gén
+function genererGrossesse(mois) {
+    if (mois === 'aleatoire') mois = 1;
+    const data = grossesseData[mois] || grossesseData["neg"];
+    
+    res('hcg', "1250", 'ENDOCRINOLOGIE & DIVERS');
+    res('gb', "11.2", 'HÉMATOLOGIE (SANG)');
+
+    let texte = `Bilan de maternité - ${data.label}. Évolution clinique favorable.`;
+    let actuelle = document.getElementById('auto-concl-area').value;
+    let finale = actuelle ? actuelle + "\n" + texte : texte;
+
+    document.getElementById('auto-concl-area').value = finale;
+    document.getElementById('d-concl').innerText = finale;
+}
+
+// --- FONCTIONS SYSTÈME ---
+
+function setAutoDate() {
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const dateStr = today.toLocaleDateString('fr-FR', options);
+    if (document.getElementById('d-date-prel')) document.getElementById('d-date-prel').innerText = dateStr;
+}
+
+function updateLiveQRCode() {
+    const nom = document.getElementById('d-nom').innerText || "Anonyme";
+    const qrImg = document.getElementById('qr-ref');
+    if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-${encodeURIComponent(nom)}`;
+    }
+}
+
 function resetSeulementBio(confirmNeeded = true) {
     if (confirmNeeded && !confirm("Vider les analyses ?")) return;
-
-    // 1. Vide les champs de saisie manuels
     document.querySelectorAll('.analysis-input').forEach(el => el.value = "");
-
-    // 2. Cache toutes les lignes et sections du rapport
     document.querySelectorAll('.row, .section').forEach(el => el.classList.remove('active'));
-
-    // 3. Vide physiquement les sections dynamiques pour le prochain prélèvement
-    const dynamicSections = document.getElementById('dynamic-sections');
-    if (dynamicSections) dynamicSections.innerHTML = "";
-
-    // 4. Reset total de la conclusion
     document.getElementById('auto-concl-area').value = "";
-    const displayConcl = document.getElementById('d-concl');
-    if (displayConcl) displayConcl.innerText = "...";
-
-    // 5. Réinitialise le QR Code sur "Vide"
+    document.getElementById('d-concl').innerText = "...";
     updateLiveQRCode();
 }
 // ==========================================
