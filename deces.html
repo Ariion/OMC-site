@@ -9,14 +9,12 @@
 <body class="labo-body">
     <div class="interface-container">
         <aside class="sidebar">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
-                <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
-                <button onclick="toggleTheme()" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-                    <span>🌓</span>
-                    <span id="theme-text">Passer mode sombre</span>
-                </button>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; gap: 10px;">
+                <a href="index.html" class="back-link" style="margin-bottom: 0;">← RETOUR</a>
+                <button onclick="toggleTheme()" id="theme-btn-toggle">🌓 <span id="theme-text">Mode Sombre</span></button>
             </div>
-<h1 class="sidebar-title">CERTIFICAT DE DÉCÈS</h1>
+            
+            <h1 class="sidebar-title">CERTIFICAT DE DÉCÈS</h1>
             
 <div class="form-group">
                 <label>Nom & Prénom du Défunt</label>
@@ -61,18 +59,17 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 25px;">
                 <label>Docteur Signataire</label>
                 <input type="text" oninput="up('d-sig', this.value)" placeholder="Nom du médecin">
             </div>
 
-        <button type="button" onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
-        <button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
+            <button type="button" onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
+            <button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
+        </aside>
 
-    </div>
-
-    <div id="preview-area">
-        <main id="preview-area-inner"> <div id="document">
+        <main class="preview-area">
+            <div id="document">
                 <div class="header-cert">
                     <img src="assets/logo_omc.png" alt="Logo" style="height: 60px;">
                     <div>
@@ -91,13 +88,16 @@
                 </div>
 
                 <div class="cert-footer">
-                    <div class="cert-signature">Établi par :<br><br><span id="d-sig" style="font-family: 'Alex Brush', cursive; font-size: 24px;">DOCTEUR</span></div>
-                    <div class="round-stamp" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div class="cert-signature">
+                        Établi par :<br><br>
+                        <span id="d-sig-doc" style="font-family: 'Alex Brush', cursive; font-size: 28px; border-top: 1px solid #000; min-width: 200px; display: inline-block; padding-top: 5px;">DOCTEUR</span>
+                    </div>
+                    <div class="round-stamp">
                         <img id="qr-ref" class="qr-code" src="" alt="QR">
-                        <div style="margin-top: 5px;">OMC MEDICAL CENTER</div>
+                        <div style="font-size: 9px; font-weight: bold;">OMC CERTIFIED</div>
                     </div>
                 </div>
-                <p class="legal-text">Ce certificat est établi sur la base des constatations cliniques effectuées par les services de l'Ocean Medical Center. Toute reproduction ou falsification est passible de poursuites.</p>
+                <p class="legal-text">Ce certificat est établi sur la base des constatations cliniques. Toute reproduction ou usage de faux est passible de poursuites.</p>
             </div>
         </main>
     </div>
@@ -115,6 +115,7 @@
     <script src="global.js"></script>
 </body>
 </html>
+
 
 
 
