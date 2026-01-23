@@ -5,7 +5,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 40px;
+    padding: 60px 20px;
     overflow-y: auto;
     background-color: var(--bg-preview) !important;
     transition: background-color 0.2s ease-in-out;
@@ -34,8 +34,19 @@
 .btn-preg { background: #172a45; color: white; border: 1px solid #233554; padding: 8px 2px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; }
 .btn-preg.neg { grid-column: span 3; background: #7f1d1d; margin-top: 5px; }
 
-#document { width: 800px !important; background: white !important; padding: 40px !important; color: #111 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
-.header-lab { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+#document {
+    width: 800px;
+    min-width: 800px;
+    background: white !important;
+    padding: 50px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    margin-bottom: 40px;      /* Marge de sécurité pour ne pas coller au bord bas */
+    display: block;           /* Assure qu'il prend sa place */
+}
+.header-lab img {
+    max-height: 60px;
+    width: auto;
+}
 .patient-card { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; padding: 20px; border: 1px solid #e2e8f0; margin-top: 20px; font-size: 14px; color: #1e293b; }
 
 .section { display: none; margin-top: 25px; border-top: 1px solid #eee; padding-top: 10px; }
