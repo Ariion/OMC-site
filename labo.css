@@ -1,203 +1,149 @@
-/* Boutons de mode et actions 
-.mode-selector { display: flex; gap: 5px; margin-bottom: 20px; background: #112240; padding: 5px; border-radius: 8px; }
-.mode-btn { 
-    flex: 1; padding: 10px; border: none; background: transparent; 
-    color: #8892b0; cursor: pointer; font-weight: bold; border-radius: 5px; transition: 0.3s;
-}
-.mode-btn.active { background: var(--omc-cyan); color: var(--omc-dark); }
+/* ============================================================
+   INTERFACE GLOBALE (SIDEBAR & PREVIEW)
+   ============================================================ */
 
-.btn-generate { background: #22c55e !important; color: white !important; font-weight: bold; border-radius: 6px; }
-.btn-generate:hover { background: #16a34a !important; }
-.btn-reset { background: #ef4444 !important; color: white !important; font-weight: bold; border-radius: 6px; margin-top: 10px; }
-
-/* Aide à la saisie (Texte Orange) 
-.help-norm {
-    display: block;
-    font-size: 10px;
-    color: #ffa500; /* Orange 
-    margin-bottom: 5px;
-    font-style: italic;
+.labo-body {
+    background: var(--omc-bg);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
 }
 
-/* Onglets manuels 
-.tab-btn { 
-    width: 100%; background: #172a45; color: var(--omc-cyan); 
-    border: none; padding: 12px; text-align: left; cursor: pointer; 
-    margin-top: 8px; font-weight: bold; border-radius: 4px; 
-}
-.tab-content { display: none; padding: 15px; background: #112240; border-radius: 0 0 5px 5px; }
-.tab-content.active { display: block; }
-
-/* Document à droite 
-.section { display: none; margin-top: 25px; }
-.section.active { display: block !important; }
-.section-title { 
-    background: #f1f5f9; padding: 8px 15px; font-weight: bold; 
-    border-left: 5px solid var(--omc-dark); font-size: 13px; 
-    text-transform: uppercase; color: var(--omc-dark); 
-}
-
-.row { display: none; grid-template-columns: 2fr 1fr 1.5fr; padding: 6px 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
-.row.active { display: grid !important; }
-.val { font-weight: bold; text-align: center; }
-
-.patient-card { 
-    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; 
-    background: #f8fafc; padding: 20px; border: 1px solid #e2e8f0; 
-    margin-top: 25px; font-size: 14px; color: #1e293b;
-}
-
-.signature-line { 
-    margin-top: 60px; font-weight: bold; border-top: 2px solid #000; */
-#document {
-    width: 800px !important;
-    min-width: 800px !important;
-    height: auto !important;     /* Laisse la hauteur s'adapter au contenu */
-    min-height: 0 !important;    /* Supprime la contrainte de hauteur A4 */
-    background: white !important;
-    padding: 40px !important;
-    color: #111 !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    position: relative;
-    box-sizing: border-box;
-    margin: 0;
-}
-
-/* --- LAYOUT ET HEADER --- */
-.header-lab { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
-
-/* --- NAVIGATION MODES --- */
-.mode-selector { display: flex; gap: 5px; margin-bottom: 20px; background: #112240; padding: 5px; border-radius: 8px; }
-.mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #8892b0; cursor: pointer; font-weight: bold; border-radius: 5px; transition: 0.3s; }
-.mode-btn.active { background: var(--omc-cyan) !important; color: var(--omc-dark) !important; }
-
-/* --- ACCORDÉONS MANUELS --- */
-#dynamic-tabs { display: flex; flex-direction: column; gap: 5px; }
-.category-btn {
-    width: 100% !important; display: flex !important; justify-content: space-between !important;
-    align-items: center; padding: 12px 15px !important; margin: 0 !important;
-    background: linear-gradient(180deg, #1a2c4e 0%, #0d192f 100%) !important;
-    color: #00d2ff !important; border: 1px solid #233554 !important;
-    border-radius: 6px !important; font-weight: bold !important; cursor: pointer;
-}
-.category-btn:hover { border-color: #00d2ff; box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
-.category-content { display: none; padding: 15px; background: rgba(10, 25, 47, 0.8); border: 1px solid #1d3354; border-top: none; margin-bottom: 5px; }
-.category-content.active { display: block !important; }
-
-/* --- INPUTS ET AIDE --- */
-.input-group-manual { margin-bottom: 15px; }
-.manual-label { color: #ccd6f6; font-size: 14px; font-weight: 600; display: block; }
-.manual-help { color: #ffa500; font-size: 10px; font-style: italic; display: block; margin-bottom: 5px; }
-
-/* --- BOUTONS ACTIONS --- */
-.btn-generate {
-    background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%) !important;
-    color: white !important; height: 50px !important; font-size: 14px !important;
-    box-shadow: 0 4px 0 #14532d !important; border: none !important; cursor: pointer;
-}
-.btn-reset {
-    background: linear-gradient(90deg, #ef4444 0%, #b91c1c 100%) !important;
-    color: white !important; height: 50px !important;
-    box-shadow: 0 4px 0 #7f1d1d !important; border: none !important; cursor: pointer;
-}
-
-/* --- DOCUMENT (DROITE) --- */
-.section { display: none; margin-top: 25px; border-top: 1px solid #eee; padding-top: 10px; }
-.section.active { display: block !important; }
-.section-title { background: #f1f5f9; padding: 5px 10px; font-weight: bold; border-left: 5px solid var(--omc-dark); font-size: 12px; margin-bottom: 10px; color: #111; }
-#preview-area {
+/* Zone de droite (Grisaille) */
+.preview-area {
+    flex-grow: 1;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Aligne le doc en haut du scroll */
-}
-.row { display: none; grid-template-columns: 2fr 1fr 1.5fr; padding: 5px 10px; border-bottom: 1px solid #f9f9f9; font-size: 13px; }
-.row.active {
-    display: grid !important;
-    grid-template-columns: 2fr 1fr 1.5fr;
-    border-bottom: 1px solid #edf2f7;
-    padding: 8px 0;
-}
-.val { font-weight: bold; text-align: center; }
-
-/* --- CHECKBOXES --- */
-.scenario-grid { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
-.check-container { display: flex; align-items: center; gap: 15px; cursor: pointer; color: #ccd6f6; position: relative; padding-left: 30px; }
-.check-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
-.checkmark { position: absolute; top: 0; left: 0; height: 20px; width: 20px; background-color: #0a192f; border: 1px solid #233554; border-radius: 4px; }
-.check-container input:checked ~ .checkmark { background-color: var(--omc-cyan); }
-.checkmark:after { content: ""; position: absolute; display: none; left: 7px; top: 3px; width: 5px; height: 10px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
-.check-container input:checked ~ .checkmark:after { display: block; }
-
-/* Signature en bas à droite */
-.signature-line {
-    margin-top: 50px;
-    margin-bottom: 20px; /* Petit battement sous la signature avant le crop */
-    border-top: 2px solid #000;
-    display: inline-block;
-    min-width: 250px;
-    float: right;
-    text-align: right;
-    padding-top: 5px;
-    clear: both;
-    font-family: 'Alex Brush', cursive;
-    font-size: 32px;
+    align-items: flex-start;
+    padding: 40px;
+    overflow-y: auto;
+    background-color: var(--bg-preview) !important;
+    transition: background-color 0.2s ease-in-out;
 }
 
-/* Bouton Générer Image (Plus pro) */
-.btn-image {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 1px solid #ccc !important;
-    text-transform: uppercase;
-    font-size: 11px;
-    padding: 10px !important;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 15px;
-}
+/* ============================================================
+   CONTRÔLES SIDEBAR (GAUCHE)
+   ============================================================ */
 
-.btn-image:hover { background: #f8fafc !important; }
-.btn-image:active { transform: translateY(2px); box-shadow: 0 2px 0 #94a3b8 !important; }
-
-/* Style Popup */
-.popup-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
+/* Sélecteur de Mode (Auto/Manuel) */
+.mode-selector {
     display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Aligne au début pour scroller vers le bas */
-    padding: 40px 20px;
-    overflow-y: auto; /* Scroll actif */
-    z-index: 10000;
-}
-
-.popup-content {
+    gap: 5px;
+    margin-bottom: 20px;
     background: #112240;
-    padding: 25px;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 650px;
-    border: 1px solid var(--omc-cyan);
-    margin-bottom: 50px; /* Espace sous la popup */
+    padding: 5px;
+    border-radius: 8px;
 }
 
-#preview-img-result {
-    max-width: 100%;
-    height: auto;
-    margin-top: 20px;
-    border: 1px solid #233554;
+.mode-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: #8892b0;
+    cursor: pointer;
+    font-weight: bold;
     border-radius: 5px;
+    transition: 0.3s;
 }
 
-#direct-link {
-    width: 100%; margin: 15px 0; background: #0a192f; border: 1px solid #233554;
-    color: var(--omc-cyan); text-align: center; padding: 10px;
+.mode-btn.active {
+    background: var(--omc-cyan) !important;
+    color: var(--omc-dark) !important;
 }
 
-/* Suivi grossesse */
+/* Section Auto : Checkboxes & Scénarios */
+.scenario-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
 
+.check-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    color: #ccd6f6;
+    position: relative;
+    padding-left: 35px;
+    font-size: 13px;
+}
+
+.check-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    position: absolute;
+    top: -2px;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #0a192f;
+    border: 1px solid #233554;
+    border-radius: 4px;
+}
+
+.check-container input:checked ~ .checkmark {
+    background-color: var(--omc-cyan);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+.check-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Section Manuel : Accordéons */
+#dynamic-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.category-btn {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: linear-gradient(180deg, #1a2c4e 0%, #0d192f 100%);
+    color: var(--omc-cyan);
+    border: 1px solid #233554;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.category-content {
+    display: none;
+    padding: 15px;
+    background: rgba(10, 25, 47, 0.8);
+    border: 1px solid #1d3354;
+    border-top: none;
+    margin-bottom: 5px;
+}
+
+.category-content.active {
+    display: block !important;
+}
+
+/* Module Maternité */
 .grossesse-panel {
     background: #112240;
     padding: 15px;
@@ -205,16 +151,18 @@
     border-radius: 8px;
     margin-top: 20px;
 }
+
 .grossesse-panel h3 {
     color: var(--omc-cyan);
-    font-size: 12px;
-    margin-top: 0;
-    margin-bottom: 10px;
+    font-size: 11px;
+    text-transform: uppercase;
     text-align: center;
+    margin: 0 0 10px 0;
 }
+
 .pregnancy-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
+    grid-template-columns: repeat(3, 1fr);
     gap: 5px;
 }
 
@@ -222,21 +170,166 @@
     background: #172a45;
     color: white;
     border: 1px solid #233554;
-    padding: 10px 5px;
-    font-size: 11px;
+    padding: 8px 2px;
+    font-size: 10px;
     font-weight: bold;
     border-radius: 4px;
     cursor: pointer;
-    transition: 0.2s;
 }
 
 .btn-preg:hover {
     background: var(--omc-cyan);
-    color: #0a192f;
+    color: var(--omc-dark);
 }
 
 .btn-preg.neg {
-    grid-column: span 3; /* Prend toute la largeur en bas */
+    grid-column: span 3;
     background: #7f1d1d;
     margin-top: 5px;
+}
+
+/* ============================================================
+   LE DOCUMENT (FEUILLE BLANCHE)
+   ============================================================ */
+
+#document {
+    width: 800px !important;
+    min-width: 800px !important;
+    background: white !important;
+    padding: 40px !important;
+    color: #111 !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+    box-sizing: border-box;
+}
+
+.header-lab {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.patient-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    background: #f8fafc;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+/* Sections des résultats (Analyses) */
+.section {
+    display: none;
+    margin-top: 25px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.section.active {
+    display: block !important;
+}
+
+.section-title {
+    background: #f1f5f9;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-left: 5px solid var(--omc-dark);
+    font-size: 12px;
+    margin-bottom: 10px;
+    color: var(--omc-dark);
+    text-transform: uppercase;
+}
+
+.row {
+    display: none;
+    grid-template-columns: 2fr 1fr 1.5fr;
+    padding: 8px 10px;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 13px;
+}
+
+.row.active {
+    display: grid !important;
+}
+
+.val {
+    font-weight: bold;
+    text-align: center;
+}
+
+.signature-line {
+    margin-top: 50px;
+    border-top: 2px solid #000;
+    display: inline-block;
+    min-width: 250px;
+    float: right;
+    text-align: right;
+    padding-top: 5px;
+    font-family: 'Alex Brush', cursive;
+    font-size: 32px;
+}
+
+/* ============================================================
+   BOUTONS D'ACTION ET POPUPS
+   ============================================================ */
+
+.btn-generate {
+    background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%) !important;
+    color: white !important;
+    height: 45px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 0 #14532d !important;
+    border: none !important;
+}
+
+.btn-reset {
+    background: linear-gradient(90deg, #ef4444 0%, #b91c1c 100%) !important;
+    color: white !important;
+    height: 45px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 0 #7f1d1d !important;
+    border: none !important;
+}
+
+.btn-image {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #ccc !important;
+    text-transform: uppercase;
+    font-size: 11px;
+    padding: 12px !important;
+    font-weight: bold;
+    width: 100%;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Popup de prévisualisation */
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    overflow-y: auto;
+    z-index: 9999;
+}
+
+.popup-content {
+    background: #112240;
+    padding: 25px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 650px;
+    border: 1px solid var(--omc-cyan);
 }
