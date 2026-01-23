@@ -239,86 +239,61 @@ function determinerGroupeAleatoire() {
 
 function lancerGenerationAuto() {
     const grav = parseInt(document.getElementById('gravity-range').value);
-    const scenarios = Array.from(document.querySelectorAll('.scenario-grid input:checked')).map(i => i.value);
+    
+    // CORRECTION ICI : On cible tous les input checkbox dans la sidebar
+    const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
     
     if (scenarios.length === 0) return alert("Coche au moins un scénario !");
 
-    // 1. On vide tout avant de générer pour ne pas mélanger les rapports
     resetSeulementBio(false); 
 
-    // 2. Valeurs de base (Saines)
     let results = { 
-        gb: 7.2, hb: 14.8, ht: 44, pla: 280, vgm: 88, // Hémato de base
-        gly: 0.95, uree: 0.30, crea: 9.2, crp: 1.2,    // Bioch de base
-        na: 140, k: 4.1, cl: 102, ca: 95              // Iono de base
+        gb: 7.2, hb: 14.8, ht: 44, pla: 280, vgm: 88, 
+        gly: 0.95, uree: 0.30, crea: 9.2, crp: 1.2,    
+        na: 140, k: 4.1, cl: 102, ca: 95              
     };
 
     let categoriesToShow = ["HÉMATOLOGIE (SANG)", "BIOCHIMIE MÉTABOLIQUE", "IONOGRAMME (SELS)"];
 
-    // 3. Application des Scénarios (Logique Cumulative)
     scenarios.forEach(s => {
-        let f = grav / 5; // Facteur de gravité
-
+        let f = grav / 5; 
         if (s === 'acc-route' || s === 'arme-feu') {
             categoriesToShow.push("GAZ DU SANG (AA)", "COAGULATION", "MARQUEURS CARDIAQUES");
-            // Hémorragie
             results.hb = (14.5 - (3.5 * f)).toFixed(1);
             results.ht = (45 - (10 * f)).toFixed(1);
-            results.pla = (250 - (50 * f)).toFixed(0);
-            // Choc et Gaz du sang
             results.lact = (1.1 + (2.5 * f)).toFixed(1);
             results.ph = (7.40 - (0.12 * f)).toFixed(2);
-            results.po2 = (95 - (15 * f)).toFixed(0);
-            // Marqueurs cardiaques (souffrance liée au choc)
-            results.tropo = (2 + (25 * f)).toFixed(0);
-            results.tp = (90 - (20 * f)).toFixed(0);
         }
-
         if (s === 'overdose') {
             categoriesToShow.push("TOXICOLOGIE (LSPD/BCSO)", "GAZ DU SANG (AA)");
             results.alc = (0.2 + (0.8 * f)).toFixed(2);
-            results.ph = (7.38 - (0.15 * f)).toFixed(2);
-            results.pco2 = (40 + (15 * f)).toFixed(0);
             results.thc = grav > 6 ? "POSITIF" : "Négatif";
         }
-
         if (s === 'diabete') {
             results.gly = (1.10 + (2.5 * f)).toFixed(2);
-            results.ph = (7.40 - (0.10 * f)).toFixed(2);
-            if (grav > 8) results.crea = (10 + (5 * f)).toFixed(1); // Impact rénal
         }
-
         if (s === 'renal') {
             results.crea = (12 + (25 * f)).toFixed(1);
-            results.uree = (0.45 + (1.2 * f)).toFixed(2);
-            results.k = (4.5 + (1.5 * f)).toFixed(1); // Hyperkaliémie dangereuse
+            results.k = (4.5 + (1.5 * f)).toFixed(1);
         }
     });
 
-    // 4. Injection et Affichage
     for (let id in results) {
-        let val = results[id];
         let catFound = "";
-        
-        // Trouver la catégorie associée dans la database
         for (let c in database) {
             if (database[c].find(i => i.id === id)) catFound = c;
         }
 
-        if (catFound) {
-            // On n'affiche que si la catégorie est dans notre liste de scénario
-            if (categoriesToShow.includes(catFound)) {
-                // Remplir l'input à gauche
-                const input = document.querySelector(`[data-id="${id}"]`);
-                if (input) input.value = val;
-                
-                // Envoyer au document à droite
-                res(id, val.toString(), catFound);
-            }
+        if (catFound && categoriesToShow.includes(catFound)) {
+            // Met à jour l'input manuel si présent
+            const input = document.querySelector(`[data-id="${id}"]`);
+            if (input) input.value = results[id];
+            
+            // Affiche sur le document
+            res(id, results[id].toString(), catFound);
         }
     }
 }
-
 function switchMode(mode) {
     document.getElementById('panel-auto').style.display = (mode === 'auto' ? 'block' : 'none');
     document.getElementById('panel-manual').style.display = (mode === 'manual' ? 'block' : 'none');
