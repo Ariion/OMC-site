@@ -170,71 +170,100 @@ function res(id, val, cat) {
 // ==========================================
 
 function lancerGenerationAuto() {
-    const grav = parseInt(document.getElementById('gravity-range').value);
+    const grav = parseInt(document.getElementById('gravity-range').value); // Échelle 1-10
     const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
     
-    if (scenarios.length === 0) return alert("Coche un scénario !");
+    if (scenarios.length === 0 && grav > 1) return alert("Cochez un scénario ou restez à 1 (Sain) !");
+
     resetSeulementBio(false); 
 
-    let results = { gb: 7.2, hb: 14.8, ht: 44, pla: 280, gly: 0.95, na: 140, k: 4.1 };
-    let categoriesToShow = ["HÉMATOLOGIE (SANG)", "BIOCHIMIE MÉTABOLIQUE", "IONOGRAMME (SELS)"];
+    // Valeurs de base (Parfaites si grav = 1)
+    let results = { 
+        gb: 7.0, hb: 15.0, ht: 45, pla: 250, gly: 0.90, na: 140, k: 4.0, crea: 9.0, ph: 7.40 
+    };
+
+    // Le facteur d'écart augmente avec la gravité
+    // À 1 : écart de 0% | À 10 : écart de 50-80% selon les constantes
+    let f = (grav - 1) / 9; 
 
     scenarios.forEach(s => {
-        let f = grav / 5; 
-        if (s === 'acc-route' || s === 'overdose') {
-            results.hb = (14.5 - (3.5 * f)).toFixed(1);
-            results.alc = (0.2 + (0.8 * f)).toFixed(2);
-            if (s === 'overdose') categoriesToShow.push("TOXICOLOGIE (LSPD/BCSO)");
+        if (s === 'acc-route' || s === 'arme-feu') {
+            results.hb = (15.0 - (8.0 * f)).toFixed(1); // Chute d'hémoglobine (Hémorragie)
+            results.ht = (45 - (20 * f)).toFixed(1);
+            results.ph = (7.40 - (0.35 * f)).toFixed(2); // Acidose métabolique
+        }
+        if (s === 'overdose') {
+            results.ph = (7.40 - (0.40 * f)).toFixed(2);
+            results.alc = (grav * 0.4).toFixed(2); // Alcoolémie proportionnelle
+        }
+        if (s === 'renal') {
+            results.crea = (9.0 + (40 * f)).toFixed(1); // Explosion de la créatinine
+            results.k = (4.0 + (3.5 * f)).toFixed(1);    // Hyperkaliémie mortelle
         }
     });
 
+    // Envoi des données vers le rapport
     for (let id in results) {
-        let catFound = "";
-        for (let c in database) {
-            if (database[c].find(i => i.id === id)) catFound = c;
-        }
-        if (catFound && categoriesToShow.includes(catFound)) {
-            res(id, results[id].toString(), catFound);
-        }
+        let catFound = Object.keys(database).find(c => database[c].some(i => i.id === id));
+        if (catFound) res(id, results[id].toString(), catFound);
     }
-    analyserTout();
+    
+    analyserTout(); // Lance le diagnostic textuel
 }
 
 function genererGrossesse(mois) {
-    if (mois === 'aleatoire') mois = 1;
+    const grav = parseInt(document.getElementById('gravity-range').value); // Récupère la gravité 1-10
+    if (mois === 'aleatoire') mois = Math.floor(Math.random() * 9) + 1;
+    
     const data = grossesseData[mois] || grossesseData["neg"];
     
-    // Valeurs bio (HCG et Globules Blancs)
-    res('hcg', (Math.random() * (2000 - 500) + 500).toFixed(0), 'ENDOCRINOLOGIE & DIVERS');
-    res('gb', "11.2", 'HÉMATOLOGIE (SANG)');
-
-let texteGrossesse = "";
-if (mois === "neg") {
-    texteGrossesse = "DOSAGE HCG : Négatif (< 5 mUI/mL). Absence de grossesse évolutive.";
-} else {
-    texteGrossesse = `MATERNITÉ (MOIS ${mois}) : Taux HCG cohérent avec le stade gestationnel. `;
+    // 1. CALCULS BIOLOGIQUES BASÉS SUR LA GRAVITÉ
+    // f = 0 à la gravité 1 (sain), f = 1 à la gravité 10 (critique)
+    let f = (grav - 1) / 9; 
     
-    // Indices cliniques selon le mois
-    if (mois <= 3) texteGrossesse += "Vigilance : Risque d'émèse gravidique (nausées) lié au pic hormonal.";
-    else if (mois >= 7) texteGrossesse += "Note : Compression veineuse possible et anémie physiologique à surveiller.";
-    else texteGrossesse += "Développement fœtal et constantes maternelles favorables.";
-}
+    // On génère des valeurs qui dérivent selon la gravité
+    let vHcg = (Math.random() * 5000 + 1000).toFixed(0);
+    let vGb = (7.0 + (15.0 * f)).toFixed(1);  // Augmente (infection/inflammation)
+    let vFer = (120 - (100 * f)).toFixed(0);  // Chute (anémie sévère)
 
+    // Injection dans le rapport
+    res('hcg', vHcg, 'ENDOCRINOLOGIE & DIVERS');
+    res('gb', vGb, 'HÉMATOLOGIE (SANG)');
+    res('vitd', vFer, 'ENDOCRINOLOGIE & DIVERS');
+
+    // 2. CONSTRUCTION DU TEXTE CLINIQUE
+    let texteG = (mois === "neg") ? "ANALYSE IMMUNOLOGIQUE : Négatif. " : `MATERNITÉ (MOIS ${mois}) : `;
+    
+    if (grav >= 8) {
+        texteG += "ALERTE OBSTÉTRIQUE : Suspicion de pré-éclampsie ou souffrance fœtale aiguë. Urgence chirurgicale à considérer.";
+    } else if (grav >= 5) {
+        texteG += "COMPLICATION : Signes d'anémie gravidique sévère et syndrome inflammatoire marqué. Surveillance accrue.";
+    } else {
+        texteG += "Suivi de routine : Paramètres fœtaux et maternels physiologiques stables.";
+    }
+
+    // 3. FUSION AVEC LA CONCLUSION EXISTANTE
     let actuelle = document.getElementById('auto-concl-area').value;
     
-    // On sépare le texte actuel par ligne
+    // On nettoie les anciennes lignes de maternité/grossesse pour ne pas les accumuler
     let lignes = actuelle.split('\n');
-    // On filtre pour enlever l'ancienne ligne de grossesse si elle existe
-    let autresLignes = lignes.filter(l => !l.includes("Bilan de maternité") && !l.includes("Analyse immunologique"));
+    let autresLignes = lignes.filter(l => 
+        !l.includes("MATERNITÉ") && 
+        !l.includes("Bilan de maternité") && 
+        !l.includes("ANALYSE IMMUNOLOGIQUE") &&
+        !l.includes("Analyse immunologique")
+    );
     
-    // On reconstruit : Les prélèvements existants + La nouvelle ligne de grossesse
+    // On reconstruit le texte final
     let finale = autresLignes.join('\n');
-    if (finale) finale += "\n";
-    finale += texteGrossesse;
+    if (finale.trim() !== "") finale += "\n";
+    finale += texteG;
 
+    // Mise à jour de l'affichage
     document.getElementById('auto-concl-area').value = finale;
     document.getElementById('d-concl').innerText = finale;
-    updateLiveQRCode();
+    
+    if (typeof updateLiveQRCode === "function") updateLiveQRCode(); // Mise à jour du QR Code
 }
 
 function determinerGroupeAleatoire() {
@@ -309,12 +338,14 @@ function analyserTout() {
 
     // 2. Construction du diagnostic médical selon la gravité
     let diag = "";
-    if (alertesCritiques.length > 0) {
-        diag = `URGENCE VITALE : Décompensation majeure détectée (${alertesCritiques.join(', ')}). Pronostic réservé, réanimation recommandée.`;
-    } else if (anomalies.length > 0) {
-        diag = `OBSERVATION CLINIQUE : Profil biologique instable avec anomalies sur (${anomalies.join(', ')}). Surveillance rapprochée nécessaire.`;
+if (grav <= 2) {
+        diag = "CONSTANTES PHYSIOLOGIQUES : Profil biologique sain. Aucune anomalie décelée.";
+    } else if (grav <= 5) {
+        diag = "BILAN PERTURBÉ : Déséquilibres modérés constatés. Surveillance en unité de soins conventionnels préconisée.";
+    } else if (grav <= 8) {
+        diag = "ÉTAT CRITIQUE : Altération sévère des constantes. Pronostic engagé. Transfert immédiat en soins intensifs.";
     } else {
-        diag = "CONSTANTES STABLES : Paramètres biologiques dans les normes physiologiques.";
+        diag = "URGENCE ABSOLUE : Décompensation multi-viscérale. Patient au seuil de la mort. Réanimation lourde engagée.";
     }
 
     // 3. Fusion avec la Maternité (pour ne pas écraser)
