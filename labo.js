@@ -457,5 +457,30 @@ function closePopup() {
     document.body.style.overflow = 'auto'; // Réactive le scroll du site
 }
 
+// Fonction pour mettre à jour le QR Code en temps réel
+function updateLiveQRCode() {
+    const nom = document.getElementById('d-nom').innerText || "Anonyme";
+    const date = document.getElementById('d-date-prel').innerText || "00-00-00";
+    const qrImg = document.getElementById('qr-ref');
+    
+    if (qrImg) {
+        // On crée une chaîne de données unique basée sur les infos du document
+        const data = encodeURIComponent(`OMC-LAB|${nom}|${date}`);
+        // L'URL change, forçant l'image à se recharger avec les nouvelles infos
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
+    }
+}
+
+// MODIFICATION DE TA FONCTION UP EXISTANTE
+// Assure-toi que ta fonction up() appelle updateLiveQRCode() à la fin
+function up(id, val) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = val;
+        // Mise à jour du QR Code à chaque modification de texte
+        updateLiveQRCode(); 
+    }
+}
+
 // Reste des fonctions (analyserTout, lancerGenerationAuto, genererImage, etc.) à garder intactes...
 document.addEventListener('DOMContentLoaded', init);
