@@ -158,24 +158,24 @@
         </div>
         
         <div class="cert-footer" style="margin-top: 30px; display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 5px;">
-            
-            <div class="cert-signature" style="flex: 1;">
-                Établi par :<br><br>
-                <span id="d-sig" class="signature-line">
-                    Dr. 
-                </span>
-            </div>
+    
+    <div class="cert-signature" style="text-align: left;">
+        <span style="font-size: 12px; font-weight: bold;">Établi par :</span><br><br>
+        <span id="d-sig" class="signature-line" style="border-top: 1px solid #000; min-width: 250px; display: inline-block; padding-top: 5px; font-family: 'Alex Brush', cursive; font-size: 28px;">
+            Dr. 
+        </span>
+    </div>
 
-            <div class="qr-container" style="text-align: center; margin-left: 20px;">
-                <img id="qr-ref" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-LAB-VALID" 
-                     alt="QR" style="width: 85px; height: 85px; border: 1px solid #0a192f; border-radius: 8px; padding: 2px;">
-                <div style="font-size: 10px; font-weight: 900; color: #0a192f; margin-top: 5px;">OMC CERTIFIED</div>
-            </div>
-        </div>
+    <div class="qr-container" style="text-align: center;">
+        <img id="qr-ref" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=INITIALIZING" 
+             alt="QR" style="width: 85px; height: 85px; border: 1px solid #0a192f; border-radius: 8px; padding: 2px; background: white;">
+        <div style="font-size: 10px; font-weight: 900; color: #0a192f; margin-top: 5px; text-transform: uppercase;">OMC CERTIFIED</div>
+    </div>
+</div>
 
-        <p class="legal-text" style="margin-top: 20px; font-size: 10px; color: #94a3b8; border-top: 1px solid #eee; padding-top: 10px; font-style: italic; text-align: left; margin-bottom: 0;">
-            Ce document est un compte-rendu d'analyses médicales informatisé établi par l'Ocean Medical Center. Toute falsification est passible de sanctions.
-        </p>
+<p class="legal-text" style="margin-top: 20px; font-size: 10px; color: #94a3b8; border-top: 1px solid #eee; padding-top: 10px; font-style: italic; margin-bottom: 0;">
+    Ce document est un compte-rendu d'analyses médicales informatisé. Toute falsification est passible de sanctions.
+</p>
 
     </div> </main>
     </div>
@@ -197,6 +197,7 @@
     <script src="labo.js"></script>
 </body>
 </html>
+
 
 
 
