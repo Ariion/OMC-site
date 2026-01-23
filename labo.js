@@ -156,6 +156,16 @@ function init() {
     }
 }
 
+// Génère un QR code basé sur un numéro de dossier fictif ou le nom du patient
+function mettreAJourQRCode(nomPatient) {
+    const qrImg = document.getElementById('qr-ref');
+    if (qrImg) {
+        const ref = "OMC-" + Math.floor(Math.random() * 999999);
+        // Utilisation d'une API gratuite de QR Code
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ref}-${nomPatient}`;
+    }
+}
+
 // ==========================================
 // 3. LOGIQUE MÉDICALE ET MISE À JOUR
 // ==========================================
