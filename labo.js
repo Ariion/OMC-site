@@ -212,35 +212,33 @@ function lancerGenerationAuto() {
 }
 
 function genererGrossesse(mois) {
-    const grav = parseInt(document.getElementById('gravity-range').value); // Récupère la gravité 1-10
+    const grav = parseInt(document.getElementById('gravity-range').value);
     if (mois === 'aleatoire') mois = Math.floor(Math.random() * 9) + 1;
-    
-    const data = grossesseData[mois] || grossesseData["neg"];
-    
-    // 1. CALCULS BIOLOGIQUES BASÉS SUR LA GRAVITÉ
-    // f = 0 à la gravité 1 (sain), f = 1 à la gravité 10 (critique)
     let f = (grav - 1) / 9; 
-    
-    // On génère des valeurs qui dérivent selon la gravité
+
+    // --- ANALYSES RÉELLES ---
     let vHcg = (Math.random() * 5000 + 1000).toFixed(0);
-    let vGb = (7.0 + (15.0 * f)).toFixed(1);  // Augmente (infection/inflammation)
-    let vFer = (120 - (100 * f)).toFixed(0);  // Chute (anémie sévère)
+    let vPla = (250 - (180 * f)).toFixed(0); // Chute des plaquettes (Danger hémorragie)
+    let vAlat = (20 + (200 * f)).toFixed(0); // Foie qui souffre
+    let vCrea = (7 + (15 * f)).toFixed(1);   // Reins sous pression
 
-    // Injection dans le rapport
     res('hcg', vHcg, 'ENDOCRINOLOGIE & DIVERS');
-    res('gb', vGb, 'HÉMATOLOGIE (SANG)');
-    res('vitd', vFer, 'ENDOCRINOLOGIE & DIVERS');
+    res('pla', vPla, 'HÉMATOLOGIE (SANG)');
+    res('alat', vAlat, 'BILAN HÉPATIQUE (FOIE)');
+    res('crea', vCrea, 'BIOCHIMIE MÉTABOLIQUE');
 
-    // 2. CONSTRUCTION DU TEXTE CLINIQUE
-    let texteG = (mois === "neg") ? "ANALYSE IMMUNOLOGIQUE : Négatif. " : `MATERNITÉ (MOIS ${mois}) : `;
-    
+    // --- DIAGNOSTIC SIMPLIFIÉ ---
+    let diag = `MATERNITÉ (MOIS ${mois}) : `;
     if (grav >= 8) {
-        texteG += "ALERTE OBSTÉTRIQUE : Suspicion de pré-éclampsie ou souffrance fœtale aiguë. Urgence chirurgicale à considérer.";
+        diag += `ALERTE : PRÉ-ÉCLAMPSIE SÉVÈRE (HELLP Syndrome). Le foie et les reins sont en train de lâcher. Risque de convulsions (Éclampsie). Sortez le bébé d'urgence.`;
     } else if (grav >= 5) {
-        texteG += "COMPLICATION : Signes d'anémie gravidique sévère et syndrome inflammatoire marqué. Surveillance accrue.";
+        diag += `VIGILANCE : PRÉ-ÉCLAMPSIE MODÉRÉE. Tension trop haute. Le foie commence à fatiguer. Repos strict et surveillance hospitalière.`;
     } else {
-        texteG += "Suivi de routine : Paramètres fœtaux et maternels physiologiques stables.";
+        diag += `NORMAL : Grossesse stable. Pas de signe d'hypertension ou de souffrance organique.`;
     }
+
+    fusionnerConclusionSpecifique(diag);
+
 
     // 3. FUSION AVEC LA CONCLUSION EXISTANTE
     let actuelle = document.getElementById('auto-concl-area').value;
@@ -338,14 +336,14 @@ function analyserTout() {
 
     // 2. Construction du diagnostic médical selon la gravité
     let diag = "";
-if (grav <= 2) {
-        diag = "CONSTANTES PHYSIOLOGIQUES : Profil biologique sain. Aucune anomalie décelée.";
-    } else if (grav <= 5) {
-        diag = "BILAN PERTURBÉ : Déséquilibres modérés constatés. Surveillance en unité de soins conventionnels préconisée.";
-    } else if (grav <= 8) {
-        diag = "ÉTAT CRITIQUE : Altération sévère des constantes. Pronostic engagé. Transfert immédiat en soins intensifs.";
+if (grav >= 9) {
+        diag = "URGENCE ABSOLUE : CHOC DÉCOMPENSÉ. Le sang ne circule plus assez pour nourrir les organes. Le patient est en train de mourir (Acidose massive). Réanimation immédiate.";
+    } else if (grav >= 6) {
+        diag = "ÉTAT CRITIQUE : CHOC HYPOVOLÉMIQUE. Perte de sang importante. Les organes manquent d'oxygène. Transfusion et chirurgie nécessaires.";
+    } else if (grav >= 3) {
+        diag = "STABLE : ANOMALIES MODÉRÉES. Signes d'inflammation ou de fatigue organique. À surveiller, mais pas de danger de mort immédiat.";
     } else {
-        diag = "URGENCE ABSOLUE : Décompensation multi-viscérale. Patient au seuil de la mort. Réanimation lourde engagée.";
+        diag = "STABLE : Bilan dans les normes. Pas de détresse vitale détectée.";
     }
 
     // 3. Fusion avec la Maternité (pour ne pas écraser)
@@ -467,6 +465,27 @@ function updateLiveQRCode() {
         // L'URL change, forçant l'image à se recharger avec les nouvelles infos
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
     }
+}
+
+function fusionnerConclusionSpecifique(nouveauTexte) {
+    let actuelle = document.getElementById('auto-concl-area').value;
+    let lignes = actuelle.split('\n');
+    
+    let estGrossesse = nouveauTexte.includes("MATERNITÉ");
+    
+    // On garde uniquement les lignes qui ne concernent pas le même sujet
+    let filtré = lignes.filter(l => {
+        if (estGrossesse) return !l.includes("MATERNITÉ") && !l.includes("PRÉ-ÉCLAMPSIE");
+        return !l.includes("CHOC") && !l.includes("URGENCE ABSOLUE") && !l.includes("STABLE");
+    });
+
+    let finale = filtré.join('\n');
+    if (finale.trim() !== "") finale += "\n";
+    finale += nouveauTexte;
+
+    document.getElementById('auto-concl-area').value = finale;
+    document.getElementById('d-concl').innerText = finale;
+    updateLiveQRCode();
 }
 
 // MODIFICATION DE TA FONCTION UP EXISTANTE
