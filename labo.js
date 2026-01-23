@@ -170,42 +170,44 @@ function res(id, val, cat) {
 // ==========================================
 
 function lancerGenerationAuto() {
-    const grav = parseInt(document.getElementById('gravity-range').value); // Échelle 1-10
+    const grav = parseInt(document.getElementById('gravity-range').value);
     const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
-    
-    if (scenarios.length === 0 && grav > 1) return alert("Cochez un scénario ou restez à 1 (Sain) !");
+    let f = (grav - 1) / 9; // Facteur d'intensité 0.0 à 1.0
 
-    resetSeulementBio(false); 
+    resetSeulementBio(false);
 
-    // Valeurs de base (Parfaites si grav = 1)
-    let results = { 
-        gb: 7.0, hb: 15.0, ht: 45, pla: 250, gly: 0.90, na: 140, k: 4.0, crea: 9.0, ph: 7.40 
-    };
-
-    // Le facteur d'écart augmente avec la gravité
-    // À 1 : écart de 0% | À 10 : écart de 50-80% selon les constantes
-    let f = (grav - 1) / 9; 
+    let results = { gb: 7.0, hb: 15.0, ht: 45, pla: 250, gly: 0.90, na: 140, k: 4.0, crea: 9.0, ph: 7.40, lact: 0.8 };
+    let diagPrincipal = "";
 
     scenarios.forEach(s => {
-        if (s === 'acc-route' || s === 'arme-feu') {
-            results.hb = (15.0 - (8.0 * f)).toFixed(1); // Chute d'hémoglobine (Hémorragie)
-            results.ht = (45 - (20 * f)).toFixed(1);
-            results.ph = (7.40 - (0.35 * f)).toFixed(2); // Acidose métabolique
+        if (s === 'arme-feu' || s === 'acc-route') {
+            // --- CHOC HÉMORRAGIQUE ---
+            results.hb = (15.0 - (10.0 * f)).toFixed(1); // Chute Hb (Hémorragie)
+            results.pla = (250 - (200 * f)).toFixed(0); // Consommation des plaquettes
+            results.lact = (0.8 + (8.0 * f)).toFixed(1); // Hypoxie (Manque d'oxygène)
+            diagPrincipal = grav >= 7 ? "CHOC HYPOVOLÉMIQUE : Hémorragie massive. Le patient se vide de son sang." : "TRAUMA : Perte sanguine modérée. Stabilisation requise.";
         }
+        
         if (s === 'overdose') {
-            results.ph = (7.40 - (0.40 * f)).toFixed(2);
-            results.alc = (grav * 0.4).toFixed(2); // Alcoolémie proportionnelle
+            // --- CHOC TOXIQUE / ARRÊT RESPIRATOIRE ---
+            results.ph = (7.40 - (0.50 * f)).toFixed(2); // Acidose respiratoire (Le patient ne respire plus)
+            results.lact = (0.8 + (10.0 * f)).toFixed(1);
+            results.alc = (f * 4.5).toFixed(2);
+            diagPrincipal = grav >= 7 ? "OVERDOSE CRITIQUE : Acidose sévère. Arrêt respiratoire imminent. Antidote requis." : "INTOXICATION : Vigilance altérée. Paramètres vitaux sous influence toxique.";
         }
-        if (s === 'renal') {
-            results.crea = (9.0 + (40 * f)).toFixed(1); // Explosion de la créatinine
-            results.k = (4.0 + (3.5 * f)).toFixed(1);    // Hyperkaliémie mortelle
+
+        if (s === 'diabete') {
+            // --- CHOC GLYCÉMIQUE ---
+            results.gly = (0.90 + (5.0 * f)).toFixed(2); // Hyperglycémie
+            results.k = (4.0 + (3.0 * f)).toFixed(1);    // Hyperkaliémie (Danger cœur)
+            diagPrincipal = grav >= 7 ? "COMA DIABÉTIQUE : Hyperglycémie majeure avec acidocétose. Danger mortel." : "DIABÈTE : Glycémie instable. Rééquilibrage nécessaire.";
         }
     });
 
-    // Envoi des données vers le rapport
+    // Envoi des résultats au rapport
     for (let id in results) {
-        let catFound = Object.keys(database).find(c => database[c].some(i => i.id === id));
-        if (catFound) res(id, results[id].toString(), catFound);
+        let cat = Object.keys(database).find(c => database[c].some(i => i.id === id));
+        if (cat) res(id, results[id].toString(), cat);
     }
     
     analyserTout(); // Lance le diagnostic textuel
@@ -215,6 +217,7 @@ function genererGrossesse(mois) {
     const grav = parseInt(document.getElementById('gravity-range').value);
     if (mois === 'aleatoire') mois = Math.floor(Math.random() * 9) + 1;
     let f = (grav - 1) / 9; 
+    let texteG = `MATERNITÉ (MOIS ${mois}) : `;
 
     // --- ANALYSES RÉELLES ---
     let vHcg = (Math.random() * 5000 + 1000).toFixed(0);
@@ -228,13 +231,15 @@ function genererGrossesse(mois) {
     res('crea', vCrea, 'BIOCHIMIE MÉTABOLIQUE');
 
     // --- DIAGNOSTIC SIMPLIFIÉ ---
-    let diag = `MATERNITÉ (MOIS ${mois}) : `;
-    if (grav >= 8) {
-        diag += `ALERTE : PRÉ-ÉCLAMPSIE SÉVÈRE (HELLP Syndrome). Le foie et les reins sont en train de lâcher. Risque de convulsions (Éclampsie). Sortez le bébé d'urgence.`;
-    } else if (grav >= 5) {
-        diag += `VIGILANCE : PRÉ-ÉCLAMPSIE MODÉRÉE. Tension trop haute. Le foie commence à fatiguer. Repos strict et surveillance hospitalière.`;
+    // Si accident grave en même temps que grossesse
+    if (grav >= 7 && (scenarios.includes('arme-feu') || scenarios.includes('acc-route'))) {
+        texteG += "URGENCE VITALE : Traumatisme abdominal/choc hypovolémique. SOUFFRANCE FŒTALE AIGUË par hypoxie. Risque de perte fœtale immédiate.";
+    } else if (grav >= 5 && scenarios.includes('overdose')) {
+        texteG += "ALERTE TOXIQUE : Passage placentaire des toxiques suspecté. Rythme cardiaque fœtal à surveiller d'urgence.";
+    } else if (grav >= 8) {
+        texteG += "PATHOLOGIE : Pré-éclampsie sévère. Risque de décollement placentaire.";
     } else {
-        diag += `NORMAL : Grossesse stable. Pas de signe d'hypertension ou de souffrance organique.`;
+        texteG += "STABLE : Pas de retentissement fœtal direct détecté malgré l'admission.";
     }
 
     fusionnerConclusionSpecifique(diag);
