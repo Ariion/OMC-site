@@ -3,10 +3,10 @@
 .preview-area {
     flex-grow: 1;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 60px 40px;
-    overflow-y: auto;
+    justify-content: center; 
+    align-items: flex-start; /* FIX: Aligne en haut pour permettre le scroll du logo */
+    padding: 40px; 
+    overflow-y: auto;        /* Active le défilement vertical */
     background-color: var(--bg-preview) !important;
     transition: background-color 0.2s ease-in-out;
 }
@@ -45,13 +45,12 @@
     width: 800px;
     min-width: 800px;
     background: white !important;
-    padding: 50px !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    margin-bottom: 40px;      /* Marge de sécurité pour ne pas coller au bord bas */
-    display: block;           /* Assure qu'il prend sa place */
-    height: auto !important;
-    min-height: fit-content !important;
-    overflow: visible !important;
+    padding: 40px;
+    color: #111 !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+    box-sizing: border-box;
+    margin-bottom: 50px; /* Espace pour ne pas coller en bas */
 }
 .header-lab img {
     max-height: 60px;
