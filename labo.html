@@ -157,12 +157,25 @@
             <p id="d-concl" style="font-style:italic; font-size:13px; margin-top:5px; color: #334155;">...</p>
         </div>
         
-        <div class="cert-footer" style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; padding-bottom: 10px;">
-            <div class="signature-line" id="d-sig">Dr. </div>
-            <div class="round-stamp" style="border: 2px solid #0a1324; border-radius: 12px; padding: 10px; text-align: center; font-size: 10px; width: 100px;">
-                OMC LABORATORY
+        <div class="cert-footer" style="margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end;">
+            
+            <div class="cert-signature" style="flex: 1;">
+                Établi par :<br><br>
+                <span id="d-sig" style="font-family: 'Alex Brush', cursive; font-size: 28px; border-top: 1px solid #000; min-width: 200px; display: inline-block; padding-top: 5px;">
+                    Dr. 
+                </span>
+            </div>
+
+            <div class="round-stamp" style="text-align: right; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                <img id="qr-ref" class="qr-code" src="" alt="QR" style="width: 80px; height: 80px; background: #eee; border-radius: 4px;">
+                <div style="font-size: 9px; font-weight: bold; color: #0a1324;">OMC CERTIFIED</div>
             </div>
         </div>
+
+        <p class="legal-text" style="margin-top: 30px; font-size: 10px; color: #94a3b8; border-top: 1px solid #eee; padding-top: 10px; font-style: italic;">
+            Ce document est établi sur la base des analyses biologiques effectuées par le laboratoire OMC. 
+            Toute reproduction ou usage détourné est strictement interdit.
+        </p>
 
     </div> </main>
     </div>
@@ -184,6 +197,7 @@
     <script src="labo.js"></script>
 </body>
 </html>
+
 
 
 
