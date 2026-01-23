@@ -93,6 +93,16 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
     background-color: var(--bg-preview) !important; /* Utilise la variable */
     transition: background-color 0.2s ease-in-out;
 }
+
+/* Espace entre la signature et les boutons d'action */
+.signature-input-group {
+    margin-bottom: 25px !important; /* Ajoute l'espace demandé */
+}
+
+/* Si tu n'as pas de classe, utilise l'ID du champ */
+#doctor-signature {
+    margin-bottom: 25px;
+}
 #document { width: 800px !important; min-width: 800px !important; height: auto !important; min-height: 1122px; background: white !important; padding: 40px !important; color: #111 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; }
 #print-btn, #discord-btn { width: 100%; padding: 15px; background: var(--omc-cyan); border: none; font-weight: bold; cursor: pointer; margin-top: 12px; border-radius: 5px; }
 #discord-btn { background: #5865F2; color: white; }
