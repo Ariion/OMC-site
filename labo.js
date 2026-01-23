@@ -78,6 +78,7 @@ const grossesseData = {
 };
 
 function genererGrossesse(mois) {
+    // 1. Logique de sélection du mois (Aléatoire ou fixe)
     if (mois === 'aleatoire') {
         mois = (Math.random() > 0.5) ? 1 : 'neg';
     }
@@ -88,27 +89,41 @@ function genererGrossesse(mois) {
         return (Math.random() * (max - min) + min).toFixed(1);
     };
 
+    // 2. Calcul des valeurs biologiques
     const vHcg = rand(data.hcg);
     const vGb = rand(data.gb);
     const vFer = rand(data.fer);
 
-    // Mise à jour des résultats avec les noms EXACTS des catégories de la database
+    // 3. Mise à jour des lignes de résultats (S'ajoutent aux existantes)
     res('hcg', vHcg, 'ENDOCRINOLOGIE & DIVERS');
     res('gb', vGb, 'HÉMATOLOGIE (SANG)');
     res('vitd', vFer, 'ENDOCRINOLOGIE & DIVERS');
 
-    let concl = "";
+    // 4. Préparation du texte de grossesse uniquement
+    let texteGrossesse = "";
     if (mois === "neg") {
-        concl = "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif.";
+        texteGrossesse = "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif.";
     } else {
-        concl = `Bilan de maternité - ${data.label} : Présence d'hormone HCG (${vHcg} mUI/mL). `;
-        if(mois >= 7) concl += "Surveillance du fer recommandée avant l'accouchement. ";
-        else if(mois == 3 || mois == 4) concl += "Pic hormonal atteint. Nausées possibles. ";
-        concl += "Évolution clinique favorable.";
+        texteGrossesse = `Bilan de maternité - ${data.label} : Présence d'hormone HCG (${vHcg} mUI/mL). `;
+        if(mois >= 7) texteGrossesse += "Surveillance du fer recommandée. ";
+        else if(mois == 3 || mois == 4) texteGrossesse += "Pic hormonal atteint. ";
+        texteGrossesse += "Évolution clinique favorable.";
     }
+
+    // 5. CUMUL de la conclusion : On récupère ce qui existe déjà
+    let conclusionActuelle = document.getElementById('auto-concl-area').value;
     
-    document.getElementById('auto-concl-area').value = concl;
-    document.getElementById('d-concl').innerText = concl;
+    // On ajoute le nouveau texte à la ligne si le champ n'est pas vide
+    let nouvelleConclusion = conclusionActuelle 
+        ? conclusionActuelle + "\n" + texteGrossesse 
+        : texteGrossesse;
+
+    // 6. Envoi final vers l'affichage
+    document.getElementById('auto-concl-area').value = nouvelleConclusion;
+    document.getElementById('d-concl').innerText = nouvelleConclusion;
+    
+    // Mise à jour du QR Code (puisque la conclusion a changé)
+    updateLiveQRCode();
 }
 
 // ==========================================
@@ -340,10 +355,25 @@ function switchMode(mode) {
 // Version modifiée du Reset pour pouvoir vider sans confirmation lors de l'auto-gén
 function resetSeulementBio(confirmNeeded = true) {
     if (confirmNeeded && !confirm("Vider les analyses ?")) return;
+
+    // 1. Vide les champs de saisie manuels
     document.querySelectorAll('.analysis-input').forEach(el => el.value = "");
+
+    // 2. Cache toutes les lignes et sections du rapport
     document.querySelectorAll('.row, .section').forEach(el => el.classList.remove('active'));
+
+    // 3. Vide physiquement les sections dynamiques pour le prochain prélèvement
+    const dynamicSections = document.getElementById('dynamic-sections');
+    if (dynamicSections) dynamicSections.innerHTML = "";
+
+    // 4. Reset total de la conclusion
     document.getElementById('auto-concl-area').value = "";
-    document.getElementById('d-concl').innerText = "...";
+    const displayConcl = document.getElementById('d-concl');
+    if (displayConcl) displayConcl.innerText = "...";
+
+    // 5. Réinitialise le QR Code sur "Vide"
+    updateLiveQRCode();
+}
 }
 // ==========================================
 // 5. EXPORT IMAGE
