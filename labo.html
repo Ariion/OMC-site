@@ -9,7 +9,13 @@
 </head>
 <body>
     <div id="input-panel">
-        <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
+    <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
+    
+    <button onclick="toggleTheme()" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+        <span>🌓</span>
+        <span id="theme-text">Passer mode sombre</span> </button>
+</div>
         <h2>OMC LABORATOIRE</h2>
 
         <div class="fixed-info">
@@ -159,8 +165,10 @@
 
     <script src="global.js"></script>
     <script src="labo.js"></script>
+    <script src="global.js"></script>
 </body>
 </html>
+
 
 
 
