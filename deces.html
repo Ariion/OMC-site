@@ -72,16 +72,16 @@
     </div>
 
     <div id="preview-area">
-        <div id="document">
-            <div class="header-cert">
-                <img src="assets/logo_omc.png" alt="Logo" style="height: 60px;">
-                <div>
-                    <div class="cert-tag">OCEAN MEDICAL CENTER</div>
-                    <h1 class="cert-main-title">Certificat de décès</h1>
+        <main id="preview-area-inner"> <div id="document">
+                <div class="header-cert">
+                    <img src="assets/logo_omc.png" alt="Logo" style="height: 60px;">
+                    <div>
+                        <div class="cert-tag">OCEAN MEDICAL CENTER</div>
+                        <h1 class="cert-main-title">Certificat de décès</h1>
+                    </div>
                 </div>
-            </div>
 
-            <div class="cert-grid">
+                <div class="cert-grid">
                     <div class="cert-box"><label>Défunt</label><div id="d-nom" class="cert-val">...</div></div>
                     <div class="cert-box"><label>Naissance</label><div id="d-ddn" class="cert-val">...</div></div>
                     <div class="cert-box"><label>Date / Heure du décès</label><div class="cert-val"><span id="d-date">...</span> à <span id="d-heure">--:--</span></div></div>
@@ -90,11 +90,14 @@
                     <div class="cert-box" style="grid-column: span 2;"><label>Cause immédiate</label><div id="d-cause" class="cert-val">...</div></div>
                 </div>
 
-            <div class="cert-footer">
-                    <div class="cert-signature">Établi par :<br><br><span id="d-sig">DOCTEUR</span></div>
-                    <div class="round-stamp"><img id="qr-ref" class="qr-code" src="" alt="QR">OMC MEDICAL CENTER</div>
+                <div class="cert-footer">
+                    <div class="cert-signature">Établi par :<br><br><span id="d-sig" style="font-family: 'Alex Brush', cursive; font-size: 24px;">DOCTEUR</span></div>
+                    <div class="round-stamp" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <img id="qr-ref" class="qr-code" src="" alt="QR">
+                        <div style="margin-top: 5px;">OMC MEDICAL CENTER</div>
+                    </div>
                 </div>
-                <p class="legal-text">Ce certificat est établi sur la base des constatations cliniques. Toute reproduction interdite.</p>
+                <p class="legal-text">Ce certificat est établi sur la base des constatations cliniques effectuées par les services de l'Ocean Medical Center. Toute reproduction ou falsification est passible de poursuites.</p>
             </div>
         </main>
     </div>
@@ -112,6 +115,7 @@
     <script src="global.js"></script>
 </body>
 </html>
+
 
 
 
