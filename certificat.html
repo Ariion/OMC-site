@@ -11,11 +11,13 @@
         
         <aside class="sidebar">
             <aside class="sidebar">
-    <button onclick="toggleTheme()" style="background:none; border:1px solid #334155; color:white; cursor:pointer; padding:5px 10px; border-radius:5px; margin-bottom:10px; font-size:10px;">
-        🌓 MODE SOMBRE/CLAIR
-    </button>
     </aside>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
             <a href="index.html" class="back-link">← RETOUR AU PORTAIL</a>
+            <button onclick="toggleTheme()" title="Mode Sombre/Clair" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 14px; display: flex; align-items: center; justify-content: center;">
+        🌓
+    </button>
+                </div>
             <h1 class="sidebar-title">CERTIFICAT MÉDICAL</h1>
 
             <div class="form-group">
@@ -137,5 +139,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="certificat.js"></script>
+    <script src="global.js"></script>
 </body>
 </html>
