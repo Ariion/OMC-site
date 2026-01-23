@@ -295,13 +295,15 @@ function determinerGroupeAleatoire() {
 function lancerGenerationAuto() {
     const grav = parseInt(document.getElementById('gravity-range').value);
     
-    // CORRECTION ICI : On cible tous les input checkbox dans la sidebar
+    // On récupère les scénarios cochés
     const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
     
     if (scenarios.length === 0) return alert("Coche au moins un scénario !");
 
+    // On vide avant de générer pour éviter les mélanges
     resetSeulementBio(false); 
 
+    // Valeurs de base (Saines)
     let results = { 
         gb: 7.2, hb: 14.8, ht: 44, pla: 280, vgm: 88, 
         gly: 0.95, uree: 0.30, crea: 9.2, crp: 1.2,    
@@ -310,8 +312,10 @@ function lancerGenerationAuto() {
 
     let categoriesToShow = ["HÉMATOLOGIE (SANG)", "BIOCHIMIE MÉTABOLIQUE", "IONOGRAMME (SELS)"];
 
+    // Logique des scénarios
     scenarios.forEach(s => {
         let f = grav / 5; 
+
         if (s === 'acc-route' || s === 'arme-feu') {
             categoriesToShow.push("GAZ DU SANG (AA)", "COAGULATION", "MARQUEURS CARDIAQUES");
             results.hb = (14.5 - (3.5 * f)).toFixed(1);
@@ -319,20 +323,24 @@ function lancerGenerationAuto() {
             results.lact = (1.1 + (2.5 * f)).toFixed(1);
             results.ph = (7.40 - (0.12 * f)).toFixed(2);
         }
+
         if (s === 'overdose') {
             categoriesToShow.push("TOXICOLOGIE (LSPD/BCSO)", "GAZ DU SANG (AA)");
             results.alc = (0.2 + (0.8 * f)).toFixed(2);
             results.thc = grav > 6 ? "POSITIF" : "Négatif";
         }
+
         if (s === 'diabete') {
             results.gly = (1.10 + (2.5 * f)).toFixed(2);
         }
+
         if (s === 'renal') {
             results.crea = (12 + (25 * f)).toFixed(1);
             results.k = (4.5 + (1.5 * f)).toFixed(1);
         }
     });
 
+    // Injection finale dans le rapport à droite
     for (let id in results) {
         let catFound = "";
         for (let c in database) {
@@ -340,14 +348,13 @@ function lancerGenerationAuto() {
         }
 
         if (catFound && categoriesToShow.includes(catFound)) {
-            // Met à jour l'input manuel si présent
-            const input = document.querySelector(`[data-id="${id}"]`);
-            if (input) input.value = results[id];
-            
-            // Affiche sur le document
+            // Affiche sur le document et met à jour les couleurs
             res(id, results[id].toString(), catFound);
         }
     }
+    
+    // Lance l'analyse automatique pour la conclusion globale
+    analyserTout(); 
 }
 function switchMode(mode) {
     document.getElementById('panel-auto').style.display = (mode === 'auto' ? 'block' : 'none');
