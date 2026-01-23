@@ -121,45 +121,45 @@
         </aside>
 
         <main class="preview-area">
-            <div id="document">
-    <div class="header-lab">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <img src="assets/logo_omc.png" alt="Logo" style="height:60px; display: block;"> 
+    <div id="document">
+        
+        <div class="header-lab">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <img src="assets/logo_omc.png" alt="Logo" style="height:60px; display: block;"> 
+                <div>
+                    <h1 style="margin:0; font-size:24px; color: #0a1324;">BILAN BIOLOGIQUE</h1>
+                    <div style="font-size: 10px; color: #64748b; font-weight: bold;">OCEAN MEDICAL CENTER</div>
+                </div>
+            </div>
+            <div style="text-align:right; font-size:10px; color:#777;">RÉF : #OMC-LAB-2026</div>
+        </div>
+
+        <div class="patient-card">
             <div>
-                <h1 style="margin:0; font-size:24px; color: #0a1324;">BILAN BIOLOGIQUE</h1>
-                <div style="font-size: 10px; color: #64748b; font-weight: bold;">OCEAN MEDICAL CENTER</div>
+                Patient : <strong id="d-nom">...</strong><br>
+                Naissance : <span id="d-ddn">...</span><br>
+                Groupe : <strong id="d-groupe">...</strong>
+            </div>
+            <div style="text-align:right;">
+                Prélèvement : <span id="d-date-prel">...</span><br>
+                Heure : <span id="d-heure-prel">--:--</span><br>
+                Médecin : <span id="d-presc">...</span>
             </div>
         </div>
-        <div style="text-align:right; font-size:10px; color:#777;">RÉF : #OMC-LAB-2026</div>
-    </div>
-    </div>
 
-                <div class="patient-card">
-                    <div>
-                        Patient : <strong id="d-nom">...</strong><br>
-                        Naissance : <span id="d-ddn">...</span><br>
-                        Groupe : <strong id="d-groupe">...</strong>
-                    </div>
-                    <div style="text-align:right;">
-                        Prélèvement : <span id="d-date-prel">...</span><br>
-                        Heure : <span id="d-heure-prel">--:--</span><br>
-                        Médecin : <span id="d-presc">...</span>
-                    </div>
-                </div>
+        <div id="dynamic-sections"></div>
 
-                <div id="dynamic-sections"></div>
+        <div class="conclusion-box">
+            <strong>Conclusion :</strong>
+            <p id="d-concl">...</p>
+        </div>
+        
+        <div class="cert-footer">
+            <div class="signature-line" id="d-sig">Dr. </div>
+            <div class="round-stamp">OMC LABORATORY</div>
+        </div>
 
-                <div class="conclusion-box">
-                    <strong>Conclusion :</strong>
-                    <p id="d-concl">...</p>
-                </div>
-                
-                <div class="cert-footer">
-                    <div class="signature-line" id="d-sig">Dr. </div>
-                    <div class="round-stamp">OMC LABORATORY</div>
-                </div>
-            </div>
-        </main>
+    </div> </main>
     </div>
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
@@ -179,4 +179,5 @@
     <script src="labo.js"></script>
 </body>
 </html>
+
 
