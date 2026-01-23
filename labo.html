@@ -121,7 +121,8 @@
         </aside>
 
         <main class="preview-area">
-    <div id="document"> <div class="header-lab" style="display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 25px;">
+    <div id="document">
+        <div class="header-lab" style="display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 25px;">
             <img src="assets/logo_omc.png" alt="Logo" style="height: 60px;">
             <div style="flex-grow: 1;">
                 <div style="background: #0a192f; color: white; display: inline-block; padding: 2px 12px; border-radius: 4px; font-weight: 800; font-size: 12px; letter-spacing: 1px; margin-bottom: 5px;">
@@ -131,9 +132,10 @@
                     BILAN BIOLOGIQUE
                 </h1>
             </div>
-            <div style="text-align: right; font-size: 10px; color: #94a3b8; font-weight: bold;">
+            <div style="text-align: right; font-size: 10px; color: #94a3b8; font-weight: bold; width: 80px;">
                 RÉF : #OMC-LAB-2026
             </div>
+        </div>
 
         <div class="patient-card">
             <div>
@@ -148,16 +150,18 @@
             </div>
         </div>
 
-        <div id="dynamic-sections"></div>
+        <div id="dynamic-sections" style="margin-top: 20px;"></div>
 
-        <div class="conclusion-box">
-            <strong>Conclusion :</strong>
-            <p id="d-concl">...</p>
+        <div class="conclusion-box" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
+            <strong style="font-size: 14px; color: #0a1324;">Conclusion :</strong>
+            <p id="d-concl" style="font-style:italic; font-size:13px; margin-top:5px; color: #334155;">...</p>
         </div>
         
-        <div class="cert-footer">
+        <div class="cert-footer" style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; padding-bottom: 10px;">
             <div class="signature-line" id="d-sig">Dr. </div>
-            <div class="round-stamp">OMC LABORATORY</div>
+            <div class="round-stamp" style="border: 2px solid #0a1324; border-radius: 12px; padding: 10px; text-align: center; font-size: 10px; width: 100px;">
+                OMC LABORATORY
+            </div>
         </div>
 
     </div> </main>
@@ -180,6 +184,7 @@
     <script src="labo.js"></script>
 </body>
 </html>
+
 
 
 
