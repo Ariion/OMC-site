@@ -1,10 +1,3 @@
-// Initialisation au chargement
-document.addEventListener('DOMContentLoaded', () => {
-    init();
-    setAutoDate();
-    updateLiveQRCode();
-});
-
 // ==========================================
 // 1. BASE DE DONNÉES MÉDICALE
 // ==========================================
@@ -215,12 +208,16 @@ function mettreAJourQRCode(nomPatient) {
 // 3. LOGIQUE MÉDICALE ET MISE À JOUR
 // ==========================================
 function res(id, val, cat) {
+    // On nettoie l'ID de la catégorie pour éviter les problèmes avec les parenthèses
+    const cleanCatId = cat.replace(/\s+/g, '-').replace(/[()]/g, '');
+    
     const row = document.getElementById('row-' + id);
     const valSpan = document.getElementById('val-' + id);
-    const section = document.getElementById('sec-' + cat);
+    const section = document.getElementById('sec-' + cleanCatId);
 
     if (valSpan) {
         valSpan.innerText = val;
+        // Gestion couleur (Rouge si hors norme)
         const item = Object.values(database).flat().find(i => i.id === id);
         if (item && val.trim() !== "" && item.norm.includes('-')) {
             const [min, max] = item.norm.split('-').map(n => parseFloat(n));
@@ -229,14 +226,17 @@ function res(id, val, cat) {
         }
     }
 
+    // AFFICHAGE : On force l'ajout de la classe 'active'
     if (val.trim() !== "" && val !== "...") {
         if (row) row.classList.add('active');
         if (section) section.classList.add('active');
     } else {
         if (row) row.classList.remove('active');
-        if (section && section.querySelectorAll('.row.active').length === 0) section.classList.remove('active');
-    }
+        if (section && section.querySelectorAll('.row.active').length === 0) {
+            section.classList.remove('active');
+        }
     analyserTout();
+}
 }
 
 // CONCLUSION GRADUÉE SELON GRAVITÉ
