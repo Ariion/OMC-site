@@ -124,8 +124,10 @@ function setupDraggableSystem() {
 function createMarker(x, y) {
     const config = LESIONS.find(l => l.key === activeType);
     const id = Date.now();
+    const markerNumber = markers.length + 1; // Définit le numéro du point
     const newMarker = {
         id: id,
+        number: markerNumber, // On stocke le numéro
         x: (x / 100) * 418,
         y: (y / 100) * 940,
         type: activeType,
@@ -136,6 +138,7 @@ function createMarker(x, y) {
     const markerEl = document.createElement('div');
     markerEl.className = 'marker-point';
     markerEl.id = `m-${id}`;
+    markerEl.innerText = markerNumber;
     markerEl.style.left = x + "%";
     markerEl.style.top = y + "%";
     markerEl.style.backgroundColor = config.color;
@@ -281,20 +284,25 @@ function updateReport() {
     // 4. Liste des Observations Cliniques
     const list = document.getElementById('reportList');
     if (list) {
-        list.innerHTML = markers.length ? "" : "<li>Aucune lésion sélectionnée.</li>";
-        markers.forEach((m, i) => {
-            const config = LESIONS.find(l => l.key === m.type);
-            const zone = regionFrom(m.x, m.y);
-            const d = m.details || { elements: [] };
-            
-            let detailTxt = d.typeL ? ` (${d.typeL})` : "";
-            let elementsTxt = (d.elements && d.elements.length > 0) ? ` — Eléments associés : ${d.elements.join(', ')}` : "";
-            
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${config.label}</strong>${detailTxt}${elementsTxt} localisée : <u>${zone}</u>.`;
-            list.appendChild(li);
-        });
-    }
+    list.innerHTML = markers.length ? "" : "<li>Aucune lésion sélectionnée.</li>";
+    markers.forEach((m, i) => {
+        const config = LESIONS.find(l => l.key === m.type);
+        const zone = regionFrom(m.x, m.y);
+        const d = m.details || { elements: [] };
+        
+        let detailTxt = d.typeL ? ` (${d.typeL})` : "";
+        let elementsTxt = (d.elements && d.elements.length > 0) ? ` — Eléments associés : ${d.elements.join(', ')}` : "";
+        
+        // Création de la pastille de couleur
+        const colorBadge = `<span class="report-badge" style="background-color: ${config.color}">${i + 1}</span>`;
+
+        const li = document.createElement('li');
+        li.style.listStyle = "none"; // On enlève la puce par défaut
+        li.style.marginBottom = "8px";
+        li.innerHTML = `${colorBadge} <strong>${config.label}</strong>${detailTxt}${elementsTxt} localisée : <u>${zone}</u>.`;
+        list.appendChild(li);
+    });
+}
 
     // 5. Badge Arme à feu
     const pafBadge = document.getElementById('pafBadge');
@@ -337,20 +345,32 @@ document.getElementById('btnClear').onclick = () => {
 function toggleDebug() {
     const isChecked = document.getElementById('debugToggle').checked;
     const layer = document.getElementById('debugLayer');
-    if (!layer) return;
+    const svg = document.getElementById('overlay');
+    
+    if (!layer || !svg) return;
+
+    // Forcer le calque au dessus
+    if (isChecked) svg.appendChild(layer); 
     layer.style.display = isChecked ? 'block' : 'none';
-    if (isChecked && layer.innerHTML === "") {
+
+    // On redessine systématiquement pour éviter les bugs d'affichage
+    layer.innerHTML = ""; 
+    if (isChecked) {
         REGIONS.forEach(region => {
-            const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-            poly.setAttribute("points", region.points.map(p => p.join(",")).join(" "));
-            poly.setAttribute("class", "debug-zone");
-            const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            const cX = region.points.reduce((s, p) => s + p[0], 0) / region.points.length;
-            const cY = region.points.reduce((s, p) => s + p[1], 0) / region.points.length;
-            txt.setAttribute("x", cX); txt.setAttribute("y", cY);
-            txt.setAttribute("fill", "white"); txt.setAttribute("font-size", "8px");
-            txt.setAttribute("text-anchor", "middle"); txt.textContent = region.label;
-            layer.appendChild(poly); layer.appendChild(txt);
+            const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+            polygon.setAttribute("points", region.points.map(p => p.join(",")).join(" "));
+            polygon.setAttribute("class", "debug-zone");
+            layer.appendChild(polygon);
+
+            const centerX = region.points.reduce((sum, p) => sum + p[0], 0) / region.points.length;
+            const centerY = region.points.reduce((sum, p) => sum + p[1], 0) / region.points.length;
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", centerX); text.setAttribute("y", centerY);
+            text.setAttribute("fill", "white"); text.setAttribute("font-size", "9px");
+            text.setAttribute("text-anchor", "middle"); 
+            text.setAttribute("style", "pointer-events: none; text-shadow: 1px 1px 2px black;");
+            text.textContent = region.label;
+            layer.appendChild(text);
         });
     }
 }
