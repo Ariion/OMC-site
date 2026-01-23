@@ -40,24 +40,19 @@
                 <input type="text" oninput="up('d-lieu', this.value)" placeholder="ex: Los Santos">
             </div>
 
-        <div class="input-group">
-            <label>Lieu du Décès</label>
-            <input type="text" oninput="up('d-lieu', this.value)" placeholder="ex: Los Santos">
-        </div>
-
             
-        <div class="input-group">
-            <label>Cause du Décès (Type)</label>
-            <select id="cause-type" onchange="updateCausesSub(this.value)">
-                <option value="">-- Sélectionner --</option>
-                <option value="Neurologique">Neurologique</option>
-                <option value="Hémorragique">Hémorragique</option>
-                <option value="Infectieuse / Métabolique">Infectieuse / Métabolique</option>
-                <option value="Cardio-respiratoire">Cardio-respiratoire</option>
-                <option value="Traumatique">Traumatique</option>
-                <option value="Toxique">Toxique</option>
-            </select>
-        </div>
+<div class="form-group">
+                <label>Cause du Décès (Type)</label>
+                <select id="cause-type" onchange="updateCausesSub(this.value)">
+                    <option value="">-- Sélectionner --</option>
+                    <option value="Neurologique">Neurologique</option>
+                    <option value="Hémorragique">Hémorragique</option>
+                    <option value="Infectieuse / Métabolique">Infectieuse / Métabolique</option>
+                    <option value="Cardio-respiratoire">Cardio-respiratoire</option>
+                    <option value="Traumatique">Traumatique</option>
+                    <option value="Toxique">Toxique</option>
+                </select>
+            </div>
 
         <div class="form-group">
                 <label>Précision de la cause</label>
@@ -117,6 +112,7 @@
     <script src="global.js"></script>
 </body>
 </html>
+
 
 
 
