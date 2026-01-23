@@ -5,7 +5,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 60px 20px;
+    padding: 60px 40px;
     overflow-y: auto;
     background-color: var(--bg-preview) !important;
     transition: background-color 0.2s ease-in-out;
