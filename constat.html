@@ -74,7 +74,13 @@
         <span class="slider round"></span>
     </label>
 </div>
-
+<div class="form-group" style="margin-top: 20px; border-top: 1px solid #1e293b; padding-top: 15px;">
+    <label>OBSERVATIONS SUPPLÉMENTAIRES</label>
+    <textarea id="obsSupInput" rows="4" 
+              placeholder="Saisissez ici vos notes complémentaires, détails sur l'état général, etc." 
+              oninput="updateReport()" 
+              style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; font-family: inherit; resize: none;"></textarea>
+</div>
             <div class="form-group">
                 <label>Signature du Praticien</label>
                 <input id="doctorSig" type="text" placeholder="Signature manuscrite" oninput="updateReport()">
@@ -137,10 +143,7 @@
     <p id="docObsSupText" style="font-size: 11px; margin: 5px 0; color: #334155; white-space: pre-wrap;"></p>
 </div>
 
-<div class="form-group">
-    <label>OBSERVATIONS SUPPLÉMENTAIRES</label>
-    <textarea id="obsSupInput" rows="3" placeholder="Notes libres..." oninput="updateReport()" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 4px; padding: 8px; font-size: 12px;"></textarea>
-</div>
+
                     </div>
 
                     <div class="cert-footer">
