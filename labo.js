@@ -83,53 +83,54 @@ const grossesseData = {
 };
 
 function genererGrossesse(mois) {
-    // 1. Logique de sélection du mois (Aléatoire ou fixe)
-    if (mois === 'aleatoire') {
-        mois = (Math.random() > 0.5) ? 1 : 'neg';
-    }
+    if (mois === 'aleatoire') mois = 1;
+    const data = grossesseData[mois] || grossesseData["neg"];
+    
+    // 1. Injection des valeurs bio
+    res('hcg', (Math.random() * (2000 - 500) + 500).toFixed(0), 'ENDOCRINOLOGIE & DIVERS');
+    res('gb', "11.2", 'HÉMATOLOGIE (SANG)');
 
-    const data = grossesseData[mois];
-    const rand = (range) => {
-        const [min, max] = range.split('-').map(Number);
-        return (Math.random() * (max - min) + min).toFixed(1);
-    };
+    // 2. Préparation du texte
+    let texteGrossesse = (mois === "neg") 
+        ? "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif." 
+        : `Bilan de maternité - ${data.label} : Présence d'hormone HCG. Évolution clinique favorable.`;
 
-    // 2. Calcul des valeurs biologiques
-    const vHcg = rand(data.hcg);
-    const vGb = rand(data.gb);
-    const vFer = rand(data.fer);
-
-    // 3. Mise à jour des lignes de résultats (S'ajoutent aux existantes)
-    res('hcg', vHcg, 'ENDOCRINOLOGIE & DIVERS');
-    res('gb', vGb, 'HÉMATOLOGIE (SANG)');
-    res('vitd', vFer, 'ENDOCRINOLOGIE & DIVERS');
-
-    // 4. Préparation du texte de grossesse uniquement
-    let texteGrossesse = "";
-    if (mois === "neg") {
-        texteGrossesse = "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif.";
+    // 3. LOGIQUE INTELLIGENTE : On récupère la conclusion actuelle
+    let actuelle = document.getElementById('auto-concl-area').value;
+    
+    // Si une ligne de grossesse existe déjà, on la remplace pour ne pas "empiler" les mois
+    // Sinon, on l'ajoute à la suite du reste (Accident, etc.)
+    let finale = "";
+    if (actuelle.includes("Bilan de maternité") || actuelle.includes("Analyse immunologique")) {
+        // On remplace l'ancienne ligne de grossesse par la nouvelle
+        finale = actuelle.replace(/.*(Bilan de maternité|Analyse immunologique).*/, texteGrossesse);
     } else {
-        texteGrossesse = `Bilan de maternité - ${data.label} : Présence d'hormone HCG (${vHcg} mUI/mL). `;
-        if(mois >= 7) texteGrossesse += "Surveillance du fer recommandée. ";
-        else if(mois == 3 || mois == 4) texteGrossesse += "Pic hormonal atteint. ";
-        texteGrossesse += "Évolution clinique favorable.";
+        finale = actuelle ? actuelle + "\n" + texteGrossesse : texteGrossesse;
     }
 
-    // 5. CUMUL de la conclusion : On récupère ce qui existe déjà
-    let conclusionActuelle = document.getElementById('auto-concl-area').value;
-    
-    // On ajoute le nouveau texte à la ligne si le champ n'est pas vide
-    let nouvelleConclusion = conclusionActuelle 
-        ? conclusionActuelle + "\n" + texteGrossesse 
-        : texteGrossesse;
-
-    // 6. Envoi final vers l'affichage
-    document.getElementById('auto-concl-area').value = nouvelleConclusion;
-    document.getElementById('d-concl').innerText = nouvelleConclusion;
-    
-    // Mise à jour du QR Code (puisque la conclusion a changé)
+    document.getElementById('auto-concl-area').value = finale;
+    document.getElementById('d-concl').innerText = finale;
     updateLiveQRCode();
 }
+
+function determinerGroupeAleatoire() {
+    const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+    const resultat = groupes[Math.floor(Math.random() * groupes.length)];
+    
+    const afficheur = document.getElementById('d-groupe'); // Sur le rapport
+    const select = document.getElementById('select-groupe'); // Dans le menu
+    
+    if(afficheur) afficheur.innerText = resultat;
+    if(select) select.value = resultat;
+}
+
+// Modifie ton DOMContentLoaded pour l'inclure au départ
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    setAutoDate();
+    determinerGroupeAleatoire(); // <--- ICI
+    updateLiveQRCode();
+});
 
 // ==========================================
 // 2. INITIALISATION ET AFFICHAGE
@@ -215,8 +216,12 @@ function res(id, val, cat) {
         if (row) row.classList.remove('active');
         if (section && section.querySelectorAll('.row.active').length === 0) {
             section.classList.remove('active');
+            
         }
     }
+    updateLiveQRCode();
+    analyserTout(); // <--- AJOUTE ÇA ICI
+}
 }
 
 // ==========================================
@@ -293,6 +298,40 @@ function resetSeulementBio(confirmNeeded = true) {
     document.getElementById('auto-concl-area').value = "";
     document.getElementById('d-concl').innerText = "...";
     updateLiveQRCode();
+}
+
+function analyserTout() {
+    let anomalies = [];
+    let isCritique = false;
+
+    // On scanne tous les inputs qui ont une valeur
+    document.querySelectorAll('.analysis-input').forEach(input => {
+        let val = parseFloat(input.value.replace(',', '.'));
+        let norm = input.getAttribute('data-norm');
+        let label = input.getAttribute('data-label');
+
+        if (!isNaN(val) && norm && norm.includes('-')) {
+            let [min, max] = norm.split('-').map(Number);
+            if (val < min || val > max) {
+                anomalies.push(label);
+                // Si l'écart est énorme (x2), on passe en critique
+                if (val > max * 2 || val < min / 2) isCritique = true;
+            }
+        }
+    });
+
+    if (anomalies.length > 0) {
+        let texte = isCritique ? "ALERTE CRITIQUE : Déséquilibre majeur détecté (" : "Bilan perturbé : Anomalies sur (";
+        texte += anomalies.join(', ') + ").";
+        
+        // On l'ajoute à la conclusion sans effacer la grossesse si elle est là
+        let actuelle = document.getElementById('auto-concl-area').value;
+        if (!actuelle.includes("Bilan perturbé") && !actuelle.includes("ALERTE CRITIQUE")) {
+            let finale = actuelle ? texte + "\n" + actuelle : texte;
+            document.getElementById('auto-concl-area').value = finale;
+            document.getElementById('d-concl').innerText = finale;
+        }
+    }
 }
 // ==========================================
 // 5. EXPORT IMAGE
