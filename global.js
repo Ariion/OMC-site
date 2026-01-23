@@ -1,16 +1,24 @@
-// Fonction pour basculer entre les thèmes
+function updateThemeButtonText(theme) {
+    const btnText = document.getElementById('theme-text');
+    if (btnText) {
+        btnText.innerText = theme === 'dark' ? 'Passer mode clair' : 'Passer mode sombre';
+    }
+}
+
 function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
     
     document.documentElement.setAttribute('data-theme', targetTheme);
     localStorage.setItem('theme', targetTheme);
+    updateThemeButtonText(targetTheme);
 }
 
-// Appliquer le thème sauvegardé au chargement de la page
+// Initialisation au chargement
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeButtonText(savedTheme);
 });
 
 // Fonction de liaison simple (Nom, Lieu, Heure, Signature)
