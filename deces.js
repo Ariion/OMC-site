@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateQR();
 });
 
-// Fonction pour formater la date en français (ex: 24 Janvier 2026)
+// Fonction pour formater la date (ex: 12 Mai 2026)
 function formatDateFR(dateStr) {
     if (!dateStr) return "...";
     const date = new Date(dateStr);
@@ -179,16 +179,7 @@ function formatDateFR(dateStr) {
     return date.toLocaleDateString('fr-FR', options);
 }
 
-// Fonction de mise à jour générique pour le texte
-function up(id, val) {
-    const el = document.getElementById(id);
-    if (el) {
-        el.innerText = val || "...";
-        updateQR(); // Met à jour le QR Code si le nom ou le médecin change
-    }
-}
-
-// Fonction spécifique pour les dates (Naissance et Décès)
+// Mise à jour des dates
 function upDate(id, val) {
     const el = document.getElementById(id);
     if (el) {
@@ -197,13 +188,26 @@ function upDate(id, val) {
     }
 }
 
-// Mise à jour dynamique du QR Code
+// Mise à jour du texte et du nom du docteur (signature)
+function up(id, val) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = val || "...";
+        // Si on change le docteur, on met à jour la signature manuscrite
+        if (id === 'd-sig') {
+            const sigDoc = document.getElementById('d-sig-doc');
+            if (sigDoc) sigDoc.innerText = "Dr. " + val;
+        }
+        updateQR();
+    }
+}
+
+// QR Code dynamique
 function updateQR() {
     const ref = document.getElementById('d-ref').innerText;
     const nom = document.getElementById('d-nom').innerText;
     const qrImg = document.getElementById('qr-ref');
     if(qrImg) {
-        // Encode le nom pour éviter les problèmes d'espaces dans l'URL du QR
         const data = encodeURIComponent(`OMC-DECES|REF:${ref}|NOM:${nom}`);
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
     }
