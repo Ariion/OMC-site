@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>OMC — Kaleo</title>
+    <link rel="stylesheet" href="global.css">
+    <style>
+        /* Conteneur pour l'image centrée */
+        .kaleo-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        .kaleo-photo {
+            max-width: 80%;
+            max-height: 80vh;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(0, 210, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Masquage total du lecteur Medal (on ne veut que le son) */
+        .hidden-video {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="labo-body">
+    <div class="interface-container">
+        
+        <aside class="sidebar">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px;">
+                <a href="index.html" class="back-link" style="margin-bottom: 0;">← PORTAIL</a>
+                <button onclick="toggleTheme()" id="theme-btn" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 11px;">
+                    🌓 <span id="theme-text">Mode</span>
+                </button>
+            </div>
+            
+            <h1 class="sidebar-title">EXPÉRIENCE KALEO</h1>
+            <p style="color: #94a3b8; font-size: 11px; line-height: 1.4;">
+                L'image s'affiche à droite. Le son de la vidéo Medal est diffusé en arrière-plan.
+            </p>
+            <hr style="border:none; border-top: 1px solid #1e293b; margin: 20px 0;">
+            <p style="font-size: 10px; color: #ef4444;">⚠️ Si le son ne démarre pas, cliquez n'importe où sur la page.</p>
+        </aside>
+
+        <main class="preview-area">
+            <div class="kaleo-display">
+                <img src="assets/kaleo.png" class="kaleo-photo" alt="Kaleo">
+            </div>
+
+            <div class="hidden-video">
+                <iframe 
+                    id="medal-iframe"
+                    src="https://medal.tv/clip/lVrjXy3Fcpf_12bJB?autoplay=1&muted=0&loop=1" 
+                    allow="autoplay" 
+                    width="1" 
+                    height="1" 
+                    frameborder="0">
+                </iframe>
+            </div>
+        </main>
+    </div>
+
+    <script src="global.js"></script>
+</body>
+</html>
