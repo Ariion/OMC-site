@@ -172,77 +172,86 @@ function res(id, val, cat) {
 function lancerGenerationAuto() {
     const grav = parseInt(document.getElementById('gravity-range').value);
     const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
-    let f = (grav - 1) / 9; // Facteur d'intensité 0.0 à 1.0
+    let f = (grav - 1) / 9; // Facteur d'intensité 0.0 à 1.0 (1=parfait, 10=mort)
 
     resetSeulementBio(false);
 
+    // Valeurs physiologiques de base (Saines)
     let results = { gb: 7.0, hb: 15.0, ht: 45, pla: 250, gly: 0.90, na: 140, k: 4.0, crea: 9.0, ph: 7.40, lact: 0.8 };
     let diagPrincipal = "";
 
     scenarios.forEach(s => {
         if (s === 'arme-feu' || s === 'acc-route') {
-            // --- CHOC HÉMORRAGIQUE ---
-            results.hb = (15.0 - (10.0 * f)).toFixed(1); // Chute Hb (Hémorragie)
-            results.pla = (250 - (200 * f)).toFixed(0); // Consommation des plaquettes
-            results.lact = (0.8 + (8.0 * f)).toFixed(1); // Hypoxie (Manque d'oxygène)
-            diagPrincipal = grav >= 7 ? "CHOC HYPOVOLÉMIQUE : Hémorragie massive. Le patient se vide de son sang." : "TRAUMA : Perte sanguine modérée. Stabilisation requise.";
+            // --- CHOC HÉMORRAGIQUE (Perte de sang) ---
+            results.hb = (15.0 - (10.0 * f)).toFixed(1); 
+            results.pla = (250 - (180 * f)).toFixed(0); 
+            results.lact = (0.8 + (8.0 * f)).toFixed(1); // Manque d'oxygène tissulaire
+            diagPrincipal = grav >= 8 ? "URGENCE : CHOC HYPOVOLÉMIQUE SÉVÈRE. Hémorragie massive avec acidose métabolique." : "TRAUMA : Spoliation sanguine modérée. Risque de choc à surveiller.";
         }
         
         if (s === 'overdose') {
-            // --- CHOC TOXIQUE / ARRÊT RESPIRATOIRE ---
-            results.ph = (7.40 - (0.50 * f)).toFixed(2); // Acidose respiratoire (Le patient ne respire plus)
+            // --- CHOC TOXIQUE / DÉTRESSE RESPIRATOIRE ---
+            results.ph = (7.40 - (0.45 * f)).toFixed(2); // Le sang s'acidifie car le patient ne respire plus
             results.lact = (0.8 + (10.0 * f)).toFixed(1);
-            results.alc = (f * 4.5).toFixed(2);
-            diagPrincipal = grav >= 7 ? "OVERDOSE CRITIQUE : Acidose sévère. Arrêt respiratoire imminent. Antidote requis." : "INTOXICATION : Vigilance altérée. Paramètres vitaux sous influence toxique.";
+            diagPrincipal = grav >= 7 ? "ALERTE : OVERDOSE CRITIQUE. Acidose respiratoire majeure. Pronostic vital engagé." : "TOXICOLOGIE : Vigilance altérée. Signes d'intoxication systémique.";
         }
 
         if (s === 'diabete') {
-            // --- CHOC GLYCÉMIQUE ---
-            results.gly = (0.90 + (5.0 * f)).toFixed(2); // Hyperglycémie
-            results.k = (4.0 + (3.0 * f)).toFixed(1);    // Hyperkaliémie (Danger cœur)
-            diagPrincipal = grav >= 7 ? "COMA DIABÉTIQUE : Hyperglycémie majeure avec acidocétose. Danger mortel." : "DIABÈTE : Glycémie instable. Rééquilibrage nécessaire.";
+            // --- CHOC GLYCÉMIQUE (Coma) ---
+            results.gly = (0.90 + (6.0 * f)).toFixed(2);
+            results.k = (4.0 + (3.5 * f)).toFixed(1); // Le potassium monte (Danger d'arrêt cardiaque)
+            diagPrincipal = grav >= 7 ? "ALERTE : COMA ACIDO-CÉTOSIQUE. Hyperglycémie maligne et déséquilibre ionique sévère." : "DIABÈTE : Décompensation glycémique modérée. Surveillance cardiaque requise.";
         }
     });
 
-    // Envoi des résultats au rapport
+    // Si pas de scénario mais gravité > 1 : Bilan perturbé général
+    if (!diagPrincipal && grav > 1) {
+        diagPrincipal = grav >= 7 ? "URGENCE ABSOLUE : Défaillance multiviscérale. État de choc non étiqueté." : "OBSERVATION : Paramètres biologiques instables. Surveillance clinique requise.";
+    } else if (!diagPrincipal) {
+        diagPrincipal = "STABLE : Constantes physiologiques dans les normes.";
+    }
+
+    // Injection des résultats
     for (let id in results) {
         let cat = Object.keys(database).find(c => database[c].some(i => i.id === id));
         if (cat) res(id, results[id].toString(), cat);
     }
     
-    analyserTout(); // Lance le diagnostic textuel
+    fusionnerConclusionSpecifique(diagPrincipal);
 }
 
 function genererGrossesse(mois) {
     const grav = parseInt(document.getElementById('gravity-range').value);
+    const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
     if (mois === 'aleatoire') mois = Math.floor(Math.random() * 9) + 1;
-    let f = (grav - 1) / 9; 
-    let texteG = `MATERNITÉ (MOIS ${mois}) : `;
+    let f = (grav - 1) / 9;
 
-    // --- ANALYSES RÉELLES ---
+    // Calcul des marqueurs (Pré-éclampsie/Hémorragie)
     let vHcg = (Math.random() * 5000 + 1000).toFixed(0);
-    let vPla = (250 - (180 * f)).toFixed(0); // Chute des plaquettes (Danger hémorragie)
-    let vAlat = (20 + (200 * f)).toFixed(0); // Foie qui souffre
-    let vCrea = (7 + (15 * f)).toFixed(1);   // Reins sous pression
+    let vPla = (250 - (200 * f)).toFixed(0); 
+    let vAlat = (20 + (250 * f)).toFixed(0); 
+    let vCrea = (7 + (20 * f)).toFixed(1);
 
     res('hcg', vHcg, 'ENDOCRINOLOGIE & DIVERS');
     res('pla', vPla, 'HÉMATOLOGIE (SANG)');
     res('alat', vAlat, 'BILAN HÉPATIQUE (FOIE)');
     res('crea', vCrea, 'BIOCHIMIE MÉTABOLIQUE');
 
-    // --- DIAGNOSTIC SIMPLIFIÉ ---
-    // Si accident grave en même temps que grossesse
+    let texteG = `MATERNITÉ (MOIS ${mois}) : `;
+
+    // RÉACTION AU TRAUMATISME (Scénarios)
     if (grav >= 7 && (scenarios.includes('arme-feu') || scenarios.includes('acc-route'))) {
-        texteG += "URGENCE VITALE : Traumatisme abdominal/choc hypovolémique. SOUFFRANCE FŒTALE AIGUË par hypoxie. Risque de perte fœtale immédiate.";
+        texteG += "URGENCE OBSTÉTRIQUE : Choc maternel sévère. SOUFFRANCE FŒTALE AIGUË par hypoxie. Risque de perte fœtale.";
     } else if (grav >= 5 && scenarios.includes('overdose')) {
-        texteG += "ALERTE TOXIQUE : Passage placentaire des toxiques suspecté. Rythme cardiaque fœtal à surveiller d'urgence.";
+        texteG += "ALERTE TOXIQUE : Risque de passage transplacentaire. Rythme cardiaque fœtal à monitorer d'urgence.";
     } else if (grav >= 8) {
-        texteG += "PATHOLOGIE : Pré-éclampsie sévère. Risque de décollement placentaire.";
+        texteG += "ALERTE : PRÉ-ÉCLAMPSIE SÉVÈRE (HELLP Syndrome). Risque de convulsions et d'hémorragie interne.";
     } else {
-        texteG += "STABLE : Pas de retentissement fœtal direct détecté malgré l'admission.";
+        texteG += "STABLE : Pas de retentissement fœtal direct décelé lors de l'examen initial.";
     }
 
-    fusionnerConclusionSpecifique(diag);
+    fusionnerConclusionSpecifique(texteG);
+}
 
 
     // 3. FUSION AVEC LA CONCLUSION EXISTANTE
@@ -478,15 +487,22 @@ function fusionnerConclusionSpecifique(nouveauTexte) {
     
     let estGrossesse = nouveauTexte.includes("MATERNITÉ");
     
-    // On garde uniquement les lignes qui ne concernent pas le même sujet
+    // On nettoie les anciennes lignes pour éviter les doublons
     let filtré = lignes.filter(l => {
-        if (estGrossesse) return !l.includes("MATERNITÉ") && !l.includes("PRÉ-ÉCLAMPSIE");
-        return !l.includes("CHOC") && !l.includes("URGENCE ABSOLUE") && !l.includes("STABLE");
+        if (estGrossesse) return !l.includes("MATERNITÉ") && !l.includes("ANALYSE") && !l.includes("PRÉ-ÉCLAMPSIE");
+        return !l.includes("URGENCE") && !l.includes("ALERTE") && !l.includes("STABLE") && !l.includes("TRAUMA") && !l.includes("DIABÈTE") && !l.includes("INTOXICATION");
     });
 
     let finale = filtré.join('\n');
-    if (finale.trim() !== "") finale += "\n";
-    finale += nouveauTexte;
+    if (finale.trim() !== "" && !estGrossesse) {
+        // Le diagnostic accident va toujours en premier
+        finale = nouveauTexte + "\n" + finale;
+    } else if (finale.trim() !== "" && estGrossesse) {
+        // La grossesse va toujours en dernier
+        finale = finale + "\n" + nouveauTexte;
+    } else {
+        finale = nouveauTexte;
+    }
 
     document.getElementById('auto-concl-area').value = finale;
     document.getElementById('d-concl').innerText = finale;
