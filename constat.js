@@ -142,7 +142,16 @@ function createMarker(x, y) {
     markerEl.style.left = x + "%";
     markerEl.style.top = y + "%";
     markerEl.style.backgroundColor = config.color;
-
+// --- CLIC DROIT POUR SUPPRIMER ---
+    markerEl.oncontextmenu = function(e) {
+        e.preventDefault(); // Empêche le menu Windows
+        markerEl.remove(); // Retire le rond
+        markers = markers.filter(m => m.id !== id); // Retire de la liste
+        // On recalcule les numéros pour éviter les trous (ex: 1, 2, 4)
+        reindexMarkers();
+        updateReport();
+        document.getElementById('detailsContainer').style.display = "none";
+    };
     // SYSTÈME DE DÉPLACEMENT (DRAG)
     markerEl.onmousedown = function(e) {
         e.stopPropagation();
@@ -188,7 +197,15 @@ function createMarker(x, y) {
     openDetails(id);
     updateReport();
 }
-
+function reindexMarkers() {
+    const allEls = document.querySelectorAll('.marker-point');
+    markers.forEach((m, index) => {
+        const newNum = index + 1;
+        m.number = newNum;
+        const el = document.getElementById(`m-${m.id}`);
+        if(el) el.innerText = newNum;
+    });
+}
 function regionFrom(x, y) {
     for (const r of REGIONS) {
         let inside = false;
@@ -301,6 +318,17 @@ function updateReport() {
         li.style.marginBottom = "8px";
         li.innerHTML = `${colorBadge} <strong>${config.label}</strong>${detailTxt}${elementsTxt} localisée : <u>${zone}</u>.`;
         list.appendChild(li);
+
+        const obsInput = document.getElementById('obsSupInput').value;
+const sectionObs = document.getElementById('sectionObsSup');
+const textObs = document.getElementById('docObsSupText');
+
+if (obsInput.trim() !== "") {
+    sectionObs.style.display = 'block';
+    textObs.innerText = obsInput;
+} else {
+    sectionObs.style.display = 'none';
+}
     });
 }
 
@@ -349,29 +377,31 @@ function toggleDebug() {
     
     if (!layer || !svg) return;
 
-    // Forcer le calque au dessus
-    if (isChecked) svg.appendChild(layer); 
     layer.style.display = isChecked ? 'block' : 'none';
 
-    // On redessine systématiquement pour éviter les bugs d'affichage
-    layer.innerHTML = ""; 
     if (isChecked) {
-        REGIONS.forEach(region => {
-            const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-            polygon.setAttribute("points", region.points.map(p => p.join(",")).join(" "));
-            polygon.setAttribute("class", "debug-zone");
-            layer.appendChild(polygon);
-
-            const centerX = region.points.reduce((sum, p) => sum + p[0], 0) / region.points.length;
-            const centerY = region.points.reduce((sum, p) => sum + p[1], 0) / region.points.length;
-            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.setAttribute("x", centerX); text.setAttribute("y", centerY);
-            text.setAttribute("fill", "white"); text.setAttribute("font-size", "9px");
-            text.setAttribute("text-anchor", "middle"); 
-            text.setAttribute("style", "pointer-events: none; text-shadow: 1px 1px 2px black;");
-            text.textContent = region.label;
-            layer.appendChild(text);
-        });
+        // On le déplace à la fin du SVG pour qu'il soit au-dessus
+        svg.appendChild(layer); 
+        
+        if (layer.innerHTML === "") {
+            REGIONS.forEach(region => {
+                const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                poly.setAttribute("points", region.points.map(p => p.join(",")).join(" "));
+                poly.setAttribute("style", "fill:rgba(59,130,246,0.3); stroke:white; stroke-width:0.5; pointer-events:none;");
+                
+                const centerX = region.points.reduce((s, p) => s + p[0], 0) / region.points.length;
+                const centerY = region.points.reduce((s, p) => s + p[1], 0) / region.points.length;
+                
+                const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                txt.setAttribute("x", centerX); txt.setAttribute("y", centerY);
+                txt.setAttribute("fill", "white"); txt.setAttribute("font-size", "8");
+                txt.setAttribute("text-anchor", "middle"); txt.setAttribute("style", "pointer-events:none; text-shadow:1px 1px 2px black;");
+                txt.textContent = region.label;
+                
+                layer.appendChild(poly);
+                layer.appendChild(txt);
+            });
+        }
     }
 }
 
