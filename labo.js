@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     init();
     setAutoDate();
+    determinerGroupeAleatoire();
     updateLiveQRCode();
 });
 
@@ -68,7 +69,6 @@ const database = {
     ]
 };
 
-// Configuration : 1 Mois de grossesse = 1 Semaine réelle
 const grossesseData = {
     1: { hcg: "50-500", gb: "5.5-10.5", fer: "80-150", label: "1er Mois" },
     2: { hcg: "500-5000", gb: "6.0-11.5", fer: "70-140", label: "2ème Mois" },
@@ -81,56 +81,6 @@ const grossesseData = {
     9: { hcg: "8000-35000", gb: "12.0-18.5", fer: "10-40", label: "9ème Mois (Terme)" },
     "neg": { hcg: "0-5", gb: "4.5-10.0", fer: "50-150", label: "Test Négatif" }
 };
-
-function genererGrossesse(mois) {
-    if (mois === 'aleatoire') mois = 1;
-    const data = grossesseData[mois] || grossesseData["neg"];
-    
-    // 1. Injection des valeurs bio
-    res('hcg', (Math.random() * (2000 - 500) + 500).toFixed(0), 'ENDOCRINOLOGIE & DIVERS');
-    res('gb', "11.2", 'HÉMATOLOGIE (SANG)');
-
-    // 2. Préparation du texte
-    let texteGrossesse = (mois === "neg") 
-        ? "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif." 
-        : `Bilan de maternité - ${data.label} : Présence d'hormone HCG. Évolution clinique favorable.`;
-
-    // 3. LOGIQUE INTELLIGENTE : On récupère la conclusion actuelle
-    let actuelle = document.getElementById('auto-concl-area').value;
-    
-    // Si une ligne de grossesse existe déjà, on la remplace pour ne pas "empiler" les mois
-    // Sinon, on l'ajoute à la suite du reste (Accident, etc.)
-    let finale = "";
-    if (actuelle.includes("Bilan de maternité") || actuelle.includes("Analyse immunologique")) {
-        // On remplace l'ancienne ligne de grossesse par la nouvelle
-        finale = actuelle.replace(/.*(Bilan de maternité|Analyse immunologique).*/, texteGrossesse);
-    } else {
-        finale = actuelle ? actuelle + "\n" + texteGrossesse : texteGrossesse;
-    }
-
-    document.getElementById('auto-concl-area').value = finale;
-    document.getElementById('d-concl').innerText = finale;
-    updateLiveQRCode();
-}
-
-function determinerGroupeAleatoire() {
-    const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-    const resultat = groupes[Math.floor(Math.random() * groupes.length)];
-    
-    const afficheur = document.getElementById('d-groupe'); // Sur le rapport
-    const select = document.getElementById('select-groupe'); // Dans le menu
-    
-    if(afficheur) afficheur.innerText = resultat;
-    if(select) select.value = resultat;
-}
-
-// Modifie ton DOMContentLoaded pour l'inclure au départ
-document.addEventListener('DOMContentLoaded', () => {
-    init();
-    setAutoDate();
-    determinerGroupeAleatoire(); // <--- ICI
-    updateLiveQRCode();
-});
 
 // ==========================================
 // 2. INITIALISATION ET AFFICHAGE
@@ -147,7 +97,6 @@ function init() {
     for (let cat in database) {
         const cleanCatId = cat.replace(/\s+/g, '-').replace(/[()]/g, '');
 
-        // Bouton Menu Gauche
         let btn = document.createElement('button');
         btn.className = 'category-btn';
         btn.innerHTML = `<span>${cat.toUpperCase()}</span> <span>▼</span>`;
@@ -161,21 +110,18 @@ function init() {
             contentDiv.classList.toggle('active');
         };
 
-        // Section Document Droite (C'est ici que l'affichage se joue)
         let sec = document.createElement('div');
         sec.id = 'sec-' + cleanCatId;
         sec.className = 'section';
         sec.innerHTML = `<div class="section-title">${cat}</div>`;
 
         database[cat].forEach(item => {
-            // Ajout dans le menu manuel
             contentDiv.innerHTML += `
                 <div class="input-group-manual">
                     <label class="manual-label">${item.label}</label>
                     <input type="text" class="analysis-input" data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
                 </div>`;
             
-            // Ajout de la ligne invisible dans le rapport
             sec.innerHTML += `
                 <div class="row" id="row-${item.id}">
                     <span>${item.label}</span>
@@ -190,7 +136,6 @@ function init() {
     }
 }
 
-// REMPLISSAGE ET ACTIVATION DES LIGNES
 function res(id, val, cat) {
     const cleanCatId = cat.replace(/\s+/g, '-').replace(/[()]/g, '');
     const row = document.getElementById('row-' + id);
@@ -199,7 +144,6 @@ function res(id, val, cat) {
 
     if (valSpan) {
         valSpan.innerText = val;
-        // Couleur selon norme
         const item = Object.values(database).flat().find(i => i.id === id);
         if (item && val.trim() !== "" && item.norm.includes('-')) {
             const [min, max] = item.norm.split('-').map(n => parseFloat(n));
@@ -208,7 +152,6 @@ function res(id, val, cat) {
         }
     }
 
-    // IMPORTANT : Active la visibilité
     if (val.trim() !== "" && val !== "...") {
         if (row) row.classList.add('active');
         if (section) section.classList.add('active');
@@ -216,12 +159,10 @@ function res(id, val, cat) {
         if (row) row.classList.remove('active');
         if (section && section.querySelectorAll('.row.active').length === 0) {
             section.classList.remove('active');
-            
         }
     }
     updateLiveQRCode();
-    analyserTout(); // <--- AJOUTE ÇA ICI
-}
+    analyserTout();
 }
 
 // ==========================================
@@ -256,22 +197,41 @@ function lancerGenerationAuto() {
             res(id, results[id].toString(), catFound);
         }
     }
-    analyserTout(); // Optionnel : met à jour la conclusion auto
+    analyserTout();
 }
 
 function genererGrossesse(mois) {
     if (mois === 'aleatoire') mois = 1;
     const data = grossesseData[mois] || grossesseData["neg"];
     
-    res('hcg', "1250", 'ENDOCRINOLOGIE & DIVERS');
+    res('hcg', (Math.random() * (2000 - 500) + 500).toFixed(0), 'ENDOCRINOLOGIE & DIVERS');
     res('gb', "11.2", 'HÉMATOLOGIE (SANG)');
 
-    let texte = `Bilan de maternité - ${data.label}. Évolution clinique favorable.`;
+    let texteGrossesse = (mois === "neg") 
+        ? "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif." 
+        : `Bilan de maternité - ${data.label} : Présence d'hormone HCG. Évolution clinique favorable.`;
+
     let actuelle = document.getElementById('auto-concl-area').value;
-    let finale = actuelle ? actuelle + "\n" + texte : texte;
+    let finale = "";
+    
+    if (actuelle.includes("Bilan de maternité") || actuelle.includes("Analyse immunologique")) {
+        finale = actuelle.replace(/.*(Bilan de maternité|Analyse immunologique).*/, texteGrossesse);
+    } else {
+        finale = actuelle ? actuelle + "\n" + texteGrossesse : texteGrossesse;
+    }
 
     document.getElementById('auto-concl-area').value = finale;
     document.getElementById('d-concl').innerText = finale;
+    updateLiveQRCode();
+}
+
+function determinerGroupeAleatoire() {
+    const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+    const resultat = groupes[Math.floor(Math.random() * groupes.length)];
+    const afficheur = document.getElementById('d-groupe');
+    const select = document.getElementById('select-groupe');
+    if(afficheur) afficheur.innerText = resultat;
+    if(select) select.value = resultat;
 }
 
 // --- FONCTIONS SYSTÈME ---
@@ -285,9 +245,19 @@ function setAutoDate() {
 
 function updateLiveQRCode() {
     const nom = document.getElementById('d-nom').innerText || "Anonyme";
+    const date = document.getElementById('d-date-prel').innerText || "00-00-00";
     const qrImg = document.getElementById('qr-ref');
     if (qrImg) {
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-${encodeURIComponent(nom)}`;
+        const data = encodeURIComponent(`OMC-LAB|${nom}|${date}`);
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
+    }
+}
+
+function up(id, val) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = val;
+        updateLiveQRCode(); 
     }
 }
 
@@ -304,7 +274,6 @@ function analyserTout() {
     let anomalies = [];
     let isCritique = false;
 
-    // On scanne tous les inputs qui ont une valeur
     document.querySelectorAll('.analysis-input').forEach(input => {
         let val = parseFloat(input.value.replace(',', '.'));
         let norm = input.getAttribute('data-norm');
@@ -314,7 +283,6 @@ function analyserTout() {
             let [min, max] = norm.split('-').map(Number);
             if (val < min || val > max) {
                 anomalies.push(label);
-                // Si l'écart est énorme (x2), on passe en critique
                 if (val > max * 2 || val < min / 2) isCritique = true;
             }
         }
@@ -324,7 +292,6 @@ function analyserTout() {
         let texte = isCritique ? "ALERTE CRITIQUE : Déséquilibre majeur détecté (" : "Bilan perturbé : Anomalies sur (";
         texte += anomalies.join(', ') + ").";
         
-        // On l'ajoute à la conclusion sans effacer la grossesse si elle est là
         let actuelle = document.getElementById('auto-concl-area').value;
         if (!actuelle.includes("Bilan perturbé") && !actuelle.includes("ALERTE CRITIQUE")) {
             let finale = actuelle ? texte + "\n" + actuelle : texte;
@@ -333,30 +300,34 @@ function analyserTout() {
         }
     }
 }
+
+function switchMode(mode) {
+    document.getElementById('panel-auto').style.display = (mode === 'auto' ? 'block' : 'none');
+    document.getElementById('panel-manual').style.display = (mode === 'manual' ? 'block' : 'none');
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    if(mode === 'auto') document.getElementById('btn-auto').classList.add('active');
+    else document.getElementById('btn-manual').classList.add('active');
+}
+
 // ==========================================
 // 5. EXPORT IMAGE
 // ==========================================
-// GÉNÉRATEUR D'IMAGE AVEC POPUP
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
+let lastImageUrl = "";
 
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
-    btn.innerText = "CROP & UPLOAD...";
+    btn.innerText = "GÉNÉRATION...";
     btn.disabled = true;
-
-    // On s'assure que le scroll est en haut pour une capture propre
     window.scrollTo(0,0);
 
     try {
         const canvas = await html2canvas(doc, { 
-            scale: 2,           // Haute qualité pour impression
-            useCORS: true,      // Pour les images externes
+            scale: 2, 
+            useCORS: true, 
             backgroundColor: "#ffffff",
-            // LE CROP : On prend la hauteur exacte du contenu
-            height: doc.scrollHeight, 
-            windowHeight: doc.scrollHeight,
-            y: 0 
+            height: doc.scrollHeight
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
@@ -378,45 +349,26 @@ async function genererImage() {
         }
 
     } catch (e) {
-        console.error(e);
-        alert("Erreur lors du crop de l'image.");
+        alert("Erreur lors de la génération.");
     } finally {
-        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)";
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
 }
 
-function copyLink() {
-    const copyText = document.getElementById("direct-link");
-    copyText.select();
-    document.execCommand("copy");
-    alert("Lien copié ! Vous pouvez le coller en jeu.");
-}
-
-function closePopup() {
-    document.getElementById('image-popup').style.display = 'none';
-}
-
-// Variable globale pour stocker l'URL de l'image
-let lastImageUrl = "";
-
-
-
 function envoyerDiscord() {
-    const webhook = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy"; // À remplacer par ton lien
+    const webhook = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
     const nomPatient = document.getElementById('d-nom').innerText;
     
-    if (!lastImageUrl) {
-        return alert("Génère d'abord l'image avant d'envoyer sur Discord !");
-    }
+    if (!lastImageUrl) return alert("Génère l'image d'abord !");
 
     const payload = {
         username: "OMC - Laboratoire",
         embeds: [{
             title: `Nouveau Bilan Biologique : ${nomPatient}`,
-            color: 65500, // Couleur Cyan
+            color: 65500,
             image: { url: lastImageUrl },
-            footer: { text: "Olympus Medical Center - Los Santos" },
+            footer: { text: "Olympus Medical Center" },
             timestamp: new Date()
         }]
     };
@@ -425,12 +377,18 @@ function envoyerDiscord() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-    }).then(() => alert("Rapport envoyé sur Discord !"));
+    }).then(() => alert("Rapport envoyé !"));
+}
+
+function copyLink() {
+    const copyText = document.getElementById("direct-link");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Lien copié !");
 }
 
 function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
-    document.body.style.overflow = 'auto'; // Réactive le scroll du site
 }
 
 // Fonction pour mettre à jour le QR Code en temps réel
