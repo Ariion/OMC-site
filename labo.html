@@ -13,7 +13,6 @@
         <aside class="sidebar">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
                 <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
-                
                 <button onclick="toggleTheme()" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
                     <span>🌓</span>
                     <span id="theme-text">Passer mode sombre</span>
@@ -48,7 +47,7 @@
             <div class="form-group">
                 <label>Groupe Sanguin</label>
                 <div style="display:flex; gap:10px">
-                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-dice" style="background: #1e293b; color: white; border: 1px solid #334155; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🎲 Aléatoire</button>
+                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-dice">🎲 Aléatoire</button>
                     <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex-grow: 1; background: #0a192f; color: white; border: 1px solid #233554; padding: 5px;">
                         <option value="...">--</option>
                         <option value="A+">A+</option><option value="A-">A-</option>
@@ -59,53 +58,54 @@
                 </div>
             </div>
 
-            <div class="mode-selector" style="display: flex; gap: 10px; margin: 20px 0;">
-                <button type="button" id="btn-auto" class="mode-btn active" onclick="switchMode('auto')" style="flex: 1; padding: 10px; border-radius: 4px; border: none; cursor: pointer;">🤖 AUTO</button>
-                <button type="button" id="btn-manual" class="mode-btn" onclick="switchMode('manual')" style="flex: 1; padding: 10px; border-radius: 4px; border: none; cursor: pointer;">✍️ MANUEL</button>
+            <div class="mode-selector">
+                <button type="button" id="btn-auto" class="mode-btn active" onclick="switchMode('auto')">🤖 AUTO</button>
+                <button type="button" id="btn-manual" class="mode-btn" onclick="switchMode('manual')">✍️ MANUEL</button>
             </div>
 
             <div id="panel-auto">
-    <div class="form-group">
-        <label>GRAVITÉ DE L'ÉTAT : <span id="grav-display">5</span>/10</label>
-        <input type="range" id="gravity-range" min="1" max="10" value="5" 
-               oninput="document.getElementById('grav-display').innerText=this.value" 
-               style="width: 100%; accent-color: #00d2ff;">
-    </div>
+                <div class="form-group">
+                    <label>GRAVITÉ DE L'ÉTAT : <span id="grav-display">5</span>/10</label>
+                    <input type="range" id="gravity-range" min="1" max="10" value="5" oninput="document.getElementById('grav-display').innerText=this.value" style="width: 100%;">
+                </div>
 
-    <div class="form-group">
-        <label>SCÉNARIOS CLINIQUES</label>
-        <div class="checkbox-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <label class="check-item"><input type="checkbox" value="acc-route"> Accident (Trauma)</label>
-            <label class="check-item"><input type="checkbox" value="arme-feu"> Plaie par Balle</label>
-            <label class="check-item"><input type="checkbox" value="overdose"> Overdose</label>
-            <label class="check-item"><input type="checkbox" value="diabete"> Crise Diabète</label>
-            <label class="check-item"><input type="checkbox" value="renal"> Insuff. Rénale</label>
-        </div>
-    </div>
+                <div class="form-group">
+                    <label>SCÉNARIOS CLINIQUES</label>
+                    <div class="scenario-grid">
+                        <label class="check-container">Accident (Trauma) <input type="checkbox" value="acc-route"><span class="checkmark"></span></label>
+                        <label class="check-container">Plaie par Balle <input type="checkbox" value="arme-feu"><span class="checkmark"></span></label>
+                        <label class="check-container">Overdose <input type="checkbox" value="overdose"><span class="checkmark"></span></label>
+                        <label class="check-container">Diabète (Crise) <input type="checkbox" value="diabete"><span class="checkmark"></span></label>
+                        <label class="check-container">Insuffisance Rénale <input type="checkbox" value="renal"><span class="checkmark"></span></label>
+                    </div>
+                </div>
 
-    <button type="button" onclick="lancerGenerationAuto()" class="btn-image" 
-            style="background: #3b82f6; color: white; margin-top: 10px; width: 100%;">
-        🤖 GÉNÉRER LE BILAN
-    </button>
-</div>
-<div class="grossesse-panel">
-        <h3>🍼 MODULE MATERNITÉ</h3>
-        <div class="pregnancy-grid">
-            <button type="button" onclick="genererGrossesse(1)" class="btn-preg">Mois 1</button>
-            <button type="button" onclick="genererGrossesse(2)" class="btn-preg">Mois 2</button>
-            <button type="button" onclick="genererGrossesse(3)" class="btn-preg">Mois 3</button>
-            <button type="button" onclick="genererGrossesse(4)" class="btn-preg">Mois 4</button>
-            <button type="button" onclick="genererGrossesse(5)" class="btn-preg">Mois 5</button>
-            <button type="button" onclick="genererGrossesse(6)" class="btn-preg">Mois 6</button>
-            <button type="button" onclick="genererGrossesse(7)" class="btn-preg">Mois 7</button>
-            <button type="button" onclick="genererGrossesse(8)" class="btn-preg">Mois 8</button>
-            <button type="button" onclick="genererGrossesse(9)" class="btn-preg">Mois 9</button>
-            <button type="button" onclick="genererGrossesse('aleatoire')" class="btn-preg neg">🎲 TEST GROSSESSE</button>
-        </div>
-    </div>
-            <div class="form-group">
+                <button type="button" onclick="lancerGenerationAuto()" class="btn-generate" style="width: 100%;">🤖 GÉNÉRER LE BILAN</button>
+            </div>
+
+            <div id="panel-manual" style="display:none">
+                <div id="dynamic-tabs"></div>
+            </div>
+
+            <div class="grossesse-panel">
+                <h3>🍼 MODULE MATERNITÉ</h3>
+                <div class="pregnancy-grid">
+                    <button type="button" onclick="genererGrossesse(1)" class="btn-preg">Mois 1</button>
+                    <button type="button" onclick="genererGrossesse(2)" class="btn-preg">Mois 2</button>
+                    <button type="button" onclick="genererGrossesse(3)" class="btn-preg">Mois 3</button>
+                    <button type="button" onclick="genererGrossesse(4)" class="btn-preg">Mois 4</button>
+                    <button type="button" onclick="genererGrossesse(5)" class="btn-preg">Mois 5</button>
+                    <button type="button" onclick="genererGrossesse(6)" class="btn-preg">Mois 6</button>
+                    <button type="button" onclick="genererGrossesse(7)" class="btn-preg">Mois 7</button>
+                    <button type="button" onclick="genererGrossesse(8)" class="btn-preg">Mois 8</button>
+                    <button type="button" onclick="genererGrossesse(9)" class="btn-preg">Mois 9</button>
+                    <button type="button" onclick="genererGrossesse('aleatoire')" class="btn-preg neg">🎲 TEST GROSSESSE</button>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top:20px;">
                 <label>Conclusion Médicale</label>
-                <textarea id="auto-concl-area" oninput="up('d-concl', this.value)" placeholder="Conclusion médicale..." rows="3" style="width: 100%; background: #0a192f; color: white; border: 1px solid #233554; border-radius: 4px; padding: 8px;"></textarea>
+                <textarea id="auto-concl-area" oninput="up('d-concl', this.value)" placeholder="Conclusion médicale..." rows="3"></textarea>
             </div>
 
             <div class="form-group">
@@ -113,27 +113,27 @@
                 <input type="text" oninput="up('d-sig', this.value)" placeholder="Signature du médecin">
             </div>
 
-            <div class="actions-group" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-                <button type="button" onclick="genererImage()" class="btn-image" style="background: white; color: black; font-weight: bold;">🖼️ GÉNÉRER L'IMAGE</button>
-                <button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord" style="background: #5865f2; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">ENVOYER SUR DISCORD</button>
+            <div class="actions-group">
+                <button type="button" onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
+                <button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
             </div>
         </aside>
 
         <main class="preview-area">
             <div id="document">
-                <div class="header-lab" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px;">
+                <div class="header-lab">
                     <div style="display:flex; align-items:center; gap:15px;">
                         <img src="assets/logo_omc.png" alt="Logo" style="height:50px;">
-                        <h1 style="margin:0; font-size:24px; color: #0a1324;">Bilan Biologique</h1>
+                        <h1 style="margin:0; font-size:24px;">Bilan Biologique</h1>
                     </div>
                     <div style="text-align:right; font-size:10px; color:#777;">#OMC-LAB-2026</div>
                 </div>
 
-                <div class="patient-card" style="display: flex; justify-content: space-between; margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; font-size: 13px;">
+                <div class="patient-card">
                     <div>
                         Patient : <strong id="d-nom">...</strong><br>
                         Naissance : <span id="d-ddn">...</span><br>
-                        Groupe Sanguin : <strong id="d-groupe">...</strong>
+                        Groupe : <strong id="d-groupe">...</strong>
                     </div>
                     <div style="text-align:right;">
                         Prélèvement : <span id="d-date-prel">...</span><br>
@@ -142,32 +142,30 @@
                     </div>
                 </div>
 
-                <div id="dynamic-sections" style="margin-top: 20px; min-height: 300px;"></div>
+                <div id="dynamic-sections"></div>
 
-                <div class="conclusion-box" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <strong style="font-size: 14px; color: #0a1324;">Conclusion :</strong>
-                    <p id="d-concl" style="font-style:italic; font-size:13px; margin-top:5px; color: #334155;">...</p>
+                <div class="conclusion-box">
+                    <strong>Conclusion :</strong>
+                    <p id="d-concl">...</p>
                 </div>
                 
-                <div class="cert-footer" style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 50px;">
-                    <div class="signature-line" id="d-sig" style="border-top: 1px solid #000; min-width: 200px; padding-top: 5px; font-family: 'Alex Brush', cursive; font-size: 24px;">Dr. </div>
-                    <div class="round-stamp" style="border: 2px solid #0a1324; border-radius: 12px; padding: 10px; text-align: center; font-size: 10px; width: 100px;">
-                        OMC LABORATORY
-                    </div>
+                <div class="cert-footer">
+                    <div class="signature-line" id="d-sig">Dr. </div>
+                    <div class="round-stamp">OMC LABORATORY</div>
                 </div>
             </div>
         </main>
     </div>
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
-        <div class="popup-content" style="background: #111b2d; padding: 20px; border-radius: 12px; text-align: center; max-width: 500px; width: 90%;">
-            <h3 style="color: white;">Rapport Laboratoire Généré</h3>
-            <input type="text" id="direct-link" readonly onclick="this.select()" style="width: 100%; padding: 10px; margin-top: 10px;">
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <button onclick="copyLink()" style="flex:1; padding:10px; background: #00d2ff; border:none; border-radius:4px; cursor:pointer;">Copier le lien</button>
-                <button onclick="closePopup()" style="flex:1; padding:10px; background: #64748b; color:white; border:none; border-radius:4px; cursor:pointer;">Fermer</button>
+        <div class="popup-content">
+            <h3>Rapport Laboratoire Généré</h3>
+            <input type="text" id="direct-link" readonly onclick="this.select()">
+            <div class="popup-buttons">
+                <button onclick="copyLink()" class="btn-copy">Copier le lien</button>
+                <button onclick="closePopup()" class="btn-close">Fermer</button>
             </div>
-            <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px; border-radius: 5px;">
+            <img id="preview-img-result" src="">
         </div>
     </div>
 
@@ -176,5 +174,3 @@
     <script src="labo.js"></script>
 </body>
 </html>
-
-
