@@ -162,7 +162,6 @@ function res(id, val, cat) {
         }
     }
     updateLiveQRCode();
-    analyserTout();
 }
 
 // ==========================================
@@ -172,46 +171,39 @@ function res(id, val, cat) {
 function lancerGenerationAuto() {
     const grav = parseInt(document.getElementById('gravity-range').value);
     const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
-    let f = (grav - 1) / 9; // Facteur d'intensité 0.0 à 1.0 (1=parfait, 10=mort)
+    let f = (grav - 1) / 9; 
 
     resetSeulementBio(false);
 
-    // Valeurs physiologiques de base (Saines)
     let results = { gb: 7.0, hb: 15.0, ht: 45, pla: 250, gly: 0.90, na: 140, k: 4.0, crea: 9.0, ph: 7.40, lact: 0.8 };
     let diagPrincipal = "";
 
     scenarios.forEach(s => {
         if (s === 'arme-feu' || s === 'acc-route') {
-            // --- CHOC HÉMORRAGIQUE (Perte de sang) ---
             results.hb = (15.0 - (10.0 * f)).toFixed(1); 
-            results.pla = (250 - (180 * f)).toFixed(0); 
-            results.lact = (0.8 + (8.0 * f)).toFixed(1); // Manque d'oxygène tissulaire
-            diagPrincipal = grav >= 8 ? "URGENCE : CHOC HYPOVOLÉMIQUE SÉVÈRE. Hémorragie massive avec acidose métabolique." : "TRAUMA : Spoliation sanguine modérée. Risque de choc à surveiller.";
+            results.pla = (250 - (200 * f)).toFixed(0); 
+            results.lact = (0.8 + (8.0 * f)).toFixed(1); 
+            diagPrincipal = grav >= 7 ? "URGENCE : CHOC HYPOVOLÉMIQUE. Hémorragie massive avec acidose lactique." : "TRAUMA : Spoliation sanguine modérée. Risque de choc hypovolémique à surveiller.";
         }
         
         if (s === 'overdose') {
-            // --- CHOC TOXIQUE / DÉTRESSE RESPIRATOIRE ---
-            results.ph = (7.40 - (0.45 * f)).toFixed(2); // Le sang s'acidifie car le patient ne respire plus
+            results.ph = (7.40 - (0.50 * f)).toFixed(2); 
             results.lact = (0.8 + (10.0 * f)).toFixed(1);
-            diagPrincipal = grav >= 7 ? "ALERTE : OVERDOSE CRITIQUE. Acidose respiratoire majeure. Pronostic vital engagé." : "TOXICOLOGIE : Vigilance altérée. Signes d'intoxication systémique.";
+            results.alc = (f * 4.5).toFixed(2);
+            diagPrincipal = grav >= 7 ? "URGENCE : OVERDOSE CRITIQUE. Acidose respiratoire majeure et défaillance multiviscérale." : "TOXICOLOGIE : Vigilance altérée. Signes d'intoxication systémique.";
         }
 
         if (s === 'diabete') {
-            // --- CHOC GLYCÉMIQUE (Coma) ---
-            results.gly = (0.90 + (6.0 * f)).toFixed(2);
-            results.k = (4.0 + (3.5 * f)).toFixed(1); // Le potassium monte (Danger d'arrêt cardiaque)
-            diagPrincipal = grav >= 7 ? "ALERTE : COMA ACIDO-CÉTOSIQUE. Hyperglycémie maligne et déséquilibre ionique sévère." : "DIABÈTE : Décompensation glycémique modérée. Surveillance cardiaque requise.";
+            results.gly = (0.90 + (6.0 * f)).toFixed(2); 
+            results.k = (4.0 + (3.0 * f)).toFixed(1);    
+            diagPrincipal = grav >= 7 ? "URGENCE : COMA ACIDO-CÉTOSIQUE. Hyperglycémie maligne. Danger d'arrêt cardiaque (Hyperkaliémie)." : "DIABÈTE : Décompensation glycémique. Surveillance ionique requise.";
         }
     });
 
-    // Si pas de scénario mais gravité > 1 : Bilan perturbé général
-    if (!diagPrincipal && grav > 1) {
-        diagPrincipal = grav >= 7 ? "URGENCE ABSOLUE : Défaillance multiviscérale. État de choc non étiqueté." : "OBSERVATION : Paramètres biologiques instables. Surveillance clinique requise.";
-    } else if (!diagPrincipal) {
-        diagPrincipal = "STABLE : Constantes physiologiques dans les normes.";
+    if (!diagPrincipal) {
+        diagPrincipal = grav > 1 ? "CONSTANTES PERTURBÉES : Anomalies détectées. Surveillance clinique nécessaire." : "STABLE : Constantes physiologiques dans les normes.";
     }
 
-    // Injection des résultats
     for (let id in results) {
         let cat = Object.keys(database).find(c => database[c].some(i => i.id === id));
         if (cat) res(id, results[id].toString(), cat);
@@ -226,11 +218,10 @@ function genererGrossesse(mois) {
     if (mois === 'aleatoire') mois = Math.floor(Math.random() * 9) + 1;
     let f = (grav - 1) / 9;
 
-    // Calcul des marqueurs (Pré-éclampsie/Hémorragie)
     let vHcg = (Math.random() * 5000 + 1000).toFixed(0);
-    let vPla = (250 - (200 * f)).toFixed(0); 
-    let vAlat = (20 + (250 * f)).toFixed(0); 
-    let vCrea = (7 + (20 * f)).toFixed(1);
+    let vPla = (250 - (180 * f)).toFixed(0); 
+    let vAlat = (20 + (200 * f)).toFixed(0); 
+    let vCrea = (7 + (15 * f)).toFixed(1);
 
     res('hcg', vHcg, 'ENDOCRINOLOGIE & DIVERS');
     res('pla', vPla, 'HÉMATOLOGIE (SANG)');
@@ -239,44 +230,20 @@ function genererGrossesse(mois) {
 
     let texteG = `MATERNITÉ (MOIS ${mois}) : `;
 
-    // RÉACTION AU TRAUMATISME (Scénarios)
     if (grav >= 7 && (scenarios.includes('arme-feu') || scenarios.includes('acc-route'))) {
-        texteG += "URGENCE OBSTÉTRIQUE : Choc maternel sévère. SOUFFRANCE FŒTALE AIGUË par hypoxie. Risque de perte fœtale.";
+        texteG += "URGENCE VITALE : Traumatisme abdominal majeur. SOUFFRANCE FŒTALE AIGUË par hypoxie maternelle.";
     } else if (grav >= 5 && scenarios.includes('overdose')) {
-        texteG += "ALERTE TOXIQUE : Risque de passage transplacentaire. Rythme cardiaque fœtal à monitorer d'urgence.";
+        texteG += "ALERTE TOXIQUE : Passage placentaire suspecté. Risque de détresse respiratoire fœtale.";
     } else if (grav >= 8) {
-        texteG += "ALERTE : PRÉ-ÉCLAMPSIE SÉVÈRE (HELLP Syndrome). Risque de convulsions et d'hémorragie interne.";
+        texteG += "URGENCE : PRÉ-ÉCLAMPSIE SÉVÈRE (HELLP Syndrome). Risque de décollement placentaire et convulsions.";
     } else {
-        texteG += "STABLE : Pas de retentissement fœtal direct décelé lors de l'examen initial.";
+        texteG += "STABLE : Pas de retentissement fœtal direct détecté malgré l'épisode aigu.";
     }
 
     fusionnerConclusionSpecifique(texteG);
 }
 
-
-    // 3. FUSION AVEC LA CONCLUSION EXISTANTE
-    let actuelle = document.getElementById('auto-concl-area').value;
-    
-    // On nettoie les anciennes lignes de maternité/grossesse pour ne pas les accumuler
-    let lignes = actuelle.split('\n');
-    let autresLignes = lignes.filter(l => 
-        !l.includes("MATERNITÉ") && 
-        !l.includes("Bilan de maternité") && 
-        !l.includes("ANALYSE IMMUNOLOGIQUE") &&
-        !l.includes("Analyse immunologique")
-    );
-    
-    // On reconstruit le texte final
-    let finale = autresLignes.join('\n');
-    if (finale.trim() !== "") finale += "\n";
-    finale += texteG;
-
-    // Mise à jour de l'affichage
-    document.getElementById('auto-concl-area').value = finale;
-    document.getElementById('d-concl').innerText = finale;
-    
-    if (typeof updateLiveQRCode === "function") updateLiveQRCode(); // Mise à jour du QR Code
-}
+// --- FONCTIONS SYSTÈME ---
 
 function determinerGroupeAleatoire() {
     const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -286,8 +253,6 @@ function determinerGroupeAleatoire() {
     if(afficheur) afficheur.innerText = resultat;
     if(select) select.value = resultat;
 }
-
-// --- FONCTIONS SYSTÈME ---
 
 function setAutoDate() {
     const today = new Date();
@@ -323,55 +288,24 @@ function resetSeulementBio(confirmNeeded = true) {
     updateLiveQRCode();
 }
 
-function analyserTout() {
-    let anomalies = [];
-    let alertesCritiques = [];
-    const grav = parseInt(document.getElementById('gravity-range').value);
-
-    // 1. Scan approfondi des résultats
-    document.querySelectorAll('.analysis-input').forEach(input => {
-        let val = parseFloat(input.value.replace(',', '.'));
-        let norm = input.getAttribute('data-norm');
-        let label = input.getAttribute('data-label');
-
-        if (!isNaN(val) && norm && norm.includes('-')) {
-            let [min, max] = norm.split('-').map(Number);
-            if (val < min || val > max) {
-                // On détermine si c'est une anomalie légère ou un pronostic engagé
-                let ecart = (val > max) ? (val / max) : (min / val);
-                if (ecart > 1.8 || grav > 8) {
-                    alertesCritiques.push(label);
-                } else {
-                    anomalies.push(label);
-                }
-            }
-        }
+function fusionnerConclusionSpecifique(nouveauTexte) {
+    let actuelle = document.getElementById('auto-concl-area').value;
+    let lignes = actuelle.split('\n');
+    let estGrossesse = nouveauTexte.includes("MATERNITÉ");
+    
+    let filtré = lignes.filter(l => {
+        if (estGrossesse) return !l.includes("MATERNITÉ") && !l.includes("ANALYSE") && !l.includes("PRÉ-ÉCLAMPSIE");
+        return !l.includes("URGENCE") && !l.includes("ALERTE") && !l.includes("STABLE") && !l.includes("TRAUMA") && !l.includes("DIABÈTE") && !l.includes("TOXICOLOGIE");
     });
 
-    // 2. Construction du diagnostic médical selon la gravité
-    let diag = "";
-if (grav >= 9) {
-        diag = "URGENCE ABSOLUE : CHOC DÉCOMPENSÉ. Le sang ne circule plus assez pour nourrir les organes. Le patient est en train de mourir (Acidose massive). Réanimation immédiate.";
-    } else if (grav >= 6) {
-        diag = "ÉTAT CRITIQUE : CHOC HYPOVOLÉMIQUE. Perte de sang importante. Les organes manquent d'oxygène. Transfusion et chirurgie nécessaires.";
-    } else if (grav >= 3) {
-        diag = "STABLE : ANOMALIES MODÉRÉES. Signes d'inflammation ou de fatigue organique. À surveiller, mais pas de danger de mort immédiat.";
+    let finale = filtré.join('\n');
+    if (finale.trim() !== "" && !estGrossesse) {
+        finale = nouveauTexte + "\n" + finale;
+    } else if (finale.trim() !== "" && estGrossesse) {
+        finale = finale + "\n" + nouveauTexte;
     } else {
-        diag = "STABLE : Bilan dans les normes. Pas de détresse vitale détectée.";
+        finale = nouveauTexte;
     }
-
-    // 3. Fusion avec la Maternité (pour ne pas écraser)
-    let actuelle = document.getElementById('auto-concl-area').value;
-    let partieGrossesse = actuelle.match(/.*(Bilan de maternité|Analyse immunologique).*/)?.[0] || "";
-
-    // On cherche si un texte de grossesse existe déjà pour le conserver
-    const matchG = actuelle.match(/.*(Bilan de maternité|Analyse immunologique).*/);
-    if (matchG) {
-        partieGrossesse = matchG[0];
-    }
-
-let finale = diag;
-    if (partieGrossesse) finale += "\n" + partieGrossesse;
 
     document.getElementById('auto-concl-area').value = finale;
     document.getElementById('d-concl').innerText = finale;
@@ -385,8 +319,12 @@ function switchMode(mode) {
     else document.getElementById('btn-manual').classList.add('active');
 }
 
+function analyserTout() {
+    // Cette fonction peut rester vide ou servir à d'autres calculs car lancerGenerationAuto gère déjà les conclusions scénarisées.
+}
+
 // ==========================================
-// 5. EXPORT IMAGE
+// 5. EXPORT IMAGE ET DISCORD
 // ==========================================
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
 let lastImageUrl = "";
@@ -405,25 +343,17 @@ async function genererImage() {
             backgroundColor: "#ffffff",
             height: doc.scrollHeight
         });
-
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
         const formData = new FormData();
         formData.append("image", imageData);
-
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-            method: "POST",
-            body: formData
-        });
-
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
         const result = await response.json();
-
         if (result.success) {
             lastImageUrl = result.data.url;
             document.getElementById('direct-link').value = lastImageUrl;
             document.getElementById('preview-img-result').src = lastImageUrl;
             document.getElementById('image-popup').style.display = 'flex';
         }
-
     } catch (e) {
         alert("Erreur lors de la génération.");
     } finally {
@@ -435,9 +365,7 @@ async function genererImage() {
 function envoyerDiscord() {
     const webhook = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
     const nomPatient = document.getElementById('d-nom').innerText;
-    
     if (!lastImageUrl) return alert("Génère l'image d'abord !");
-
     const payload = {
         username: "OMC - Laboratoire",
         embeds: [{
@@ -448,12 +376,7 @@ function envoyerDiscord() {
             timestamp: new Date()
         }]
     };
-
-    fetch(webhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    }).then(() => alert("Rapport envoyé !"));
+    fetch(webhook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(() => alert("Rapport envoyé !"));
 }
 
 function copyLink() {
@@ -465,59 +388,6 @@ function copyLink() {
 
 function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
-}
-
-// Fonction pour mettre à jour le QR Code en temps réel
-function updateLiveQRCode() {
-    const nom = document.getElementById('d-nom').innerText || "Anonyme";
-    const date = document.getElementById('d-date-prel').innerText || "00-00-00";
-    const qrImg = document.getElementById('qr-ref');
-    
-    if (qrImg) {
-        // On crée une chaîne de données unique basée sur les infos du document
-        const data = encodeURIComponent(`OMC-LAB|${nom}|${date}`);
-        // L'URL change, forçant l'image à se recharger avec les nouvelles infos
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
-    }
-}
-
-function fusionnerConclusionSpecifique(nouveauTexte) {
-    let actuelle = document.getElementById('auto-concl-area').value;
-    let lignes = actuelle.split('\n');
-    
-    let estGrossesse = nouveauTexte.includes("MATERNITÉ");
-    
-    // On nettoie les anciennes lignes pour éviter les doublons
-    let filtré = lignes.filter(l => {
-        if (estGrossesse) return !l.includes("MATERNITÉ") && !l.includes("ANALYSE") && !l.includes("PRÉ-ÉCLAMPSIE");
-        return !l.includes("URGENCE") && !l.includes("ALERTE") && !l.includes("STABLE") && !l.includes("TRAUMA") && !l.includes("DIABÈTE") && !l.includes("INTOXICATION");
-    });
-
-    let finale = filtré.join('\n');
-    if (finale.trim() !== "" && !estGrossesse) {
-        // Le diagnostic accident va toujours en premier
-        finale = nouveauTexte + "\n" + finale;
-    } else if (finale.trim() !== "" && estGrossesse) {
-        // La grossesse va toujours en dernier
-        finale = finale + "\n" + nouveauTexte;
-    } else {
-        finale = nouveauTexte;
-    }
-
-    document.getElementById('auto-concl-area').value = finale;
-    document.getElementById('d-concl').innerText = finale;
-    updateLiveQRCode();
-}
-
-// MODIFICATION DE TA FONCTION UP EXISTANTE
-// Assure-toi que ta fonction up() appelle updateLiveQRCode() à la fin
-function up(id, val) {
-    const el = document.getElementById(id);
-    if (el) {
-        el.innerText = val;
-        // Mise à jour du QR Code à chaque modification de texte
-        updateLiveQRCode(); 
-    }
 }
 
 // Reste des fonctions (analyserTout, lancerGenerationAuto, genererImage, etc.) à garder intactes...
