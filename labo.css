@@ -4,8 +4,8 @@
     flex-grow: 1;
     display: flex;
     justify-content: center; 
-    align-items: flex-start; /* Aligne au début du scroll */
-    padding: 60px 20px;      /* Marge de confort en haut et en bas */
+    align-items: flex-start; /* FIX: Toujours calé en haut pour le scroll */
+    padding: 40px 20px;      /* Marge de confort pour l'interface */
     overflow-y: auto;
     background-color: var(--bg-preview) !important;
 }
@@ -13,19 +13,26 @@
 #document {
     width: 800px;
     min-width: 800px;
-    height: auto !important;
     background: white !important;
-    padding: 50px !important;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    padding: 40px 50px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     box-sizing: border-box;
-    margin-bottom: 40px;
-    display: flex;
-    flex-direction: column;
+    /* On force le document à ne pas être plus grand que son contenu */
+    height: auto !important;
+    min-height: auto !important;
+    display: block;
+    margin-bottom: 20px; /* Petit battement avant le fond bleu */
 }
 
-.header-lab {
-    position: relative !important;
-    top: auto !important;
+/* On nettoie la signature pour éviter qu'elle ne crée un vide immense */
+.signature-line {
+    border-top: 1px solid #000;
+    min-width: 220px;
+    display: inline-block;
+    padding-top: 5px;
+    font-family: 'Alex Brush', cursive;
+    font-size: 28px;
+    margin-bottom: 0;
 }
 
 .mode-selector { display: flex; gap: 5px; margin-bottom: 20px; background: #112240; padding: 5px; border-radius: 8px; }
@@ -72,7 +79,6 @@
 .row.active { display: grid !important; }
 .val { font-weight: bold; text-align: center; }
 
-.signature-line { margin-top: 50px; border-top: 2px solid #000; display: inline-block; min-width: 250px; float: right; text-align: right; padding-top: 5px; font-family: 'Alex Brush', cursive; font-size: 32px; }
 
 .btn-generate { background: #16a34a !important; color: white !important; height: 45px !important; border-radius: 6px !important; border: none !important; cursor: pointer; margin-top: 10px;}
 .btn-reset { background: #bf1605 !important; color: white !important; height: 45px !important; border-radius: 6px !important; border: none !important; cursor: pointer; margin-top: 10px;}
