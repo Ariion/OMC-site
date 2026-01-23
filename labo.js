@@ -156,6 +156,31 @@ function init() {
     }
 }
 
+// Fonction pour mettre la date du jour au format local
+function setAutoDate() {
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const dateString = today.toLocaleDateString('fr-FR', options);
+    
+    // Met à jour l'affichage dans le document
+    const dateElement = document.getElementById('d-date-prel');
+    if (dateElement) {
+        dateElement.innerText = dateString;
+    }
+    
+    // Met à jour le champ de saisie s'il existe
+    const inputDate = document.getElementById('date-prel');
+    if (inputDate) {
+        inputDate.value = dateString;
+    }
+}
+
+// Appeler la fonction au chargement
+window.addEventListener('load', () => {
+    setAutoDate();
+    updateLiveQRCode(); // Pour que le QR code soit aussi à jour dès le départ
+});
+
 // Génère un QR code basé sur un numéro de dossier fictif ou le nom du patient
 function mettreAJourQRCode(nomPatient) {
     const qrImg = document.getElementById('qr-ref');
