@@ -52,8 +52,7 @@ body {
 .section { display: none; }
 .section.active { display: block !important; margin-bottom: 20px; }
 
-.row { display: none; }
-.row.active { 
+.row { display: none; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }.row.active { 
     display: grid !important; 
     grid-template-columns: 2fr 1fr 1.5fr;
     padding: 5px 10px;
