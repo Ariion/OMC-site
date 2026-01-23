@@ -119,18 +119,41 @@
 
 .marker-point {
     position: absolute;
-    width: 18px;
-    height: 18px;
+    width: 22px; /* Un peu plus grand pour le numéro */
+    height: 22px;
     border-radius: 50%;
     border: 2px solid #ffffff;
     box-shadow: 0 0 5px rgba(0,0,0,0.8);
-    transform: translate(-50%, -50%); /* Pour centrer le point pile sur le clic */
+    transform: translate(-50%, -50%);
     z-index: 100;
     cursor: grab;
+    /* Centrage du numéro */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
 }
 
 .marker-point:active {
     cursor: grabbing;
+}
+
+/* La pastille de rappel dans le rapport écrit */
+.report-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    margin-right: 8px;
+    vertical-align: middle;
 }
 .overlay { position: absolute; inset: 0; cursor: crosshair; }
 
