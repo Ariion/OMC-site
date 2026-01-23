@@ -208,9 +208,17 @@ function genererGrossesse(mois) {
     res('hcg', (Math.random() * (2000 - 500) + 500).toFixed(0), 'ENDOCRINOLOGIE & DIVERS');
     res('gb', "11.2", 'HÉMATOLOGIE (SANG)');
 
-    let texteGrossesse = (mois === "neg") 
-        ? "Analyse immunologique : Absence d'hormone Bêta-HCG. Test de grossesse négatif." 
-        : `Bilan de maternité - ${data.label} : Présence d'hormone HCG. Évolution clinique favorable.`;
+let texteGrossesse = "";
+if (mois === "neg") {
+    texteGrossesse = "DOSAGE HCG : Négatif (< 5 mUI/mL). Absence de grossesse évolutive.";
+} else {
+    texteGrossesse = `MATERNITÉ (MOIS ${mois}) : Taux HCG cohérent avec le stade gestationnel. `;
+    
+    // Indices cliniques selon le mois
+    if (mois <= 3) texteGrossesse += "Vigilance : Risque d'émèse gravidique (nausées) lié au pic hormonal.";
+    else if (mois >= 7) texteGrossesse += "Note : Compression veineuse possible et anémie physiologique à surveiller.";
+    else texteGrossesse += "Développement fœtal et constantes maternelles favorables.";
+}
 
     let actuelle = document.getElementById('auto-concl-area').value;
     
@@ -276,9 +284,10 @@ function resetSeulementBio(confirmNeeded = true) {
 
 function analyserTout() {
     let anomalies = [];
-    let isCritique = false;
+    let alertesCritiques = [];
+    const grav = parseInt(document.getElementById('gravity-range').value);
 
-    // 1. Scan des résultats pour détecter les problèmes
+    // 1. Scan approfondi des résultats
     document.querySelectorAll('.analysis-input').forEach(input => {
         let val = parseFloat(input.value.replace(',', '.'));
         let norm = input.getAttribute('data-norm');
@@ -287,25 +296,30 @@ function analyserTout() {
         if (!isNaN(val) && norm && norm.includes('-')) {
             let [min, max] = norm.split('-').map(Number);
             if (val < min || val > max) {
-                anomalies.push(label);
-                if (val > max * 2 || val < min / 2) isCritique = true;
+                // On détermine si c'est une anomalie légère ou un pronostic engagé
+                let ecart = (val > max) ? (val / max) : (min / val);
+                if (ecart > 1.8 || grav > 8) {
+                    alertesCritiques.push(label);
+                } else {
+                    anomalies.push(label);
+                }
             }
         }
     });
 
-    // 2. Préparation du texte de prélèvement
-    let textePrelevement = "";
-    if (anomalies.length > 0) {
-        textePrelevement = isCritique 
-            ? `ALERTE CRITIQUE : Déséquilibre majeur détecté (${anomalies.join(', ')}).` 
-            : `Bilan perturbé : Anomalies détectées sur (${anomalies.join(', ')}).`;
+    // 2. Construction du diagnostic médical selon la gravité
+    let diag = "";
+    if (alertesCritiques.length > 0) {
+        diag = `URGENCE VITALE : Décompensation majeure détectée (${alertesCritiques.join(', ')}). Pronostic réservé, réanimation recommandée.`;
+    } else if (anomalies.length > 0) {
+        diag = `OBSERVATION CLINIQUE : Profil biologique instable avec anomalies sur (${anomalies.join(', ')}). Surveillance rapprochée nécessaire.`;
     } else {
-        textePrelevement = "Bilan biologique satisfaisant. Absence d'anomalie majeure.";
+        diag = "CONSTANTES STABLES : Paramètres biologiques dans les normes physiologiques.";
     }
 
-    // 3. FUSION INTELLIGENTE
+    // 3. Fusion avec la Maternité (pour ne pas écraser)
     let actuelle = document.getElementById('auto-concl-area').value;
-    let partieGrossesse = "";
+    let partieGrossesse = actuelle.match(/.*(Bilan de maternité|Analyse immunologique).*/)?.[0] || "";
 
     // On cherche si un texte de grossesse existe déjà pour le conserver
     const matchG = actuelle.match(/.*(Bilan de maternité|Analyse immunologique).*/);
@@ -313,11 +327,8 @@ function analyserTout() {
         partieGrossesse = matchG[0];
     }
 
-    // On assemble : Prélèvement en premier, Grossesse en dessous
-    let finale = textePrelevement;
-    if (partieGrossesse) {
-        finale += "\n" + partieGrossesse;
-    }
+let finale = diag;
+    if (partieGrossesse) finale += "\n" + partieGrossesse;
 
     document.getElementById('auto-concl-area').value = finale;
     document.getElementById('d-concl').innerText = finale;
