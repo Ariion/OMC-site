@@ -274,6 +274,7 @@ function analyserTout() {
     let anomalies = [];
     let isCritique = false;
 
+    // 1. Scan des résultats pour détecter les problèmes
     document.querySelectorAll('.analysis-input').forEach(input => {
         let val = parseFloat(input.value.replace(',', '.'));
         let norm = input.getAttribute('data-norm');
@@ -288,17 +289,34 @@ function analyserTout() {
         }
     });
 
+    // 2. Préparation du texte de prélèvement
+    let textePrelevement = "";
     if (anomalies.length > 0) {
-        let texte = isCritique ? "ALERTE CRITIQUE : Déséquilibre majeur détecté (" : "Bilan perturbé : Anomalies sur (";
-        texte += anomalies.join(', ') + ").";
-        
-        let actuelle = document.getElementById('auto-concl-area').value;
-        if (!actuelle.includes("Bilan perturbé") && !actuelle.includes("ALERTE CRITIQUE")) {
-            let finale = actuelle ? texte + "\n" + actuelle : texte;
-            document.getElementById('auto-concl-area').value = finale;
-            document.getElementById('d-concl').innerText = finale;
-        }
+        textePrelevement = isCritique 
+            ? `ALERTE CRITIQUE : Déséquilibre majeur détecté (${anomalies.join(', ')}).` 
+            : `Bilan perturbé : Anomalies détectées sur (${anomalies.join(', ')}).`;
+    } else {
+        textePrelevement = "Bilan biologique satisfaisant. Absence d'anomalie majeure.";
     }
+
+    // 3. FUSION INTELLIGENTE
+    let actuelle = document.getElementById('auto-concl-area').value;
+    let partieGrossesse = "";
+
+    // On cherche si un texte de grossesse existe déjà pour le conserver
+    const matchG = actuelle.match(/.*(Bilan de maternité|Analyse immunologique).*/);
+    if (matchG) {
+        partieGrossesse = matchG[0];
+    }
+
+    // On assemble : Prélèvement en premier, Grossesse en dessous
+    let finale = textePrelevement;
+    if (partieGrossesse) {
+        finale += "\n" + partieGrossesse;
+    }
+
+    document.getElementById('auto-concl-area').value = finale;
+    document.getElementById('d-concl').innerText = finale;
 }
 
 function switchMode(mode) {
