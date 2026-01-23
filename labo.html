@@ -81,6 +81,7 @@
                 </div>
 
                 <button type="button" onclick="lancerGenerationAuto()" class="btn-generate" style="width: 100%;">🤖 GÉNÉRER LE BILAN</button>
+                  <button type="button" onclick="resetSeulementBio()" class="btn-reset" style="width: 100%; margin-top: 10px;">🗑️ RÉINITIALISER LE PRÉLÈVEMENT</button>
             </div>
 
             <div id="panel-manual" style="display:none">
@@ -121,13 +122,17 @@
 
         <main class="preview-area">
             <div id="document">
-                <div class="header-lab">
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <img src="assets/logo_omc.png" alt="Logo" style="height:50px;">
-                        <h1 style="margin:0; font-size:24px;">Bilan Biologique</h1>
-                    </div>
-                    <div style="text-align:right; font-size:10px; color:#777;">#OMC-LAB-2026</div>
-                </div>
+    <div class="header-lab">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <img src="assets/logo_omc.png" alt="Logo" style="height:60px; display: block;"> 
+            <div>
+                <h1 style="margin:0; font-size:24px; color: #0a1324;">BILAN BIOLOGIQUE</h1>
+                <div style="font-size: 10px; color: #64748b; font-weight: bold;">OCEAN MEDICAL CENTER</div>
+            </div>
+        </div>
+        <div style="text-align:right; font-size:10px; color:#777;">RÉF : #OMC-LAB-2026</div>
+    </div>
+    </div>
 
                 <div class="patient-card">
                     <div>
@@ -174,3 +179,4 @@
     <script src="labo.js"></script>
 </body>
 </html>
+
