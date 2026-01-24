@@ -18,11 +18,7 @@
             <h1 class="sidebar-title">PRESCRIPTION</h1>
             
             <div class="sidebar-section">
-                <h3>1. Patient & Médecin</h3>
-                <div class="form-group">
-                    <label>Médecin Traitant</label>
-                    <input type="text" oninput="upSignature(this.value)" placeholder="Nom du médecin">
-                </div>
+                
                 <div class="form-group">
                     <label>Patient(e)</label>
                     <input type="text" id="input-nom" oninput="up('d-nom', this.value)" placeholder="Nom Prénom">
@@ -35,12 +31,15 @@
                     <label>Date de consultation</label>
                     <input type="date" id="input-date" oninput="upDate('d-date', this.value)">
                 </div>
+                <div class="form-group">
+                    <label>Médecin Traitant</label>
+                    <input type="text" oninput="upSignature(this.value)" placeholder="Nom du médecin">
+                </div>
             </div>
 
             <hr style="border: 0; border-top: 1px solid #334155; margin: 15px 0;">
 
             <div class="sidebar-section">
-                <h3>2. Traitement</h3>
                 <div class="form-group">
                     <label>Service (Spécialité)</label>
                     <select id="service-select" onchange="updateMeds(this.value)">
@@ -151,7 +150,6 @@
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
         <div class="popup-content">
-            <h3>Ordonnance Générée</h3>
             <input type="text" id="direct-link" readonly onclick="this.select()">
             <div class="popup-buttons"><button onclick="copyLink()">Copier</button><button onclick="closePopup()">Fermer</button></div>
             <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px;">
