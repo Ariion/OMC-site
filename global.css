@@ -131,51 +131,71 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
    ========================================= */
 @media screen and (max-width: 1024px) {
 
-    /* 1. On annule la disposition "Gauche-Droite" pour mettre "Haut-Bas" */
-    .interface-container {
-        flex-direction: column;
-        height: auto;
-        overflow: auto;
+    /* 1. On débloque la hauteur totale */
+    body, html {
+        height: auto !important;
+        overflow-y: auto !important; /* Scroll vertical autorisé partout */
     }
 
-    /* 2. La Sidebar (Menu de gauche) prend toute la largeur */
+    /* 2. Le conteneur principal empile les blocs */
+    .interface-container {
+        flex-direction: column !important; /* Haut vers Bas */
+        height: auto !important; /* La hauteur s'adapte au contenu */
+        min-height: 100vh;
+        overflow: visible !important; /* Surtout pas de hidden ! */
+        display: flex;
+    }
+
+    /* 3. La Barre Latérale (Inputs) */
     .sidebar {
         width: 100% !important;
-        height: auto;
-        position: relative; /* On l'enlève du mode "fixé" */
+        height: auto !important; /* Pas de hauteur fixe */
+        min-height: auto !important;
+        position: relative !important;
         border-right: none;
         border-bottom: 4px solid #1e293b;
         padding: 20px;
         box-sizing: border-box;
-        overflow-y: visible;
         z-index: 10;
+        background: #0f172a; /* On assure le fond sombre */
     }
-
-    /* 3. Ajustement des titres qui sont parfois trop gros sur mobile */
+    
+    /* Titres sidebar */
     .sidebar-title {
-        font-size: 22px; /* Plus petit */
         text-align: center;
         margin-top: 10px;
     }
-    
-    /* 4. La zone de document (Droite) */
+
+    /* 4. La zone de prévisualisation (Fond bleu derrière la feuille) */
     .preview-area {
-        width: 100%;
-        margin: 0;
-        padding: 20px 10px; /* Moins de marge sur les côtés */
-        display: block; /* Important pour le scroll */
-        overflow-x: auto; /* AUTORISE LE SCROLL HORIZONTAL */
+        width: 100% !important;
+        height: auto !important;
+        display: block !important; /* Important pour le scroll */
+        padding: 20px 0 !important;
+        margin: 0 !important;
+        
+        /* C'est ICI le secret : on autorise le scroll horizontal */
+        overflow-x: auto !important; 
+        overflow-y: visible !important;
+        
         background: #0f172a;
+        flex-grow: 0 !important; /* Ne cherche pas à remplir le vide */
     }
 
-    /* 5. Le Document A4 (800px) */
+    /* 5. Le Document Blanc (A4) */
     #document {
-        /* On ne touche PAS à la largeur pour ne pas casser html2canvas */
-        margin: 0 auto; 
-        /* Si l'écran est trop petit, l'utilisateur scrollera vers la droite */
+        /* On garde la largeur fixe pour que html2canvas fonctionne bien */
+        margin: 0 auto !important; 
+        /* Si l'écran est petit, l'utilisateur scrollera vers la droite */
+        
+        /* On force l'affichage */
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        transform: none !important; /* Pas de zoom bizarre qui casse la capture */
     }
 
-    /* 6. Spécifique Labo / Ordonnance : Les groupes de 2 inputs passent l'un sous l'autre */
+    /* 6. Ajustements des champs de formulaire */
     .row-group {
         flex-direction: column;
         gap: 0;
@@ -184,17 +204,10 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
         margin-bottom: 15px;
         width: 100%;
     }
-
-    /* 7. Ajustement du Menu Principal (Index) */
-    .menu-grid {
-        grid-template-columns: 1fr; /* 1 seule colonne */
-        padding: 10px;
-        width: 100%;
-        box-sizing: border-box;
-    }
     
-    .menu-card {
-        width: 100%; /* Prend toute la largeur */
-        box-sizing: border-box;
+    /* Menu Principal (Index) */
+    .menu-grid {
+        grid-template-columns: 1fr;
+        padding: 10px;
     }
 }
