@@ -17,9 +17,9 @@
             <h1 class="sidebar-title">CERTIFICAT DE DÉCÈS</h1>
             
 <div class="form-group">
-                <label>Nom & Prénom du Défunt</label>
-                <input type="text" oninput="up('d-nom', this.value)" placeholder="ex: John Doe">
-            </div>
+    <label>Nom & Prénom du Défunt</label>
+    <input type="text" oninput="up('d-nom', this.value)" placeholder="ex: John Doe">
+</div>
 
             <div class="form-group">
                 <label>Date de Naissance</label>
@@ -59,9 +59,9 @@
                 </select>
             </div>
 
-            <div class="form-group" style="margin-bottom: 25px;">
+            <div class="form-group">
                 <label>Docteur Signataire</label>
-                <input type="text" oninput="up('d-sig', this.value)" placeholder="Nom du médecin">
+                <input type="text" oninput="upSignature(this.value)" placeholder="Nom du médecin">
             </div>
 
             <button type="button" onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
@@ -90,11 +90,11 @@
                 <div class="cert-footer">
                     <div class="cert-signature">
                         Établi par :<br><br>
-                        <span id="d-sig-doc" style="font-family: 'Alex Brush', cursive; font-size: 28px; border-top: 1px solid #000; min-width: 200px; display: inline-block; padding-top: 5px;">Docteur</span>
+                        <span id="display-sig" style="font-family: 'Alex Brush', cursive; font-size: 26px;">DOCTEUR</span>
                     </div>
                     <div class="round-stamp">
                         <img id="qr-ref" class="qr-code" src="" alt="QR">
-                        <div style="font-size: 9px; font-weight: bold;">OMC CERTIFIED</div>
+                        <div>OMC MEDICAL CENTER</div>
                     </div>
                 </div>
                 <p class="legal-text">Ce certificat est établi sur la base des constatations cliniques. Toute reproduction ou usage de faux est passible de poursuites.</p>
@@ -115,6 +115,7 @@
     <script src="global.js"></script>
 </body>
 </html>
+
 
 
 
