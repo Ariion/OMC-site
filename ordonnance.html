@@ -60,7 +60,8 @@
                 <div class="row-group">
                     <div class="form-group" style="flex:1">
                         <label>Dosage</label>
-                        <input type="text" id="input-dosage" placeholder="ex: 1000mg">
+                        <select id="dosage-select">
+                            </select>
                     </div>
                     <div class="form-group" style="flex:1">
                         <label>Durée</label>
@@ -75,8 +76,8 @@
                         <option value="1 comprimé matin, midi et soir">1 cp Matin/Midi/Soir</option>
                         <option value="1 comprimé le matin">1 cp le Matin</option>
                         <option value="1 comprimé le soir au coucher">1 cp le Soir</option>
-                        <option value="En cas de douleur, max 3 par jour">Si douleur (Max 3/j)</option>
-                        <option value="1 application locale 2 fois par jour">Application locale 2x/j</option>
+                        <option value="Si douleur (Max 4 par jour)">Si douleur (Max 4/j)</option>
+                        <option value="1 application locale 2 fois par jour">Appli locale 2x/j</option>
                     </select>
                     <input type="text" id="input-poso" placeholder="Ou écrire librement..." style="margin-top: 5px;">
                 </div>
@@ -91,7 +92,7 @@
 
             <div class="form-group">
                 <label>Instructions Spécifiques (Facultatif)</label>
-                <textarea id="input-inst" oninput="up('d-inst', this.value)" rows="3" placeholder="Repos, arrêt de travail, recommandations..."></textarea>
+                <textarea id="input-inst" oninput="upInst(this.value)" rows="3" placeholder="Repos, arrêt de travail, recommandations..."></textarea>
             </div>
 
             <button type="button" onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'ORDONNANCE</button>
@@ -126,9 +127,9 @@
                         <li class="empty-msg">Aucune prescription en cours...</li>
                     </ul>
 
-                    <div id="inst-container" style="margin-top: 30px; display: none; padding-top: 15px; border-top: 1px dotted #ccc;">
-                        <label style="font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: bold;">Instructions particulières :</label>
-                        <p id="d-inst" style="font-style: italic; color: #334155; margin-top: 5px;"></p>
+                    <div id="inst-container" style="display: none;">
+                        <label class="inst-label">Instructions particulières :</label>
+                        <p id="d-inst" class="inst-text"></p>
                     </div>
                 </div>
 
@@ -143,7 +144,7 @@
                     </div>
                 </div>
                 
-                <p class="legal-text">Ce document permet la délivrance des médicaments listés ci-dessus. Valable uniquement dans les pharmacies agréées de l'État de San Andreas.</p>
+                <p class="legal-text">Ce document permet la délivrance des médicaments listés ci-dessus. Valable uniquement dans les pharmacies agréées de l'État de San Andreas. Toute reproduction est interdite.</p>
             </div>
         </main>
     </div>
