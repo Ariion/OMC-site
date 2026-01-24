@@ -122,3 +122,61 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
     background: #f0f0f0 !important;
 }
 @media print { #input-panel, .back-link, button { display: none !important; } body { display: block !important; } #preview-area { background: white; padding: 0; } #document { box-shadow: none !important; width: 210mm !important; } }
+
+
+
+
+/* =========================================
+   VERSION MOBILE (SMARTPHONE)
+   ========================================= */
+@media screen and (max-width: 900px) {
+
+    /* 1. On passe d'un affichage "Côte à côte" à "L'un sous l'autre" */
+    .interface-container {
+        flex-direction: column; /* Empile les éléments */
+    }
+
+    /* 2. La barre latérale prend toute la largeur et n'est plus fixée */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative; /* Elle redevient normale */
+        border-right: none;
+        border-bottom: 2px solid #334155;
+        padding-bottom: 40px;
+        overflow-y: visible; /* On laisse scroller la page entière */
+    }
+
+    /* 3. La zone de prévisualisation prend toute la largeur */
+    .preview-area {
+        width: 100%;
+        padding: 20px;
+        margin: 0; /* On enlève la marge qui poussait le contenu */
+        overflow-x: auto; /* Permet de scroller horizontalement si le doc est trop large */
+        background: #0f172a;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    /* 4. Gestion du document A4 sur petit écran */
+    /* On est obligé de garder 800px pour la qualité d'image, 
+       donc on va réduire l'affichage visuel (zoom out) */
+    #document {
+        transform: scale(0.6); /* Réduit le document à 60% de sa taille */
+        transform-origin: top center; /* On le centre */
+        margin-bottom: -40%; /* On remonte le vide créé par le zoom */
+    }
+    
+    /* Ajustement des titres pour mobile */
+    .sidebar-title {
+        font-size: 24px;
+        text-align: center;
+    }
+
+    /* Le menu principal (index.html) en 1 colonne */
+    .menu-grid {
+        grid-template-columns: 1fr; /* Une seule colonne */
+        padding: 10px;
+    }
+}
