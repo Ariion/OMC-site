@@ -127,56 +127,74 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 
 
 /* =========================================
-   VERSION MOBILE (SMARTPHONE)
+   VERSION MOBILE (SMARTPHONE & TABLETTE)
    ========================================= */
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 1024px) {
 
-    /* 1. On passe d'un affichage "Côte à côte" à "L'un sous l'autre" */
+    /* 1. On annule la disposition "Gauche-Droite" pour mettre "Haut-Bas" */
     .interface-container {
-        flex-direction: column; /* Empile les éléments */
-    }
-
-    /* 2. La barre latérale prend toute la largeur et n'est plus fixée */
-    .sidebar {
-        width: 100%;
+        flex-direction: column;
         height: auto;
-        position: relative; /* Elle redevient normale */
+        overflow: auto;
+    }
+
+    /* 2. La Sidebar (Menu de gauche) prend toute la largeur */
+    .sidebar {
+        width: 100% !important;
+        height: auto;
+        position: relative; /* On l'enlève du mode "fixé" */
         border-right: none;
-        border-bottom: 2px solid #334155;
-        padding-bottom: 40px;
-        overflow-y: visible; /* On laisse scroller la page entière */
-    }
-
-    /* 3. La zone de prévisualisation prend toute la largeur */
-    .preview-area {
-        width: 100%;
+        border-bottom: 4px solid #1e293b;
         padding: 20px;
-        margin: 0; /* On enlève la marge qui poussait le contenu */
-        overflow-x: auto; /* Permet de scroller horizontalement si le doc est trop large */
-        background: #0f172a;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
+        box-sizing: border-box;
+        overflow-y: visible;
+        z-index: 10;
     }
 
-    /* 4. Gestion du document A4 sur petit écran */
-    /* On est obligé de garder 800px pour la qualité d'image, 
-       donc on va réduire l'affichage visuel (zoom out) */
-    #document {
-        transform: scale(0.6); /* Réduit le document à 60% de sa taille */
-        transform-origin: top center; /* On le centre */
-        margin-bottom: -40%; /* On remonte le vide créé par le zoom */
+    /* 3. Ajustement des titres qui sont parfois trop gros sur mobile */
+    .sidebar-title {
+        font-size: 22px; /* Plus petit */
+        text-align: center;
+        margin-top: 10px;
     }
     
-    /* Ajustement des titres pour mobile */
-    .sidebar-title {
-        font-size: 24px;
-        text-align: center;
+    /* 4. La zone de document (Droite) */
+    .preview-area {
+        width: 100%;
+        margin: 0;
+        padding: 20px 10px; /* Moins de marge sur les côtés */
+        display: block; /* Important pour le scroll */
+        overflow-x: auto; /* AUTORISE LE SCROLL HORIZONTAL */
+        background: #0f172a;
     }
 
-    /* Le menu principal (index.html) en 1 colonne */
+    /* 5. Le Document A4 (800px) */
+    #document {
+        /* On ne touche PAS à la largeur pour ne pas casser html2canvas */
+        margin: 0 auto; 
+        /* Si l'écran est trop petit, l'utilisateur scrollera vers la droite */
+    }
+
+    /* 6. Spécifique Labo / Ordonnance : Les groupes de 2 inputs passent l'un sous l'autre */
+    .row-group {
+        flex-direction: column;
+        gap: 0;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    /* 7. Ajustement du Menu Principal (Index) */
     .menu-grid {
-        grid-template-columns: 1fr; /* Une seule colonne */
+        grid-template-columns: 1fr; /* 1 seule colonne */
         padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .menu-card {
+        width: 100%; /* Prend toute la largeur */
+        box-sizing: border-box;
     }
 }
