@@ -9,14 +9,43 @@ const causesData = {
 
 let typeSelectionne = "";
 
+// Mise à jour du texte simple (Nom, Lieu)
+function up(id, val) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = val || "...";
+        updateQR();
+    }
+}
+
+// Mise à jour des dates avec formatage automatique
+function upDate(id, val) {
+    const el = document.getElementById(id);
+    if (el) {
+        if (!val) { el.innerText = "..."; }
+        else {
+            const d = new Date(val);
+            el.innerText = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+    }
+    updateQR();
+}
+
+// Mise à jour de la signature manuscrite
+function upSignature(val) {
+    const el = document.getElementById('display-sig');
+    if (el) el.innerText = val || "DOCTEUR";
+    updateQR();
+}
+
 // Gère le deuxième menu déroulant (Précisions)
 function updateCausesSub(type) {
     typeSelectionne = type;
     const select = document.getElementById('cause-precision');
-    if(!select) return;
-    
+    if (!select) return;
+
     select.innerHTML = '<option value="">-- Sélectionner la précision --</option>';
-    
+
     if (causesData[type]) {
         causesData[type].forEach(c => {
             let opt = document.createElement('option');
@@ -25,42 +54,50 @@ function updateCausesSub(type) {
             select.appendChild(opt);
         });
     }
+    updateQR();
 }
 
 // Affiche la cause finale sur le document
 function updateCauseFinale(precision) {
     const el = document.getElementById('d-cause');
-    if(el) {
+    if (el) {
         el.innerText = precision ? `${typeSelectionne} — ${precision}` : "...";
     }
+    updateQR();
 }
 
-// Génère la référence au format JOUR MOIS HEURE MINUTE (JJMMHHMM)
+// Génère la référence au format JOUR MOIS HEURE MINUTE
 function genererReference() {
     const n = new Date();
     const jj = n.getDate().toString().padStart(2, '0');
     const mm = (n.getMonth() + 1).toString().padStart(2, '0');
     const hh = n.getHours().toString().padStart(2, '0');
     const min = n.getMinutes().toString().padStart(2, '0');
-    
+
     const ref = `${jj}${mm}${hh}${min}`;
-
-    // Mise à jour de la référence texte
     const refEl = document.getElementById('d-ref');
-    if(refEl) {
-        refEl.innerText = ref;
-        refEl.style.color = "#1e293b"; // Noir/Gris foncé
+    if (refEl) {
+        refEl.innerText = "#" + ref;
     }
+    updateQR();
+}
 
-    // Mise à jour du QR Code
+// QR Code dynamique synchronisé sur tous les champs
+function updateQR() {
+    const ref = document.getElementById('d-ref').innerText;
+    const nom = document.getElementById('d-nom').innerText;
+    const medecin = document.getElementById('display-sig') ? document.getElementById('display-sig').innerText : "DOCTEUR";
+    const dateDeces = document.getElementById('d-date').innerText;
     const qrImg = document.getElementById('qr-ref');
-    if(qrImg) {
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-DECES-${ref}`;
+
+    if (qrImg) {
+        const data = encodeURIComponent(`OMC-DECES|REF:${ref}|DEFUNT:${nom}|MEDECIN:${medecin}|DATE:${dateDeces}`);
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
     }
 }
 
-// Clé API ImgBB (Remplace par la tienne pour que ça marche à 100%)
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
+// Export Image avec Crop
+const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 
 async function genererImage() {
     const doc = document.getElementById('document');
@@ -73,8 +110,7 @@ async function genererImage() {
             scale: 2,
             useCORS: true,
             backgroundColor: "#ffffff",
-            // Ces deux lignes sont CRUCIALES pour le crop sous la dernière ligne :
-            height: doc.scrollHeight, 
+            height: doc.scrollHeight,
             windowHeight: doc.scrollHeight
         });
 
@@ -102,6 +138,52 @@ async function genererImage() {
     }
 }
 
+// Envoi Discord
+async function envoyerDiscord() {
+    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
+    const btn = document.getElementById('discord-btn');
+    const doc = document.getElementById('document');
+
+    if (!doc) return alert("Erreur : Document introuvable");
+
+    btn.disabled = true;
+    btn.innerText = "CAPTURING...";
+
+    try {
+        const canvas = await html2canvas(doc, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: false
+        });
+
+        canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            const nom = document.getElementById('d-nom').innerText || "Inconnu";
+
+            formData.append("payload_json", JSON.stringify({
+                content: `📄 **Nouvel Acte de Décès**\n👤 Défunt : ${nom}`
+            }));
+            formData.append("file", blob, `deces_${nom}.png`);
+
+            const response = await fetch(url, { method: 'POST', body: formData });
+
+            if (response.ok) {
+                alert("✅ Envoyé sur l'intranet !");
+                btn.innerText = "ENVOYÉ";
+            } else {
+                throw new Error("Erreur serveur Discord");
+            }
+        }, 'image/png');
+
+    } catch (e) {
+        console.error(e);
+        alert("❌ Erreur lors de l'envoi.");
+        btn.disabled = false;
+        btn.innerText = "RÉESSAYER";
+    }
+}
+
 function copyLink() {
     const copyText = document.getElementById("direct-link");
     copyText.select();
@@ -113,94 +195,8 @@ function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
 }
 
-// Fonction d'envoi Discord
-async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    const btn = document.getElementById('discord-btn');
-    const doc = document.getElementById('document');
-    
-    if(!doc) return alert("Erreur : Document introuvable");
-    
-    btn.disabled = true;
-    btn.innerText = "CAPTURING...";
-
-    try {
-        // On utilise useCORS pour autoriser la capture d'images venant d'autres sites (comme le QR Code)
-        // On ajoute logging pour voir les erreurs en console si besoin
-        const canvas = await html2canvas(doc, { 
-            scale: 2,
-            useCORS: true, 
-            allowTaint: true,
-            logging: false
-        });
-
-        canvas.toBlob(async (blob) => {
-            const formData = new FormData();
-            const nom = document.getElementById('d-nom').innerText || "Inconnu";
-            
-            formData.append("payload_json", JSON.stringify({
-                content: `📄 **Nouvel Acte de Décès**\n👤 Défunt : ${nom}`
-            }));
-            formData.append("file", blob, `deces_${nom}.png`);
-            
-            const response = await fetch(url, { method: 'POST', body: formData });
-            
-            if (response.ok) {
-                alert("✅ Envoyé sur l'intranet !");
-                btn.innerText = "ENVOYÉ";
-            } else {
-                throw new Error("Erreur serveur Discord");
-            }
-        }, 'image/png');
-
-    } catch (e) {
-        console.error(e);
-        alert("❌ Erreur lors de l'envoi. Vérifiez votre connexion.");
-        btn.disabled = false;
-        btn.innerText = "RÉESSAYER";
-    }
-}
-
 // Initialisation au chargement
 document.addEventListener('DOMContentLoaded', () => {
     genererReference();
-    // On force un premier rendu du QR Code à vide
     updateQR();
 });
-
-// Fonction pour formater la date (ex: 12 Mai 2026)
-function formatDateFR(dateStr) {
-    if (!dateStr) return "...";
-    const date = new Date(dateStr);
-    const options = { day: 'numeric', month: 'long', year: 'numeric' };
-    return date.toLocaleDateString('fr-FR', options);
-}
-
-// Mise à jour des dates
-function upDate(id, val) {
-    const el = document.getElementById(id);
-    if(el) {
-        if(!val) { el.innerText = "..."; return; }
-        const d = new Date(val);
-        el.innerText = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-    }
-    updateQR();
-}
-
-// Mise à jour du texte et du nom du docteur (signature)
-function upSignature(val) {
-    const el = document.getElementById('display-sig');
-    if(el) el.innerText = val || "DOCTEUR";
-    updateQR(); // On synchronise le QR
-}
-
-// QR Code dynamique
-function updateQR() {
-    const ref = document.getElementById('d-ref').innerText;
-    const nom = document.getElementById('d-nom').innerText;
-    const qrImg = document.getElementById('qr-ref');
-    if(qrImg) {
-        // On génère l'URL avec les infos actuelles
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-${ref}-${encodeURIComponent(nom)}`;
-    }
-}
