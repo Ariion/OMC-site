@@ -14,7 +14,7 @@ function up(id, val) {
     const el = document.getElementById(id);
     if (el) {
         el.innerText = val || "...";
-        updateQR();
+        updateQR(); // <--- CRUCIAL
     }
 }
 
@@ -22,21 +22,21 @@ function up(id, val) {
 function upDate(id, val) {
     const el = document.getElementById(id);
     if (el) {
-        if (!val) { 
-            el.innerText = "..."; 
-        } else {
+        if (!val) { el.innerText = "..."; }
+        else {
             const d = new Date(val);
-            // Formate en "24 Janvier 2026"
             el.innerText = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
         }
+        updateQR(); // <--- CRUCIAL
     }
-    updateQR();
 }
 // Mise à jour de la signature manuscrite
 function upSignature(val) {
     const el = document.getElementById('display-sig');
-    if (el) el.innerText = val || "DOCTEUR";
-    updateQR();
+    if (el) {
+        el.innerText = val || "DOCTEUR";
+        updateQR(); // <--- CRUCIAL
+    }
 }
 
 // Gère le deuxième menu déroulant (Précisions)
@@ -85,15 +85,26 @@ function genererReference() {
 
 // QR Code dynamique synchronisé sur tous les champs
 function updateQR() {
-    const ref = document.getElementById('d-ref').innerText;
-    const nom = document.getElementById('d-nom').innerText;
-    const medecin = document.getElementById('display-sig') ? document.getElementById('display-sig').innerText : "DOCTEUR";
-    const dateDeces = document.getElementById('d-date').innerText;
+    // On récupère les éléments avec sécurité pour éviter les erreurs "null"
+    const ref = document.getElementById('d-ref') ? document.getElementById('d-ref').innerText : "";
+    const nom = document.getElementById('d-nom') ? document.getElementById('d-nom').innerText : "";
+    
+    // On vérifie si c'est la signature cursive ou le texte simple
+    const sigElement = document.getElementById('display-sig') || document.getElementById('d-sig');
+    const medecin = sigElement ? sigElement.innerText : "";
+    
+    const dateDeces = document.getElementById('d-date') ? document.getElementById('d-date').innerText : "";
     const qrImg = document.getElementById('qr-ref');
-
+    
     if (qrImg) {
-        const data = encodeURIComponent(`OMC-DECES|REF:${ref}|DEFUNT:${nom}|MEDECIN:${medecin}|DATE:${dateDeces}`);
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
+        // On crée la chaîne de données
+        const dataStr = `OMC-DECES|REF:${ref}|DEFUNT:${nom}|MEDECIN:${medecin}|DATE:${dateDeces}`;
+        
+        // On encode pour l'URL
+        const dataEncoded = encodeURIComponent(dataStr);
+        
+        // On met à jour l'image (l'API va générer le nouveau dessin du QR)
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${dataEncoded}`;
     }
 }
 
