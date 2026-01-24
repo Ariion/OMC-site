@@ -111,3 +111,34 @@
 .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
 .popup-content { background: #112240; padding: 25px; border-radius: 10px; width: 500px; text-align: center; border: 1px solid var(--omc-cyan); }
 #direct-link { margin: 15px 0; background: #0a192f; border: 1px solid #233554; color: var(--omc-cyan); text-align: center; width: 90%; padding: 5px; }
+
+/* Style du bouton de suppression */
+.del-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ef4444; /* Rouge */
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 5px;
+    opacity: 0; /* Invisible par défaut */
+    transition: opacity 0.2s;
+}
+
+/* La croix apparaît quand on passe la souris sur la ligne */
+#ordo-list li:hover .del-btn {
+    opacity: 1;
+}
+
+/* Ajustement de la ligne pour laisser la place à la croix */
+#ordo-list li {
+    position: relative; /* Important pour le positionnement */
+    padding-right: 30px; /* Espace pour ne pas chevaucher le texte */
+}
+
+/* CLASSE SPÉCIALE : Cache les croix pendant la photo */
+.mode-capture .del-btn {
+    display: none !important;
+}
