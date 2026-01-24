@@ -22,15 +22,16 @@ function up(id, val) {
 function upDate(id, val) {
     const el = document.getElementById(id);
     if (el) {
-        if (!val) { el.innerText = "..."; }
-        else {
+        if (!val) { 
+            el.innerText = "..."; 
+        } else {
             const d = new Date(val);
+            // Formate en "24 Janvier 2026"
             el.innerText = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
         }
     }
     updateQR();
 }
-
 // Mise à jour de la signature manuscrite
 function upSignature(val) {
     const el = document.getElementById('display-sig');
@@ -197,6 +198,21 @@ function closePopup() {
 
 // Initialisation au chargement
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Génère la référence (numéro de dossier)
     genererReference();
+
+    // 2. AUTOMATISATION DE LA DATE DU JOUR
+    const aujourdhui = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
+    
+    // Met à jour le champ de saisie (input) dans la sidebar
+    const inputDateDeces = document.querySelector('input[type="date"][oninput*="d-date"]');
+    if (inputDateDeces) {
+        inputDateDeces.value = aujourdhui;
+    }
+
+    // Met à jour l'affichage sur le document (le span #d-date)
+    upDate('d-date', aujourdhui);
+
+    // 3. Premier rendu du QR Code
     updateQR();
 });
