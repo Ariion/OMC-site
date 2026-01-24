@@ -1,0 +1,89 @@
+.preview-area {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 60px 40px;
+    overflow-y: auto;
+    background-color: #0f172a;
+}
+
+#document {
+    width: 800px !important;
+    min-width: 800px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background: white !important;
+    padding: 50px !important;
+    color: #111 !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    display: block;
+    position: relative;
+}
+
+/* En-tête Spécifique Ordonnance */
+.header-cert { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px; }
+.cert-tag { background: var(--omc-cyan); color: var(--omc-dark); padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; letter-spacing: 1px; }
+.cert-main-title { font-size: 32px; margin: 5px 0; color: var(--omc-dark); text-transform: uppercase; font-weight: 900; letter-spacing: -1px; }
+.cert-subtitle { font-size: 14px; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
+
+/* Grille Patient / Médecin */
+.patient-header-grid {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+.ph-box label { display: block; font-size: 10px; text-transform: uppercase; color: #94a3b8; font-weight: bold; margin-bottom: 2px; }
+.ph-val { font-size: 18px; font-weight: bold; color: #0f172a; }
+.ph-sub { font-size: 13px; color: #64748b; }
+.text-right { text-align: right; }
+
+/* Liste des Médicaments */
+.ordo-body {
+    min-height: 300px;
+    margin-bottom: 40px;
+}
+#ordo-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+#ordo-list li {
+    padding: 15px 0;
+    border-bottom: 1px dashed #cbd5e1;
+    display: flex;
+    flex-direction: column;
+}
+#ordo-list li.empty-msg {
+    text-align: center;
+    color: #cbd5e1;
+    font-style: italic;
+    border: none;
+    margin-top: 50px;
+}
+
+/* Style d'une ligne de médicament */
+.med-name { font-size: 18px; font-weight: bold; color: #0f172a; }
+.med-details { font-size: 14px; color: #475569; margin-top: 4px; }
+.med-poso { font-weight: 600; color: var(--omc-dark); }
+
+/* Footer */
+.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; border-top: 2px solid #0f172a; padding-top: 20px; }
+.round-stamp { border: 2px solid #0a192f; border-radius: 12px; padding: 10px; text-align: center; width: 120px; }
+.qr-code { width: 85px; height: 85px; margin-bottom: 5px; background: #f1f5f9; }
+.legal-text { font-size: 10px; color: #94a3b8; text-align: center; margin-top: 40px; }
+
+/* Sidebar spécifique */
+.row-group { display: flex; gap: 10px; }
+.btn-add { background: var(--omc-cyan); color: var(--omc-dark); border: none; padding: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 4px; }
+.btn-clear { background: #ef4444; color: white; border: none; padding: 8px; width: 30%; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 4px; }
+.btn-image { background: #ffffff !important; color: #000000 !important; border: 1px solid #ccc !important; text-transform: uppercase; font-size: 11px; padding: 10px !important; cursor: pointer; width: 100%; margin-top: 15px; }
+
+/* Popup */
+.popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+.popup-content { background: #112240; padding: 25px; border-radius: 10px; width: 500px; text-align: center; border: 1px solid var(--omc-cyan); }
+#direct-link { margin: 15px 0; background: #0a192f; border: 1px solid #233554; color: var(--omc-cyan); text-align: center; width: 90%; padding: 5px; }
