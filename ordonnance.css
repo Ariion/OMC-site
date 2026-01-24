@@ -14,102 +14,54 @@
     height: auto !important;
     min-height: 0 !important;
     background: white !important;
-    padding: 50px !important;
-    /* On augmente la marge interne en bas pour que le tampon respire */
-    padding-bottom: 100px !important; 
+    /* PADDING BAS AUGMENTÉ POUR ÉVITER LE CROP */
+    padding: 50px 50px 80px 50px !important; 
     color: #111 !important;
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     display: block;
     position: relative;
-    /* Empêche les éléments de sortir du cadre blanc */
-    overflow: hidden; 
+    overflow: hidden;
 }
 
-/* En-tête Spécifique Ordonnance */
-.header-cert { 
-    display: flex; 
-    align-items: center; 
-    gap: 20px; 
-    border-bottom: 2px solid #0f172a; /* Ligne noire épaisse */
-    padding-bottom: 20px; 
-    margin-bottom: 30px; 
-}
-.cert-tag { 
-    background: #0f172a; /* Fond noir/bleu foncé comme Décès */
-    color: white; 
-    padding: 4px 12px; 
-    border-radius: 20px; /* Arrondi type pilule */
-    font-size: 11px; 
-    font-weight: bold; 
-    letter-spacing: 1px; 
-}
-.cert-main-title { 
-    font-size: 36px; /* Plus gros */
-    margin: 5px 0; 
-    color: #0f172a; 
-    text-transform: uppercase; 
-    font-weight: 900; 
-    letter-spacing: -1px; 
+
+/* En-tête */
+.header-cert { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px; }
+.cert-tag { background: #0f172a; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 1px; }
+.cert-main-title { font-size: 36px; margin: 5px 0; color: #0f172a; text-transform: uppercase; font-weight: 900; letter-spacing: -1px; }
 }.cert-subtitle { font-size: 14px; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
 
-/* Grille Patient / Médecin */
-.patient-header-grid {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 40px;
-    background: #f8fafc;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-}
+
+
+/* Infos Patient */
+.patient-header-grid { display: flex; justify-content: space-between; margin-bottom: 30px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
 .ph-box label { display: block; font-size: 10px; text-transform: uppercase; color: #94a3b8; font-weight: bold; margin-bottom: 2px; }
-.ph-val { 
-    font-size: 18px; 
-    font-weight: bold; 
-    color: #0f172a; 
-}
-#d-ref.ph-val {
-    font-size: 14px !important; /* Beaucoup plus petit */
-    color: #64748b;
-    font-family: monospace;
-}
+.ph-val { font-size: 18px; font-weight: bold; color: #0f172a; }
+#d-ref.ph-val { font-size: 14px !important; color: #64748b; font-family: monospace; } /* REF PETITE */
 .ph-sub { font-size: 13px; color: #64748b; }
 .text-right { text-align: right; }
 
-/* Liste des Médicaments */
-.ordo-body {
-    min-height: 300px;
-    margin-bottom: 40px;
-}
-#ordo-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-#ordo-list li {
-    padding: 15px 0;
-    border-bottom: 1px dashed #cbd5e1;
-    display: flex;
-    flex-direction: column;
-}
-#ordo-list li.empty-msg {
-    text-align: center;
-    color: #cbd5e1;
-    font-style: italic;
-    border: none;
-    margin-top: 50px;
-}
 
-/* Style d'une ligne de médicament */
-.med-name { font-size: 18px; font-weight: bold; color: #0f172a; }
-.med-details { font-size: 14px; color: #475569; margin-top: 4px; }
+
+/* Liste Médicaments */
+.ordo-body { min-height: 250px; margin-bottom: 30px; }
+#ordo-list { list-style: none; padding: 0; margin: 0; }
+#ordo-list li { padding: 12px 0; border-bottom: 1px dashed #cbd5e1; position: relative; padding-right: 30px; }
+#ordo-list li.empty-msg { text-align: center; color: #cbd5e1; font-style: italic; border: none; margin-top: 50px; }
+
+.med-name { font-size: 16px; font-weight: bold; color: #0f172a; }
+.med-details { font-size: 13px; color: #475569; margin-top: 2px; }
 .med-poso { font-weight: 600; color: var(--omc-dark); }
 
-/* Footer */
-.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; border-top: 2px solid #0f172a; padding-top: 20px; }
-.round-stamp { border: 2px solid #0a192f; border-radius: 12px; padding: 10px; text-align: center; width: 120px; }
+/* Instructions */
+#inst-container { margin-top: 20px; padding-top: 15px; border-top: 1px dotted #94a3b8; }
+.inst-label { font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: bold; }
+.inst-text { font-style: italic; color: #334155; margin-top: 5px; font-size: 14px; }
+
+/* Footer & Legal */
+.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; border-top: 2px solid #0f172a; padding-top: 20px; }
+.round-stamp { border: 2px solid #0a192f; border-radius: 12px; padding: 10px; text-align: center; width: 120px; display: flex; flex-direction: column; align-items: center; }
 .qr-code { width: 85px; height: 85px; margin-bottom: 5px; background: #f1f5f9; }
-.legal-text { font-size: 10px; color: #94a3b8; text-align: center; margin-top: 40px; }
+.legal-text { font-size: 9px; color: #94a3b8; text-align: center; margin-top: 30px; font-style: italic; }
 
 /* Sidebar spécifique */
 .row-group { display: flex; gap: 10px; }
