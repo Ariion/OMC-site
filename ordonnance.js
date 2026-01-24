@@ -3,40 +3,40 @@ const medsDB = {
     "Médecine Générale": [
         { name: "Paracétamol", info: "Antidouleur / Fièvre", doses: ["500 mg", "1 g (1000 mg)"] },
         { name: "Ibuprofène", info: "Anti-inflammatoire", doses: ["200 mg", "400 mg"] },
-        { name: "Amoxicilline", info: "Antibiotique", doses: ["500 mg", "1 g"] },
-        { name: "Spasfon", info: "Douleurs ventre", doses: ["80 mg", "160 mg (2 cp)"] },
+        { name: "Amoxicilline", info: "Antibiotique", doses: ["250 mg","500 mg", "1 g", "Sirop pédiatrique"] },
+        { name: "Spasfon", info: "Douleurs ventre", doses: ["80 mg (Lyoc)", "160 mg (2 cp)"] },
         { name: "Oméprazole", info: "Protection estomac", doses: ["10 mg", "20 mg"] },
         { name: "Prednisolone", info: "Cortisone", doses: ["20 mg", "40 mg"] },
-        { name: "Ventoline", info: "Asthme", doses: ["1 bouffée", "2 bouffées"] }
+        { name: "Ventoline", info: "Asthme", doses: ["100 µg (1 bouffée)", "200 µg (2 bouffées)"] }
     ],
     "Psychologie": [
         { name: "Sertraline", info: "Antidépresseur", doses: ["25 mg", "50 mg", "100 mg"] },
-        { name: "Xanax", info: "Anxiolytique", doses: ["0.25 mg", "0.50 mg"] },
+        { name: "Xanax", info: "Anxiolytique", doses: ["0.25 mg", "0.50 mg", "1 mg"] },
         { name: "Valium", info: "Sédatif / Angoisse", doses: ["5 mg", "10 mg"] },
-        { name: "Zolpidem", info: "Somnifère", doses: ["5 mg", "10 mg"] },
-        { name: "Quétiapine", info: "Régulateur humeur", doses: ["50 mg", "300 mg"] }
+        { name: "Zolpidem", info: "Somnifère puissant", doses: ["10 mg"] },
+        { name: "Quétiapine", info: "Régulateur humeur", doses: ["50 mg", "300 mg (LP)"] }
     ],
     "Chirurgie": [
-        { name: "Tramadol", info: "Douleur modérée", doses: ["50 mg", "100 mg"] },
-        { name: "Izalgi", info: "Douleur intense", doses: ["500mg/25mg"] },
-        { name: "Augmentin", info: "Antibiotique large", doses: ["1 g"] },
-        { name: "Lovenox", info: "Anticoagulant", doses: ["2000 UI", "4000 UI"] },
-        { name: "Bétadine", info: "Antiseptique", doses: ["Application locale"] },
-        { name: "Morphine", info: "Douleur sévère", doses: ["10 mg", "30 mg"] }
+        { name: "Tramadol", info: "Douleur modérée (Palier 2)", doses: ["50 mg", "100 mg (LP)", "150 mg"] },
+        { name: "Izalgi", info: "Douleur intense (Opium)", doses: ["500mg/25mg"] },
+        { name: "Augmentin", info: "Antibiotique large spectre", doses: ["1 g"] },
+        { name: "Lovenox", info: "Anticoagulant (Injection)", doses: ["2000 UI", "4000 UI", "6000 UI"] },
+        { name: "Bétadine", info: "Antiseptique local", doses: ["Solution dermique", "Scrub (Rouge)"] },
+        { name: "Morphine", info: "Douleur sévère (Palier 3)", doses: ["10 mg", "30 mg", "60 mg"] }
     ],
     "Gynécologie": [
         { name: "Spasfon", info: "Douleurs règles", doses: ["80 mg", "160 mg"] },
-        { name: "Antadys", info: "Anti-inflammatoire", doses: ["100 mg"] },
-        { name: "Monazol", info: "Antifongique", doses: ["1 ovule"] },
-        { name: "Acide Folique", info: "Grossesse", doses: ["0.4 mg"] },
+        { name: "Antadys", info: "Anti-inflammatoire règles", doses: ["100 mg"] },
+        { name: "Monazol", info: "Antifongique (Ovule)", doses: ["1 ovule le soir"] },
+        { name: "Acide Folique", info: "Grossesse", doses: ["0.4 mg", "5 mg"] },
         { name: "Pilule", info: "Contraceptif", doses: ["1 cp/jour"] }
     ],
     "Kiné": [
-        { name: "Voltarène Gel", info: "Anti-inflammatoire", doses: ["Application locale"] },
+        { name: "Voltarène Gel", info: "Anti-inflammatoire local", doses: ["Application locale"] },
         { name: "Bi-Profenid", info: "Anti-inflammatoire", doses: ["100 mg"] },
         { name: "Doliprane", info: "Douleur", doses: ["1 g"] },
-        { name: "Lumirelax", info: "Décontractant", doses: ["500 mg"] },
-        { name: "Flector Tissugel", info: "Patch", doses: ["1 patch"] }
+        { name: "Lumirelax", info: "Décontractant musculaire", doses: ["500 mg"] },
+        { name: "Flector Tissugel", info: "Patch anti-douleur", doses: ["1 patch / 12h"] }
     ]
 };
 
@@ -106,27 +106,29 @@ function updateMeds(service) {
     if(medsDB[service]) {
         medsDB[service].forEach((med, index) => {
             let opt = document.createElement('option');
-            opt.value = index; 
-            // Affiche "Nom - Info" dans le menu déroulant
+            opt.value = index; // On garde l'index pour retrouver les infos plus tard
             opt.innerText = `${med.name} - ${med.info}`;
             select.appendChild(opt);
         });
-        // Met à jour les dosages pour le premier élément
+        
+        // IMPORTANT : On force la mise à jour des dosages pour le 1er médicament de la liste
         updateDosages();
     }
 }
-
 document.getElementById('med-select').addEventListener('change', selectMed);
 
 function updateDosages() {
     const service = document.getElementById('service-select').value;
-    const medIndex = document.getElementById('med-select').value;
+    const medIndex = document.getElementById('med-select').value; // Récupère l'index
     const dosageSelect = document.getElementById('dosage-select');
     
-    dosageSelect.innerHTML = "";
+    dosageSelect.innerHTML = ""; // On vide l'ancien dosage
     
+    // On vérifie que le médicament existe bien dans la DB
     if (medsDB[service] && medsDB[service][medIndex]) {
         const med = medsDB[service][medIndex];
+        
+        // On boucle sur les doses disponibles de CE médicament
         med.doses.forEach(dose => {
             let opt = document.createElement('option');
             opt.value = dose;
@@ -153,9 +155,12 @@ function fillPoso(val) {
 
 function ajouterLigne() {
     const service = document.getElementById('service-select').value;
-    const medIndex = document.getElementById('med-select').value;
-    const medData = medsDB[service][medIndex];
+    const select = document.getElementById('med-select');
+    if (select.selectedIndex === -1) return;
 
+    // Récupération des données
+    const medIndex = select.value;
+    const medData = medsDB[service][medIndex];
     const dosage = document.getElementById('dosage-select').value;
     const duree = document.getElementById('input-duree').value || "-";
     const poso = document.getElementById('input-poso').value || "Selon instructions";
@@ -166,7 +171,7 @@ function ajouterLigne() {
 
     const li = document.createElement('li');
     
-    // SUR LE PAPIER : Nom + (Info) + Dosage
+    // Création de la ligne HTML
     li.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
             <span class="med-name">${medData.name} <small style="font-weight: normal; color: #666;">(${medData.info})</small></span>
@@ -177,6 +182,13 @@ function ajouterLigne() {
     `;
     
     list.appendChild(li);
+
+    // 1. On remet le menu déroulant sur l'option par défaut (vide)
+    document.getElementById('poso-select').value = "";
+    // 2. On vide aussi le champ texte pour éviter les erreurs
+    document.getElementById('input-poso').value = "";
+    // ---------------------------------
+
     updateQR();
 }
 
