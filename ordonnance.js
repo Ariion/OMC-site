@@ -1,42 +1,42 @@
 // 1. BASE DE DONNÉES DES MÉDICAMENTS
 const medsDB = {
     "Médecine Générale": [
-        { name: "Paracétamol", type: "Antidouleur / Fièvre", dose: "1g (1000mg)" },
-        { name: "Ibuprofène", type: "Anti-inflammatoire", dose: "400 mg" },
-        { name: "Amoxicilline", type: "Antibiotique", dose: "1g" },
-        { name: "Spasfon", type: "Douleurs spasmodiques", dose: "80 mg" },
-        { name: "Oméprazole", type: "Protection estomac", dose: "20 mg" },
-        { name: "Prednisolone", type: "Corticoïde", dose: "20 mg" },
-        { name: "Ventoline", type: "Crise d'asthme", dose: "2 bouffées" }
+        { name: "Paracétamol", info: "Antidouleur / Fièvre", doses: ["500 mg", "1 g (1000 mg)"] },
+        { name: "Ibuprofène", info: "Anti-inflammatoire", doses: ["200 mg", "400 mg"] },
+        { name: "Amoxicilline", info: "Antibiotique", doses: ["500 mg", "1 g"] },
+        { name: "Spasfon", info: "Douleurs ventre", doses: ["80 mg", "160 mg (2 cp)"] },
+        { name: "Oméprazole", info: "Protection estomac", doses: ["10 mg", "20 mg"] },
+        { name: "Prednisolone", info: "Cortisone", doses: ["20 mg", "40 mg"] },
+        { name: "Ventoline", info: "Asthme", doses: ["1 bouffée", "2 bouffées"] }
     ],
     "Psychologie": [
-        { name: "Sertraline", type: "Antidépresseur", dose: "50 mg" },
-        { name: "Xanax (Alprazolam)", type: "Anxiolytique", dose: "0.25 mg" },
-        { name: "Valium", type: "Sédatif / Angoisse", dose: "5 mg" },
-        { name: "Zolpidem", type: "Somnifère puissant", dose: "10 mg" },
-        { name: "Quétiapine", type: "Régulateur humeur", dose: "300 mg" }
+        { name: "Sertraline", info: "Antidépresseur", doses: ["25 mg", "50 mg", "100 mg"] },
+        { name: "Xanax", info: "Anxiolytique", doses: ["0.25 mg", "0.50 mg"] },
+        { name: "Valium", info: "Sédatif / Angoisse", doses: ["5 mg", "10 mg"] },
+        { name: "Zolpidem", info: "Somnifère", doses: ["5 mg", "10 mg"] },
+        { name: "Quétiapine", info: "Régulateur humeur", doses: ["50 mg", "300 mg"] }
     ],
     "Chirurgie": [
-        { name: "Tramadol", type: "Douleur modérée (Palier 2)", dose: "50 mg" },
-        { name: "Izalgi", type: "Douleur intense (Opium)", dose: "500mg/25mg" },
-        { name: "Augmentin", type: "Antibiotique large spectre", dose: "1g" },
-        { name: "Lovenox", type: "Anticoagulant (Injection)", dose: "4000 UI" },
-        { name: "Bétadine", type: "Antiseptique local", dose: "Application" },
-        { name: "Morphine", type: "Douleur sévère (Palier 3)", dose: "10 mg" }
+        { name: "Tramadol", info: "Douleur modérée", doses: ["50 mg", "100 mg"] },
+        { name: "Izalgi", info: "Douleur intense", doses: ["500mg/25mg"] },
+        { name: "Augmentin", info: "Antibiotique large", doses: ["1 g"] },
+        { name: "Lovenox", info: "Anticoagulant", doses: ["2000 UI", "4000 UI"] },
+        { name: "Bétadine", info: "Antiseptique", doses: ["Application locale"] },
+        { name: "Morphine", info: "Douleur sévère", doses: ["10 mg", "30 mg"] }
     ],
     "Gynécologie": [
-        { name: "Spasfon", type: "Douleurs règles", dose: "80 mg" },
-        { name: "Antadys", type: "Anti-inflammatoire règles", dose: "100 mg" },
-        { name: "Monazol", type: "Antifongique (Ovule)", dose: "1 ovule le soir" },
-        { name: "Acide Folique", type: "Vitamine Grossesse", dose: "0.4 mg" },
-        { name: "Pilule", type: "Contraceptif", dose: "1 cp/jour" }
+        { name: "Spasfon", info: "Douleurs règles", doses: ["80 mg", "160 mg"] },
+        { name: "Antadys", info: "Anti-inflammatoire", doses: ["100 mg"] },
+        { name: "Monazol", info: "Antifongique", doses: ["1 ovule"] },
+        { name: "Acide Folique", info: "Grossesse", doses: ["0.4 mg"] },
+        { name: "Pilule", info: "Contraceptif", doses: ["1 cp/jour"] }
     ],
     "Kiné": [
-        { name: "Voltarène Gel", type: "Anti-inflammatoire local", dose: "Application" },
-        { name: "Bi-Profenid", type: "Anti-inflammatoire", dose: "100 mg" },
-        { name: "Doliprane", type: "Douleur", dose: "1g" },
-        { name: "Lumirelax", type: "Décontractant musculaire", dose: "500 mg" },
-        { name: "Flector Tissugel", type: "Patch anti-douleur", dose: "1 patch/12h" }
+        { name: "Voltarène Gel", info: "Anti-inflammatoire", doses: ["Application locale"] },
+        { name: "Bi-Profenid", info: "Anti-inflammatoire", doses: ["100 mg"] },
+        { name: "Doliprane", info: "Douleur", doses: ["1 g"] },
+        { name: "Lumirelax", info: "Décontractant", doses: ["500 mg"] },
+        { name: "Flector Tissugel", info: "Patch", doses: ["1 patch"] }
     ]
 };
 
@@ -53,6 +53,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
     updateQR();
 });
+
+// GESTION INSTRUCTIONS SPÉCIFIQUES
+function upInst(val) {
+    const container = document.getElementById('inst-container');
+    const text = document.getElementById('d-inst');
+    
+    if (val.trim() !== "") {
+        container.style.display = "block";
+        text.innerText = val;
+    } else {
+        container.style.display = "none";
+        text.innerText = "";
+    }
+    updateQR();
+}
 
 // 3. LOGIQUE D'AFFICHAGE
 function up(id, val) {
@@ -82,13 +97,8 @@ function upDate(id, val) {
     updateQR();
 }
 
-// 4. AIDE POSOLOGIE
-function fillPoso(val) {
-    const input = document.getElementById('input-poso');
-    if(input && val) input.value = val;
-}
 
-// 5. GESTION MÉDICAMENTS
+// 4. GESTION MÉDICAMENTS
 function updateMeds(service) {
     const select = document.getElementById('med-select');
     select.innerHTML = "";
@@ -96,19 +106,35 @@ function updateMeds(service) {
     if(medsDB[service]) {
         medsDB[service].forEach((med, index) => {
             let opt = document.createElement('option');
-            // On stocke les infos dans les attributs pour les récupérer au clic
             opt.value = index; 
-            opt.innerText = med.name; 
-            opt.dataset.type = med.type;
-            opt.dataset.dose = med.dose;
+            // Affiche "Nom - Info" dans le menu déroulant
+            opt.innerText = `${med.name} - ${med.info}`;
             select.appendChild(opt);
         });
-        // Sélectionne le premier et remplit le dosage par défaut
-        selectMed();
+        // Met à jour les dosages pour le premier élément
+        updateDosages();
     }
 }
 
 document.getElementById('med-select').addEventListener('change', selectMed);
+
+function updateDosages() {
+    const service = document.getElementById('service-select').value;
+    const medIndex = document.getElementById('med-select').value;
+    const dosageSelect = document.getElementById('dosage-select');
+    
+    dosageSelect.innerHTML = "";
+    
+    if (medsDB[service] && medsDB[service][medIndex]) {
+        const med = medsDB[service][medIndex];
+        med.doses.forEach(dose => {
+            let opt = document.createElement('option');
+            opt.value = dose;
+            opt.innerText = dose;
+            dosageSelect.appendChild(opt);
+        });
+    }
+}
 
 function selectMed() {
     const select = document.getElementById('med-select');
@@ -126,15 +152,11 @@ function fillPoso(val) {
 }
 
 function ajouterLigne() {
-    const select = document.getElementById('med-select');
-    if (select.selectedIndex === -1) return; 
+    const service = document.getElementById('service-select').value;
+    const medIndex = document.getElementById('med-select').value;
+    const medData = medsDB[service][medIndex];
 
-    // Récupération des données riches
-    const selectedOption = select.options[select.selectedIndex];
-    const medName = selectedOption.innerText;
-    const medType = selectedOption.dataset.type; // Ex: Antibiotique
-
-    const dosage = document.getElementById('input-dosage').value || "-";
+    const dosage = document.getElementById('dosage-select').value;
     const duree = document.getElementById('input-duree').value || "-";
     const poso = document.getElementById('input-poso').value || "Selon instructions";
 
@@ -144,10 +166,10 @@ function ajouterLigne() {
 
     const li = document.createElement('li');
     
-    // AFFICHAGE SUR LE PAPIER : Nom + (Type)
+    // SUR LE PAPIER : Nom + (Info) + Dosage
     li.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
-            <span class="med-name">${medName} <small style="font-weight: normal; color: #666;">(${medType})</small></span>
+            <span class="med-name">${medData.name} <small style="font-weight: normal; color: #666;">(${medData.info})</small></span>
             <span style="font-weight: bold; font-size: 14px;">${dosage} / ${duree}</span>
         </div>
         <div class="med-details">➤ ${poso}</div>
