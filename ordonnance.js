@@ -1,42 +1,42 @@
 // 1. BASE DE DONNÉES DES MÉDICAMENTS
 const medsDB = {
     "Médecine Générale": [
-        "Paracétamol (Antidouleur/Fièvre)", 
-        "Ibuprofène (Anti-inflammatoire)", 
-        "Amoxicilline (Antibiotique)", 
-        "Oméprazole (Protection estomac)", 
-        "Salbutamol (Asthme/Ventoline)", 
-        "Prednisolone (Cortisone)", 
-        "Spasfon (Douleurs ventre)"
+        { name: "Paracétamol", type: "Antidouleur / Fièvre", dose: "1g (1000mg)" },
+        { name: "Ibuprofène", type: "Anti-inflammatoire", dose: "400 mg" },
+        { name: "Amoxicilline", type: "Antibiotique", dose: "1g" },
+        { name: "Spasfon", type: "Douleurs spasmodiques", dose: "80 mg" },
+        { name: "Oméprazole", type: "Protection estomac", dose: "20 mg" },
+        { name: "Prednisolone", type: "Corticoïde", dose: "20 mg" },
+        { name: "Ventoline", type: "Crise d'asthme", dose: "2 bouffées" }
     ],
     "Psychologie": [
-        "Sertraline (Antidépresseur)", 
-        "Alprazolam (Anxiolytique/Xanax)", 
-        "Quétiapine (Régulateur humeur)", 
-        "Hydroxyzine (Sédatif léger)", 
-        "Zolpidem (Somnifère)"
+        { name: "Sertraline", type: "Antidépresseur", dose: "50 mg" },
+        { name: "Xanax (Alprazolam)", type: "Anxiolytique", dose: "0.25 mg" },
+        { name: "Valium", type: "Sédatif / Angoisse", dose: "5 mg" },
+        { name: "Zolpidem", type: "Somnifère puissant", dose: "10 mg" },
+        { name: "Quétiapine", type: "Régulateur humeur", dose: "300 mg" }
     ],
     "Chirurgie": [
-        "Tramadol (Douleur modérée)", 
-        "Paracétamol Codéiné (Douleur forte)", 
-        "Augmentin (Antibiotique puissant)", 
-        "Lovenox (Anticoagulant)", 
-        "Bétadine (Désinfectant)", 
-        "Morphine (Douleur intense)"
+        { name: "Tramadol", type: "Douleur modérée (Palier 2)", dose: "50 mg" },
+        { name: "Izalgi", type: "Douleur intense (Opium)", dose: "500mg/25mg" },
+        { name: "Augmentin", type: "Antibiotique large spectre", dose: "1g" },
+        { name: "Lovenox", type: "Anticoagulant (Injection)", dose: "4000 UI" },
+        { name: "Bétadine", type: "Antiseptique local", dose: "Application" },
+        { name: "Morphine", type: "Douleur sévère (Palier 3)", dose: "10 mg" }
     ],
     "Gynécologie": [
-        "Spasfon (Douleurs règles)", 
-        "Amoxicilline (Infection)", 
-        "Acide folique (Grossesse)", 
-        "Pilule contraceptive", 
-        "Ovule antifongique (Mycose)"
+        { name: "Spasfon", type: "Douleurs règles", dose: "80 mg" },
+        { name: "Antadys", type: "Anti-inflammatoire règles", dose: "100 mg" },
+        { name: "Monazol", type: "Antifongique (Ovule)", dose: "1 ovule le soir" },
+        { name: "Acide Folique", type: "Vitamine Grossesse", dose: "0.4 mg" },
+        { name: "Pilule", type: "Contraceptif", dose: "1 cp/jour" }
     ],
     "Kiné": [
-        "Diclofénac Gel (Anti-inflammatoire)", 
-        "Paracétamol (Douleur)", 
-        "Baclofène (Décontractant musculaire)", 
-        "Patch Chauffant (Douleur dos)", 
-        "Ketoprofène (Anti-inflammatoire fort)"
+        { name: "Voltarène Gel", type: "Anti-inflammatoire local", dose: "Application" },
+        { name: "Bi-Profenid", type: "Anti-inflammatoire", dose: "100 mg" },
+        { name: "Doliprane", type: "Douleur", dose: "1g" },
+        { name: "Lumirelax", type: "Décontractant musculaire", dose: "500 mg" },
+        { name: "Flector Tissugel", type: "Patch anti-douleur", dose: "1 patch/12h" }
     ]
 };
 
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMeds("Médecine Générale");
     genererReference();
     
-    // Date du jour
+    // Date du jour auto
     const today = new Date().toISOString().split('T')[0];
     const dateInput = document.getElementById('input-date');
     if(dateInput) dateInput.value = today;
@@ -66,8 +66,7 @@ function up(id, val) {
 
 function upSignature(val) {
     const el = document.getElementById('display-sig');
-    // Correction : On affiche juste "Dr. Nom" ou "..." si vide
-    if(el) el.innerText = val ? "Dr. " + val : "...";
+    if(el) el.innerText = val || "...";
     updateQR();
 }
 
@@ -93,39 +92,63 @@ function fillPoso(val) {
 function updateMeds(service) {
     const select = document.getElementById('med-select');
     select.innerHTML = "";
+    
     if(medsDB[service]) {
-        medsDB[service].forEach(med => {
+        medsDB[service].forEach((med, index) => {
             let opt = document.createElement('option');
-            opt.value = med.split(' (')[0]; // On garde juste le nom pour la valeur
-            opt.innerText = med; // On affiche Nom + (Famille)
+            // On stocke les infos dans les attributs pour les récupérer au clic
+            opt.value = index; 
+            opt.innerText = med.name; 
+            opt.dataset.type = med.type;
+            opt.dataset.dose = med.dose;
             select.appendChild(opt);
         });
+        // Sélectionne le premier et remplit le dosage par défaut
+        selectMed();
     }
+}
+
+document.getElementById('med-select').addEventListener('change', selectMed);
+
+function selectMed() {
+    const select = document.getElementById('med-select');
+    const selectedOption = select.options[select.selectedIndex];
+    
+    // Remplit le champ dosage automatiquement avec la valeur de la DB
+    if(selectedOption && selectedOption.dataset.dose) {
+        document.getElementById('input-dosage').value = selectedOption.dataset.dose;
+    }
+}
+
+function fillPoso(val) {
+    const input = document.getElementById('input-poso');
+    if(input && val) input.value = val;
 }
 
 function ajouterLigne() {
     const select = document.getElementById('med-select');
-    // Sécurité si la liste est vide
     if (select.selectedIndex === -1) return; 
 
-    const medFull = select.options[select.selectedIndex].text;
+    // Récupération des données riches
+    const selectedOption = select.options[select.selectedIndex];
+    const medName = selectedOption.innerText;
+    const medType = selectedOption.dataset.type; // Ex: Antibiotique
+
     const dosage = document.getElementById('input-dosage').value || "-";
     const duree = document.getElementById('input-duree').value || "-";
     const poso = document.getElementById('input-poso').value || "Selon instructions";
 
     const list = document.getElementById('ordo-list');
-    
-    // Enlève le message "Aucune prescription" si présent
     const emptyMsg = list.querySelector('.empty-msg');
     if(emptyMsg) emptyMsg.remove();
 
     const li = document.createElement('li');
-    const medName = medFull.split(' (')[0]; 
     
+    // AFFICHAGE SUR LE PAPIER : Nom + (Type)
     li.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
-            <span class="med-name">${medName} <small style="font-weight: normal; color: #666;">${dosage}</small></span>
-            <span style="font-weight: bold; font-size: 14px;">${duree}</span>
+            <span class="med-name">${medName} <small style="font-weight: normal; color: #666;">(${medType})</small></span>
+            <span style="font-weight: bold; font-size: 14px;">${dosage} / ${duree}</span>
         </div>
         <div class="med-details">➤ ${poso}</div>
         <span class="del-btn" onclick="supprimerLigne(this)">✖</span>
@@ -135,18 +158,13 @@ function ajouterLigne() {
     updateQR();
 }
 
-// NOUVELLE FONCTION
 function supprimerLigne(btn) {
-    // Supprime la ligne parent (li) du bouton cliqué
     const li = btn.closest('li');
     li.remove();
-
-    // Si la liste est vide, on remet le message par défaut
     const list = document.getElementById('ordo-list');
     if (list.children.length === 0) {
         list.innerHTML = '<li class="empty-msg">Aucune prescription en cours...</li>';
     }
-    
     updateQR();
 }
 
@@ -164,7 +182,6 @@ function genererReference() {
     const mm = (n.getMonth() + 1).toString().padStart(2, '0');
     const hh = n.getHours().toString().padStart(2, '0');
     const min = n.getMinutes().toString().padStart(2, '0');
-    
     const ref = `${jj}${mm}${hh}${min}`;
     document.getElementById('d-ref').innerText = "#" + ref;
     updateQR();
@@ -191,17 +208,12 @@ async function genererImage() {
     const btn = event.target;
     btn.innerText = "GÉNÉRATION...";
     btn.disabled = true;
-
-    // 1. On ajoute la classe qui cache les croix rouges
     doc.classList.add('mode-capture');
 
     try {
         const canvas = await html2canvas(doc, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: "#ffffff",
-            height: doc.scrollHeight,
-            windowHeight: doc.scrollHeight
+            scale: 2, useCORS: true, backgroundColor: "#ffffff",
+            height: doc.scrollHeight, windowHeight: doc.scrollHeight
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
@@ -216,10 +228,8 @@ async function genererImage() {
             document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
         }
-    } catch (e) {
-        alert("Erreur génération image");
-    } finally {
-        // 2. On retire la classe pour réafficher les croix
+    } catch (e) { alert("Erreur génération image"); } 
+    finally {
         doc.classList.remove('mode-capture');
         btn.innerText = "🖼️ GÉNÉRER L'ORDONNANCE";
         btn.disabled = false;
