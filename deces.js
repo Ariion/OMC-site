@@ -12,10 +12,8 @@ let typeSelectionne = "";
 // Mise à jour du texte simple (Nom, Lieu)
 function up(id, val) {
     const el = document.getElementById(id);
-    if (el) {
-        el.innerText = val || "...";
-        updateQR(); // <--- CRUCIAL
-    }
+    if (el) el.innerText = val || "...";
+    updateQR(); // <--- CA DOIT ETRE LA
 }
 
 // Mise à jour des dates avec formatage automatique
@@ -27,8 +25,8 @@ function upDate(id, val) {
             const d = new Date(val);
             el.innerText = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
         }
-        updateQR(); // <--- CRUCIAL
     }
+    updateQR();
 }
 // Mise à jour de la signature manuscrite
 function upSignature(val) {
@@ -85,25 +83,29 @@ function genererReference() {
 
 // QR Code dynamique synchronisé sur tous les champs
 function updateQR() {
-    // On récupère les éléments avec sécurité pour éviter les erreurs "null"
+    // 1. On récupère la référence (le numéro #JJMMHHMM)
     const ref = document.getElementById('d-ref') ? document.getElementById('d-ref').innerText : "";
-    const nom = document.getElementById('d-nom') ? document.getElementById('d-nom').innerText : "";
-    
-    // On vérifie si c'est la signature cursive ou le texte simple
-    const sigElement = document.getElementById('display-sig') || document.getElementById('d-sig');
-    const medecin = sigElement ? sigElement.innerText : "";
-    
-    const dateDeces = document.getElementById('d-date') ? document.getElementById('d-date').innerText : "";
+
+    // 2. On récupère les valeurs directement dans les INPUTS de la sidebar
+    // On utilise querySelector pour être sûr de trouver le bon champ même sans ID
+    const nomInput = document.querySelector('input[placeholder*="John Doe"]');
+    const medecinInput = document.querySelector('input[placeholder*="Nom du médecin"]');
+    const dateInput = document.querySelector('input[type="date"][oninput*="d-date"]');
+
+    const nom = nomInput ? nomInput.value : "";
+    const medecin = medecinInput ? medecinInput.value : "";
+    const dateValue = dateInput ? dateInput.value : "";
+
+    // 3. On prépare l'image du QR
     const qrImg = document.getElementById('qr-ref');
-    
     if (qrImg) {
-        // On crée la chaîne de données
-        const dataStr = `OMC-DECES|REF:${ref}|DEFUNT:${nom}|MEDECIN:${medecin}|DATE:${dateDeces}`;
+        // On crée la chaîne d'infos (on peut ajouter la date formatée si on veut)
+        const dataStr = `OMC-DECES|REF:${ref}|DEFUNT:${nom}|MEDECIN:${medecin}|DATE:${dateValue}`;
         
-        // On encode pour l'URL
+        // Encodage pour l'URL
         const dataEncoded = encodeURIComponent(dataStr);
         
-        // On met à jour l'image (l'API va générer le nouveau dessin du QR)
+        // Mise à jour de l'image
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${dataEncoded}`;
     }
 }
