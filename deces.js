@@ -65,42 +65,39 @@ const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
-    btn.innerText = "CROP & UPLOAD...";
+    btn.innerText = "CAPTURE EN COURS...";
     btn.disabled = true;
 
     try {
-        // html2canvas va maintenant suivre la hauteur réelle de l'élément #document
-        const canvas = await html2canvas(doc, { 
-            scale: 2,           // Haute qualité
-            useCORS: true,      // Pour le QR Code
+        const canvas = await html2canvas(doc, {
+            scale: 2,
+            useCORS: true,
             backgroundColor: "#ffffff",
-            height: doc.offsetHeight, // Force la capture à la hauteur réelle du texte
-            windowHeight: doc.offsetHeight
+            // Ces deux lignes sont CRUCIALES pour le crop sous la dernière ligne :
+            height: doc.scrollHeight, 
+            windowHeight: doc.scrollHeight
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
         const formData = new FormData();
         formData.append("image", imageData);
 
-        // Envoi à ImgBB
         const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
             method: "POST",
             body: formData
         });
 
         const result = await response.json();
-
         if (result.success) {
             document.getElementById('direct-link').value = result.data.url;
             document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
         }
-
     } catch (e) {
         console.error(e);
-        alert("Erreur lors du crop de l'image.");
+        alert("Erreur lors de la création de l'image.");
     } finally {
-        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (CROP)";
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
 }
@@ -182,24 +179,19 @@ function formatDateFR(dateStr) {
 // Mise à jour des dates
 function upDate(id, val) {
     const el = document.getElementById(id);
-    if (el) {
-        el.innerText = formatDateFR(val);
-        updateQR();
+    if(el) {
+        if(!val) { el.innerText = "..."; return; }
+        const d = new Date(val);
+        el.innerText = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     }
+    updateQR();
 }
 
 // Mise à jour du texte et du nom du docteur (signature)
-function up(id, val) {
-    const el = document.getElementById(id);
-    if (el) {
-        el.innerText = val || "...";
-        // Si on change le docteur, on met à jour la signature manuscrite
-        if (id === 'd-sig') {
-            const sigDoc = document.getElementById('d-sig-doc');
-            if (sigDoc) sigDoc.innerText = "Dr. " + val;
-        }
-        updateQR();
-    }
+function upSignature(val) {
+    const el = document.getElementById('display-sig');
+    if(el) el.innerText = val || "DOCTEUR";
+    updateQR(); // On synchronise le QR
 }
 
 // QR Code dynamique
@@ -208,7 +200,7 @@ function updateQR() {
     const nom = document.getElementById('d-nom').innerText;
     const qrImg = document.getElementById('qr-ref');
     if(qrImg) {
-        const data = encodeURIComponent(`OMC-DECES|REF:${ref}|NOM:${nom}`);
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
+        // On génère l'URL avec les infos actuelles
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-${ref}-${encodeURIComponent(nom)}`;
     }
 }
