@@ -11,16 +11,17 @@
     <div class="interface-container">
         <aside class="sidebar">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; gap: 10px;">
-                <a href="index.html" class="back-link" style="margin-bottom: 0;">← RETOUR PORTAIL</a>
+                <a href="index.html" class="back-link" style="margin-bottom: 0;">← RETOUR</a>
                 <button onclick="toggleTheme()" id="theme-btn-toggle">🌓 <span id="theme-text">Mode Sombre</span></button>
             </div>
             
-            <h1 class="sidebar-title">PRESCRIPTION MEDICALE</h1>
+            <h1 class="sidebar-title">PRESCRIPTION</h1>
             
             <div class="sidebar-section">
+                <h3>1. Patient & Médecin</h3>
                 <div class="form-group">
                     <label>Médecin Traitant</label>
-                    <input type="text" oninput="upSignature(this.value)" placeholder="Dr. ...">
+                    <input type="text" oninput="upSignature(this.value)" placeholder="Nom du médecin">
                 </div>
                 <div class="form-group">
                     <label>Patient(e)</label>
@@ -39,6 +40,7 @@
             <hr style="border: 0; border-top: 1px solid #334155; margin: 15px 0;">
 
             <div class="sidebar-section">
+                <h3>2. Traitement</h3>
                 <div class="form-group">
                     <label>Service (Spécialité)</label>
                     <select id="service-select" onchange="updateMeds(this.value)">
@@ -51,7 +53,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Médicament</label>
+                    <label>Médicament (avec aide)</label>
                     <select id="med-select">
                         </select>
                 </div>
@@ -68,8 +70,16 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Posologie (Fréquence)</label>
-                    <input type="text" id="input-poso" placeholder="ex: 1 matin et soir pendant les repas">
+                    <label>Posologie (Suggestion)</label>
+                    <select id="poso-select" onchange="fillPoso(this.value)">
+                        <option value="">-- Choisir une fréquence --</option>
+                        <option value="1 comprimé matin, midi et soir">1 cp Matin/Midi/Soir</option>
+                        <option value="1 comprimé le matin">1 cp le Matin</option>
+                        <option value="1 comprimé le soir au coucher">1 cp le Soir</option>
+                        <option value="En cas de douleur, max 3 par jour">Si douleur (Max 3/j)</option>
+                        <option value="1 application locale 2 fois par jour">Application locale 2x/j</option>
+                    </select>
+                    <input type="text" id="input-poso" placeholder="Ou écrire librement..." style="margin-top: 5px;">
                 </div>
 
                 <div style="display: flex; gap: 10px;">
@@ -92,11 +102,10 @@
         <main class="preview-area">
             <div id="document">
                 <div class="header-cert">
-                    <img src="assets/logo_omc.png" alt="Logo" style="height: 70px;">
+                    <img src="assets/logo_omc.png" alt="Logo" style="height: 60px;">
                     <div>
                         <div class="cert-tag">OCEAN MEDICAL CENTER</div>
                         <h1 class="cert-main-title">ORDONNANCE MÉDICALE</h1>
-                        <div class="cert-subtitle">Prescription certifiée - Los Santos</div>
                     </div>
                 </div>
 
@@ -118,7 +127,7 @@
                         <li class="empty-msg">Aucune prescription en cours...</li>
                     </ul>
 
-                    <div id="inst-container" style="margin-top: 30px; display: none;">
+                    <div id="inst-container" style="margin-top: 30px; display: none; padding-top: 15px; border-top: 1px dotted #ccc;">
                         <label style="font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: bold;">Instructions particulières :</label>
                         <p id="d-inst" style="font-style: italic; color: #334155; margin-top: 5px;"></p>
                     </div>
@@ -127,11 +136,11 @@
                 <div class="cert-footer">
                     <div class="cert-signature">
                         <span style="font-size: 10px; text-transform: uppercase; color: #64748b;">Le Médecin Traitant</span><br>
-                        <span id="display-sig" style="font-family: 'Alex Brush', cursive; font-size: 32px; color: #0f172a;">Dr...</span>
+                        <span id="display-sig" style="font-family: 'Alex Brush', cursive; font-size: 32px; color: #0f172a; display: block; margin-top: 10px;">...</span>
                     </div>
                     <div class="round-stamp">
                         <img id="qr-ref" class="qr-code" src="" alt="QR">
-                        <div>OMC PHARMACY</div>
+                        <div style="font-size: 9px; font-weight: bold; margin-top: 5px;">OMC PHARMACY</div>
                     </div>
                 </div>
                 
@@ -142,6 +151,7 @@
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
         <div class="popup-content">
+            <h3>Ordonnance Générée</h3>
             <input type="text" id="direct-link" readonly onclick="this.select()">
             <div class="popup-buttons"><button onclick="copyLink()">Copier</button><button onclick="closePopup()">Fermer</button></div>
             <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px;">
