@@ -362,23 +362,50 @@ async function genererImage() {
     }
 }
 
-function envoyerDiscord() {
-    const webhook = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
-    const nomPatient = document.getElementById('d-nom').innerText;
-    if (!lastImageUrl) return alert("Génère l'image d'abord !");
-    const payload = {
-        username: "OMC - Laboratoire",
-        embeds: [{
-            title: `Nouveau Bilan Biologique : ${nomPatient}`,
-            color: 65500,
-            image: { url: lastImageUrl },
-            footer: { text: "Olympus Medical Center" },
-            timestamp: new Date()
-        }]
-    };
-    fetch(webhook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(() => alert("Rapport envoyé !"));
-}
+async function envoyerDiscord() {
+    const url = "https://discord.com/api/webhooks/1467854784504795280/7upr72-C3MarQEIX0sQwGFcCtivsBHi_NjBcwCHVhvbNyAKC5mzxdACH5texYCMWelEb";
+    const btn = document.getElementById('discord-btn'); // Vérifie que ton bouton a cet ID
+    const doc = document.getElementById('document'); 
 
+    btn.disabled = true;
+    btn.innerText = "CAPTURE...";
+
+    doc.classList.add('mode-capture');
+
+    try {
+        const canvas = await html2canvas(doc, { scale: 2, useCORS: true });
+        doc.classList.remove('mode-capture');
+        btn.innerText = "ENVOI...";
+
+        canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            const nom = document.getElementById('d-nom').innerText || "Inconnu";
+            const datePost = new Date().toLocaleDateString('fr-FR');
+
+            formData.append("payload_json", JSON.stringify({
+                thread_name: `🔬 LABO - ${nom} (${datePost})`,
+                content: `🧪 **Nouveau Bilan Biologique**\n👤 Patient : ${nom}`
+            }));
+            
+            formData.append("file", blob, `labo_${nom}.png`);
+
+            const response = await fetch(url + "?wait=true", { method: 'POST', body: formData });
+            
+            if(response.ok) { 
+                alert("✅ Rapport Labo envoyé !"); 
+                btn.innerText = "ENVOYÉ"; 
+            } else {
+                throw new Error("Erreur Discord");
+            }
+            btn.disabled = false;
+        }, 'image/png');
+
+    } catch (e) {
+        doc.classList.remove('mode-capture');
+        btn.disabled = false;
+        btn.innerText = "RÉESSAYER";
+    }
+}
 function copyLink() {
     const copyText = document.getElementById("direct-link");
     copyText.select();
