@@ -140,34 +140,36 @@ async function genererImage() {
 }
 
 async function envoyerDiscord() {
-    const webhookUrl = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
+    const url = "https://discord.com/api/webhooks/1467854784504795280/7upr72-C3MarQEIX0sQwGFcCtivsBHi_NjBcwCHVhvbNyAKC5mzxdACH5texYCMWelEb";
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
     
     btn.disabled = true;
-    btn.innerText = "CAPTURING...";
+    btn.innerText = "CAPTURE...";
 
     try {
-        const canvas = await html2canvas(doc, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+        const canvas = await html2canvas(doc, { scale: 2, useCORS: true });
+        
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const nom = document.getElementById('d-nom').innerText || "Inconnu";
-            const typeDoc = document.getElementById('d-titre-doc').innerText;
-            
-            const payload = {
-                content: `📜 **NOUVEAU RAPPORT MÉDICAL**\n👤 **Patient :** ${nom}\n📋 **Type :** ${typeDoc}`,
-                embeds: [{
-                    color: 3066993,
-                    image: { url: "attachment://certificat.png" }
-                }]
-            };
+            const typeDoc = document.getElementById('d-titre-doc').innerText || "Certificat";
+            const datePost = new Date().toLocaleDateString('fr-FR');
 
-            formData.append("payload_json", JSON.stringify(payload));
+            formData.append("payload_json", JSON.stringify({
+                thread_name: `📝 ${typeDoc} - ${nom}`,
+                content: `📜 **Nouveau Rapport Médical**\n👤 Patient : ${nom}\n📋 Type : ${typeDoc}`
+            }));
+
             formData.append("file", blob, "certificat.png");
             
-            await fetch(webhookUrl, { method: 'POST', body: formData });
-            alert("✅ Envoyé avec succès !");
-            btn.innerText = "ENVOYÉ";
+            const response = await fetch(url + "?wait=true", { method: 'POST', body: formData });
+            
+            if(response.ok) {
+                alert("✅ Certificat envoyé !");
+                btn.innerText = "ENVOYÉ";
+            }
+            btn.disabled = false;
         }, 'image/png');
     } catch (e) {
         alert("Erreur envoi Discord.");
