@@ -435,17 +435,30 @@ async function genererImage() {
 }
 
 async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
+    const url = "https://discord.com/api/webhooks/1467854784504795280/7upr72-C3MarQEIX0sQwGFcCtivsBHi_NjBcwCHVhvbNyAKC5mzxdACH5texYCMWelEb";
+    const zone = document.getElementById('capture-zone'); // Ton ID spécifique pour le constat
+
     try {
-        const canvas = await html2canvas(document.getElementById('capture-zone'), { scale: 2, useCORS: true });
+        const canvas = await html2canvas(zone, { scale: 2, useCORS: true });
+        
         canvas.toBlob(async (blob) => {
-            const fd = new FormData();
-            fd.append("payload_json", JSON.stringify({ content: `📄 **Constat : ${document.getElementById('patientId').value}**` }));
-            fd.append("file", blob, "constat.png");
-            await fetch(url, { method: 'POST', body: fd });
-            alert("Envoyé !");
-        });
-    } catch (e) { alert("Erreur Discord"); }
+            const formData = new FormData();
+            const nom = document.getElementById('patientId').value || "Inconnu";
+            const datePost = new Date().toLocaleDateString('fr-FR');
+
+            formData.append("payload_json", JSON.stringify({
+                thread_name: `🤕 CONSTAT - ${nom} (${datePost})`,
+                content: `🚑 **Nouveau Constat Lésionnel**\n👤 Patient ID : ${nom}`
+            }));
+            
+            formData.append("file", blob, `constat_${nom}.png`);
+
+            await fetch(url + "?wait=true", { method: 'POST', body: formData });
+            alert("✅ Constat envoyé !");
+        }, 'image/png');
+    } catch (e) { 
+        alert("Erreur Discord"); 
+    }
 }
 
 function copyLink() { navigator.clipboard.writeText(document.getElementById("direct-link").value); alert("Copié !"); }
