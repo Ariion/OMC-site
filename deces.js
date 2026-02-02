@@ -154,45 +154,45 @@ async function genererImage() {
 
 // Envoi Discord
 async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
+    const url = "https://discord.com/api/webhooks/1467854784504795280/7upr72-C3MarQEIX0sQwGFcCtivsBHi_NjBcwCHVhvbNyAKC5mzxdACH5texYCMWelEb";
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
 
-    if (!doc) return alert("Erreur : Document introuvable");
-
     btn.disabled = true;
-    btn.innerText = "CAPTURING...";
+    btn.innerText = "CAPTURE...";
+
+    doc.classList.add('mode-capture');
 
     try {
-        const canvas = await html2canvas(doc, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            logging: false
-        });
+        const canvas = await html2canvas(doc, { scale: 2, useCORS: true });
+        doc.classList.remove('mode-capture');
+        btn.innerText = "ENVOI...";
 
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const nom = document.getElementById('d-nom').innerText || "Inconnu";
+            const datePost = new Date().toLocaleDateString('fr-FR');
 
             formData.append("payload_json", JSON.stringify({
-                content: `📄 **Nouvel Acte de Décès**\n👤 Défunt : ${nom}`
+                thread_name: `🕯️ DÉCÈS - ${nom} (${datePost})`,
+                content: `📄 **Nouvel Acte de Décès enregistré**\n👤 Défunt : ${nom}`
             }));
+            
             formData.append("file", blob, `deces_${nom}.png`);
 
-            const response = await fetch(url, { method: 'POST', body: formData });
+            const response = await fetch(url + "?wait=true", { method: 'POST', body: formData });
 
             if (response.ok) {
-                alert("✅ Envoyé sur l'intranet !");
+                alert("✅ Acte de décès envoyé !");
                 btn.innerText = "ENVOYÉ";
             } else {
-                throw new Error("Erreur serveur Discord");
+                throw new Error("Erreur Discord");
             }
+            btn.disabled = false;
         }, 'image/png');
 
     } catch (e) {
-        console.error(e);
-        alert("❌ Erreur lors de l'envoi.");
+        doc.classList.remove('mode-capture');
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
     }
