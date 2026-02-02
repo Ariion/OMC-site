@@ -297,17 +297,24 @@ async function envoyerDiscord() {
         
         btn.innerText = "ENVOI...";
 
-        canvas.toBlob(async (blob) => {
-            const formData = new FormData();
-            const nom = document.getElementById('input-nom').value || "Inconnu";
-            
-            formData.append("payload_json", JSON.stringify({
-                content: `💊 **Nouvelle Ordonnance**\n👤 Patient : ${nom}`
-            }));
-            formData.append("file", blob, `ordo_${nom}.png`);
+       canvas.toBlob(async (blob) => {
+    const formData = new FormData();
+    const nom = document.getElementById('input-nom').value || "Inconnu";
+    
+    // On récupère la date pour le titre du post
+    const datePost = new Date().toLocaleDateString('fr-FR');
 
-            const response = await fetch(url, { method: 'POST', body: formData });
-            
+    formData.append("payload_json", JSON.stringify({
+        // C'est ICI que la magie opère pour les Forums
+        thread_name: `Rapport - ${nom} (${datePost})`, 
+        content: `💊 **Nouvelle Ordonnance médicale enregistrée**\n👤 Patient : ${nom}`
+    }));
+    
+    formData.append("file", blob, `ordo_${nom}.png`);
+
+    // AJOUTE ?wait=true à la fin de ton URL pour être sûr que Discord valide la création
+    const response = await fetch(url + "?wait=true", { method: 'POST', body: formData });
+                
             if(response.ok) { 
                 alert("✅ Envoyé sur l'intranet !"); 
                 btn.innerText = "ENVOYÉ"; 
