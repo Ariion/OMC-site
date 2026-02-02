@@ -1,5 +1,5 @@
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
-
+ 
 const LESIONS = [
     {key:'fracture', label:'Fracture / Entorse', color:'#ef4444', icon:'🦴'},
     {key:'plaie_laceration', label:'Plaie & Lacération', color:'#a855f7', icon:'🔪'},
