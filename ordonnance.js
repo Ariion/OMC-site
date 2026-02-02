@@ -272,7 +272,7 @@ async function genererImage() {
 
 // 8. ENVOI DISCORD
 async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1462416189526638613/iMpoe9mn6DC4j_0eBS4tOVjaDo_jy1MhfSKIEP80H7Ih3uYGHRcJ5kQSqIFuL0DTqlUy";
+    const url = "https://discord.com/api/webhooks/1467854784504795280/7upr72-C3MarQEIX0sQwGFcCtivsBHi_NjBcwCHVhvbNyAKC5mzxdACH5texYCMWelEb";
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
 
