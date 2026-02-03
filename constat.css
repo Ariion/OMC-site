@@ -454,6 +454,41 @@ input:checked + .slider:before { transform: translateX(14px); }
     cursor: pointer;
 }
 
+
+#detailsContainer {
+    background: #0f172a !important;
+    border: 1px solid #1e293b !important;
+    border-left: 4px solid #3b82f6 !important;
+    padding: 20px !important;
+    border-radius: 12px !important;
+    margin-top: 20px;
+}
+
+.details-header {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.details-grid-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.details-sub-title {
+    font-size: 11px;
+    font-weight: bold;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+
+
 .details-title {
     color: #64ffda;
     font-size: 12px;
@@ -511,5 +546,57 @@ input:checked + .slider:before { transform: translateX(14px); }
     color: #0f172a;
     font-weight: 600;
 }
+
+/* Grilles d'options boutons (Radio-like) */
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.opt-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.2s;
+}
+
+.opt-btn:hover { background: #334155; }
+
+.opt-btn.selected {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+    color: white;
+}
+
+.opt-btn::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border: 2px solid #475569;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.opt-btn.selected::before {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    box-shadow: 0 0 8px #3b82f6;
+}
+
+/* Style spécifique pour les checkboxes (Éléments associés) */
+.opt-check {
+    border-radius: 4px !important;
+}
+.opt-check::before { border-radius: 2px !important; }
+
 
 @keyframes blink { 50% { opacity: 0.5; } }
