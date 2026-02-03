@@ -355,9 +355,6 @@ if (obsInput.trim() !== "") {
     }
 
     // 7. QR Code (utilisant la référence session)
- const qrImg = document.getElementById('qr-ref');
-const ref = document.getElementById('num-ref').innerText; // Ou ta variable de réf
-
 const ref = document.getElementById('patientId').value || "0000"; // Ou ta variable de dossier
 const qrImg = document.getElementById('qr-ref');
 
@@ -369,6 +366,7 @@ if (qrImg) {
     // Log pour vérifier dans ta console (F12) si l'URL est bonne
     console.log("URL du QR :", qrImg.src);
 }
+ 
     // Gestion de l'affichage dynamique de l'observation supplémentaire
     const inputObs = document.getElementById('obsSupInput').value;
 const sectionObs = document.getElementById('sectionObsSup');
