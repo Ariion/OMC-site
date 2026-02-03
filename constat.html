@@ -30,14 +30,14 @@
     </div>
     <div class="form-group">
         <label>DATE DE NAISSANCE</label>
-        <input id="patientBirth" type="text" placeholder="JJ/MM/AAAA" oninput="updateReport()">
+        <input id="patientBirth" type="date" oninput="updateReport()">
     </div>
 </div>
 
 <div class="form-group-row">
     <div class="form-group">
-        <label>NOM DU MÉDECIN</label>
-        <input id="doctorName" type="text" placeholder="Ex: Bill Hanson" oninput="updateReport()">
+        <label>IMAGERIE PAR</label>
+        <input id="imagingDoc" type="text" placeholder="Ex: Dr. Hanson" oninput="updateReport()">
     </div>
     <div class="form-group">
         <label>DATE DU CONSTAT</label>
@@ -129,6 +129,7 @@
     <div class="info-box"><small>NAISSANCE</small><div id="display-birth">...</div></div>
     <div class="info-box"><small>DATE D'ÉTABLISSEMENT</small><div id="display-date">22/01/2026</div></div>
     <div class="info-box"><small>RÉFÉRENCE DOSSIER</small><div id="display-ref">#22012300</div></div>
+    <div class="info-box"><small>IMAGERIE RÉALISÉE PAR</small><div id="display-imaging">...</div></div>
 </div>
                         <hr class="doc-hr">
                         <h4>OBSERVATIONS CLINIQUES :</h4>
