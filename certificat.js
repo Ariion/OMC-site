@@ -140,7 +140,7 @@ async function genererImage() {
 }
 
 async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1467854784504795280/7upr72-C3MarQEIX0sQwGFcCtivsBHi_NjBcwCHVhvbNyAKC5mzxdACH5texYCMWelEb";
+    const url = "https://discord.com/api/webhooks/1421827797965471855/aBgwIgdIRP3TO0Qp_culr5GJHVLDRnwtKnxjv7N62ThG8L_bRQ1gwsqV_aYXhu4eCHa2";
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
     
