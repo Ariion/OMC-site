@@ -358,17 +358,16 @@ if (obsInput.trim() !== "") {
  const qrImg = document.getElementById('qr-ref');
 const ref = document.getElementById('num-ref').innerText; // Ou ta variable de réf
 
-if(qrImg && ref) {
-    // On construit l'URL proprement
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
-    
-    // On l'applique
-    qrImg.src = qrUrl;
+const ref = document.getElementById('patientId').value || "0000"; // Ou ta variable de dossier
+const qrImg = document.getElementById('qr-ref');
 
-    // Optionnel : Debug si ça rate encore
-    qrImg.onerror = function() {
-        console.error("Erreur de chargement du QR Code. Vérifiez l'URL : " + qrUrl);
-    };
+if (qrImg) {
+    // On encode la data pour être sûr que les caractères spéciaux ne cassent pas l'URL
+    const data = encodeURIComponent(`OMC-CERT-${ref}`);
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
+    
+    // Log pour vérifier dans ta console (F12) si l'URL est bonne
+    console.log("URL du QR :", qrImg.src);
 }
     // Gestion de l'affichage dynamique de l'observation supplémentaire
     const inputObs = document.getElementById('obsSupInput').value;
