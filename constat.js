@@ -271,13 +271,23 @@ function initTraitements() {
 
 function updateReport() {
     const patientVal = document.getElementById('patientId').value || "...";
-    const birthVal = document.getElementById('patientBirth').value || "...";
+    const birthInput = document.getElementById('patientBirth').value;
+    const imagingVal = document.getElementById('imagingDoc').value || "...";
+    const doctorVal = document.getElementById('doctorName').value || "...";
     const dateVal = document.getElementById('constatDate').value;
     const sigVal = document.getElementById('doctorSig').value || "...";
 
+// 2. Formatage des dates
+    const formattedBirth = birthInput ? new Date(birthInput).toLocaleDateString('fr-FR') : "...";
+    const formattedDate = dateVal ? new Date(dateVal).toLocaleDateString('fr-FR') : "...";
+
+    // 3. Mise à jour de l'aperçu à droite
     if(document.getElementById('display-patient')) document.getElementById('display-patient').innerText = patientVal;
-    if(document.getElementById('display-birth')) document.getElementById('display-birth').innerText = birthVal;
+    if(document.getElementById('display-birth')) document.getElementById('display-birth').innerText = formattedBirth;
+    if(document.getElementById('display-imaging')) document.getElementById('display-imaging').innerText = imagingVal;
+    if(document.getElementById('display-date')) document.getElementById('display-date').innerText = formattedDate;
     if(document.getElementById('display-ref')) document.getElementById('display-ref').innerText = window.sessionRef;
+    if(document.getElementById('d-sig')) document.getElementById('d-sig').innerText = sigVal;
     
     const displayDate = document.getElementById('display-date');
     if(displayDate) displayDate.innerText = dateVal ? new Date(dateVal).toLocaleDateString('fr-FR') : "...";
