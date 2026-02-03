@@ -154,7 +154,7 @@ async function genererImage() {
 
 // Envoi Discord
 async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1467854784504795280/7upr72-C3MarQEIX0sQwGFcCtivsBHi_NjBcwCHVhvbNyAKC5mzxdACH5texYCMWelEb";
+    const url = "https://discord.com/api/webhooks/1468221753372446720/g_ItYTLYSb3xDeyRjFrVEsHuIPhwibYEEZoHzfktlzRCCqlqvmG2W3Xv7HNtCLv_hc0K";
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
 
