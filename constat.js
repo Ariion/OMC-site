@@ -351,50 +351,35 @@ function updateReport() {
         displayDate.innerText = dateVal ? new Date(dateVal).toLocaleDateString('fr-FR') : "...";
     }
 
-    // 3. Signature et Meta
+    // 3. Signature
     if(document.getElementById('d-sig')) document.getElementById('d-sig').innerText = sigVal;
-    if(document.getElementById('reportMeta')) {
-        document.getElementById('reportMeta').innerText = `Médecin référent : ${doctorVal}`;
-        document.getElementById('reportMeta').style.display = "block";
-    }
 
     // 4. Liste des Observations Cliniques
     const list = document.getElementById('reportList');
     if (list) {
-    list.innerHTML = markers.length ? "" : "<li>Aucune lésion sélectionnée.</li>";
-   markers.forEach((m, i) => {
-    const config = LESIONS.find(l => l.key === m.type);
-    const zone = regionFrom(m.x, m.y);
-    const d = m.details || {};
-    
-    // Construction des détails textuels
-    let detailsParts = [];
-    
-    if (d.typeL) detailsParts.push(d.typeL);
-    if (d.origine) detailsParts.push(`Origine : ${d.origine}`);
-    if (d.extras) detailsParts.push(`Détail : ${d.extras}`);
-    
-    // Gestion des organes touchés
-    if (d.organes && d.organes.length > 0) {
-        detailsParts.push(`Lésion d’organe : ${d.organes.join(', ')}`);
-    }
+        list.innerHTML = markers.length ? "" : "<li>Aucune lésion sélectionnée.</li>";
+        markers.forEach((m, i) => {
+            const config = LESIONS.find(l => l.key === m.type);
+            const zone = regionFrom(m.x, m.y);
+            const d = m.details || {};
+            
+            let detailsParts = [];
+            if (d.typeL) detailsParts.push(d.typeL);
+            if (d.origine) detailsParts.push(`Origine : ${d.origine}`);
+            if (d.extras) detailsParts.push(`Détail : ${d.extras}`);
+            if (d.organes && d.organes.length > 0) detailsParts.push(`Lésion d’organe : ${d.organes.join(', ')}`);
+            if (d.elements && d.elements.length > 0) detailsParts.push(`Éléments associés : ${d.elements.join(', ')}`);
+            
+            const finalDetailTxt = detailsParts.length > 0 ? ` (${detailsParts.join(' — ')})` : "";
+            const colorBadge = `<span class="report-badge" style="background-color: ${config.color}">${m.number}</span>`;
 
-    // Gestion des éléments associés
-    if (d.elements && d.elements.length > 0) {
-        detailsParts.push(`Éléments associés : ${d.elements.join(', ')}`);
+            const li = document.createElement('li');
+            li.style.listStyle = "none";
+            li.style.marginBottom = "8px";
+            li.innerHTML = `${colorBadge} <strong>${config.label}</strong>${finalDetailTxt} localisée : <u>${zone}</u>.`;
+            list.appendChild(li);
+        });
     }
-    
-    const finalDetailTxt = detailsParts.length > 0 ? ` (${detailsParts.join(' — ')})` : "";
-    
-    // Création de la pastille de couleur
-    const colorBadge = `<span class="report-badge" style="background-color: ${config.color}">${m.number}</span>`;
-
-    const li = document.createElement('li');
-    li.style.listStyle = "none";
-    li.style.marginBottom = "8px";
-    li.innerHTML = `${colorBadge} <strong>${config.label}</strong>${finalDetailTxt} localisée : <u>${zone}</u>.`;
-    list.appendChild(li);
-});
 
         const obsInput = document.getElementById('obsSupInput').value;
 const sectionObs = document.getElementById('sectionObsSup');
