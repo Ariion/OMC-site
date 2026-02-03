@@ -270,29 +270,27 @@ function initTraitements() {
 }
 
 function updateReport() {
+    // 1. Récupération des éléments de la Sidebar
     const patientVal = document.getElementById('patientId').value || "...";
     const birthInput = document.getElementById('patientBirth').value;
     const imagingVal = document.getElementById('imagingDoc').value || "...";
-    const doctorVal = document.getElementById('doctorName').value || "...";
-    const dateVal = document.getElementById('constatDate').value;
+    const dateInput = document.getElementById('constatDate').value;
     const sigVal = document.getElementById('doctorSig').value || "...";
+    const obsInput = document.getElementById('obsSupInput').value || "";
 
-// 2. Formatage des dates
+    // 2. Formatage des dates (JJ/MM/AAAA)
     const formattedBirth = birthInput ? new Date(birthInput).toLocaleDateString('fr-FR') : "...";
-    const formattedDate = dateVal ? new Date(dateVal).toLocaleDateString('fr-FR') : "...";
+    const formattedDate = dateInput ? new Date(dateInput).toLocaleDateString('fr-FR') : "...";
 
-    // 3. Mise à jour de l'aperçu à droite
+    // 3. Mise à jour du Document (Aperçu à droite)
     if(document.getElementById('display-patient')) document.getElementById('display-patient').innerText = patientVal;
     if(document.getElementById('display-birth')) document.getElementById('display-birth').innerText = formattedBirth;
     if(document.getElementById('display-imaging')) document.getElementById('display-imaging').innerText = imagingVal;
     if(document.getElementById('display-date')) document.getElementById('display-date').innerText = formattedDate;
     if(document.getElementById('display-ref')) document.getElementById('display-ref').innerText = window.sessionRef;
     if(document.getElementById('d-sig')) document.getElementById('d-sig').innerText = sigVal;
-    
-    const displayDate = document.getElementById('display-date');
-    if(displayDate) displayDate.innerText = dateVal ? new Date(dateVal).toLocaleDateString('fr-FR') : "...";
-    if(document.getElementById('d-sig')) document.getElementById('d-sig').innerText = sigVal;
 
+    // 4. Liste des Observations Cliniques
     const list = document.getElementById('reportList');
     if (list) {
         list.innerHTML = markers.length ? "" : "<li>Aucune lésion sélectionnée.</li>";
@@ -316,16 +314,16 @@ function updateReport() {
         });
     }
 
-    const obsInput = document.getElementById('obsSupInput').value;
+    // 5. Observations supplémentaires & Badge PAF
     const sectionObs = document.getElementById('sectionObsSup');
     if (sectionObs) {
         sectionObs.style.display = obsInput.trim() !== "" ? 'block' : 'none';
         document.getElementById('docObsSupText').innerText = obsInput;
     }
-
     const pafBadge = document.getElementById('pafBadge');
     if (pafBadge) pafBadge.style.display = markers.some(m => m.type === 'plaie_feu') ? 'block' : 'none';
 
+    // 6. Traitements & Préconisations
     const selectedMeds = Array.from(document.querySelectorAll('.med-check:checked')).map(cb => cb.value);
     document.getElementById('sectionTraitements').style.display = selectedMeds.length ? 'block' : 'none';
     document.getElementById('docMedsList').innerHTML = selectedMeds.map(m => `<li>${m}</li>`).join('');
@@ -334,10 +332,11 @@ function updateReport() {
     document.getElementById('sectionPrecons').style.display = selectedPrecons.length ? 'block' : 'none';
     document.getElementById('docPreconsList').innerHTML = selectedPrecons.map(c => `<li>${c}</li>`).join('');
 
+    // 7. Mise à jour du QR Code (Lien sécurisé)
     const qrImg = document.getElementById('qr-ref');
     if (qrImg) {
-        const refData = document.getElementById('patientId').value || "0000";
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${refData}`;
+        const qrData = encodeURIComponent(`OMC-CERT-${patientVal}-${window.sessionRef}`);
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}&margin=1`;
     }
 }
 
