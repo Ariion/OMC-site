@@ -62,7 +62,6 @@ window.onload = () => {
     setupDraggableSystem();
     initTraitements();
     
-    // Génération Référence : JOUR MOIS HEURE MINUTE
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -70,8 +69,6 @@ window.onload = () => {
     const minutes = String(now.getMinutes()).padStart(2, '0');
     
     window.sessionRef = `#${day}${month}${hours}${minutes}`;
-    
-    // On met la date du jour par défaut dans l'input
     document.getElementById('constatDate').valueAsDate = now;
     
     updateReport();
@@ -110,7 +107,6 @@ function setupInteractions() {
 
 function setupDraggableSystem() {
     const frame = document.getElementById('frame');
-    
     frame.addEventListener('click', function(e) {
         if (e.target.id === 'overlay') {
             const rect = frame.getBoundingClientRect();
@@ -124,21 +120,15 @@ function setupDraggableSystem() {
 function createMarker(x, y) {
     const config = LESIONS.find(l => l.key === activeType);
     const id = Date.now();
-    const markerNumber = markers.length + 1; // Définit le numéro du point
+    const markerNumber = markers.length + 1;
     const newMarker = {
-    id: id,
-    number: markerNumber,
-    x: (x / 100) * 418,
-    y: (y / 100) * 940,
-    type: activeType,
-    details: { 
-        typeL: "", 
-        elements: [], 
-        extras: "", 
-        origine: "", 
-        organes: [] // Ajouté
-    }
-};
+        id: id,
+        number: markerNumber,
+        x: (x / 100) * 418,
+        y: (y / 100) * 940,
+        type: activeType,
+        details: { typeL: "", elements: [], extras: "", origine: "", organes: [] }
+    };
     markers.push(newMarker);
 
     const markerEl = document.createElement('div');
@@ -148,24 +138,20 @@ function createMarker(x, y) {
     markerEl.style.left = x + "%";
     markerEl.style.top = y + "%";
     markerEl.style.backgroundColor = config.color;
-// --- CLIC DROIT POUR SUPPRIMER ---
+
     markerEl.oncontextmenu = function(e) {
-        e.preventDefault(); // Empêche le menu Windows
-        markerEl.remove(); // Retire le rond
-        markers = markers.filter(m => m.id !== id); // Retire de la liste
-        // On recalcule les numéros pour éviter les trous (ex: 1, 2, 4)
+        e.preventDefault();
+        markerEl.remove();
+        markers = markers.filter(m => m.id !== id);
         reindexMarkers();
         updateReport();
         document.getElementById('detailsContainer').style.display = "none";
     };
-    // SYSTÈME DE DÉPLACEMENT (DRAG)
+
     markerEl.onmousedown = function(e) {
         e.stopPropagation();
-        const startX = e.clientX;
-        const startY = e.clientY;
         let hasMoved = false;
-
-        const rect = frame.getBoundingClientRect();
+        const rect = document.getElementById('frame').getBoundingClientRect();
         let shiftX = e.clientX - markerEl.getBoundingClientRect().left;
         let shiftY = e.clientY - markerEl.getBoundingClientRect().top;
 
@@ -173,28 +159,19 @@ function createMarker(x, y) {
             hasMoved = true;
             let newX = ((moveEvent.clientX - rect.left - shiftX) / rect.width) * 100;
             let newY = ((moveEvent.clientY - rect.top - shiftY) / rect.height) * 100;
-            
-            // Bornes 0-100%
             newX = Math.max(0, Math.min(100, newX));
             newY = Math.max(0, Math.min(100, newY));
-
             markerEl.style.left = newX + "%";
             markerEl.style.top = newY + "%";
-
-            // Mise à jour des coordonnées réelles pour le calcul de zone
             newMarker.x = (newX / 100) * 418;
             newMarker.y = (newY / 100) * 940;
             updateReport();
         }
 
         document.addEventListener('mousemove', onMouseMove);
-
         document.onmouseup = function() {
             document.removeEventListener('mousemove', onMouseMove);
-            // Si on n'a pas bougé, c'est un clic simple : on ouvre les détails
-            if (!hasMoved) {
-                openDetails(id);
-            }
+            if (!hasMoved) openDetails(id);
             document.onmouseup = null;
         };
     };
@@ -203,8 +180,8 @@ function createMarker(x, y) {
     openDetails(id);
     updateReport();
 }
+
 function reindexMarkers() {
-    const allEls = document.querySelectorAll('.marker-point');
     markers.forEach((m, index) => {
         const newNum = index + 1;
         m.number = newNum;
@@ -212,6 +189,7 @@ function reindexMarkers() {
         if(el) el.innerText = newNum;
     });
 }
+
 function regionFrom(x, y) {
     for (const r of REGIONS) {
         let inside = false;
@@ -231,11 +209,9 @@ function openDetails(markerId) {
     container.style.display = "block";
     const config = LESIONS.find(l => l.key === m.type);
 
-    // Titre dynamique
     let html = `<span class="details-header">Options de la lésion (${config.label})</span>`;
     html += `<div class="details-grid-wrapper">`;
 
-    // 1. SECTION TYPE (Selon la lésion)
     if (m.type === 'fracture') {
         html += renderOptionGroup(m, "Type", ["Fermée non déplacée", "Fermée déplacée", "Ouverte"]);
     } else if (m.type === 'plaie_laceration') {
@@ -245,87 +221,47 @@ function openDetails(markerId) {
     } else if (m.type === 'brulure') {
         html += renderOptionGroup(m, "Brûlure thermique", ["1er degré (rougeurs)", "2e degré (cloques)", "3e degré (peau détruite)"]);
         html += renderOptionGroup(m, "Cause", ["Thermique", "Chimique", "Électrique", "Inhalation de fumée"], "origine");
-        html += renderOptionGroup(m, "Étendue (sur la zone)", ["< 5%", "5% - 50%", "50% - 80%", "> 80%"], "extras");
+        html += renderOptionGroup(m, "Étendue", ["< 5%", "5% - 50%", "50% - 80%", "> 80%"], "extras");
     } else if (m.type === 'hematome') {
         html += renderOptionGroup(m, "Type", ["Hématome", "Œdème", "Traumatisme crânien", "Hémorragie interne"]);
         html += renderOptionGroup(m, "Gravité", ["Légère", "Moyenne", "Sévère"], "extras");
     } else if (m.type === 'plaie_feu') {
-        html += `<div style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-bottom: 10px; border: 1px solid rgba(239, 68, 68, 0.2);">🔴 PAF détectée — pensez à la déclaration</div>`;
+        html += `<div style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-bottom: 10px; border: 1px solid rgba(239, 68, 68, 0.2);">🔴 PAF détectée</div>`;
         html += renderOptionGroup(m, "Type d’impact", ["Entrée seule", "Entrée + sortie"]);
         html += renderOptionGroup(m, "Gravité", ["Superficielle", "Pénétrante", "Traversante"], "extras");
         html += renderOptionGroup(m, "Lésion d’organe", ["Cœur", "Estomac", "Foie", "Intestin", "Poumon", "Rate", "Rein"], "organes", true);
     } else if (m.type === 'abrasion') {
-        html += renderOptionGroup(m, "Type", ["Entorse légère", "Entorse sévère (ligament endommagé ou rompu)", "Luxation complète"]);
+        html += renderOptionGroup(m, "Type", ["Entorse légère", "Entorse sévère", "Luxation complète"]);
     }
 
-    // 2. SECTION ÉLÉMENTS ASSOCIÉS (Commun à tous)
     html += renderOptionGroup(m, "Éléments associés", ["Hémorragie", "Corps étranger présent", "Risque infectieux"], "elements", true);
-
     html += `</div>`;
     container.innerHTML = html;
 }
 
-// Fonction utilitaire pour générer les groupes de boutons
 function renderOptionGroup(marker, title, options, field = "typeL", isMultiple = false) {
-    let groupHtml = `<div class="option-group">
-        <div class="details-sub-title">${title}</div>
-        <div class="options-grid">`;
-
+    let groupHtml = `<div class="option-group"><div class="details-sub-title">${title}</div><div class="options-grid">`;
     options.forEach(opt => {
-        let isSelected = false;
-        if (isMultiple) {
-            // Vérifie si l'option est dans le tableau (elements ou organes)
-            const list = marker.details[field] || [];
-            isSelected = list.includes(opt);
-        } else {
-            isSelected = marker.details[field] === opt;
-        }
-
+        let isSelected = isMultiple ? (marker.details[field] || []).includes(opt) : marker.details[field] === opt;
         const activeClass = isSelected ? 'selected' : '';
-        const checkClass = isMultiple ? 'opt-check' : '';
-        
-        groupHtml += `<button class="opt-btn ${activeClass} ${checkClass}" onclick="toggleOption(${marker.id}, '${field}', '${opt}', ${isMultiple})">
-            ${opt}
-        </button>`;
+        groupHtml += `<button class="opt-btn ${activeClass}" onclick="toggleOption(${marker.id}, '${field}', '${opt}', ${isMultiple})">${opt}</button>`;
     });
-
     groupHtml += `</div></div>`;
     return groupHtml;
 }
 
-// Nouvelle fonction pour gérer le clic sur les boutons
 function toggleOption(id, field, val, isMultiple) {
     const m = markers.find(mark => mark.id == id);
     if (!m) return;
-
     if (!m.details[field]) m.details[field] = isMultiple ? [] : "";
-
     if (isMultiple) {
-        if (m.details[field].includes(val)) {
-            m.details[field] = m.details[field].filter(v => v !== val);
-        } else {
-            m.details[field].push(val);
-        }
+        if (m.details[field].includes(val)) m.details[field] = m.details[field].filter(v => v !== val);
+        else m.details[field].push(val);
     } else {
         m.details[field] = val;
     }
-
     updateReport();
-    openDetails(id); // Rafraîchit le menu pour montrer la sélection
-}
-
-function updateMarkerDetail(id, field, val) {
-    const m = markers.find(mark => mark.id == id);
-    if (m) { m.details[field] = val; updateReport(); }
-}
-
-function updateMarkerElements(id, val, checked) {
-    const m = markers.find(mark => mark.id == id);
-    if (m) {
-        if (checked) m.details.elements.push(val);
-        else m.details.elements = m.details.elements.filter(e => e !== val);
-        updateReport();
-    }
+    openDetails(id);
 }
 
 function initTraitements() {
@@ -334,112 +270,65 @@ function initTraitements() {
 }
 
 function updateReport() {
-    // 1. Récupération des éléments (Sidebar)
     const patientVal = document.getElementById('patientId').value || "...";
     const birthVal = document.getElementById('patientBirth').value || "...";
-    const doctorVal = document.getElementById('doctorName').value || "...";
     const dateVal = document.getElementById('constatDate').value;
     const sigVal = document.getElementById('doctorSig').value || "...";
 
-    // 2. Mise à jour du Rapport (Boîtes grises à droite)
     if(document.getElementById('display-patient')) document.getElementById('display-patient').innerText = patientVal;
     if(document.getElementById('display-birth')) document.getElementById('display-birth').innerText = birthVal;
     if(document.getElementById('display-ref')) document.getElementById('display-ref').innerText = window.sessionRef;
     
     const displayDate = document.getElementById('display-date');
-    if(displayDate) {
-        displayDate.innerText = dateVal ? new Date(dateVal).toLocaleDateString('fr-FR') : "...";
-    }
-
-    // 3. Signature
+    if(displayDate) displayDate.innerText = dateVal ? new Date(dateVal).toLocaleDateString('fr-FR') : "...";
     if(document.getElementById('d-sig')) document.getElementById('d-sig').innerText = sigVal;
 
-    // 4. Liste des Observations Cliniques
     const list = document.getElementById('reportList');
     if (list) {
         list.innerHTML = markers.length ? "" : "<li>Aucune lésion sélectionnée.</li>";
-        markers.forEach((m, i) => {
+        markers.forEach((m) => {
             const config = LESIONS.find(l => l.key === m.type);
             const zone = regionFrom(m.x, m.y);
             const d = m.details || {};
+            let parts = [];
+            if (d.typeL) parts.push(d.typeL);
+            if (d.origine) parts.push(`Origine: ${d.origine}`);
+            if (d.extras) parts.push(`Détail: ${d.extras}`);
+            if (d.organes && d.organes.length) parts.push(`Organes: ${d.organes.join(', ')}`);
+            if (d.elements && d.elements.length) parts.push(`Assoc.: ${d.elements.join(', ')}`);
             
-            let detailsParts = [];
-            if (d.typeL) detailsParts.push(d.typeL);
-            if (d.origine) detailsParts.push(`Origine : ${d.origine}`);
-            if (d.extras) detailsParts.push(`Détail : ${d.extras}`);
-            if (d.organes && d.organes.length > 0) detailsParts.push(`Lésion d’organe : ${d.organes.join(', ')}`);
-            if (d.elements && d.elements.length > 0) detailsParts.push(`Éléments associés : ${d.elements.join(', ')}`);
-            
-            const finalDetailTxt = detailsParts.length > 0 ? ` (${detailsParts.join(' — ')})` : "";
-            const colorBadge = `<span class="report-badge" style="background-color: ${config.color}">${m.number}</span>`;
-
+            const txt = parts.length ? ` (${parts.join(' — ')})` : "";
             const li = document.createElement('li');
             li.style.listStyle = "none";
             li.style.marginBottom = "8px";
-            li.innerHTML = `${colorBadge} <strong>${config.label}</strong>${finalDetailTxt} localisée : <u>${zone}</u>.`;
+            li.innerHTML = `<span class="report-badge" style="background:${config.color}">${m.number}</span> <strong>${config.label}</strong>${txt} : <u>${zone}</u>.`;
             list.appendChild(li);
         });
     }
 
-        const obsInput = document.getElementById('obsSupInput').value;
-const sectionObs = document.getElementById('sectionObsSup');
-const textObs = document.getElementById('docObsSupText');
+    const obsInput = document.getElementById('obsSupInput').value;
+    const sectionObs = document.getElementById('sectionObsSup');
+    if (sectionObs) {
+        sectionObs.style.display = obsInput.trim() !== "" ? 'block' : 'none';
+        document.getElementById('docObsSupText').innerText = obsInput;
+    }
 
-if (obsInput.trim() !== "") {
-    sectionObs.style.display = 'block';
-    textObs.innerText = obsInput;
-} else {
-    sectionObs.style.display = 'none';
-}
-    });
-}
-
-    // 5. Badge Arme à feu
     const pafBadge = document.getElementById('pafBadge');
-    if (pafBadge) {
-        const hasPAF = markers.some(m => m.type === 'plaie_feu');
-        pafBadge.style.display = hasPAF ? 'block' : 'none';
-    }
+    if (pafBadge) pafBadge.style.display = markers.some(m => m.type === 'plaie_feu') ? 'block' : 'none';
 
-    // 6. Traitements & Préconisations
     const selectedMeds = Array.from(document.querySelectorAll('.med-check:checked')).map(cb => cb.value);
-    const divMeds = document.getElementById('sectionTraitements');
-    if(divMeds) {
-        divMeds.style.display = selectedMeds.length ? 'block' : 'none';
-        document.getElementById('docMedsList').innerHTML = selectedMeds.map(m => `<li>${m}</li>`).join('');
-    }
+    document.getElementById('sectionTraitements').style.display = selectedMeds.length ? 'block' : 'none';
+    document.getElementById('docMedsList').innerHTML = selectedMeds.map(m => `<li>${m}</li>`).join('');
 
     const selectedPrecons = Array.from(document.querySelectorAll('.precon-check:checked')).map(cb => cb.value);
-    const divPre = document.getElementById('sectionPrecons');
-    if(divPre) {
-        divPre.style.display = selectedPrecons.length ? 'block' : 'none';
-        document.getElementById('docPreconsList').innerHTML = selectedPrecons.map(c => `<li>${c}</li>`).join('');
+    document.getElementById('sectionPrecons').style.display = selectedPrecons.length ? 'block' : 'none';
+    document.getElementById('docPreconsList').innerHTML = selectedPrecons.map(c => `<li>${c}</li>`).join('');
+
+    const qrImg = document.getElementById('qr-ref');
+    if (qrImg) {
+        const refData = document.getElementById('patientId').value || "0000";
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${refData}`;
     }
-
-    // 7. QR Code (utilisant la référence session)
-const ref = document.getElementById('patientId').value || "0000"; // Ou ta variable de dossier
-const qrImg = document.getElementById('qr-ref');
-
-if (qrImg) {
-    // On encode la data pour être sûr que les caractères spéciaux ne cassent pas l'URL
-    const data = encodeURIComponent(`OMC-CERT-${ref}`);
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
-    
-    // Log pour vérifier dans ta console (F12) si l'URL est bonne
-    console.log("URL du QR :", qrImg.src);
-}
- 
-    // Gestion de l'affichage dynamique de l'observation supplémentaire
-    const inputObs = document.getElementById('obsSupInput').value;
-const sectionObs = document.getElementById('sectionObsSup');
-const displayObs = document.getElementById('docObsSupText');
-
-if (inputObs && inputObs.trim() !== "") {
-    sectionObs.style.display = 'block'; // On montre le bloc à droite
-    displayObs.innerText = inputObs;    // On injecte le texte
-} else {
-    sectionObs.style.display = 'none';  // On cache si c'est vide
-}
 }
 
 document.getElementById('btnUndo').onclick = () => {
@@ -453,34 +342,18 @@ document.getElementById('btnClear').onclick = () => {
 
 function toggleDebug() {
     const isChecked = document.getElementById('debugToggle').checked;
-    const layer = document.getElementById('debugLayer');
+    const layer = document.getElementById('debugLayer') || document.createElementNS("http://www.w3.org/2000/svg", "g");
+    layer.id = "debugLayer";
     const svg = document.getElementById('overlay');
-    
-    if (!layer || !svg) return;
-
     layer.style.display = isChecked ? 'block' : 'none';
-
     if (isChecked) {
-        // On le déplace à la fin du SVG pour qu'il soit au-dessus
-        svg.appendChild(layer); 
-        
+        svg.appendChild(layer);
         if (layer.innerHTML === "") {
             REGIONS.forEach(region => {
                 const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
                 poly.setAttribute("points", region.points.map(p => p.join(",")).join(" "));
                 poly.setAttribute("style", "fill:rgba(59,130,246,0.3); stroke:white; stroke-width:0.5; pointer-events:none;");
-                
-                const centerX = region.points.reduce((s, p) => s + p[0], 0) / region.points.length;
-                const centerY = region.points.reduce((s, p) => s + p[1], 0) / region.points.length;
-                
-                const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                txt.setAttribute("x", centerX); txt.setAttribute("y", centerY);
-                txt.setAttribute("fill", "white"); txt.setAttribute("font-size", "8");
-                txt.setAttribute("text-anchor", "middle"); txt.setAttribute("style", "pointer-events:none; text-shadow:1px 1px 2px black;");
-                txt.textContent = region.label;
-                
                 layer.appendChild(poly);
-                layer.appendChild(txt);
             });
         }
     }
@@ -506,29 +379,20 @@ async function genererImage() {
 
 async function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1421780761731928194/ZFSpiLTHfytIGT02QBf5SBOIEDzWMaf_PMHtDB9sd-GmF5chHnQqQic-9YpLnYHJIRPo";
-    const zone = document.getElementById('capture-zone'); // Ton ID spécifique pour le constat
-
     try {
-        const canvas = await html2canvas(zone, { scale: 2, useCORS: true });
-        
+        const canvas = await html2canvas(document.getElementById('capture-zone'), { scale: 2, useCORS: true });
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const nom = document.getElementById('patientId').value || "Inconnu";
-            const datePost = new Date().toLocaleDateString('fr-FR');
-
             formData.append("payload_json", JSON.stringify({
-                thread_name: `🤕 CONSTAT - ${nom} (${datePost})`,
-                content: `🚑 **Nouveau Constat Lésionnel**\n👤 Patient ID : ${nom}`
+                thread_name: `🤕 CONSTAT - ${nom}`,
+                content: `🚑 **Nouveau Constat Lésionnel** : ${nom}`
             }));
-            
             formData.append("file", blob, `constat_${nom}.png`);
-
             await fetch(url + "?wait=true", { method: 'POST', body: formData });
             alert("✅ Constat envoyé !");
         }, 'image/png');
-    } catch (e) { 
-        alert("Erreur Discord"); 
-    }
+    } catch (e) { alert("Erreur Discord"); }
 }
 
 function copyLink() { navigator.clipboard.writeText(document.getElementById("direct-link").value); alert("Copié !"); }
