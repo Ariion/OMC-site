@@ -126,13 +126,19 @@ function createMarker(x, y) {
     const id = Date.now();
     const markerNumber = markers.length + 1; // Définit le numéro du point
     const newMarker = {
-        id: id,
-        number: markerNumber, // On stocke le numéro
-        x: (x / 100) * 418,
-        y: (y / 100) * 940,
-        type: activeType,
-        details: { typeL: "", elements: [], extras: "", origine: "" }
-    };
+    id: id,
+    number: markerNumber,
+    x: (x / 100) * 418,
+    y: (y / 100) * 940,
+    type: activeType,
+    details: { 
+        typeL: "", 
+        elements: [], 
+        extras: "", 
+        origine: "", 
+        organes: [] // Ajouté
+    }
+};
     markers.push(newMarker);
 
     const markerEl = document.createElement('div');
@@ -224,34 +230,88 @@ function openDetails(markerId) {
     const container = document.getElementById('detailsContainer');
     container.style.display = "block";
     const config = LESIONS.find(l => l.key === m.type);
-    let html = `<span class="details-title">${config.icon} OPTIONS : ${config.label}</span>`;
 
-    if (m.type === 'fracture' || m.type === 'abrasion') {
-        html += `<div class="details-sub">TYPE :</div>
-            <select onchange="updateMarkerDetail(${m.id}, 'typeL', this.value)">
-                <option value="">Choisir...</option>
-                <option value="Fermée non déplacée" ${m.details.typeL==='Fermée non déplacée'?'selected':''}>Fermée non déplacée</option>
-                <option value="Fermée déplacée" ${m.details.typeL==='Fermée déplacée'?'selected':''}>Fermée déplacée</option>
-                <option value="Ouverte" ${m.details.typeL==='Ouverte'?'selected':''}>Ouverte</option>
-                <option value="Entorse légère" ${m.details.typeL==='Entorse légère'?'selected':''}>Entorse légère</option>
-                <option value="Entorse sévère" ${m.details.typeL==='Entorse sévère'?'selected':''}>Entorse sévère</option>
-                <option value="Luxation complète" ${m.details.typeL==='Luxation complète'?'selected':''}>Luxation complète</option>
-            </select>`;
+    // Titre dynamique
+    let html = `<span class="details-header">Options de la lésion (${config.label})</span>`;
+    html += `<div class="details-grid-wrapper">`;
+
+    // 1. SECTION TYPE (Selon la lésion)
+    if (m.type === 'fracture') {
+        html += renderOptionGroup(m, "Type", ["Fermée non déplacée", "Fermée déplacée", "Ouverte"]);
+    } else if (m.type === 'plaie_laceration') {
+        html += renderOptionGroup(m, "Type", ["Coupure superficielle", "Lacération profonde", "Perforation"]);
+        html += renderOptionGroup(m, "Origine", ["Arme Blanche", "Autre (environnement)"], "origine");
+        html += renderOptionGroup(m, "Lésion d’organe", ["Cœur", "Estomac", "Foie", "Intestin", "Poumon", "Rate", "Rein"], "organes", true);
+    } else if (m.type === 'brulure') {
+        html += renderOptionGroup(m, "Brûlure thermique", ["1er degré (rougeurs)", "2e degré (cloques)", "3e degré (peau détruite)"]);
+        html += renderOptionGroup(m, "Cause", ["Thermique", "Chimique", "Électrique", "Inhalation de fumée"], "origine");
+        html += renderOptionGroup(m, "Étendue (sur la zone)", ["< 5%", "5% - 50%", "50% - 80%", "> 80%"], "extras");
+    } else if (m.type === 'hematome') {
+        html += renderOptionGroup(m, "Type", ["Hématome", "Œdème", "Traumatisme crânien", "Hémorragie interne"]);
+        html += renderOptionGroup(m, "Gravité", ["Légère", "Moyenne", "Sévère"], "extras");
     } else if (m.type === 'plaie_feu') {
-        html += `<div style="color:#ef4444; font-size:10px; font-weight:bold;">⚠️ DÉCLARATION LSPD REQUISE</div>
-            <div class="details-sub">IMPACT :</div>
-            <select onchange="updateMarkerDetail(${m.id}, 'typeL', this.value)">
-                <option value="Entrée seule" ${m.details.typeL==='Entrée seule'?'selected':''}>Entrée seule</option>
-                <option value="Entrée + sortie" ${m.details.typeL==='Entrée + sortie'?'selected':''}>Entrée + sortie</option>
-            </select>`;
+        html += `<div style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-bottom: 10px; border: 1px solid rgba(239, 68, 68, 0.2);">🔴 PAF détectée — pensez à la déclaration</div>`;
+        html += renderOptionGroup(m, "Type d’impact", ["Entrée seule", "Entrée + sortie"]);
+        html += renderOptionGroup(m, "Gravité", ["Superficielle", "Pénétrante", "Traversante"], "extras");
+        html += renderOptionGroup(m, "Lésion d’organe", ["Cœur", "Estomac", "Foie", "Intestin", "Poumon", "Rate", "Rein"], "organes", true);
+    } else if (m.type === 'abrasion') {
+        html += renderOptionGroup(m, "Type", ["Entorse légère", "Entorse sévère (ligament endommagé ou rompu)", "Luxation complète"]);
     }
 
-    html += `<div class="details-sub">ÉLÉMENTS ASSOCIÉS :</div><div class="checkbox-grid">`;
-    ["Hémorragie", "Corps étranger", "Risque infectieux", "Oedème"].forEach(el => {
-        html += `<label class="checkbox-item"><input type="checkbox" onchange="updateMarkerElements(${m.id},'${el}',this.checked)" ${m.details.elements.includes(el)?'checked':''}> ${el}</label>`;
-    });
+    // 2. SECTION ÉLÉMENTS ASSOCIÉS (Commun à tous)
+    html += renderOptionGroup(m, "Éléments associés", ["Hémorragie", "Corps étranger présent", "Risque infectieux"], "elements", true);
+
     html += `</div>`;
     container.innerHTML = html;
+}
+
+// Fonction utilitaire pour générer les groupes de boutons
+function renderOptionGroup(marker, title, options, field = "typeL", isMultiple = false) {
+    let groupHtml = `<div class="option-group">
+        <div class="details-sub-title">${title}</div>
+        <div class="options-grid">`;
+
+    options.forEach(opt => {
+        let isSelected = false;
+        if (isMultiple) {
+            // Vérifie si l'option est dans le tableau (elements ou organes)
+            const list = marker.details[field] || [];
+            isSelected = list.includes(opt);
+        } else {
+            isSelected = marker.details[field] === opt;
+        }
+
+        const activeClass = isSelected ? 'selected' : '';
+        const checkClass = isMultiple ? 'opt-check' : '';
+        
+        groupHtml += `<button class="opt-btn ${activeClass} ${checkClass}" onclick="toggleOption(${marker.id}, '${field}', '${opt}', ${isMultiple})">
+            ${opt}
+        </button>`;
+    });
+
+    groupHtml += `</div></div>`;
+    return groupHtml;
+}
+
+// Nouvelle fonction pour gérer le clic sur les boutons
+function toggleOption(id, field, val, isMultiple) {
+    const m = markers.find(mark => mark.id == id);
+    if (!m) return;
+
+    if (!m.details[field]) m.details[field] = isMultiple ? [] : "";
+
+    if (isMultiple) {
+        if (m.details[field].includes(val)) {
+            m.details[field] = m.details[field].filter(v => v !== val);
+        } else {
+            m.details[field].push(val);
+        }
+    } else {
+        m.details[field] = val;
+    }
+
+    updateReport();
+    openDetails(id); // Rafraîchit le menu pour montrer la sélection
 }
 
 function updateMarkerDetail(id, field, val) {
