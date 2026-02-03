@@ -385,7 +385,7 @@ async function envoyerDiscord() {
             const formData = new FormData();
             const nom = document.getElementById('patientId').value || "Inconnu";
             formData.append("payload_json", JSON.stringify({
-                thread_name: `🤕 CONSTAT - ${nom}`,
+                thread_name: `Imagerie - ${nom} - sessionRef`,
                 content: `🚑 **Nouveau Constat Lésionnel** : ${nom}`
             }));
             formData.append("file", blob, `constat_${nom}.png`);
