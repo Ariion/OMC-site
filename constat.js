@@ -355,10 +355,21 @@ if (obsInput.trim() !== "") {
     }
 
     // 7. QR Code (utilisant la référence session)
-    const qrImg = document.getElementById('qr-ref');
-    if(qrImg) {
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
-    }
+ const qrImg = document.getElementById('qr-ref');
+const ref = document.getElementById('num-ref').innerText; // Ou ta variable de réf
+
+if(qrImg && ref) {
+    // On construit l'URL proprement
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
+    
+    // On l'applique
+    qrImg.src = qrUrl;
+
+    // Optionnel : Debug si ça rate encore
+    qrImg.onerror = function() {
+        console.error("Erreur de chargement du QR Code. Vérifiez l'URL : " + qrUrl);
+    };
+}
     // Gestion de l'affichage dynamique de l'observation supplémentaire
     const inputObs = document.getElementById('obsSupInput').value;
 const sectionObs = document.getElementById('sectionObsSup');
