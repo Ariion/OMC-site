@@ -435,7 +435,7 @@ async function genererImage() {
 }
 
 async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1467854784504795280/7upr72-C3MarQEIX0sQwGFcCtivsBHi_NjBcwCHVhvbNyAKC5mzxdACH5texYCMWelEb";
+    const url = "https://discord.com/api/webhooks/1421780761731928194/ZFSpiLTHfytIGT02QBf5SBOIEDzWMaf_PMHtDB9sd-GmF5chHnQqQic-9YpLnYHJIRPo";
     const zone = document.getElementById('capture-zone'); // Ton ID spécifique pour le constat
 
     try {
