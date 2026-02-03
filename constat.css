@@ -202,20 +202,34 @@
     font-size: 11px; 
 }
 
-.qr-code {
-    width: 80px;  /* Ajuste selon tes besoins */
-    height: 80px;
-    display: block;
-    margin: 0 auto;
-    background-color: white; /* Aide à voir si l'image est là mais invisible */
-}
-
+/* Le conteneur du tampon */
 .round-stamp {
-    position: relative;
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 10px;
+    border: 2px solid #003366; /* Bleu médical sombre */
+    border-radius: 15px;      /* Coins arrondis */
+    background-color: white;
+    width: fit-content;
+}
+
+/* Style de l'image QR */
+.qr-code {
+    width: 120px; 
+    height: 120px;
+    margin-bottom: 5px;
+}
+
+/* Texte sous le QR */
+.stamp-text {
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    font-size: 12px;
+    color: #003366;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* Grid des lésions */
