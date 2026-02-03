@@ -363,7 +363,7 @@ async function genererImage() {
 }
 
 async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1467854784504795280/7upr72-C3MarQEIX0sQwGFcCtivsBHi_NjBcwCHVhvbNyAKC5mzxdACH5texYCMWelEb";
+    const url = "https://discord.com/api/webhooks/1468219484245332171/OwqxaLPAJznP0W5gxsmNEhuPIJHWukIEX6OZDXpElPWOz0Bbjjc3I9ahKsJ73dCUaQln";
     const btn = document.getElementById('discord-btn'); // Vérifie que ton bouton a cet ID
     const doc = document.getElementById('document'); 
 
