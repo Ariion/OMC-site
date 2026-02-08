@@ -135,23 +135,62 @@ h4 { margin: 10px 0; color: #0f172a; text-transform: uppercase; font-size: 14px;
 }
 
 /* --- FOOTER --- */
-.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; }
+/* --- FOOTER (CORRECTION COULEURS) --- */
+.cert-footer { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-end; 
+    margin-top: 40px; 
+}
+
 .cert-signature { 
     border-top: 2px solid #0a1324; 
-    min-width: 200px; padding-top: 10px; 
-    font-weight: bold; font-size: 11px; 
+    min-width: 200px; 
+    padding-top: 10px; 
+    font-weight: bold; 
+    font-size: 11px; 
+    color: #000000; /* FORCER LE NOIR ICI */
 }
-#d-sig { font-family: 'Alex Brush', cursive; font-size: 32px; color: #0a1324; }
 
-/* QR CODE (Retour au style sobre) */
+#d-sig { 
+    font-family: 'Alex Brush', cursive; 
+    font-size: 32px; 
+    color: #000000; /* Signature en noir */
+}
+
 .round-stamp {
-    display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 5px; border: 2px solid #000; border-radius: 4px; background-color: white; width: fit-content;
-    opacity: 1; transform: none;
+    display: inline-flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    padding: 5px; 
+    border: 2px solid #000; 
+    border-radius: 4px; 
+    background-color: white; 
+    width: fit-content;
+    opacity: 1; 
+    transform: none;
 }
-.qr-code { width: 70px; height: 70px; margin-bottom: 2px; }
-.stamp-text { font-family: 'Arial', sans-serif; font-weight: bold; font-size: 9px; color: #000; text-transform: uppercase; }
 
+.qr-code { width: 70px; height: 70px; margin-bottom: 2px; }
+
+.stamp-text { 
+    font-family: 'Arial', sans-serif; 
+    font-weight: bold; 
+    font-size: 9px; 
+    color: #000; 
+    text-transform: uppercase; 
+}
+
+/* Le texte légal tout en bas */
+.legal-text {
+    font-size: 10px;
+    color: #000000 !important; /* FORCER LE NOIR IMPÉRATIVEMENT */
+    text-align: center;
+    margin-top: 20px;
+    opacity: 0.7;
+    font-style: italic;
+}
 
 /* --- FORMULAIRES SIDEBAR --- */
 .form-group-row { display: flex; gap: 10px; }
