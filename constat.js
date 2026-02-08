@@ -269,20 +269,9 @@ function initTraitements() {
     document.getElementById('preconsGrid').innerHTML = LISTE_CONSEILS.map(c => `<label class="checkbox-item"><input type="checkbox" class="precon-check" value="${c}" onchange="updateReport()"> ${c}</label>`).join('');
 }
 
-function updateReport()Voici la fonction updateReport() entièrement nettoyée et corrigée.
-
-Ce qu'elle fait maintenant :
-
-Elle sépare bien les Circonstances (input du haut) des Observations supplémentaires (input du bas).
-
-Elle supprime toute interaction avec les blocs flottants autour du corps (que tu ne voulais plus).
-
-Elle gère l'affichage conditionnel : si tu n'écris rien dans "Observations supplémentaires", la ligne en bas du rapport disparaît pour rester propre.
-
-JavaScript
 function updateReport() {
     // ============================================================
-    // 1. RÉCUPÉRATION DES DONNÉES (INPUTS)
+    // 1. RÉCUPÉRATION DES INPUTS
     // ============================================================
     const patientVal = document.getElementById('patientId').value || "...";
     const birthInput = document.getElementById('patientBirth').value;
@@ -290,20 +279,21 @@ function updateReport() {
     const dateInput = document.getElementById('constatDate').value;
     const sigVal = document.getElementById('doctorSig').value || "...";
     
-    // NOUVEAU : On récupère séparément les deux champs de texte
-    // (Assure-toi d'avoir créé l'input id="circumInput" dans ton HTML comme vu précédemment)
-    const circumInput = document.getElementById('circumInput') ? document.getElementById('circumInput').value : ""; 
-    const obsInput = document.getElementById('obsSupInput').value || "";
+    // Input HAUT (Circonstances)
+    // Note: Assure-toi d'avoir l'id="circumInput" dans ton HTML (voir étape 2)
+    const circumEl = document.getElementById('circumInput');
+    const circumVal = circumEl ? circumEl.value : "";
+
+    // Input BAS (Observations Supplémentaires)
+    const obsEl = document.getElementById('obsSupInput');
+    const obsVal = obsEl ? obsEl.value : "";
 
     // ============================================================
-    // 2. FORMATAGE DES DATES
+    // 2. MISE À JOUR EN-TÊTE & DATES
     // ============================================================
     const formattedBirth = birthInput ? new Date(birthInput).toLocaleDateString('fr-FR') : "...";
     const formattedDate = dateInput ? new Date(dateInput).toLocaleDateString('fr-FR') : "...";
 
-    // ============================================================
-    // 3. MISE À JOUR DES INFOS DE BASE (EN-TÊTE)
-    // ============================================================
     if(document.getElementById('display-patient')) document.getElementById('display-patient').innerText = patientVal;
     if(document.getElementById('display-birth')) document.getElementById('display-birth').innerText = formattedBirth;
     if(document.getElementById('display-imaging')) document.getElementById('display-imaging').innerText = imagingVal;
@@ -312,37 +302,35 @@ function updateReport() {
     if(document.getElementById('d-sig')) document.getElementById('d-sig').innerText = sigVal;
 
     // ============================================================
-    // 4. GESTION DU BLOC "CIRCONSTANCES" (Sous l'en-tête)
+    // 3. GESTION DU BLOC "CIRCONSTANCES" (HAUT)
     // ============================================================
-    const circumTextDisplay = document.getElementById('display-circum-text');
-    const circumSection = document.getElementById('sectionCircumstances');
-    
-    if (circumTextDisplay && circumSection) {
-        // Si l'utilisateur a écrit quelque chose, on l'affiche, sinon phrase par défaut
-        circumTextDisplay.innerText = circumInput || "En attente des détails de l'intervention...";
-        // On s'assure que le bloc est visible
-        circumSection.style.display = 'block';
+    // C'est le bloc gris en pointillés sous les infos patient
+    const circumDisplay = document.getElementById('display-circum-text');
+    if (circumDisplay) {
+        circumDisplay.innerText = circumVal || "En attente des détails de l'intervention...";
+        // On s'assure que le bloc parent est visible
+        const circumSection = document.getElementById('sectionCircumstances');
+        if(circumSection) circumSection.style.display = 'block';
     }
 
     // ============================================================
-    // 5. GESTION DU BLOC "OBSERVATIONS SUPPLÉMENTAIRES" (Tout en bas)
+    // 4. GESTION DU BLOC "OBSERVATIONS SUPPLÉMENTAIRES" (BAS)
     // ============================================================
+    // C'est le bloc tout en bas du rapport
     const sectionObs = document.getElementById('sectionObsSup');
     const docObsText = document.getElementById('docObsSupText');
-    
+
     if (sectionObs && docObsText) {
-        if (obsInput.trim() !== "") {
-            // S'il y a du texte, on affiche le bloc du bas
-            sectionObs.style.display = 'block';
-            docObsText.innerText = obsInput;
+        if (obsVal.trim() !== "") {
+            sectionObs.style.display = 'block'; // On affiche seulement si on écrit
+            docObsText.innerText = obsVal;
         } else {
-            // Sinon, on le cache pour ne pas avoir une ligne vide
-            sectionObs.style.display = 'none';
+            sectionObs.style.display = 'none';  // Sinon on cache pour gagner de la place
         }
     }
 
     // ============================================================
-    // 6. LISTE DES LÉSIONS (MARKERS)
+    // 5. LISTE DES LÉSIONS (MARKERS)
     // ============================================================
     const list = document.getElementById('reportList');
     if (list) {
@@ -352,7 +340,6 @@ function updateReport() {
             const zone = regionFrom(m.x, m.y);
             const d = m.details || {};
             
-            // Construction de la ligne de détails
             let parts = [];
             if (d.typeL) parts.push(d.typeL);
             if (d.origine) parts.push(`Origine: ${d.origine}`);
@@ -362,7 +349,6 @@ function updateReport() {
             
             const txt = parts.length ? ` (${parts.join(' — ')})` : "";
             
-            // Création de l'élément de liste
             const li = document.createElement('li');
             li.style.listStyle = "none";
             li.style.marginBottom = "8px";
@@ -372,27 +358,19 @@ function updateReport() {
     }
 
     // ============================================================
-    // 7. TRAITEMENTS, PRÉCONISATIONS ET BADGES
+    // 6. CHECKBOXES & QR CODE
     // ============================================================
-    // Médicaments
     const selectedMeds = Array.from(document.querySelectorAll('.med-check:checked')).map(cb => cb.value);
     document.getElementById('sectionTraitements').style.display = selectedMeds.length ? 'block' : 'none';
     document.getElementById('docMedsList').innerHTML = selectedMeds.map(m => `<li>${m}</li>`).join('');
 
-    // Préconisations
     const selectedPrecons = Array.from(document.querySelectorAll('.precon-check:checked')).map(cb => cb.value);
     document.getElementById('sectionPrecons').style.display = selectedPrecons.length ? 'block' : 'none';
     document.getElementById('docPreconsList').innerHTML = selectedPrecons.map(c => `<li>${c}</li>`).join('');
 
-    // Badge Alerte Arme à Feu (PAF)
     const pafBadge = document.getElementById('pafBadge');
-    if (pafBadge) {
-        pafBadge.style.display = markers.some(m => m.type === 'plaie_feu') ? 'block' : 'none';
-    }
+    if (pafBadge) pafBadge.style.display = markers.some(m => m.type === 'plaie_feu') ? 'block' : 'none';
 
-    // ============================================================
-    // 8. QR CODE
-    // ============================================================
     const qrImg = document.getElementById('qr-ref');
     if (qrImg) {
         const qrData = encodeURIComponent(`OMC-CERT-${patientVal}-${window.sessionRef}`);
