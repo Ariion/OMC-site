@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>OMC — Constat Lésionnel</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="constat.css">
@@ -13,90 +12,91 @@
     <div class="interface-container">
         
         <aside class="sidebar">
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
-    <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
-    
-    <button onclick="toggleTheme()" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-        <span>🌓</span>
-        <span id="theme-text">Passer mode sombre</span> </button>
-</div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
+                <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
+                <button onclick="toggleTheme()" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                    <span>🌓</span>
+                    <span id="theme-text">Passer mode sombre</span> 
+                </button>
+            </div>
         
             <h1 class="sidebar-title">CONSTAT LÉSIONNEL</h1>
 
             <div class="form-group-row">
-    <div class="form-group">
-        <label>NOM DU PATIENT</label>
-        <input id="patientId" type="text" placeholder="Ex: Garret Freeman" oninput="updateReport()">
-    </div>
-    <div class="form-group">
-        <label>DATE DE NAISSANCE</label>
-        <input id="patientBirth" type="date" oninput="updateReport()">
-    </div>
-</div>
+                <div class="form-group">
+                    <label>NOM DU PATIENT</label>
+                    <input id="patientId" type="text" placeholder="Ex: Garret Freeman" oninput="updateReport()">
+                </div>
+                <div class="form-group">
+                    <label>DATE DE NAISSANCE</label>
+                    <input id="patientBirth" type="date" oninput="updateReport()">
+                </div>
+            </div>
 
-<div class="form-group-row">
-    <div class="form-group">
-        <label>IMAGERIE PAR</label>
-        <input id="imagingDoc" type="text" placeholder="Ex: Dr. Hanson" oninput="updateReport()">
-    </div>
-    <div class="form-group">
-        <label>DATE DU CONSTAT</label>
-        <input id="constatDate" type="date" oninput="updateReport()">
-    </div>
-</div>
-            <div class="form-group" style="margin-top: 10px;">
-    <label>CIRCONSTANCES D'INTERVENTION</label>
-    <textarea id="circumInput" rows="3" 
-              placeholder="Détails de l'intervention (ex: AVP, agression...)" 
-              oninput="updateReport()" 
-              style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; font-family: inherit; resize: none;"></textarea>
-</div>
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label>IMAGERIE PAR</label>
+                    <input id="imagingDoc" type="text" placeholder="Ex: Dr. Hanson" oninput="updateReport()">
+                </div>
+                <div class="form-group">
+                    <label>DATE DU CONSTAT</label>
+                    <input id="constatDate" type="date" oninput="updateReport()">
+                </div>
+            </div>
 
+            <div class="form-group" style="margin-top: 10px; border-top: 1px solid #1e293b; padding-top: 10px;">
+                <label style="color:#64ffda;">CIRCONSTANCES D'INTERVENTION</label>
+                <textarea id="circumInput" rows="3" 
+                          placeholder="Détails de l'intervention (ex: AVP, agression...)" 
+                          oninput="updateReport()" 
+                          style="width: 100%; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; font-family: inherit; resize: none;"></textarea>
+            </div>
 
-            <div class="form-group">
+            <div class="form-group" style="margin-top: 15px;">
                 <label>Type de lésion à placer</label>
                 <div class="lesions-grid" id="lesionsGrid"></div>
             </div>
-            <div class="form-group" id="detailsContainer" style="display:none; background: #111b2d; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-top: 15px;">
-    </div>
+            
+            <div class="form-group" id="detailsContainer" style="display:none; background: #111b2d; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-top: 15px;"></div>
 
-<div class="form-group" style="border-top: 1px solid #1e293b; padding-top: 15px;">
-    <label>Traitement médicamenteux</label>
-    <div class="checkbox-grid" id="medsGrid">
-        </div>
-</div>
+            <div class="form-group" style="border-top: 1px solid #1e293b; padding-top: 15px;">
+                <label>Traitement médicamenteux</label>
+                <div class="checkbox-grid" id="medsGrid"></div>
+            </div>
 
-<div class="form-group">
-    <label>Préconisations post-rapport</label>
-    <div class="checkbox-grid" id="preconsGrid">
-        </div>
-</div>
+            <div class="form-group">
+                <label>Préconisations post-rapport</label>
+                <div class="checkbox-grid" id="preconsGrid"></div>
+            </div>
 
-<div id="lspdSection" class="form-group" style="display:none;">
-    <label style="color: #ef4444; font-size: 10px;">📋 DÉCLARATION INTER-SERVICES</label>
-    <label class="checkbox-item" style="font-size: 11px; color: #94a3b8;">
-        <input type="checkbox" id="lspdDeclare" onchange="updateReport()"> Déclaration LSPD / BCSO
-    </label>
-</div>
+            <div id="lspdSection" class="form-group" style="display:none;">
+                <label style="color: #ef4444; font-size: 10px;">📋 DÉCLARATION INTER-SERVICES</label>
+                <label class="checkbox-item" style="font-size: 11px; color: #94a3b8;">
+                    <input type="checkbox" id="lspdDeclare" onchange="updateReport()"> Déclaration LSPD / BCSO
+                </label>
+            </div>
 
             <div class="edit-btns-container">
-        <button id="btnUndo" class="btn-edit">EFFACER LE DERNIER POINT</button>
-        <button id="btnClear" class="btn-edit btn-danger-soft">RÉINITIALISER L'IMAGERIE</button>
-    </div>
+                <button id="btnUndo" class="btn-edit">EFFACER LE DERNIER POINT</button>
+                <button id="btnClear" class="btn-edit btn-danger-soft">RÉINITIALISER L'IMAGERIE</button>
+            </div>
+            
             <div class="form-group debug-container">
-    <span class="debug-label">CALQUE DES ZONES</span>
-    <label class="switch">
-        <input type="checkbox" id="debugToggle" onchange="toggleDebug()">
-        <span class="slider round"></span>
-    </label>
-</div>
-<div class="form-group" style="margin-top: 20px; border-top: 1px solid #1e293b; padding-top: 15px;">
-    <label>OBSERVATIONS SUPPLÉMENTAIRES</label>
-    <textarea id="obsSupInput" rows="4" 
-              placeholder="Saisissez ici vos notes complémentaires, détails sur l'état général, etc." 
-              oninput="updateReport()" 
-              style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; font-family: inherit; resize: none;"></textarea>
-</div>
+                <span class="debug-label">CALQUE DES ZONES</span>
+                <label class="switch">
+                    <input type="checkbox" id="debugToggle" onchange="toggleDebug()">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px; border-top: 1px solid #1e293b; padding-top: 15px;">
+                <label>OBSERVATIONS SUPPLÉMENTAIRES</label>
+                <textarea id="obsSupInput" rows="4" 
+                          placeholder="Saisissez ici vos notes complémentaires..." 
+                          oninput="updateReport()" 
+                          style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; font-family: inherit; resize: none;"></textarea>
+            </div>
+
             <div class="form-group">
                 <label>Signature du Praticien</label>
                 <input id="doctorSig" type="text" placeholder="Signature manuscrite" oninput="updateReport()">
@@ -105,9 +105,20 @@
             <div class="actions-group">
                 <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
                 <button class="btn-discord" onclick="envoyerDiscord()">Envoyer sur Discord</button>
-                
             </div>
         </aside>
+
+        <main class="preview-area">
+            <div id="capture-zone" class="document-final">
+                
+                <div class="doc-left-side">
+                    <div class="bodyframe" id="frame">
+                        <img class="body-bg" src="assets/corps-humain.png" alt="Silhouette">
+                        <svg class="overlay" id="overlay" viewBox="0 0 418 940">
+                            <g id="markersLayer"></g>
+                        </svg>
+                    </div>
+                </div>
 
                 <div class="doc-right-side">
                     <header class="header-cert">
@@ -120,41 +131,42 @@
 
                     <div class="report-content">
                         <div class="report-header-grid">
-    <div class="info-box"><small>PATIENT</small><div id="display-patient">...</div></div>
-    <div class="info-box"><small>NAISSANCE</small><div id="display-birth">...</div></div>
-    <div class="info-box"><small>DATE D'ÉTABLISSEMENT</small><div id="display-date">22/01/2026</div></div>
-    <div class="info-box"><small>RÉFÉRENCE DOSSIER</small><div id="display-ref">#22012300</div></div>
-    <div class="info-box"><small>IMAGERIE RÉALISÉE PAR</small><div id="display-imaging">...</div></div>
-</div>
-                        <div id="sectionCircumstances" style="margin-top: 15px; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 4px;">
-    <small style="font-size: 9px; font-weight: bold; color: #64748b; text-transform: uppercase;">Circonstances de l'imagerie</small>
-    <p id="display-circum-text" style="font-size: 11px; color: #0f172a; margin: 5px 0 0 0; line-height: 1.4; font-style: italic;">
-        En attente des détails de l'intervention...
-    </p>
-</div>
+                            <div class="info-box"><small>PATIENT</small><div id="display-patient">...</div></div>
+                            <div class="info-box"><small>NAISSANCE</small><div id="display-birth">...</div></div>
+                            <div class="info-box"><small>DATE D'ÉTABLISSEMENT</small><div id="display-date">22/01/2026</div></div>
+                            <div class="info-box"><small>RÉFÉRENCE DOSSIER</small><div id="display-ref">#22012300</div></div>
+                            <div class="info-box"><small>IMAGERIE RÉALISÉE PAR</small><div id="display-imaging">...</div></div>
+                        </div>
+
+                        <div id="sectionCircumstances" style="margin-top: 15px; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 4px; display: none;">
+                            <small style="font-size: 9px; font-weight: bold; color: #64748b; text-transform: uppercase;">Circonstances de l'imagerie</small>
+                            <p id="display-circum-text" style="font-size: 11px; color: #0f172a; margin: 5px 0 0 0; line-height: 1.4; font-style: italic;"></p>
+                        </div>
+
                         <hr class="doc-hr">
                         <h4>OBSERVATIONS CLINIQUES :</h4>
                         <ol id="reportList">
                             <li>Aucune lésion sélectionnée.</li>
                         </ol>
+
                         <div id="pafBadge" class="paf-badge paf-hidden">
-    ⚠️ ALERTE : BLESSURE PAR ARME À FEU
-</div>
+                            ⚠️ ALERTE : BLESSURE PAR ARME À FEU
+                        </div>
+
                         <div id="sectionTraitements" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; display:none;">
-    <h5 style="margin: 0; color: #0a1324;">TRAITEMENT MÉDICAMENTEUX :</h5>
-    <ul id="docMedsList" style="font-size: 11px; margin: 5px 0;"></ul>
-</div>
+                            <h5 style="margin: 0; color: #0a1324;">TRAITEMENT MÉDICAMENTEUX :</h5>
+                            <ul id="docMedsList" style="font-size: 11px; margin: 5px 0;"></ul>
+                        </div>
 
-<div id="sectionPrecons" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; display:none;">
-    <h5 style="margin: 0; color: #0a1324;">PRÉCONISATIONS :</h5>
-    <ul id="docPreconsList" style="font-size: 11px; margin: 5px 0;"></ul>
-</div>
+                        <div id="sectionPrecons" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; display:none;">
+                            <h5 style="margin: 0; color: #0a1324;">PRÉCONISATIONS :</h5>
+                            <ul id="docPreconsList" style="font-size: 11px; margin: 5px 0;"></ul>
+                        </div>
+
                         <div id="sectionObsSup" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; display:none;">
-    <h5 style="margin: 0; color: #0a1324;">OBSERVATIONS SUPPLÉMENTAIRES :</h5>
-    <p id="docObsSupText" style="font-size: 11px; margin: 5px 0;"></p>
-</div>
-
-
+                            <h5 style="margin: 0; color: #0a1324;">OBSERVATIONS SUPPLÉMENTAIRES :</h5>
+                            <p id="docObsSupText" style="font-size: 11px; margin: 5px 0;"></p>
+                        </div>
                     </div>
 
                     <div class="cert-footer">
@@ -174,22 +186,22 @@
     </div>
 
     <div id="cursorTip" class="cursor-tip"></div>
-<div id="image-popup" class="popup-overlay" style="display:none;">
-    <div class="popup-content">
-        <h3 style="color:white; margin-bottom:15px;">PRÉVISUALISATION DU CONSTAT</h3>
-        <img id="preview-img-result" src="" alt="Aptitude">
-        <div class="popup-actions" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-            <input type="text" id="direct-link" readonly onclick="this.select()" style="width: 100%; padding: 10px; border-radius: 4px; border: none; text-align: center;">
-            <div style="display: flex; gap: 10px;">
-                <button onclick="copyLink()" style="flex: 1; background: #64ffda; color: #0a1324; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">COPIER LE LIEN</button>
-                <button onclick="closePopup()" style="flex: 1; background: #64748b; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">FERMER</button>
+    <div id="image-popup" class="popup-overlay" style="display:none;">
+        <div class="popup-content">
+            <h3 style="color:white; margin-bottom:15px;">PRÉVISUALISATION DU CONSTAT</h3>
+            <img id="preview-img-result" src="" alt="Aptitude">
+            <div class="popup-actions" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="direct-link" readonly onclick="this.select()" style="width: 100%; padding: 10px; border-radius: 4px; border: none; text-align: center;">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="copyLink()" style="flex: 1; background: #64ffda; color: #0a1324; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">COPIER LE LIEN</button>
+                    <button onclick="closePopup()" style="flex: 1; background: #64748b; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">FERMER</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="constat.js"></script>
     <script src="global.js"></script>
-    
 </body>
 </html>
