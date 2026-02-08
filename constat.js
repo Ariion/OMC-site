@@ -277,6 +277,7 @@ function updateReport() {
     const dateInput = document.getElementById('constatDate').value;
     const sigVal = document.getElementById('doctorSig').value || "...";
     const obsInput = document.getElementById('obsSupInput').value || "";
+    const obsSup = document.getElementById('obsSupInput').value;
 
     // 2. Formatage des dates (JJ/MM/AAAA)
     const formattedBirth = birthInput ? new Date(birthInput).toLocaleDateString('fr-FR') : "...";
@@ -288,6 +289,20 @@ function updateReport() {
     if(document.getElementById('display-imaging')) document.getElementById('display-imaging').innerText = imagingVal;
     if(document.getElementById('display-date')) document.getElementById('display-date').innerText = formattedDate;
     if(document.getElementById('display-ref')) document.getElementById('display-ref').innerText = window.sessionRef;
+
+ const circumText = document.getElementById('display-circum-text');
+    if (obsSup) {
+        circumText.innerText = obsSup;
+        document.getElementById('sectionCircumstances').style.display = 'block';
+    } else {
+        circumText.innerText = "Aucune circonstance particulière renseignée.";
+    }
+
+    // Si tu as gardé les petits blocs autour de la silhouette (étape précédente) :
+    if(document.getElementById('display-circum-left')) {
+        document.getElementById('display-circum-left').innerText = obsSup || "...";
+    }
+}
     if(document.getElementById('d-sig')) document.getElementById('d-sig').innerText = sigVal;
 
     // 4. Liste des Observations Cliniques
