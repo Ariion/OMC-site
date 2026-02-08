@@ -105,7 +105,8 @@
     width: 280px; /* Largeur fixe plus raisonnable */
     height: 630px; 
     margin: 0 auto;
-    z-index: 1;
+    z-index: 5;
+    background: transparent;
 }
 
 .body-bg {
@@ -347,21 +348,25 @@
     box-shadow: 0 0 15px rgba(100, 255, 218, 0.2);
 }
 .doc-left-side {
+    position: relative;
     flex: 0 0 350px;
-    background: #fafafa;
-    border: 1px solid #eee;
+    background: white; /* Doit être blanc comme le reste du doc */
     padding: 10px;
     display: flex;
     justify-content: center;
+    align-items: center;
+    border-right: 1px solid #eee; /* Séparation légère */
 }
+/* --- LES BLOCS DE CIRCONSTANCES AUTOUR DE LA SILHOUETTE --- */
 .circumstance-box {
     position: absolute;
-    width: 140px; /* Largeur ajustable */
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #eee;
+    width: 140px; 
+    background: #f8fafc; /* Fond très clair pour le doc blanc */
+    border: 1px solid #cbd5e1;
     padding: 8px;
     border-radius: 4px;
-    top: 50px; /* Positionnement vertical */
+    top: 30px; /* Aligné vers le haut */
+    z-index: 10;
 }
 
 .circumstance-box small {
@@ -370,21 +375,23 @@
     font-weight: bold;
     color: #64748b;
     margin-bottom: 4px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #e2e8f0;
     padding-bottom: 2px;
+    text-transform: uppercase;
 }
 
 .circumstance-box div {
     font-size: 10px;
     color: #0a1324;
     line-height: 1.2;
-    min-height: 40px;
+    min-height: 20px;
     word-wrap: break-word;
+    font-style: italic;
 }
 
 .box-left {
     left: 10px;
-    border-left: 3px solid #3b82f6; /* Rappel couleur médicale */
+    border-left: 3px solid #3b82f6;
 }
 
 .box-right {
