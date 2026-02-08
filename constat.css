@@ -1,4 +1,4 @@
-/* --- LAYOUT 3 COLONNES --- */
+/* --- LAYOUT GLOBAL --- */
 .labo-body {  
     background-color: #0d1117;
     margin: 0;
@@ -7,6 +7,7 @@
 
 .interface-container { display: flex; width: 100vw; height: 100vh; }
 
+/* --- SIDEBAR (GAUCHE) --- */
 .sidebar {
     width: 400px;
     background-color: #0a1324;
@@ -18,6 +19,9 @@
     flex-direction: column;
 }
 
+.sidebar-title { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #64ffda; text-transform: uppercase; }
+
+/* --- PREVIEW AREA (CENTRE) --- */
 .preview-area {
     flex-grow: 1;
     background-color: #f1f5f9;
@@ -28,6 +32,41 @@
     overflow-y: auto;
 }
 
+/* --- DOCUMENT A4 PAYSAGE (CONTENEUR PRINCIPAL) --- */
+.document-final {
+    background: white;
+    width: 1000px;
+    display: flex; /* Active les deux colonnes (Corps + Texte) */
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    gap: 40px;
+}
+
+/* --- COLONNE GAUCHE (CORPS) --- */
+.doc-left-side {
+    position: relative;
+    flex: 0 0 320px;       /* Largeur fixe */
+    background: transparent;
+    border-right: 1px solid #eee;
+    padding-right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* --- COLONNE DROITE (TEXTE) --- */
+.doc-right-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- ELEMENTS GRAPHIQUES --- */
+.header-cert { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+.cert-tag { background: #0a1324; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+.cert-main-title { font-size: 24px; margin: 0; color: #0a1324; font-weight: 900; }
+.doc-hr { border: none; border-top: 1px solid #e2e8f0; margin: 15px 0; }
+
 .report-header-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -36,7 +75,7 @@
 }
 
 .info-box {
-    background: #f1f5f9; /* Gris très clair médical */
+    background: #f1f5f9;
     border: 1px solid #cbd5e1;
     padding: 8px 12px;
     border-radius: 4px;
@@ -44,412 +83,104 @@
 }
 
 .info-box small {
-    display: block;
-    font-size: 9px;
-    font-weight: bold;
-    color: #64748b;
-    margin-bottom: 2px;
-    text-transform: uppercase;
+    display: block; font-size: 9px; font-weight: bold; color: #64748b; margin-bottom: 2px; text-transform: uppercase;
 }
+.info-box div { font-size: 13px; color: #0f172a; font-weight: 600; min-height: 1.2em; }
 
-.info-box div {
-    font-size: 13px;
-    color: #0f172a;
-    font-weight: 600;
-    min-height: 1.2em;
-}
+#reportList { font-size: 13px; line-height: 1.6; padding-left: 20px; color: #334155; }
 
-.form-group-row {
-    display: flex;
-    gap: 10px;
-}
-
-.readonly-input {
-    background: #1e293b !important;
-    color: #64ffda !important;
-    border: 1px solid #334155 !important;
-    text-align: center;
-}
-
-/* Zone qui sera photographiée */
-.work-zone {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
-    padding: 20px;
-}
-
-/* Points déplaçables */
-
-
-#frame {
-    position: relative;
-    width: 280px;
-    height: 630px;
-    margin: 0 auto;
-    cursor: crosshair; /* Curseur en forme de cible */
-}
 /* --- SILHOUETTE --- */
-.bodymap-container {
-    background: #0b1223;
-    padding: 40px;
-    border-radius: 16px;
-    border: 1px solid #1e293b;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-/* Taille de la silhouette maîtrisée */
 .bodyframe { 
     position: relative; 
-    width: 280px; /* Largeur fixe plus raisonnable */
+    width: 280px; 
     height: 630px; 
     margin: 0 auto;
     z-index: 5;
     background: transparent;
 }
+.body-bg { width: 100%; height: 100%; display: block; pointer-events: none; opacity: 0.85; }
+.overlay { position: absolute; inset: 0; cursor: crosshair; }
 
-.body-bg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    pointer-events: none;
-    /* On baisse très légèrement l'opacité du corps quand le debug est ON 
-       pour mieux voir les zones bleues si besoin */
-    opacity: 0.85; 
-}
-
+/* MARKERS (Points sur le corps) */
 .marker-point {
     position: absolute;
-    width: 22px; /* Un peu plus grand pour le numéro */
-    height: 22px;
+    width: 22px; height: 22px;
     border-radius: 50%;
     border: 2px solid #ffffff;
     box-shadow: 0 0 5px rgba(0,0,0,0.8);
     transform: translate(-50%, -50%);
     z-index: 100;
     cursor: grab;
-    /* Centrage du numéro */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 11px;
-    font-weight: bold;
-    font-family: Arial, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 11px; font-weight: bold; font-family: Arial, sans-serif;
 }
+.marker-point:active { cursor: grabbing; }
 
-.marker-point:active {
-    cursor: grabbing;
-}
-
-/* La pastille de rappel dans le rapport écrit */
 .report-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
-    color: white;
-    font-size: 10px;
-    font-weight: bold;
-    margin-right: 8px;
-    vertical-align: middle;
-}
-.overlay { position: absolute; inset: 0; cursor: crosshair; }
-#overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 5; /* Sous les points, mais sur l'image */
-    pointer-events: auto; /* Permet de cliquer sur l'overlay pour créer des points */
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 4px;
+    color: white; font-size: 10px; font-weight: bold;
+    margin-right: 8px; vertical-align: middle;
 }
 
-/* --- DOCUMENT BLANC --- */
-#document {
-    width: 800px;
-    background: white;
-    padding: 50px;
-    color: #111;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-/* LE DOCUMENT A4 PAYSAGE */
-.document-final {
-    background: white;
-    width: 1000px;
-    display: flex; /* Active les deux colonnes */
-    padding: 40px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    gap: 40px;
-}
-
-.header-cert { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-.cert-tag { background: #0a1324; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
-.cert-main-title { font-size: 24px; margin: 0; color: #0a1324; font-weight: 900; }
-.report-content { margin-top: 25px; }
-.meta-info { font-size: 13px; color: #64748b; font-weight: 600; }
-.doc-hr { border: none; border-top: 1px solid #e2e8f0; margin: 15px 0; }
-#reportList { font-size: 13px; line-height: 1.6; padding-left: 20px; color: #334155; }
-
+/* --- FOOTER --- */
 .cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; }
 .cert-signature { 
     border-top: 2px solid #0a1324; 
-    min-width: 200px; 
-    padding-top: 10px; 
-    font-weight: bold; 
-    font-size: 11px; 
+    min-width: 200px; padding-top: 10px; 
+    font-weight: bold; font-size: 11px; 
 }
+#d-sig { font-family: 'Alex Brush', cursive; font-size: 32px; color: #0a1324; }
 
-/* Le conteneur du tampon */
 .round-stamp {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-    border: 2px solid #003366; /* Bleu médical sombre */
-    border-radius: 10px;      /* Coins arrondis */
-    background-color: white;
-    width: fit-content;
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 8px; border: 2px solid #003366; border-radius: 10px; background-color: white; width: fit-content;
 }
+.qr-code { width: 75px; height: 75px; margin-bottom: 5px; }
+.stamp-text { font-family: 'Arial', sans-serif; font-weight: bold; font-size: 10px; color: #003366; text-transform: uppercase; letter-spacing: 1px; }
 
-/* Style de l'image QR */
-.qr-code {
-    width: 75px; 
-    height: 75px;
-    margin-bottom: 5px;
+/* --- FORM ELEMENTS (SIDEBAR) --- */
+.form-group-row { display: flex; gap: 10px; }
+.form-group { margin-bottom: 10px; }
+label { display: block; font-size: 10px; font-weight: bold; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; }
+input[type="text"], input[type="date"] {
+    width: 100%; background: #111b2d; border: 1px solid #334155; color: white;
+    padding: 8px; border-radius: 4px; font-size: 12px; outline: none;
 }
+input:focus, textarea:focus { border-color: #64ffda; }
 
-/* Texte sous le QR */
-.stamp-text {
-    font-family: 'Arial', sans-serif;
-    font-weight: bold;
-    font-size: 10px;
-    color: #003366;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
+.lesions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.chip { padding: 8px; background: #121c2f; border: 1px solid #1e293b; border-radius: 6px; font-size: 11px; cursor: pointer; text-align: center; color: #94a3b8; }
+.chip.active { background: #1e293b; border-color: #3b82f6; color: white; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
 
-/* Grid des lésions */
-.lesions-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
+.checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 15px; margin: 10px 0; }
+.checkbox-item { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 11px; color: #94a3b8; }
 
-.chip {
-    padding: 8px;
-    background: #121c2f;
-    border: 1px solid #1e293b;
-    border-radius: 6px;
-    font-size: 11px;
-    cursor: pointer;
-    text-align: center;
-    color: #94a3b8;
-}
+/* BOUTONS */
+.edit-btns-container { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+.btn-edit { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 8px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: 0.2s; }
+.btn-edit:hover { background: #334155; color: white; }
+.btn-danger-soft:hover { background: #7f1d1d; border-color: #b91c1c; }
 
-.chip.active {
-    background: #1e293b;
-    border-color: #3b82f6;
-    color: white;
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
-}
-
-/* Style des petits boutons sous les lésions */
-.edit-btns-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 15px;
-}
-
-.btn-edit {
-    background: #1e293b;
-    color: #94a3b8;
-    border: 1px solid #334155;
-    padding: 8px;
-    font-size: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: 0.2s;
-}
-
-.btn-edit:hover {
-    background: #334155;
-    color: white;
-}
-
-.btn-danger-soft:hover {
-    background: #7f1d1d;
-    border-color: #b91c1c;
-}
-.btn-secondary { background: #334155; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
-.btn-danger { background: #7f1d1d; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
-
-/* Harmonisation des boutons Sidebar */
-.btn-image, .btn-discord {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-    text-transform: uppercase;
-    transition: 0.2s;
-}
-
-.btn-image {
-    background: #ffffff;
-    color: #0a1324;
-}
-
+.btn-image, .btn-discord { width: 100%; padding: 14px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; text-transform: uppercase; transition: 0.2s; }
+.btn-image { background: #ffffff; color: #0a1324; }
 .btn-image:hover { background: #e2e8f0; }
-
-.btn-discord {
-    background: #5865f2;
-    color: #ffffff;
-}
-
+.btn-discord { background: #5865f2; color: #ffffff; }
 .btn-discord:hover { background: #4752c4; }
 
+/* OPTIONS DETAILS */
+#detailsContainer { background: #0f172a; border: 1px solid #1e293b; padding: 20px; border-radius: 12px; margin-top: 20px; }
+.details-header { font-size: 14px; font-weight: bold; color: white; margin-bottom: 15px; display: block; }
+.details-sub-title { font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; }
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.opt-btn { background: #1e293b; border: 1px solid #334155; color: #cbd5e1; padding: 10px; border-radius: 8px; font-size: 12px; cursor: pointer; text-align: left; }
+.opt-btn.selected { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); color: white; }
+
+/* BADGES ET ALERTS */
 .paf-badge { background: #991b1b; color: white; padding: 5px; border-radius: 4px; font-size: 9px; margin-top: 10px; text-align: center; }
 .paf-hidden { display: none; }
 
-/* SIGNATURE MANUSCRITE */
-#d-sig { 
-    font-family: 'Alex Brush', cursive; 
-    font-size: 32px; 
-    color: #0a1324;
-    text-transform: none; /* Garde les minuscules du médecin */
-}
-
-/* Colonne Silhouette */
-/* Tooltip de survol */
-.cursor-tip {
-    position: fixed;
-    background: rgba(10, 19, 36, 0.95);
-    color: #64ffda;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 800;
-    pointer-events: none;
-    z-index: 10000;
-    border: 1px solid #64ffda;
-    white-space: nowrap;
-    display: none;
-    box-shadow: 0 0 15px rgba(100, 255, 218, 0.2);
-}
-.doc-left-side {
-    position: relative;
-    flex: 0 0 320px;       /* Largeur fixe pour la silhouette */
-    background: transparent;
-    border-right: 1px solid #e2e8f0; /* Séparation fine */
-    display: flex;
-    justify-content: center; /* Centre la silhouette horizontalement */
-    padding-top: 40px;      /* Un peu d'espace au dessus de la tête */
-    align-items: flex-start; /* Aligne la silhouette vers le haut */
-}
-/* --- LES BLOCS DE CIRCONSTANCES AUTOUR DE LA SILHOUETTE --- */
-.circumstance-box {
-    position: absolute;
-    width: 140px; 
-    background: #f8fafc; /* Fond très clair pour le doc blanc */
-    border: 1px solid #cbd5e1;
-    padding: 8px;
-    border-radius: 4px;
-    top: 30px; /* Aligné vers le haut */
-    z-index: 10;
-    display: none !important;
-}
-
-.circumstance-box small {
-    display: block;
-    font-size: 8px;
-    font-weight: bold;
-    color: #64748b;
-    margin-bottom: 4px;
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 2px;
-    text-transform: uppercase;
-}
-
-.circumstance-box div {
-    font-size: 10px;
-    color: #0a1324;
-    line-height: 1.2;
-    min-height: 20px;
-    word-wrap: break-word;
-    font-style: italic;
-}
-
-.box-left {
-    left: 10px;
-    border-left: 3px solid #3b82f6;
-}
-
-.box-right {
-    right: 10px;
-    border-left: 3px solid #64748b;
-}
-
-/* Colonne Texte */
-.doc-right-side {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Fix Popup Image */
-.popup-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-}
-
-.popup-content {
-    background: #1e293b;
-    padding: 25px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 600px;
-    text-align: center;
-    border: 1px solid #334155;
-}
-
-.popup-content img {
-    max-width: 100%;
-    max-height: 60vh;
-    border-radius: 4px;
-    border: 1px solid #64ffda;
-    margin-bottom: 10px;
-}
-
-/* Container du Switch */
-.debug-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 10px;
-    border-radius: 6px;
-    margin-top: 10px;
-}
-
-.debug-label { color: #94a3b8; font-size: 11px; font-weight: bold; }
-
-/* Le design du Switch (Slider) */
+/* SWITCH */
 .switch { position: relative; display: inline-block; width: 34px; height: 20px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .4s; border-radius: 34px; }
@@ -457,193 +188,8 @@
 input:checked + .slider { background-color: #3b82f6; }
 input:checked + .slider:before { transform: translateX(14px); }
 
-/* Force l'affichage du calque au dessus */
-#debugLayer {
-    pointer-events: none;
-    z-index: 99;
-}
-.debug-zone {
-    fill: rgba(30, 144, 255, 0.2); 
-    stroke: rgba(255, 255, 255, 0.4); /* Bordure blanche très fine */
-    stroke-width: 0.5px; 
-}
-
-#debugLayer text {
-    fill: #ffffff;
-    font-weight: 500; /* Moins gras pour plus de clarté */
-    letter-spacing: 0.5px;
-}
-
-.checkbox-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Force 2 colonnes égales */
-    gap: 10px 15px; /* Espace entre les lignes et colonnes */
-    margin: 10px 0;
-    align-items: center;
-}
-
-/* Style de chaque ligne (Case + Texte) */
-.checkbox-item {
-    display: flex;
-    align-items: center; /* Aligne verticalement la case et le texte */
-    gap: 8px;            /* Espace fixe entre la case et le texte */
-    cursor: pointer;
-    font-size: 11px;
-    color: #94a3b8;
-    white-space: nowrap; /* Empêche le texte de passer à la ligne */
-}
-
-/* Taille fixe pour les cases à cocher pour éviter les décalages */
-.checkbox-item input[type="checkbox"] {
-    width: 14px;
-    height: 14px;
-    margin: 0;
-    cursor: pointer;
-}
-
-
-#detailsContainer {
-    background: #0f172a !important;
-    border: 1px solid #1e293b !important;
-    border-left: 4px solid #3b82f6 !important;
-    padding: 20px !important;
-    border-radius: 12px !important;
-    margin-top: 20px;
-}
-
-.details-header {
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-    margin-bottom: 15px;
-    display: block;
-}
-
-.details-grid-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.details-sub-title {
-    font-size: 11px;
-    font-weight: bold;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-}
-
-
-
-.details-title {
-    color: #64ffda;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    display: block;
-    text-transform: uppercase;
-}
-
-.details-sub {
-    grid-column: span 2; /* Le titre prend toute la largeur des 2 colonnes */
-    color: #64ffda;
-    font-size: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-top: 10px;
-    border-bottom: 1px solid rgba(100, 255, 218, 0.1);
-    padding-bottom: 3px;
-}
-/* Style spécifique pour le document blanc pour les nouvelles sections */
-.doc-section-title {
-    font-size: 12px;
-    font-weight: bold;
-    margin: 15px 0 5px 0;
-    text-decoration: underline;
-}
-.doc-item-list {
-    font-size: 11px;
-    margin: 0;
-    padding-left: 15px;
-}
-
-
-.report-header-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-.info-box {
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    padding: 8px 12px;
-    border-radius: 6px;
-}
-.info-box small {
-    font-size: 9px;
-    color: #64748b;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 2px;
-}
-.info-box div {
-    font-size: 13px;
-    color: #0f172a;
-    font-weight: 600;
-}
-
-/* Grilles d'options boutons (Radio-like) */
-.options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-
-.opt-btn {
-    background: #1e293b;
-    border: 1px solid #334155;
-    color: #cbd5e1;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: 0.2s;
-}
-
-.opt-btn:hover { background: #334155; }
-
-.opt-btn.selected {
-    border-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.1);
-    color: white;
-}
-
-.opt-btn::before {
-    content: '';
-    width: 12px;
-    height: 12px;
-    border: 2px solid #475569;
-    border-radius: 50%;
-    display: inline-block;
-}
-
-.opt-btn.selected::before {
-    background: #3b82f6;
-    border-color: #3b82f6;
-    box-shadow: 0 0 8px #3b82f6;
-}
-
-/* Style spécifique pour les checkboxes (Éléments associés) */
-.opt-check {
-    border-radius: 4px !important;
-}
-.opt-check::before { border-radius: 2px !important; }
-
-
-@keyframes blink { 50% { opacity: 0.5; } }
+/* POPUP */
+.popup-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center; z-index: 10000; }
+.popup-content { background: #1e293b; padding: 25px; border-radius: 12px; width: 90%; max-width: 600px; text-align: center; border: 1px solid #334155; }
+.popup-content img { max-width: 100%; max-height: 60vh; border: 1px solid #64ffda; }
+.cursor-tip { position: fixed; background: rgba(10, 19, 36, 0.95); color: #64ffda; padding: 4px 10px; border-radius: 4px; font-size: 11px; z-index: 10000; pointer-events: none; display: none; border: 1px solid #64ffda; }
