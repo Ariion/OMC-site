@@ -349,13 +349,13 @@
 }
 .doc-left-side {
     position: relative;
-    flex: 0 0 350px;
-    background: white; /* Doit être blanc comme le reste du doc */
-    padding: 10px;
+    flex: 0 0 320px;       /* Largeur fixe pour la silhouette */
+    background: transparent;
+    border-right: 1px solid #e2e8f0; /* Séparation fine */
     display: flex;
-    justify-content: center;
-    align-items: center;
-    border-right: 1px solid #eee; /* Séparation légère */
+    justify-content: center; /* Centre la silhouette horizontalement */
+    padding-top: 40px;      /* Un peu d'espace au dessus de la tête */
+    align-items: flex-start; /* Aligne la silhouette vers le haut */
 }
 /* --- LES BLOCS DE CIRCONSTANCES AUTOUR DE LA SILHOUETTE --- */
 .circumstance-box {
@@ -367,6 +367,7 @@
     border-radius: 4px;
     top: 30px; /* Aligné vers le haut */
     z-index: 10;
+    display: none !important;
 }
 
 .circumstance-box small {
