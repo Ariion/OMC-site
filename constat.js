@@ -1,5 +1,5 @@
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
- 
+
 const LESIONS = [
     {key:'fracture', label:'Fracture / Entorse', color:'#ef4444', icon:'🦴'},
     {key:'plaie_laceration', label:'Plaie & Lacération', color:'#a855f7', icon:'🔪'},
@@ -270,30 +270,25 @@ function initTraitements() {
 }
 
 function updateReport() {
-    // ============================================================
-    // 1. RÉCUPÉRATION DES INPUTS
-    // ============================================================
+    // 1. Récupération des Inputs
     const patientVal = document.getElementById('patientId').value || "...";
     const birthInput = document.getElementById('patientBirth').value;
     const imagingVal = document.getElementById('imagingDoc').value || "...";
     const dateInput = document.getElementById('constatDate').value;
     const sigVal = document.getElementById('doctorSig').value || "...";
     
-    // Input HAUT (Circonstances)
-    // Note: Assure-toi d'avoir l'id="circumInput" dans ton HTML (voir étape 2)
+    // NOUVEAUX CHAMPS
     const circumEl = document.getElementById('circumInput');
     const circumVal = circumEl ? circumEl.value : "";
-
-    // Input BAS (Observations Supplémentaires)
+    
     const obsEl = document.getElementById('obsSupInput');
     const obsVal = obsEl ? obsEl.value : "";
 
-    // ============================================================
-    // 2. MISE À JOUR EN-TÊTE & DATES
-    // ============================================================
+    // 2. Formatage
     const formattedBirth = birthInput ? new Date(birthInput).toLocaleDateString('fr-FR') : "...";
     const formattedDate = dateInput ? new Date(dateInput).toLocaleDateString('fr-FR') : "...";
 
+    // 3. Mise à jour HEADER
     if(document.getElementById('display-patient')) document.getElementById('display-patient').innerText = patientVal;
     if(document.getElementById('display-birth')) document.getElementById('display-birth').innerText = formattedBirth;
     if(document.getElementById('display-imaging')) document.getElementById('display-imaging').innerText = imagingVal;
@@ -301,37 +296,27 @@ function updateReport() {
     if(document.getElementById('display-ref')) document.getElementById('display-ref').innerText = window.sessionRef;
     if(document.getElementById('d-sig')) document.getElementById('d-sig').innerText = sigVal;
 
-    // ============================================================
-    // 3. GESTION DU BLOC "CIRCONSTANCES" (HAUT)
-    // ============================================================
-    // C'est le bloc gris en pointillés sous les infos patient
+    // 4. Mise à jour CIRCONSTANCES (Haut du rapport)
     const circumDisplay = document.getElementById('display-circum-text');
     if (circumDisplay) {
         circumDisplay.innerText = circumVal || "En attente des détails de l'intervention...";
-        // On s'assure que le bloc parent est visible
         const circumSection = document.getElementById('sectionCircumstances');
         if(circumSection) circumSection.style.display = 'block';
     }
 
-    // ============================================================
-    // 4. GESTION DU BLOC "OBSERVATIONS SUPPLÉMENTAIRES" (BAS)
-    // ============================================================
-    // C'est le bloc tout en bas du rapport
+    // 5. Mise à jour OBS SUP (Bas du rapport)
     const sectionObs = document.getElementById('sectionObsSup');
     const docObsText = document.getElementById('docObsSupText');
-
     if (sectionObs && docObsText) {
         if (obsVal.trim() !== "") {
-            sectionObs.style.display = 'block'; // On affiche seulement si on écrit
+            sectionObs.style.display = 'block';
             docObsText.innerText = obsVal;
         } else {
-            sectionObs.style.display = 'none';  // Sinon on cache pour gagner de la place
+            sectionObs.style.display = 'none';
         }
     }
 
-    // ============================================================
-    // 5. LISTE DES LÉSIONS (MARKERS)
-    // ============================================================
+    // 6. Liste des Lésions
     const list = document.getElementById('reportList');
     if (list) {
         list.innerHTML = markers.length ? "" : "<li>Aucune lésion sélectionnée.</li>";
@@ -348,7 +333,6 @@ function updateReport() {
             if (d.elements && d.elements.length) parts.push(`Assoc.: ${d.elements.join(', ')}`);
             
             const txt = parts.length ? ` (${parts.join(' — ')})` : "";
-            
             const li = document.createElement('li');
             li.style.listStyle = "none";
             li.style.marginBottom = "8px";
@@ -357,9 +341,7 @@ function updateReport() {
         });
     }
 
-    // ============================================================
-    // 6. CHECKBOXES & QR CODE
-    // ============================================================
+    // 7. Checkboxes
     const selectedMeds = Array.from(document.querySelectorAll('.med-check:checked')).map(cb => cb.value);
     document.getElementById('sectionTraitements').style.display = selectedMeds.length ? 'block' : 'none';
     document.getElementById('docMedsList').innerHTML = selectedMeds.map(m => `<li>${m}</li>`).join('');
@@ -371,6 +353,7 @@ function updateReport() {
     const pafBadge = document.getElementById('pafBadge');
     if (pafBadge) pafBadge.style.display = markers.some(m => m.type === 'plaie_feu') ? 'block' : 'none';
 
+    // 8. QR Code
     const qrImg = document.getElementById('qr-ref');
     if (qrImg) {
         const qrData = encodeURIComponent(`OMC-CERT-${patientVal}-${window.sessionRef}`);
