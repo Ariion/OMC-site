@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMC — Dossier Obstétrique</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="constat.css"> <link rel="stylesheet" href="grossesse.css"> <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+</head>
+<body class="labo-body">
+    <div class="interface-container">
+        
+        <aside class="sidebar">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
+                <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
+            </div>
+        
+            <h1 class="sidebar-title">SUIVI DE GROSSESSE</h1>
+
+            <div class="form-group">
+                <label>PATIENTE</label>
+                <input id="patientName" type="text" placeholder="Nom Prénom" oninput="updateReport()">
+            </div>
+            
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label>DATE NAISSANCE</label>
+                    <input id="patientBirth" type="date" oninput="updateReport()">
+                </div>
+                <div class="form-group">
+                    <label>DATE DU JOUR</label>
+                    <input id="examDate" type="date" oninput="updateReport()">
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #1e293b; margin: 15px 0;">
+
+            <div class="form-group">
+                <label style="color: #64ffda;">DATE DE DÉBUT DE GROSSESSE (DDR/DDC)</label>
+                <input id="dateDebut" type="date" onchange="calculerTerme()" style="border: 1px solid #64ffda;">
+                <small style="color: #94a3b8; font-size: 10px; margin-top: 5px; display:block;">
+                    Calcul automatique des SA (Semaines d'Aménorrhée)
+                </small>
+            </div>
+
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label>TYPE D'ÉCHOGRAPHIE</label>
+                    <select id="echoType" onchange="updateReport()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
+                        <option value="datation">Datation (Précoce)</option>
+                        <option value="t1">T1 (12 SA) - Morpho</option>
+                        <option value="t2">T2 (22 SA) - Morpho</option>
+                        <option value="t3">T3 (32 SA) - Croissance</option>
+                        <option value="col">Mesure du Col</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>SEXE FOETAL</label>
+                    <select id="sexeFoetal" onchange="updateReport()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
+                        <option value="indetermine">Indéterminé (Trop tôt)</option>
+                        <option value="fille">Féminin</option>
+                        <option value="garcon">Masculin</option>
+                        <option value="cache">Caché / Non visible</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>VITALITÉ</label>
+                <div class="checkbox-grid">
+                    <label class="checkbox-item"><input type="checkbox" id="activiteCardiaque" checked onchange="updateReport()"> Activité Cardiaque (Bdc)</label>
+                    <label class="checkbox-item"><input type="checkbox" id="mouvementsActifs" checked onchange="updateReport()"> Mouvements Actifs (MAF)</label>
+                </div>
+            </div>
+
+             <div class="edit-btns-container">
+                <button class="btn-edit" onclick="genererMesuresAleatoires()">🎲 GÉNÉRER MESURES & IMAGE</button>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>CONCLUSION DU RAPPORT</label>
+                <textarea id="conclusionInput" rows="3" oninput="updateReport()" placeholder="Grossesse évolutive correspondant au terme..." style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>PRATICIEN</label>
+                <input id="doctorSig" type="text" placeholder="Dr. Greystone" oninput="updateReport()">
+            </div>
+
+            <div class="actions-group">
+                <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
+            </div>
+        </aside>
+
+        <main class="preview-area">
+            <div id="capture-zone" class="document-final document-vertical">
+                
+                <header class="header-cert">
+                    <img src="assets/logo_omc.png" style="height: 60px;">
+                    <div style="flex:1; text-align: right;">
+                        <div class="cert-tag">OCEAN MEDICAL CENTER — OBSTÉTRIQUE</div>
+                        <h1 class="cert-main-title">DOSSIER DE GROSSESSE</h1>
+                        <div id="display-date-top" style="font-size: 12px; color: #64748b; font-weight: bold;"></div>
+                    </div>
+                </header>
+
+                <div class="patient-banner">
+                    <div>
+                        <small>PATIENTE</small>
+                        <span id="display-patient">...</span>
+                    </div>
+                    <div>
+                        <small>NAISSANCE</small>
+                        <span id="display-birth">...</span>
+                    </div>
+                    <div style="border-left: 1px solid #cbd5e1; padding-left: 15px;">
+                        <small>TERME ACTUEL (SA)</small>
+                        <span id="display-sa" style="color: #000; font-weight: 900; font-size: 16px;">-- SA + --j</span>
+                    </div>
+                    <div>
+                        <small>DPA (ESTIMÉE)</small>
+                        <span id="display-dpa">--/--/----</span>
+                    </div>
+                </div>
+
+                <div class="section-block">
+                    <h4 class="section-title">BIOLOGIE : DOSAGE BETA-HCG</h4>
+                    <table class="bio-table">
+                        <thead>
+                            <tr>
+                                <th>Analyse</th>
+                                <th>Résultat</th>
+                                <th>Valeurs de référence (selon terme)</th>
+                                <th>Interprétation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Beta-hCG Plasmatique</strong></td>
+                                <td id="hcg-result" style="font-weight: bold; color: #2563eb;">-- mIU/ml</td>
+                                <td id="hcg-ref" style="font-size: 10px; color: #64748b;">--</td>
+                                <td id="hcg-interp" style="font-style: italic;">--</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-block">
+                    <h4 class="section-title">IMAGERIE : ÉCHOGRAPHIE OBSTÉTRICALE</h4>
+                    
+                    <div class="echo-container">
+                        <div class="echo-frame">
+                            <div class="echo-overlay-text top-left">OMC RADIOLOGY<br>OB/GYN</div>
+                            <div class="echo-overlay-text top-right" id="echo-date-display">00/00/0000</div>
+                            <div class="echo-overlay-text bottom-left">Mi: 1.2 Tis: 0.4</div>
+                            <img id="echo-img-display" src="assets/echo_placeholder.jpg" alt="Echographie">
+                        </div>
+
+                        <div class="biometrics-panel">
+                            <h5>BIOMÉTRIES FOETALES</h5>
+                            <ul class="bio-list">
+                                <li><span>LCC (Long. Crânio-Caudale) :</span> <strong id="val-lcc">-- mm</strong></li>
+                                <li><span>BIP (Diam. Bipariétal) :</span> <strong id="val-bip">-- mm</strong></li>
+                                <li><span>PC (Périmètre Crânien) :</span> <strong id="val-pc">-- mm</strong></li>
+                                <li><span>PA (Périmètre Abdominal) :</span> <strong id="val-pa">-- mm</strong></li>
+                                <li><span>LF (Long. Fémorale) :</span> <strong id="val-lf">-- mm</strong></li>
+                            </ul>
+                            
+                            <h5 style="margin-top: 15px;">DOPPLER & VITALITÉ</h5>
+                            <ul class="bio-list">
+                                <li><span>Activité Cardiaque :</span> <strong id="val-acf">-- bpm</strong></li>
+                                <li><span>Mouvements (MAF) :</span> <strong id="val-maf">--</strong></li>
+                                <li><span>Estimation Poids (EPF) :</span> <strong id="val-poids">-- g</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-block" style="flex-grow: 1;">
+                    <h4 class="section-title">CONCLUSION</h4>
+                    <p id="display-conclusion" style="font-size: 12px; line-height: 1.5;">
+                        Examen en attente.
+                    </p>
+                </div>
+
+                <div class="cert-footer">
+                    <div class="cert-signature">
+                        Praticien :<br>
+                        <span id="d-sig">...</span>
+                    </div>
+                    <div class="round-stamp">
+                        <img id="qr-ref" class="qr-code" src="" crossorigin="anonymous"> 
+                        <div class="stamp-text">OMC OBSTETRICS</div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="grossesse.js"></script>
+    <script src="global.js"></script>
+</body>
+</html>
