@@ -2,16 +2,23 @@
 .document-vertical {
     width: 750px; 
     height: auto !important;
-    min-height: 1100px; /* Assez long pour tout contenir */
+    min-height: 1100px;
     flex-direction: column;
     padding: 50px;
     gap: 15px;
     background: white;
-    padding-bottom: 60px; /* Marge interne pour le bas */
-    margin-bottom: 50px; /* Marge externe pour le scroll */
+    padding-bottom: 60px;
+    margin-top: 20px; /* Espace en haut pour éviter le "caché" */
+    margin-bottom: 50px;
 }
 
-.preview-area { align-items: flex-start; padding-bottom: 100px; }
+/* Scroll fix */
+.preview-area { 
+    align-items: flex-start; 
+    justify-content: center;
+    padding-top: 20px;
+    overflow-y: auto;
+}
 
 /* En cas de terme dépassé */
 .alert-term {
