@@ -61,25 +61,14 @@ const database = {
         { id: "coc", label: "Cocaïne", unit: "-", norm: "Négatif", help: "Drogue." },
         { id: "amp", label: "Amphétamines", unit: "-", norm: "Négatif", help: "Drogue." }
     ],
-    "ENDOCRINOLOGIE & DIVERS": [
+    "ENDOCRINOLOGIE & FERTILITÉ": [
         { id: "tsh", label: "TSH", unit: "mUI/L", norm: "0.4 - 4.0", help: "Thyroïde." },
-        { id: "hcg", label: "Bêta-HCG", unit: "mUI/mL", norm: "0 - 5", help: "Grossesse." },
-        { id: "vitd", label: "Vitamine D", unit: "ng/mL", norm: "30 - 60", help: "Os." },
-        { id: "adn", label: "Compatibilité ADN", unit: "%", norm: "100", help: "Identification." }
+        { id: "hcg", label: "Bêta-HCG (Grossesse)", unit: "mUI/mL", norm: "< 5", help: "Grossesse." },
+        { id: "amh", label: "AMH (Réserve Ovarienne)", unit: "ng/mL", norm: "2.0 - 6.8", help: "Fertilité." },
+        { id: "fsh", label: "FSH (J3 cycle)", unit: "UI/L", norm: "3.5 - 12.5", help: "Stimulation." },
+        { id: "lh", label: "LH", unit: "UI/L", norm: "2.4 - 12.6", help: "Ovulation." },
+        { id: "prolac", label: "Prolactine", unit: "ng/mL", norm: "4.8 - 23.3", help: "Hormone." }
     ]
-};
-
-const grossesseData = {
-    1: { hcg: "50-500", gb: "5.5-10.5", fer: "80-150", label: "1er Mois" },
-    2: { hcg: "500-5000", gb: "6.0-11.5", fer: "70-140", label: "2ème Mois" },
-    3: { hcg: "30000-150000", gb: "7.5-12.5", fer: "60-130", label: "3ème Mois (Pic hormonal)" },
-    4: { hcg: "100000-250000", gb: "8.5-13.5", fer: "50-110", label: "4ème Mois" },
-    5: { hcg: "20000-100000", gb: "9.5-14.5", fer: "40-90", label: "5ème Mois" },
-    6: { hcg: "15000-60000", gb: "10.0-15.5", fer: "30-75", label: "6ème Mois" },
-    7: { hcg: "10000-50000", gb: "11.0-16.5", fer: "20-60", label: "7ème Mois" },
-    8: { hcg: "10000-40000", gb: "11.5-17.5", fer: "15-50", label: "8ème Mois" },
-    9: { hcg: "8000-35000", gb: "12.0-18.5", fer: "10-40", label: "9ème Mois (Terme)" },
-    "neg": { hcg: "0-5", gb: "4.5-10.0", fer: "50-150", label: "Test Négatif" }
 };
 
 // ==========================================
@@ -144,11 +133,21 @@ function res(id, val, cat) {
 
     if (valSpan) {
         valSpan.innerText = val;
+        // Logic de couleur simple pour valeurs numériques
         const item = Object.values(database).flat().find(i => i.id === id);
         if (item && val.trim() !== "" && item.norm.includes('-')) {
-            const [min, max] = item.norm.split('-').map(n => parseFloat(n));
-            const v = parseFloat(val.replace(',', '.'));
-            valSpan.style.color = (v < min || v > max) ? "#ef4444" : "#22c55e";
+            // Tentative d'extraction de range simple "min - max"
+            try {
+                const parts = item.norm.split('-');
+                if(parts.length === 2) {
+                    const min = parseFloat(parts[0]);
+                    const max = parseFloat(parts[1]);
+                    const v = parseFloat(val.replace(',', '.'));
+                    if(!isNaN(v) && !isNaN(min) && !isNaN(max)) {
+                        valSpan.style.color = (v < min || v > max) ? "#ef4444" : "#22c55e";
+                    }
+                }
+            } catch(e) {}
         }
     }
 
@@ -212,35 +211,65 @@ function lancerGenerationAuto() {
     fusionnerConclusionSpecifique(diagPrincipal);
 }
 
-function genererGrossesse(mois) {
-    const grav = parseInt(document.getElementById('gravity-range').value);
-    const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
-    if (mois === 'aleatoire') mois = Math.floor(Math.random() * 9) + 1;
-    let f = (grav - 1) / 9;
-
-    let vHcg = (Math.random() * 5000 + 1000).toFixed(0);
-    let vPla = (250 - (180 * f)).toFixed(0); 
-    let vAlat = (20 + (200 * f)).toFixed(0); 
-    let vCrea = (7 + (15 * f)).toFixed(1);
-
-    res('hcg', vHcg, 'ENDOCRINOLOGIE & DIVERS');
-    res('pla', vPla, 'HÉMATOLOGIE (SANG)');
-    res('alat', vAlat, 'BILAN HÉPATIQUE (FOIE)');
-    res('crea', vCrea, 'BIOCHIMIE MÉTABOLIQUE');
-
-    let texteG = `MATERNITÉ (MOIS ${mois}) : `;
-
-    if (grav >= 7 && (scenarios.includes('arme-feu') || scenarios.includes('acc-route'))) {
-        texteG += "URGENCE VITALE : Traumatisme abdominal majeur. SOUFFRANCE FŒTALE AIGUË par hypoxie maternelle.";
-    } else if (grav >= 5 && scenarios.includes('overdose')) {
-        texteG += "ALERTE TOXIQUE : Passage placentaire suspecté. Risque de détresse respiratoire fœtale.";
-    } else if (grav >= 8) {
-        texteG += "URGENCE : PRÉ-ÉCLAMPSIE SÉVÈRE (HELLP Syndrome). Risque de décollement placentaire et convulsions.";
+// --- NOUVEAU : TEST GROSSESSE ---
+function lancerTestGrossesse() {
+    resetSeulementBio(false);
+    const isEnceinte = Math.random() > 0.3; // 70% chance positif pour le RP
+    
+    let hcg = isEnceinte ? Math.floor(Math.random() * 5000) + 50 : Math.floor(Math.random() * 5);
+    
+    res('hcg', hcg.toString(), 'ENDOCRINOLOGIE & FERTILITÉ');
+    
+    let texte = "";
+    if(isEnceinte) {
+        // Calcul approx SA
+        let sa = 0;
+        if(hcg < 50) sa = 3;
+        else if(hcg < 500) sa = 4;
+        else if(hcg < 5000) sa = 5;
+        else sa = 6;
+        texte = `TEST DE GROSSESSE POSITIF.\nTaux Beta-HCG : ${hcg} mUI/mL.\nTerme estimé : ${sa} SA environ.\nNécessite échographie de datation.`;
     } else {
-        texteG += "STABLE : Pas de retentissement fœtal direct détecté malgré l'épisode aigu.";
+        texte = `TEST DE GROSSESSE NÉGATIF.\nTaux Beta-HCG : < 5 mUI/mL.\nAbsence de grossesse biologique détectable ce jour.`;
+    }
+    
+    fusionnerConclusionSpecifique(texte);
+}
+
+// --- NOUVEAU : BILAN FERTILITÉ ---
+function lancerFertilite() {
+    resetSeulementBio(false);
+    
+    // Normal ou Patho ?
+    const isPatho = Math.random() > 0.7;
+    
+    let amh = (Math.random() * 4 + 2).toFixed(2);
+    let fsh = (Math.random() * 8 + 3).toFixed(1);
+    let lh = (Math.random() * 8 + 3).toFixed(1);
+    let prolac = (Math.random() * 15 + 5).toFixed(1);
+    
+    let diag = "BILAN FERTILITÉ NORMAL. Réserve ovarienne satisfaisante.";
+
+    if (isPatho) {
+        const type = Math.random();
+        if (type < 0.5) {
+            // Insuffisance
+            amh = (Math.random() * 1).toFixed(2); // Bas
+            fsh = (Math.random() * 15 + 15).toFixed(1); // Haut
+            diag = "INSUFFISANCE OVARIENNE DÉBUTANTE.\nAMH basse et FSH élevée. Réserve ovarienne diminuée.";
+        } else {
+            // OPK
+            lh = (fsh * 2.5).toFixed(1); // Ratio LH/FSH inversé
+            diag = "PROFIL OPK SUSPECTÉ.\nInversion du ratio LH/FSH. À corréler avec l'échographie.";
+        }
     }
 
-    fusionnerConclusionSpecifique(texteG);
+    res('amh', amh, 'ENDOCRINOLOGIE & FERTILITÉ');
+    res('fsh', fsh, 'ENDOCRINOLOGIE & FERTILITÉ');
+    res('lh', lh, 'ENDOCRINOLOGIE & FERTILITÉ');
+    res('prolac', prolac, 'ENDOCRINOLOGIE & FERTILITÉ');
+    
+    fusionnerConclusionSpecifique(diag);
 }
 
 // --- FONCTIONS SYSTÈME ---
@@ -248,16 +277,18 @@ function genererGrossesse(mois) {
 function determinerGroupeAleatoire() {
     const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
     const resultat = groupes[Math.floor(Math.random() * groupes.length)];
-    const afficheur = document.getElementById('d-groupe');
     const select = document.getElementById('select-groupe');
-    if(afficheur) afficheur.innerText = resultat;
-    if(select) select.value = resultat;
+    if(select) {
+        select.value = resultat;
+        up('d-groupe', resultat);
+    }
 }
 
 function setAutoDate() {
     const today = new Date();
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const dateStr = today.toLocaleDateString('fr-FR', options);
+    if (document.getElementById('date-prel-input')) document.getElementById('date-prel-input').valueAsDate = today;
     if (document.getElementById('d-date-prel')) document.getElementById('d-date-prel').innerText = dateStr;
 }
 
@@ -279,6 +310,15 @@ function up(id, val) {
     }
 }
 
+function upDate(id, val) {
+    if(!val) return;
+    const dateObj = new Date(val);
+    const dateStr = dateObj.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
+    const el = document.getElementById(id);
+    if(el) el.innerText = dateStr;
+    updateLiveQRCode();
+}
+
 function resetSeulementBio(confirmNeeded = true) {
     if (confirmNeeded && !confirm("Vider les analyses ?")) return;
     document.querySelectorAll('.analysis-input').forEach(el => el.value = "");
@@ -289,26 +329,8 @@ function resetSeulementBio(confirmNeeded = true) {
 }
 
 function fusionnerConclusionSpecifique(nouveauTexte) {
-    let actuelle = document.getElementById('auto-concl-area').value;
-    let lignes = actuelle.split('\n');
-    let estGrossesse = nouveauTexte.includes("MATERNITÉ");
-    
-    let filtré = lignes.filter(l => {
-        if (estGrossesse) return !l.includes("MATERNITÉ") && !l.includes("ANALYSE") && !l.includes("PRÉ-ÉCLAMPSIE");
-        return !l.includes("URGENCE") && !l.includes("ALERTE") && !l.includes("STABLE") && !l.includes("TRAUMA") && !l.includes("DIABÈTE") && !l.includes("TOXICOLOGIE");
-    });
-
-    let finale = filtré.join('\n');
-    if (finale.trim() !== "" && !estGrossesse) {
-        finale = nouveauTexte + "\n" + finale;
-    } else if (finale.trim() !== "" && estGrossesse) {
-        finale = finale + "\n" + nouveauTexte;
-    } else {
-        finale = nouveauTexte;
-    }
-
-    document.getElementById('auto-concl-area').value = finale;
-    document.getElementById('d-concl').innerText = finale;
+    document.getElementById('auto-concl-area').value = nouveauTexte;
+    document.getElementById('d-concl').innerText = nouveauTexte;
 }
 
 function switchMode(mode) {
@@ -317,10 +339,6 @@ function switchMode(mode) {
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
     if(mode === 'auto') document.getElementById('btn-auto').classList.add('active');
     else document.getElementById('btn-manual').classList.add('active');
-}
-
-function analyserTout() {
-    // Cette fonction peut rester vide ou servir à d'autres calculs car lancerGenerationAuto gère déjà les conclusions scénarisées.
 }
 
 // ==========================================
@@ -364,17 +382,14 @@ async function genererImage() {
 
 async function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1468219484245332171/OwqxaLPAJznP0W5gxsmNEhuPIJHWukIEX6OZDXpElPWOz0Bbjjc3I9ahKsJ73dCUaQln";
-    const btn = document.getElementById('discord-btn'); // Vérifie que ton bouton a cet ID
+    const btn = document.getElementById('discord-btn'); 
     const doc = document.getElementById('document'); 
 
     btn.disabled = true;
     btn.innerText = "CAPTURE...";
 
-    doc.classList.add('mode-capture');
-
     try {
         const canvas = await html2canvas(doc, { scale: 2, useCORS: true });
-        doc.classList.remove('mode-capture');
         btn.innerText = "ENVOI...";
 
         canvas.toBlob(async (blob) => {
@@ -401,7 +416,6 @@ async function envoyerDiscord() {
         }, 'image/png');
 
     } catch (e) {
-        doc.classList.remove('mode-capture');
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
     }
@@ -416,6 +430,3 @@ function copyLink() {
 function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
 }
-
-// Reste des fonctions (analyserTout, lancerGenerationAuto, genererImage, etc.) à garder intactes...
-document.addEventListener('DOMContentLoaded', init);
