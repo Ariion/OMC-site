@@ -1,20 +1,18 @@
 /* FORMAT A4 AJUSTABLE */
 .document-vertical {
     width: 750px; 
-    height: auto !important;
+    height: auto !important; /* Laisse le document grandir */
     min-height: 1100px;
     flex-direction: column;
     padding: 50px;
     gap: 15px;
     background: white;
     padding-bottom: 60px;
-    margin-top: 20px; /* Espace en haut pour éviter le "caché" */
     margin-bottom: 50px;
 }
 
-/* Scroll fix */
 .preview-area { 
-    align-items: flex-start; 
+    align-items: flex-start; /* Important pour voir le haut */
     justify-content: center;
     padding-top: 20px;
     overflow-y: auto;
