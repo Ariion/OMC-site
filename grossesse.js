@@ -1,4 +1,4 @@
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
+const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";  
 
 const ECHO_IMAGES = {
     sac: "https://placehold.co/600x400/000000/FFFFFF?text=SAC+GESTATIONNEL",
