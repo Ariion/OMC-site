@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -19,20 +19,28 @@
         
             <h1 class="sidebar-title">SUIVI DE GROSSESSE</h1>
 
-            <div class="form-group">
-                <label>PATIENTE</label>
-                <input id="patientName" type="text" placeholder="Nom Prénom" oninput="updateReport()">
+            <div class="form-group" style="background: #162032; padding: 10px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 15px;">
+                <label style="color: #64ffda;">CONTENU DU DOSSIER</label>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label class="checkbox-item"><input type="checkbox" id="toggleBio" checked onchange="toggleSections()"> 🩸 Inclure Prise de Sang</label>
+                    <label class="checkbox-item"><input type="checkbox" id="toggleEcho" checked onchange="toggleSections()"> 🖥️ Inclure Échographie</label>
+                </div>
             </div>
-            
+
             <div class="form-group-row">
                 <div class="form-group">
-                    <label>DATE NAISSANCE</label>
-                    <input id="patientBirth" type="date" oninput="updateReport()">
+                    <label>PATIENTE</label>
+                    <input id="patientName" type="text" placeholder="Nom Prénom" oninput="updateReport()">
                 </div>
                 <div class="form-group">
                     <label>DATE DU JOUR</label>
                     <input id="examDate" type="date" oninput="updateReport()">
                 </div>
+            </div>
+            
+            <div class="form-group">
+                <label>DATE NAISSANCE</label>
+                <input id="patientBirth" type="date" oninput="updateReport()">
             </div>
 
             <hr style="border: 0; border-top: 1px solid #1e293b; margin: 15px 0;">
@@ -41,7 +49,7 @@
                 <label style="color: #64ffda;">DÉBUT DE GROSSESSE (DDR)</label>
                 <input id="dateDebut" type="date" onchange="calculerTerme()" style="border: 1px solid #64ffda;">
                 <small style="color: #94a3b8; font-size: 10px; margin-top: 5px; display:block;">
-                    Échelle : 1 semaine IRL = 1 mois Grossesse
+                    1 semaine IRL = 1 mois Grossesse
                 </small>
             </div>
 
@@ -57,16 +65,17 @@
             <div class="form-group-row">
                 <div class="form-group">
                     <label>TYPE D'EXAMEN</label>
-                    <select id="echoType" onchange="updateReport()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
+                    <select id="echoType" onchange="updateConclusionDynamic()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
                         <option value="Standard">Standard</option>
                         <option value="Datation">Datation (T1)</option>
                         <option value="Morpho T2">Morphologie (T2)</option>
                         <option value="Croissance T3">Croissance (T3)</option>
+                        <option value="Col">Mesure du Col</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>SEXE FOETAL</label>
-                    <select id="sexeFoetal" onchange="updateReport()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
+                    <select id="sexeFoetal" onchange="updateConclusionDynamic()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
                         <option value="Indéterminé">Indéterminé</option>
                         <option value="Féminin">Féminin</option>
                         <option value="Masculin">Masculin</option>
@@ -94,7 +103,7 @@
 
             <div class="form-group">
                 <label>PRATICIEN</label>
-                <input id="doctorSig" type="text" placeholder="Dr. " oninput="updateReport()">
+                <input id="doctorSig" type="text" placeholder="Dr. Greystone" oninput="updateReport()">
             </div>
 
             <div class="actions-group">
@@ -134,7 +143,7 @@
                     </div>
                 </div>
 
-                <div class="section-block">
+                <div id="section-bio" class="section-block">
                     <h4 class="section-title">BILAN BIOLOGIQUE & SANGUIN</h4>
                     <table class="bio-table">
                         <thead>
@@ -145,21 +154,28 @@
                                 <th>Interprétation</th>
                             </tr>
                         </thead>
-                        <tbody id="bio-tbody">
-                            </tbody>
+                        <tbody id="bio-tbody"></tbody>
                     </table>
                 </div>
 
-                <div class="section-block">
+                <div id="section-echo" class="section-block">
                     <h4 class="section-title">IMAGERIE : ÉCHOGRAPHIE OBSTÉTRICALE</h4>
                     
                     <div class="echo-container">
-                        <div class="echo-frame">
-                            <div class="echo-overlay-text top-left">OMC RADIOLOGY<br>OB/GYN</div>
-                            <div class="echo-overlay-text top-right" id="echo-date-display">00/00/0000</div>
-                            <div class="echo-overlay-text bottom-left">Mi: 1.2 Tis: 0.4</div>
-                            <div class="echo-overlay-text bottom-center" id="echo-label-img"></div>
-                            <img id="echo-img-display" src="assets/echo_placeholder.jpg" alt="Echographie">
+                        <div style="width: 60%; display:flex; flex-direction:column; gap:5px;">
+                            <div class="echo-frame">
+                                <div class="echo-overlay-text top-left">OMC RADIOLOGY<br>OB/GYN</div>
+                                <div class="echo-overlay-text top-right" id="echo-date-display">00/00/0000</div>
+                                <div class="echo-overlay-text bottom-left">Mi: 1.2 Tis: 0.4</div>
+                                <div class="echo-overlay-text bottom-center" id="echo-label-img"></div>
+                                <img id="echo-img-display" src="assets/echo_placeholder.jpg" alt="Echo Main">
+                            </div>
+                            
+                            <div class="echo-thumbnails">
+                                <div class="thumb-frame"><img id="thumb-1" src="" alt="View 1"></div>
+                                <div class="thumb-frame"><img id="thumb-2" src="" alt="View 2"></div>
+                                <div class="thumb-frame"><img id="thumb-3" src="" alt="View 3"></div>
+                            </div>
                         </div>
 
                         <div class="biometrics-panel">
@@ -185,7 +201,7 @@
 
                 <div class="section-block" style="flex-grow: 1;">
                     <h4 class="section-title">CONCLUSION & CONDUITE À TENIR</h4>
-                    <p id="display-conclusion" style="font-size: 12px; line-height: 1.5; color: #000000; white-space: pre-wrap;">
+                    <p id="display-conclusion" style="font-size: 12px; line-height: 1.5; color: #000000; white-space: pre-wrap; font-weight: 500;">
                         Examen en attente.
                     </p>
                 </div>
