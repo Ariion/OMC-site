@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>OMC - Laboratoire de Biologie</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="labo.css">
@@ -36,7 +35,7 @@
             <div class="form-group">
                 <label>Date & Heure du Prélèvement</label>
                 <div style="display: flex; gap: 5px;">
-                    <input type="date" oninput="upDate('d-date-prel', this.value)" style="flex: 2;">
+                    <input type="date" id="date-prel-input" oninput="upDate('d-date-prel', this.value)" style="flex: 2;">
                     <input type="time" oninput="up('d-heure-prel', this.value)" style="flex: 1;">
                 </div>
             </div>
@@ -49,8 +48,8 @@
             <div class="form-group">
                 <label>Groupe Sanguin</label>
                 <div style="display:flex; gap:10px">
-                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-dice">🎲 Aléatoire</button>
-                    <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex-grow: 1; background: #0a192f; color: white; border: 1px solid #233554; padding: 5px;">
+                    <button type="button" onclick="determinerGroupeAleatoire()" class="btn-dice">🎲 RNG</button>
+                    <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex-grow: 1; background: #111b2d; color: white; border: 1px solid #334155; padding: 5px; border-radius: 4px;">
                         <option value="...">--</option>
                         <option value="A+">A+</option><option value="A-">A-</option>
                         <option value="B+">B+</option><option value="B-">B-</option>
@@ -61,18 +60,27 @@
             </div>
 
             <div class="mode-selector">
-                <button type="button" id="btn-auto" class="mode-btn active" onclick="switchMode('auto')">🤖 AUTO</button>
+                <button type="button" id="btn-auto" class="mode-btn active" onclick="switchMode('auto')">🤖 SCÉNARIOS</button>
                 <button type="button" id="btn-manual" class="mode-btn" onclick="switchMode('manual')">✍️ MANUEL</button>
             </div>
 
             <div id="panel-auto">
-                <div class="form-group">
-                    <label>GRAVITÉ DE L'ÉTAT : <span id="grav-display">5</span>/10</label>
-                    <input type="range" id="gravity-range" min="1" max="10" value="5" oninput="document.getElementById('grav-display').innerText=this.value" style="width: 100%;">
+                
+                <div class="form-group" style="background: #162032; padding: 10px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 15px;">
+                    <label style="color: #f472b6;">TESTS SPÉCIFIQUES</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button class="btn-special" onclick="lancerTestGrossesse()">🤰 TEST GROSSESSE</button>
+                        <button class="btn-special" onclick="lancerFertilite()">🧬 BILAN FERTILITÉ</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label>SCÉNARIOS CLINIQUES</label>
+                    <label>GRAVITÉ DE L'ÉTAT (SCÉNARIOS)</label>
+                    <input type="range" id="gravity-range" min="1" max="10" value="5" style="width: 100%;">
+                </div>
+
+                <div class="form-group">
+                    <label>SCÉNARIOS URGENCES</label>
                     <div class="scenario-grid">
                         <label class="check-container">Accident (Trauma) <input type="checkbox" value="acc-route"><span class="checkmark"></span></label>
                         <label class="check-container">Plaie par Balle <input type="checkbox" value="arme-feu"><span class="checkmark"></span></label>
@@ -82,33 +90,17 @@
                     </div>
                 </div>
 
-                <button type="button" onclick="lancerGenerationAuto()" class="btn-generate" style="width: 100%;">🤖 GÉNÉRER LE BILAN</button>
-                  <button type="button" onclick="resetSeulementBio()" class="btn-reset" style="width: 100%; margin-top: 10px;">🗑️ RÉINITIALISER LE PRÉLÈVEMENT</button>
+                <button type="button" onclick="lancerGenerationAuto()" class="btn-generate" style="width: 100%;">GÉNÉRER SCÉNARIO</button>
+                <button type="button" onclick="resetSeulementBio()" class="btn-reset" style="width: 100%; margin-top: 10px;">🗑️ RÉINITIALISER</button>
             </div>
 
             <div id="panel-manual" style="display:none">
                 <div id="dynamic-tabs"></div>
             </div>
 
-            <div class="grossesse-panel">
-                <h3>🍼 MODULE MATERNITÉ</h3>
-                <div class="pregnancy-grid">
-                    <button type="button" onclick="genererGrossesse(1)" class="btn-preg">Mois 1</button>
-                    <button type="button" onclick="genererGrossesse(2)" class="btn-preg">Mois 2</button>
-                    <button type="button" onclick="genererGrossesse(3)" class="btn-preg">Mois 3</button>
-                    <button type="button" onclick="genererGrossesse(4)" class="btn-preg">Mois 4</button>
-                    <button type="button" onclick="genererGrossesse(5)" class="btn-preg">Mois 5</button>
-                    <button type="button" onclick="genererGrossesse(6)" class="btn-preg">Mois 6</button>
-                    <button type="button" onclick="genererGrossesse(7)" class="btn-preg">Mois 7</button>
-                    <button type="button" onclick="genererGrossesse(8)" class="btn-preg">Mois 8</button>
-                    <button type="button" onclick="genererGrossesse(9)" class="btn-preg">Mois 9</button>
-                    <button type="button" onclick="genererGrossesse('aleatoire')" class="btn-preg neg">🎲 TEST GROSSESSE</button>
-                </div>
-            </div>
-
             <div class="form-group" style="margin-top:20px;">
                 <label>Conclusion Médicale</label>
-                <textarea id="auto-concl-area" oninput="up('d-concl', this.value)" placeholder="Conclusion médicale..." rows="3"></textarea>
+                <textarea id="auto-concl-area" oninput="up('d-concl', this.value)" placeholder="Conclusion médicale..." rows="4" style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
             </div>
 
             <div class="form-group">
@@ -123,63 +115,62 @@
         </aside>
 
         <main class="preview-area">
-    <div id="document">
-        <div class="header-lab" style="display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #0a192f; padding-bottom: 20px; margin-bottom: 25px;">
-            <img src="assets/logo_omc.png" alt="Logo OMC" style="height: 60px; object-fit: contain;">
-            <div style="flex-grow: 1;">
-                <div style="background: #0a192f; color: white; display: inline-block; padding: 2px 10px; border-radius: 4px; font-weight: 800; font-size: 11px; letter-spacing: 1px; margin-bottom: 5px;">
-                    OCEAN MEDICAL CENTER
+            <div id="document">
+                <div class="header-lab" style="display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #0a192f; padding-bottom: 20px; margin-bottom: 25px;">
+                    <img src="assets/logo_omc.png" alt="Logo OMC" style="height: 60px; object-fit: contain;">
+                    <div style="flex-grow: 1;">
+                        <div style="background: #0a192f; color: white; display: inline-block; padding: 2px 10px; border-radius: 4px; font-weight: 800; font-size: 11px; letter-spacing: 1px; margin-bottom: 5px;">
+                            OCEAN MEDICAL CENTER
+                        </div>
+                        <h1 style="margin: 0; font-size: 26px; font-weight: 900; color: #0a192f; text-transform: uppercase; letter-spacing: -1px;">
+                            BILAN BIOLOGIQUE
+                        </h1>
+                    </div>
+                    <div style="text-align: right; font-size: 10px; color: #94a3b8; font-weight: bold; width: 80px;">
+                        RÉF : #OMC-LAB
+                    </div>
                 </div>
-                <h1 style="margin: 0; font-size: 26px; font-weight: 900; color: #0a192f; text-transform: uppercase; letter-spacing: -1px;">
-                    BILAN BIOLOGIQUE
-                </h1>
-            </div>
-            <div style="text-align: right; font-size: 10px; color: #94a3b8; font-weight: bold; width: 80px;">
-                RÉF : #OMC-LAB-2026
-            </div>
-        </div>
 
-        <div class="patient-card">
-            <div>
-                Patient : <strong id="d-nom">...</strong><br>
-                Naissance : <span id="d-ddn">...</span><br>
-                Groupe : <strong id="d-groupe">...</strong>
-            </div>
-            <div style="text-align:right;">
-                Prélèvement : <span id="d-date-prel">...</span><br>
-                Heure : <span id="d-heure-prel">--:--</span><br>
-                Médecin : <span id="d-presc">...</span>
-            </div>
-        </div>
+                <div class="patient-card">
+                    <div>
+                        Patient : <strong id="d-nom">...</strong><br>
+                        Naissance : <span id="d-ddn">...</span><br>
+                        Groupe : <strong id="d-groupe">...</strong>
+                    </div>
+                    <div style="text-align:right;">
+                        Prélèvement : <span id="d-date-prel">...</span><br>
+                        Heure : <span id="d-heure-prel">--:--</span><br>
+                        Médecin : <span id="d-presc">...</span>
+                    </div>
+                </div>
 
-        <div id="dynamic-sections" style="margin-top: 20px; min-height: 50px;"></div>
+                <div id="dynamic-sections" style="margin-top: 20px; min-height: 50px;"></div>
 
-        <div class="conclusion-box" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
-            <strong style="font-size: 14px; color: #0a1324;">CONCLUSION :</strong>
-            <p id="d-concl" style="font-style:italic; font-size:13px; margin-top:5px; color: #334155;">...</p>
-        </div>
-        
-        <div class="cert-footer" style="margin-top: 30px; display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 5px;">
-    
-    <div class="cert-signature" style="text-align: left;">
-        <span style="font-size: 12px; font-weight: bold;">Établi par :</span><br><br>
-        <span id="d-sig" class="signature-line" style="border-top: 1px solid #000; min-width: 250px; display: inline-block; padding-top: 5px; font-family: 'Alex Brush', cursive; font-size: 28px;">
-            Dr. 
-        </span>
-    </div>
+                <div class="conclusion-box" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
+                    <strong style="font-size: 14px; color: #0a1324;">CONCLUSION :</strong>
+                    <p id="d-concl" style="font-style:italic; font-size:13px; margin-top:5px; color: #000000;">...</p>
+                </div>
+                
+                <div class="cert-footer" style="margin-top: 30px; display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 5px;">
+                    <div class="cert-signature" style="text-align: left;">
+                        <span style="font-size: 12px; font-weight: bold;">Établi par :</span><br><br>
+                        <span id="d-sig" class="signature-line" style="border-top: 1px solid #000; min-width: 250px; display: inline-block; padding-top: 5px; font-family: 'Alex Brush', cursive; font-size: 28px; color: #000;">
+                            Dr. 
+                        </span>
+                    </div>
 
-    <div class="qr-container" style="text-align: center;">
-        <img id="qr-ref" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=INITIALIZING" 
-             alt="QR" style="width: 85px; height: 85px; border: 1px solid #0a192f; border-radius: 8px; padding: 2px; background: white;">
-        <div style="font-size: 10px; font-weight: 900; color: #0a192f; margin-top: 5px; text-transform: uppercase;">OMC CERTIFIED</div>
-    </div>
-</div>
+                    <div class="qr-container" style="text-align: center;">
+                        <img id="qr-ref" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=INITIALIZING" 
+                             alt="QR" style="width: 85px; height: 85px; border: 1px solid #0a192f; border-radius: 8px; padding: 2px; background: white;">
+                        <div style="font-size: 10px; font-weight: 900; color: #0a192f; margin-top: 5px; text-transform: uppercase;">OMC CERTIFIED</div>
+                    </div>
+                </div>
 
-<p class="legal-text" style="margin-top: 20px; font-size: 10px; color: #94a3b8; border-top: 1px solid #eee; padding-top: 10px; font-style: italic; margin-bottom: 0;">
-    Ce document est un compte-rendu d'analyses médicales informatisé. Toute falsification est passible de sanctions.
-</p>
-
-    </div> </main>
+                <p class="legal-text" style="margin-top: 20px; font-size: 10px; color: #000; border-top: 1px solid #eee; padding-top: 10px; font-style: italic; margin-bottom: 0;">
+                    Ce document est un compte-rendu d'analyses médicales informatisé. Toute falsification est passible de sanctions.
+                </p>
+            </div> 
+        </main>
     </div>
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
@@ -199,14 +190,3 @@
     <script src="labo.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
