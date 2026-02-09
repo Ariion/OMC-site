@@ -1,11 +1,11 @@
-.labo-body { background: var(--omc-bg); height: 100vh; display: flex; overflow: hidden; }
+.labo-body { background: var(--omc-bg); height: 100vh; display: flex; overflow: hidden; color: #e2e8f0; }
 
 .preview-area {
     flex-grow: 1;
     display: flex;
     justify-content: center; 
-    align-items: flex-start; /* FIX: Toujours calé en haut pour le scroll */
-    padding: 40px 20px;      /* Marge de confort pour l'interface */
+    align-items: flex-start; /* IMPORTANT: Pour le scroll */
+    padding: 40px 20px;      
     overflow-y: auto;
     background-color: var(--bg-preview) !important;
 }
@@ -17,14 +17,29 @@
     padding: 40px 50px !important;
     box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     box-sizing: border-box;
-    /* On force le document à ne pas être plus grand que son contenu */
-    height: auto !important;
-    min-height: auto !important;
+    height: auto !important; /* IMPORTANT: Permet d'agrandir */
+    min-height: 1000px;      /* Taille min A4 */
     display: block;
-    margin-bottom: 20px; /* Petit battement avant le fond bleu */
+    margin-bottom: 50px;
+    color: black;
 }
 
-/* On nettoie la signature pour éviter qu'elle ne crée un vide immense */
+/* Boutons spéciaux Grossesse/Fertilité */
+.btn-special {
+    background: #1e293b;
+    color: #fbcfe8;
+    border: 1px solid #be185d;
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+.btn-special:hover { background: #be185d; color: white; }
+
+/* Signature propre */
 .signature-line {
     border-top: 1px solid #000;
     min-width: 220px;
@@ -33,6 +48,7 @@
     font-family: 'Alex Brush', cursive;
     font-size: 28px;
     margin-bottom: 0;
+    color: #000;
 }
 
 .mode-selector { display: flex; gap: 5px; margin-bottom: 20px; background: #112240; padding: 5px; border-radius: 8px; }
@@ -52,24 +68,8 @@
 .category-content { display: none; padding: 15px; background: rgba(10, 25, 47, 0.8); border: 1px solid #1d3354; border-top: none; margin-bottom: 5px; }
 .category-content.active { display: block !important; }
 
-.grossesse-panel { background: #112240; padding: 15px; border: 1px solid #233554; border-radius: 8px; margin-top: 20px; }
-.grossesse-panel h3 { color: var(--omc-cyan); font-size: 11px; text-transform: uppercase; text-align: center; margin: 0 0 10px 0; }
-.pregnancy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
-.btn-preg { background: #172a45; color: white; border: 1px solid #233554; padding: 8px 2px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-.btn-preg.neg { grid-column: span 3; background: #7f1d1d; margin-top: 5px; }
+.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; padding-bottom: 20px; }
 
-.cert-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-top: 40px;
-    padding-bottom: 20px; /* Ajoute un petit espace de sécurité sous le tampon/signature */
-}
-
-.header-lab img {
-    max-height: 60px;
-    width: auto;
-}
 .patient-card { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; padding: 20px; border: 1px solid #e2e8f0; margin-top: 20px; font-size: 14px; color: #1e293b; }
 
 .section { display: none; margin-top: 25px; border-top: 1px solid #eee; padding-top: 10px; }
@@ -79,9 +79,9 @@
 .row.active { display: grid !important; }
 .val { font-weight: bold; text-align: center; }
 
-
 .btn-generate { background: #16a34a !important; color: white !important; height: 45px !important; border-radius: 6px !important; border: none !important; cursor: pointer; margin-top: 10px;}
 .btn-reset { background: #bf1605 !important; color: white !important; height: 45px !important; border-radius: 6px !important; border: none !important; cursor: pointer; margin-top: 10px;}
+.btn-dice { background: #334155; color: white; border: 1px solid #475569; border-radius: 4px; cursor: pointer;}
 
 .btn-image { background: #ffffff !important; color: #000000 !important; border: 1px solid #ccc !important; text-transform: uppercase; font-size: 11px; padding: 12px !important; font-weight: bold; width: 100%; border-radius: 4px; cursor: pointer; }
 .btn-discord { background: #5865f2 !important; color: white !important; padding: 12px !important; width: 100%; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px;}
@@ -89,3 +89,9 @@
 .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: flex-start; padding: 40px 20px; overflow-y: auto; z-index: 9999; }
 .popup-content { background: #112240; padding: 25px; border-radius: 12px; width: 100%; max-width: 650px; border: 1px solid var(--omc-cyan); text-align: center; color: white;}
 #preview-img-result { max-width: 100%; margin-top: 15px; border-radius: 8px;}
+
+/* Inputs sidebars */
+input[type="text"], input[type="date"], input[type="time"], textarea {
+    width: 100%; background: #111b2d; border: 1px solid #334155; color: white;
+    padding: 8px; border-radius: 4px; font-size: 11px; outline: none;
+}
