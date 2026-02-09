@@ -40,7 +40,7 @@
                 </div>
                 <div class="form-group">
                     <label>GROUPE SANGUIN</label>
-                    <input id="bloodGroup" type="text" placeholder="Ex: A+" oninput="calculerTerme()" style="text-align:center; font-weight:bold; color:#64ffda;">
+                    <input id="bloodGroup" type="text" placeholder="Ex: A+" oninput="updateReport()" style="text-align:center; font-weight:bold; color:#64ffda;">
                 </div>
             </div>
 
@@ -54,17 +54,27 @@
             <div class="form-group">
                 <label style="color: #64ffda;">DÉBUT DE GROSSESSE (DDR)</label>
                 <input id="dateDebut" type="date" onchange="calculerTerme()" style="border: 1px solid #64ffda;">
-                <small style="color: #94a3b8; font-size: 10px; margin-top: 5px; display:block;">
-                    1 semaine IRL = 1 mois Grossesse
-                </small>
+            </div>
+
+            <div class="form-group">
+                <label>OBSERVATIONS / ÉTAT GÉNÉRAL (Visible si rempli)</label>
+                <textarea id="obsHealth" rows="2" placeholder="Ex: Patiente fatiguée, nausées importantes..." oninput="updateReport()" style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
             </div>
 
             <div class="form-group" style="background: #162032; padding: 10px; border-radius: 6px; border: 1px solid #334155;">
-                <label>ÉTAT DE SANTÉ</label>
+                <label>ÉTAT DE SANTÉ (IMPACT RÉSULTATS)</label>
                 <input type="range" id="santeMaman" min="0" max="100" value="100" oninput="updateHealthColor()" onchange="calculerTerme()" style="width: 100%; cursor: pointer;">
                 <div style="display: flex; justify-content: space-between; font-size: 10px; margin-top: 5px;">
                     <span style="color: #ef4444;">Pathologique</span>
                     <span id="healthValue" style="color: #64ffda; font-weight: bold;">Parfaite (100%)</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>SPÉCIFICITÉS</label>
+                <div class="checkbox-grid">
+                    <label class="checkbox-item"><input type="checkbox" id="isGemellaire" onchange="calculerTerme()"> 👶👶 Grossesse Gémellaire (Jumeaux)</label>
+                    <label class="checkbox-item"><input type="checkbox" id="measureCol" onchange="calculerTerme()"> 📏 Mesure du Col (Urgence)</label>
                 </div>
             </div>
 
@@ -140,6 +150,11 @@
                     </div>
                 </div>
 
+                <div id="obs-block" style="margin-bottom: 20px; padding: 10px; background: #fffbeb; border-left: 4px solid #f59e0b; display:none;">
+                    <small style="font-weight:bold; color: #b45309; text-transform:uppercase;">État clinique / Observations :</small>
+                    <p id="display-obs" style="margin: 5px 0 0 0; font-size: 12px; color: #000; font-style: italic;">...</p>
+                </div>
+
                 <div id="section-bio" class="section-block">
                     <h4 class="section-title">BILAN BIOLOGIQUE & SANGUIN</h4>
                     <table class="bio-table">
@@ -147,7 +162,7 @@
                             <tr>
                                 <th>Analyse</th>
                                 <th>Résultat</th>
-                                <th>Normes</th>
+                                <th>Normes (Selon Terme)</th>
                                 <th>Interprétation</th>
                             </tr>
                         </thead>
