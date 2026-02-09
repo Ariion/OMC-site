@@ -24,6 +24,7 @@
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <label class="checkbox-item"><input type="checkbox" id="toggleBio" checked onchange="toggleSections()"> 🩸 Inclure Prise de Sang</label>
                     <label class="checkbox-item"><input type="checkbox" id="toggleEcho" checked onchange="toggleSections()"> 🖥️ Inclure Échographie</label>
+                    <label class="checkbox-item"><input type="checkbox" id="toggleOrdo" checked onchange="toggleSections()"> 💊 Inclure Ordonnance</label>
                 </div>
             </div>
 
@@ -37,7 +38,6 @@
                     <input id="examDate" type="date" oninput="updateReport()">
                 </div>
             </div>
-            
             <div class="form-group">
                 <label>DATE NAISSANCE</label>
                 <input id="patientBirth" type="date" oninput="updateReport()">
@@ -54,7 +54,7 @@
             </div>
 
             <div class="form-group" style="background: #162032; padding: 10px; border-radius: 6px; border: 1px solid #334155;">
-                <label>ÉTAT DE SANTÉ DE LA MAMAN</label>
+                <label>ÉTAT DE SANTÉ</label>
                 <input type="range" id="santeMaman" min="0" max="100" value="100" oninput="updateHealthColor()" onchange="calculerTerme()" style="width: 100%; cursor: pointer;">
                 <div style="display: flex; justify-content: space-between; font-size: 10px; margin-top: 5px;">
                     <span style="color: #ef4444;">Pathologique</span>
@@ -65,12 +65,12 @@
             <div class="form-group-row">
                 <div class="form-group">
                     <label>TYPE D'EXAMEN</label>
-                    <select id="echoType" onchange="updateConclusionDynamic()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
+                    <select id="echoType" onchange="calculerTerme()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
                         <option value="Standard">Standard</option>
                         <option value="Datation">Datation (T1)</option>
                         <option value="Morpho T2">Morphologie (T2)</option>
                         <option value="Croissance T3">Croissance (T3)</option>
-                        <option value="Col">Mesure du Col</option>
+                        <option value="Col">Mesure du Col (Urgence)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -87,8 +87,8 @@
             <div class="form-group">
                 <label>VITALITÉ</label>
                 <div class="checkbox-grid">
-                    <label class="checkbox-item"><input type="checkbox" id="activiteCardiaque" checked onchange="updateReport()"> Activité Cardiaque (Bdc)</label>
-                    <label class="checkbox-item"><input type="checkbox" id="mouvementsActifs" checked onchange="updateReport()"> Mouvements Actifs (MAF)</label>
+                    <label class="checkbox-item"><input type="checkbox" id="activiteCardiaque" checked onchange="updateConclusionDynamic()"> Activité Cardiaque</label>
+                    <label class="checkbox-item"><input type="checkbox" id="mouvementsActifs" checked onchange="updateConclusionDynamic()"> Mouvements (MAF)</label>
                 </div>
             </div>
 
@@ -97,13 +97,13 @@
             </div>
 
             <div class="form-group" style="margin-top: 20px;">
-                <label>CONCLUSION DU RAPPORT</label>
-                <textarea id="conclusionInput" rows="4" oninput="updateReport()" placeholder="Conclusion générée automatiquement..." style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
+                <label>CONCLUSION</label>
+                <textarea id="conclusionInput" rows="4" oninput="updateReport()" style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
             </div>
 
             <div class="form-group">
                 <label>PRATICIEN</label>
-                <input id="doctorSig" type="text" placeholder="Dr. Greystone" oninput="updateReport()">
+                <input id="doctorSig" type="text" placeholder="Dr. " oninput="updateReport()">
             </div>
 
             <div class="actions-group">
@@ -124,7 +124,7 @@
                     </div>
                 </header>
 
-                <div class="patient-banner">
+                <div class="patient-banner" id="banner-status">
                     <div>
                         <small>PATIENTE</small>
                         <span id="display-patient">...</span>
@@ -134,11 +134,11 @@
                         <span id="display-birth">...</span>
                     </div>
                     <div style="border-left: 1px solid #cbd5e1; padding-left: 15px;">
-                        <small>TERME ACTUEL (SA)</small>
-                        <span id="display-sa" style="color: #000; font-weight: 900; font-size: 16px;">-- SA + --j</span>
+                        <small>TERME ACTUEL</small>
+                        <span id="display-sa" style="color: #000; font-weight: 900; font-size: 16px;">-- SA</span>
                     </div>
                     <div>
-                        <small>DPA (ESTIMÉE)</small>
+                        <small>TERME PRÉVU AUTOUR DU</small>
                         <span id="display-dpa">--/--/----</span>
                     </div>
                 </div>
@@ -170,7 +170,6 @@
                                 <div class="echo-overlay-text bottom-center" id="echo-label-img"></div>
                                 <img id="echo-img-display" src="assets/echo_placeholder.jpg" alt="Echo Main">
                             </div>
-                            
                             <div class="echo-thumbnails">
                                 <div class="thumb-frame"><img id="thumb-1" src="" alt="View 1"></div>
                                 <div class="thumb-frame"><img id="thumb-2" src="" alt="View 2"></div>
@@ -180,20 +179,15 @@
 
                         <div class="biometrics-panel">
                             <h5>BIOMÉTRIES FOETALES</h5>
-                            <ul class="bio-list">
-                                <li><span>LCC (Long. Crânio-Caudale) :</span> <strong id="val-lcc">-- mm</strong></li>
-                                <li><span>BIP (Diam. Bipariétal) :</span> <strong id="val-bip">-- mm</strong></li>
-                                <li><span>PC (Périmètre Crânien) :</span> <strong id="val-pc">-- mm</strong></li>
-                                <li><span>PA (Périmètre Abdominal) :</span> <strong id="val-pa">-- mm</strong></li>
-                                <li><span>LF (Long. Fémorale) :</span> <strong id="val-lf">-- mm</strong></li>
-                            </ul>
+                            <ul class="bio-list" id="bio-list-content">
+                                </ul>
                             
-                            <h5 style="margin-top: 15px;">DOPPLER & VITALITÉ</h5>
+                            <h5 style="margin-top: 15px;">VITALITÉ</h5>
                             <ul class="bio-list">
-                                <li><span>Activité Cardiaque :</span> <strong id="val-acf">-- bpm</strong></li>
+                                <li><span>Activité Cardiaque :</span> <strong id="val-acf">--</strong></li>
                                 <li><span>Mouvements (MAF) :</span> <strong id="val-maf">--</strong></li>
                                 <li><span>Sexe Foetal :</span> <strong id="val-sexe">--</strong></li>
-                                <li><span>Estimation Poids (EPF) :</span> <strong id="val-poids">-- g</strong></li>
+                                <li><span>Poids Estimé :</span> <strong id="val-poids">-- g</strong></li>
                             </ul>
                         </div>
                     </div>
@@ -206,6 +200,19 @@
                     </p>
                 </div>
 
+                <div id="section-ordo" class="section-block ordo-block">
+                    <h4 class="section-title" style="color: #0f172a; border-color:#0f172a;">ORDONNANCE SUGGÉRÉE</h4>
+                    <div style="display:flex; gap: 20px;">
+                        <div style="flex:1;">
+                            <ul id="ordo-list" style="list-style: square; padding-left: 15px; font-size: 12px; line-height: 1.6; color: #000;">
+                                </ul>
+                        </div>
+                        <div style="width: 100px; display:flex; align-items:center; justify-content:center;">
+                            <div class="ordo-stamp">VALIDÉ</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="cert-footer">
                     <div class="cert-signature">
                         Praticien :<br>
@@ -216,6 +223,10 @@
                         <div class="stamp-text">OMC OBSTETRICS</div>
                     </div>
                 </div>
+
+                <p class="legal-text">
+                    Résultat fourni par le service d'Obstétrique de l'Ocean Medical Center. Toute reproduction est interdite. Falsification punie par la loi San Andreas.
+                </p>
 
             </div>
         </main>
