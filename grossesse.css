@@ -1,87 +1,78 @@
 /* SURCHARGE CSS POUR GROSSESSE */
 
-/* Format Vertical A4 avec Scroll si besoin */
+/* Format Vertical A4 Extensible */
 .document-vertical {
     width: 750px; 
-    min-height: 1000px; /* Force la hauteur mini */
+    height: auto !important; /* IMPORTANT : Permet de s'agrandir */
+    min-height: 1000px;
     flex-direction: column;
     padding: 50px;
     gap: 20px;
+    padding-bottom: 80px; /* Espace sécurité en bas */
 }
 
-/* Override pour autoriser le scroll dans la preview */
+/* Style spécifique pour les checkboxes de configuration */
+.checkbox-item input[type="checkbox"] {
+    accent-color: #64ffda;
+    width: 14px; height: 14px;
+}
+
+/* Override preview area pour scroll */
 .preview-area {
-    align-items: flex-start; /* Important pour le scroll */
-    padding-bottom: 100px;
+    align-items: flex-start;
 }
 
 /* Bannière Patiente */
 .patient-banner {
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    padding: 12px;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px;
+    display: flex; justify-content: space-between; margin-bottom: 20px;
 }
-
 .patient-banner div { display: flex; flex-direction: column; }
 .patient-banner small { font-size: 9px; color: #64748b; font-weight: bold; text-transform: uppercase; }
 .patient-banner span { font-size: 13px; color: #0f172a; font-weight: 700; }
 
-/* Titres de section */
+/* Titres */
 .section-title {
-    font-size: 14px;
-    font-weight: 800;
-    color: #0f172a;
-    border-bottom: 2px solid #0f172a;
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-    display: flex;
-    justify-content: space-between;
+    font-size: 14px; font-weight: 800; color: #0f172a;
+    border-bottom: 2px solid #0f172a; padding-bottom: 5px; margin-bottom: 15px;
+    text-transform: uppercase; display: flex; justify-content: space-between;
 }
 
-/* Tableau Biologie - Rendu propre */
+/* Tableau Bio */
 .bio-table { width: 100%; border-collapse: collapse; font-size: 11px; }
 .bio-table th { text-align: left; background: #f8fafc; padding: 6px; border-bottom: 2px solid #e2e8f0; color: #64748b; }
 .bio-table td { padding: 6px; border-bottom: 1px solid #e2e8f0; color: #000; vertical-align: middle; }
-
-/* Style des résultats anormaux */
 .result-bad { color: #dc2626 !important; font-weight: bold; }
 .result-good { color: #2563eb !important; font-weight: bold; }
 
 /* --- BLOC ÉCHOGRAPHIE --- */
 .echo-container { display: flex; gap: 20px; align-items: flex-start; }
 
-/* Cadre Image */
+/* Cadre Image Principal */
 .echo-frame {
-    width: 60%;
+    width: 100%;
     height: 250px;
     background-color: black;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 4px solid #000;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    border: 4px solid #000; margin-bottom: 5px;
 }
+.echo-frame img { max-width: 100%; max-height: 100%; filter: contrast(1.2) brightness(1.1) grayscale(100%); }
 
-.echo-frame img {
-    max-width: 100%;
-    max-height: 100%;
-    filter: contrast(1.2) brightness(1.1) grayscale(100%);
+/* Miniatures */
+.echo-thumbnails {
+    display: flex; gap: 5px; justify-content: space-between;
 }
+.thumb-frame {
+    width: 32%; height: 60px; background: black; border: 2px solid #000;
+    overflow: hidden; display: flex; align-items: center; justify-content: center;
+}
+.thumb-frame img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) contrast(1.2); opacity: 0.8; }
 
+/* Texte Overlay */
 .echo-overlay-text {
-    position: absolute;
-    color: #00ff00;
-    font-family: 'Courier New', monospace;
-    font-size: 10px;
-    font-weight: bold;
-    text-shadow: 1px 1px 0 #000;
-    pointer-events: none;
+    position: absolute; color: #00ff00; font-family: 'Courier New', monospace;
+    font-size: 10px; font-weight: bold; text-shadow: 1px 1px 0 #000; pointer-events: none;
 }
 .top-left { top: 10px; left: 10px; }
 .top-right { top: 10px; right: 10px; text-align: right; }
@@ -90,18 +81,12 @@
 
 /* Panneau Biométries */
 .biometrics-panel {
-    flex: 1;
-    background: #f8fafc;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #e2e8f0;
+    flex: 1; background: #f8fafc; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;
 }
-
 .biometrics-panel h5 {
     font-size: 10px; color: #64748b; margin: 0 0 8px 0;
     text-transform: uppercase; border-bottom: 1px dashed #cbd5e1; padding-bottom: 2px;
 }
-
 .bio-list { list-style: none; padding: 0; margin: 0; }
 .bio-list li {
     display: flex; justify-content: space-between; font-size: 11px;
@@ -110,5 +95,4 @@
 .bio-list li span { color: #475569; }
 .bio-list li strong { color: #0f172a; }
 
-/* Force la couleur noire pour la conclusion */
-#display-conclusion { color: #000000 !important; opacity: 1; font-weight: 500;}
+#display-conclusion { color: #000000 !important; font-weight: 500;}
