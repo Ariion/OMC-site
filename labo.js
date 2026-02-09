@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     determinerGroupeAleatoire();
     updateLiveQRCode();
 });
-
+ 
 // ==========================================
 // 1. BASE DE DONNÉES MÉDICALE
 // ==========================================
