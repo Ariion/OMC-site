@@ -5,7 +5,6 @@ const ECHO_IMAGES = {
     t1: "https://placehold.co/600x400/000000/FFFFFF?text=PROFIL+T1",
     t2: "https://placehold.co/600x400/000000/FFFFFF?text=MORPHO+T2",
     t3: "https://placehold.co/600x400/000000/FFFFFF?text=VISAGE+T3",
-    col: "https://placehold.co/600x400/000000/FFFFFF?text=MESURE+COL+UTERIN",
     femur: "https://placehold.co/200x150/000000/FFFFFF?text=FEMUR",
     abdo: "https://placehold.co/200x150/000000/FFFFFF?text=ABDO",
     cerveau: "https://placehold.co/200x150/000000/FFFFFF?text=CERVEAU"
@@ -18,6 +17,7 @@ window.onload = () => {
 };
 
 let currentSA = 0;
+let examTypeLabel = "Standard";
 
 function toggleSections() {
     const showBio = document.getElementById('toggleBio').checked;
@@ -27,6 +27,7 @@ function toggleSections() {
     document.getElementById('section-bio').style.display = showBio ? 'block' : 'none';
     document.getElementById('section-echo').style.display = showEcho ? 'block' : 'none';
     document.getElementById('section-ordo').style.display = showOrdo ? 'block' : 'none';
+    calculerTerme(); // Recalcul auto pour adapter le titre
 }
 
 function updateHealthColor() {
@@ -38,7 +39,7 @@ function updateHealthColor() {
     else txt.style.color = "#ef4444";
 }
 
-// 1. CALCUL DU TERME (AVEC LOGIQUE DÉPASSEMENT)
+// 1. CALCUL DU TERME ET TYPE D'EXAMEN AUTO
 function calculerTerme() {
     const debut = new Date(document.getElementById('dateDebut').value);
     const today = new Date(document.getElementById('examDate').value);
@@ -46,14 +47,12 @@ function calculerTerme() {
     if (!isNaN(debut)) {
         const diffTime = Math.abs(today - debut);
         const daysIRL = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-        
-        // 1 jour IRL = 0.64 Semaine Grossesse
         currentSA = Math.floor(daysIRL * 0.64);
         const joursRestants = Math.floor((daysIRL * 0.64 - currentSA) * 7);
 
         document.getElementById('display-sa').innerText = `${currentSA} SA + ${joursRestants}j`;
         
-        // DPA (Terme théorique)
+        // Calcul DPA (41 SA)
         const dpa = new Date(debut);
         dpa.setDate(dpa.getDate() + 64);
         document.getElementById('display-dpa').innerText = dpa.toLocaleDateString('fr-FR');
@@ -67,6 +66,18 @@ function calculerTerme() {
             banner.classList.remove('alert-term');
         }
 
+        // Détermination AUTO du type d'examen
+        const hasEcho = document.getElementById('toggleEcho').checked;
+        if (hasEcho) {
+            if (currentSA < 11) examTypeLabel = "Échographie de Datation";
+            else if (currentSA >= 11 && currentSA < 14) examTypeLabel = "Échographie T1 (12 SA)";
+            else if (currentSA >= 14 && currentSA < 28) examTypeLabel = "Échographie Morphologique T2";
+            else if (currentSA >= 28) examTypeLabel = "Échographie Croissance T3";
+        } else {
+            examTypeLabel = "Consultation de Suivi Mensuel";
+        }
+        document.getElementById('exam-type-auto').innerText = examTypeLabel;
+
         genererTout();
     }
 }
@@ -79,10 +90,11 @@ function genererTout() {
     updateReport();
 }
 
-// 2. BIOLOGIE ÉVOLUTIVE (CHANGE SELON LES SEMAINES)
+// 2. BIOLOGIE ÉVOLUTIVE (CUMULATIVE)
 function genererBiologieEvolutive(sante) {
     const tbody = document.getElementById('bio-tbody');
     tbody.innerHTML = ""; 
+    const bloodGroup = document.getElementById('bloodGroup').value || "Non renseigné";
 
     const addRow = (nom, res, unit, ref, isBad = false, comment = "") => {
         const row = document.createElement('tr');
@@ -90,63 +102,69 @@ function genererBiologieEvolutive(sante) {
         tbody.appendChild(row);
     };
 
-    // T1 (< 14 SA) : Sérologies, Groupe Sanguin
-    if (currentSA <= 14) {
+    // --- TOUJOURS AFFICHER ---
+    addRow("Groupe Sanguin / Rhésus", bloodGroup, "", "Info Patient");
+
+    // --- DÉBUT DE GROSSESSE (T1 & Avant) ---
+    if (currentSA > 0) {
         let hcg = rand(20000, 150000);
-        addRow("Beta-hCG", formatNumber(hcg), "mIU/ml", "> 5000");
-        addRow("Groupe Sanguin / Rhésus", ["A+", "A-", "B+", "O+", "O-"][rand(0,4)], "", "Info");
-        addRow("Toxoplasmose", sante < 30 ? "IgM POSITIF" : "Négatif", "", "Négatif", sante < 30, "Infection");
-        addRow("Rubéole", "Immunisée", "", "Immunisée");
+        if (currentSA > 14) hcg = rand(10000, 50000); // Baisse physiologique
+        addRow("Beta-hCG Plasmatique", formatNumber(hcg), "mIU/ml", "Variable selon terme");
+        
+        const toxo = sante < 30 ? "IgM POSITIF" : "Négatif";
+        addRow("Sérologie Toxoplasmose", toxo, "", "Négatif", toxo.includes("POSITIF"), "Primo-infection ?");
+        addRow("Sérologie Rubéole", "Immunisée", "", "Immunisée");
     }
-    
-    // T2 (15 - 28 SA) : Diabète, Numération
-    if (currentSA > 14 && currentSA <= 28) {
+
+    // --- MILIEU DE GROSSESSE (T2 : 15-28 SA) ---
+    // On ajoute NFS et Glycémie
+    if (currentSA >= 15) {
         let hemo = sante < 60 ? rand(95, 105) : rand(115, 130);
-        addRow("Hémoglobine", hemo, "g/L", "> 110 g/L", hemo < 110, "Anémie gravidique");
+        addRow("Hémoglobine (NFS)", hemo, "g/L", "> 110 g/L", hemo < 110, "Anémie gravidique");
         
         let glycemie = sante < 40 ? "1.35" : "0.85";
         addRow("Glycémie à jeun", glycemie, "g/L", "< 0.92 g/L", parseFloat(glycemie) > 0.92, "Diabète Gestationnel");
     }
 
-    // T3 & Terme (> 28 SA) : Coagulation, Albuminurie
-    if (currentSA > 28) {
-        let plaquettes = rand(150, 400);
-        addRow("Plaquettes", plaquettes, "G/L", "150 - 400 G/L");
+    // --- FIN DE GROSSESSE (T3 : > 28 SA) ---
+    // On ajoute Coagulation et Albuminurie
+    if (currentSA >= 28) {
+        let plaq = rand(150, 400);
+        addRow("Plaquettes", plaq, "G/L", "150 - 400 G/L");
         
-        let prot = sante < 20 ? "0.45" : "0.10"; // Pré-éclampsie
+        let tp = rand(80, 100);
+        addRow("Taux de Prothrombine (TP)", tp, "%", "> 70%", false, "Bilan anesthésie OK");
+
+        let prot = sante < 20 ? "0.45" : "0.10"; 
         addRow("Protéinurie", prot, "g/24h", "< 0.30", parseFloat(prot) > 0.3, "Risque Pré-éclampsie");
-        
-        addRow("TP (Taux Prothrombine)", rand(80, 100), "%", "> 70%", false, "OK pour Péridurale");
     }
 }
 
-// 3. LOGIQUE ECHOGRAPHIE (Col vs Bébé)
+// 3. ECHOGRAPHIE AUTO
 function genererEchoLogic(sante) {
-    const typeEx = document.getElementById('echoType').value;
     const sexe = document.getElementById('sexeFoetal').value;
-    const isCol = typeEx === "Col";
     
-    // Image principale
-    let imgUrl = ECHO_IMAGES.t1;
-    if (typeEx === "Col") imgUrl = ECHO_IMAGES.col;
-    else if (currentSA > 14 && currentSA < 28) imgUrl = ECHO_IMAGES.t2;
+    // Choix image selon terme
+    let imgUrl = ECHO_IMAGES.sac;
+    if (currentSA >= 10 && currentSA < 14) imgUrl = ECHO_IMAGES.t1;
+    else if (currentSA >= 14 && currentSA < 28) imgUrl = ECHO_IMAGES.t2;
     else if (currentSA >= 28) imgUrl = ECHO_IMAGES.t3;
     
     document.getElementById('echo-img-display').src = imgUrl;
-    document.getElementById('echo-label-img').innerText = typeEx.toUpperCase();
+    document.getElementById('echo-label-img').innerText = examTypeLabel.toUpperCase();
 
-    // Biométries (Liste)
+    // Miniatures
+    document.getElementById('thumb-1').src = ECHO_IMAGES.femur;
+    document.getElementById('thumb-2').src = ECHO_IMAGES.abdo;
+    document.getElementById('thumb-3').src = ECHO_IMAGES.cerveau;
+
+    // Biométries
     const list = document.getElementById('bio-list-content');
-    list.innerHTML = ""; // Reset
+    list.innerHTML = ""; 
 
-    if (isCol) {
-        // Mode Mesure du Col (Urgence contractions)
-        let longueur = sante < 50 ? rand(15, 25) : rand(30, 45); // Col court si santé basse
-        list.innerHTML += `<li><span>Longueur Cervicale :</span> <strong>${longueur} mm</strong></li>`;
-        list.innerHTML += `<li><span>Orifice Interne :</span> <strong>${longueur < 25 ? "OUVERT (Entonnoir)" : "Fermé"}</strong></li>`;
-        list.innerHTML += `<li><span>Membranes :</span> <strong>Intactes</strong></li>`;
+    if (currentSA < 10) {
+        list.innerHTML = "<li><span>Sac Gestationnel :</span> <strong>Visible intra-utérin</strong></li>";
     } else {
-        // Mode Foetus Standard
         const bip = currentSA > 12 ? (currentSA * 2.5) + rand(-3, 3) : 0;
         const lf = currentSA > 12 ? (currentSA * 1.8) + rand(-2, 2) : 0;
         const poids = currentSA > 12 ? (Math.pow(currentSA, 2.9) * 0.13 + rand(-50, 50)) : 0;
@@ -155,41 +173,33 @@ function genererEchoLogic(sante) {
         list.innerHTML += `<li><span>LF (Fémur) :</span> <strong>${lf.toFixed(1)} mm</strong></li>`;
         list.innerHTML += `<li><span>PC (Périm. Tête) :</span> <strong>${(bip * 3.14).toFixed(0)} mm</strong></li>`;
         list.innerHTML += `<li><span>PA (Abdo) :</span> <strong>${(bip * 2.8).toFixed(0)} mm</strong></li>`;
+        
+        document.getElementById('val-poids').innerText = poids > 10 ? poids.toFixed(0) + " g" : "-";
     }
 
-    // Valeurs communes
+    // Vitalité
     document.getElementById('val-acf').innerText = rand(130, 160) + " bpm";
     document.getElementById('val-sexe').innerText = (currentSA > 14) ? sexe : "Incertain";
+    document.getElementById('val-maf').innerText = "Présents";
     
-    // Conclusion Auto
-    let txt = `Terme : ${currentSA} SA. Examen : ${typeEx}.\n`;
-    if (isCol) {
-        txt += document.querySelector('#bio-list-content strong').innerText.includes("1") ? "⚠️ COL COURT. Menace d'accouchement prématuré." : "Col long et fermé. Pas de menace.";
-    } else {
-        txt += `Vitalité foetale positive. Biométries conformes.\nSexe probable : ${sexe}.`;
-        if (currentSA >= 41) txt = "⚠️ TERME DÉPASSÉ. Placenta grade 3. Oligoamnios modéré.\nIndication de déclenchement à discuter.";
-    }
+    // Conclusion
+    let txt = `Grossesse évolutive de ${currentSA} SA.\n`;
+    if (currentSA > 14 && sexe !== "Indéterminé") txt += `Foetus de sexe ${sexe.toUpperCase()}.\n`;
+    if (sante < 50) txt += "⚠️ Surveillance accrue nécessaire (Biologie perturbée).";
+    else txt += "Développement staturo-pondéral satisfaisant.";
+    
     document.getElementById('conclusionInput').value = txt;
 }
 
-// 4. ORDONNANCE INTELLIGENTE
+// 4. ORDONNANCE AUTO
 function genererOrdonnance(sante) {
     const list = document.getElementById('ordo-list');
     list.innerHTML = "";
 
-    // Base vitamines
-    if (currentSA < 14) list.innerHTML += "<li>Acide Folique 0.4mg (1cp/jour)</li>";
-    if (currentSA > 14) list.innerHTML += "<li>Gestarelle / Vitamines Grossesse (1cp/jour)</li>";
-
-    // Pathologie
-    if (sante < 60) list.innerHTML += "<li>Tardyferon 80mg (Fer) - 1cp matin</li>";
-    if (sante < 40) list.innerHTML += "<li>Spasfon (en cas de contractions)</li><li>Repos strict au domicile</li>";
-
-    // Dépassement Terme
-    if (currentSA >= 41) {
-        list.innerHTML = "<li>Monitoring Foetal (RCF) toutes les 48h à l'hôpital</li>";
-        list.innerHTML += "<li>Déclenchement prévu à J+4 si pas de travail spontané</li>";
-    }
+    if (currentSA < 14) list.innerHTML += "<li>Acide Folique 0.4mg (1cp/jour)</li><li>Vitamines Grossesse</li>";
+    if (currentSA >= 14 && sante < 60) list.innerHTML += "<li>Tardyferon 80mg (Fer)</li>";
+    if (currentSA >= 28) list.innerHTML += "<li>Rendez-vous Anesthésiste (Péridurale)</li>";
+    if (currentSA >= 41) list.innerHTML = "<li>Monitoring toutes les 48h à l'hôpital</li><li>Déclenchement J+4</li>";
 }
 
 function updateReport() {
@@ -198,27 +208,23 @@ function updateReport() {
     document.getElementById('d-sig').innerText = document.getElementById('doctorSig').value || "...";
     document.getElementById('display-conclusion').innerText = document.getElementById('conclusionInput').value;
     
-    // Update dates
     const dateStr = new Date(document.getElementById('examDate').value).toLocaleDateString('fr-FR');
     document.getElementById('display-date-top').innerText = dateStr;
     document.getElementById('echo-date-display').innerText = dateStr;
 
-    // QR
-    const qrData = encodeURIComponent(`OMC-OBST-${currentSA}SA-${Date.now()}`);
+    const nom = document.getElementById('patientName').value || "Inconnu";
+    const qrData = encodeURIComponent(`OMC-OBST-${nom}-${currentSA}SA`);
     document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}&margin=1`;
 }
 
-function updateConclusionDynamic() { calculerTerme(); } // Relance le calcul complet
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); }
 function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
 
-// --- EXPORT IMAGE ---
 async function genererImage() {
     const btn = event.currentTarget;
     window.scrollTo(0,0);
     btn.innerText = "CHARGEMENT...";
     
-    // On force la hauteur pour tout capturer
     const captureZone = document.getElementById('capture-zone');
     const originalHeight = captureZone.style.height;
     captureZone.style.height = captureZone.scrollHeight + "px";
@@ -237,14 +243,27 @@ async function genererImage() {
         }
     } catch (e) { alert("Erreur: " + e.message); }
     
-    captureZone.style.height = originalHeight; // Restore
+    captureZone.style.height = originalHeight; 
     btn.innerText = "GÉNÉRER L'IMAGE";
 }
 
 async function envoyerDiscord() {
-    // ... (Même logique que Constat, copier/coller la fonction si besoin)
-    // Pour alléger la réponse, je garde la fonction d'export simple ici
-    alert("Fonction Discord prête (voir code précédent)");
+    const url = "https://discord.com/api/webhooks/1421780761731928194/ZFSpiLTHfytIGT02QBf5SBOIEDzWMaf_PMHtDB9sd-GmF5chHnQqQic-9YpLnYHJIRPo";
+    try {
+        window.scrollTo(0,0);
+        const canvas = await html2canvas(document.getElementById('capture-zone'), { scale: 2, useCORS: true });
+        canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            const nom = document.getElementById('patientName').value || "Inconnu";
+            formData.append("payload_json", JSON.stringify({
+                thread_name: `Obstétrique - ${nom}`,
+                content: `🤰 **Nouveau Dossier Obstétrique** : ${nom}`
+            }));
+            formData.append("file", blob, `grossesse_${nom}.png`);
+            await fetch(url + "?wait=true", { method: 'POST', body: formData });
+            alert("✅ Dossier envoyé !");
+        }, 'image/png');
+    } catch (e) { alert("Erreur Discord"); }
 }
 
 function copyLink() { navigator.clipboard.writeText(document.getElementById("direct-link").value); alert("Copié !"); }
