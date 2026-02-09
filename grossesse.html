@@ -28,19 +28,25 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label>PATIENTE</label>
+                <input id="patientName" type="text" placeholder="Nom Prénom" oninput="updateReport()">
+            </div>
+            
             <div class="form-group-row">
                 <div class="form-group">
-                    <label>PATIENTE</label>
-                    <input id="patientName" type="text" placeholder="Nom Prénom" oninput="updateReport()">
+                    <label>DATE NAISSANCE</label>
+                    <input id="patientBirth" type="date" oninput="updateReport()">
                 </div>
                 <div class="form-group">
-                    <label>DATE DU JOUR</label>
-                    <input id="examDate" type="date" oninput="updateReport()">
+                    <label>GROUPE SANGUIN</label>
+                    <input id="bloodGroup" type="text" placeholder="Ex: A+" oninput="calculerTerme()" style="text-align:center; font-weight:bold; color:#64ffda;">
                 </div>
             </div>
+
             <div class="form-group">
-                <label>DATE NAISSANCE</label>
-                <input id="patientBirth" type="date" oninput="updateReport()">
+                <label>DATE DU JOUR</label>
+                <input id="examDate" type="date" oninput="calculerTerme()">
             </div>
 
             <hr style="border: 0; border-top: 1px solid #1e293b; margin: 15px 0;">
@@ -63,20 +69,10 @@
             </div>
 
             <div class="form-group-row">
-                <div class="form-group">
-                    <label>TYPE D'EXAMEN</label>
-                    <select id="echoType" onchange="calculerTerme()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
-                        <option value="Standard">Standard</option>
-                        <option value="Datation">Datation (T1)</option>
-                        <option value="Morpho T2">Morphologie (T2)</option>
-                        <option value="Croissance T3">Croissance (T3)</option>
-                        <option value="Col">Mesure du Col (Urgence)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>SEXE FOETAL</label>
-                    <select id="sexeFoetal" onchange="updateConclusionDynamic()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
-                        <option value="Indéterminé">Indéterminé</option>
+                <div class="form-group" style="width:100%;">
+                    <label>SEXE FOETAL (VISUEL ÉCHO)</label>
+                    <select id="sexeFoetal" onchange="calculerTerme()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
+                        <option value="Indéterminé">Indéterminé / Trop tôt</option>
                         <option value="Féminin">Féminin</option>
                         <option value="Masculin">Masculin</option>
                         <option value="Caché">Non visible</option>
@@ -87,8 +83,8 @@
             <div class="form-group">
                 <label>VITALITÉ</label>
                 <div class="checkbox-grid">
-                    <label class="checkbox-item"><input type="checkbox" id="activiteCardiaque" checked onchange="updateConclusionDynamic()"> Activité Cardiaque</label>
-                    <label class="checkbox-item"><input type="checkbox" id="mouvementsActifs" checked onchange="updateConclusionDynamic()"> Mouvements (MAF)</label>
+                    <label class="checkbox-item"><input type="checkbox" id="activiteCardiaque" checked onchange="calculerTerme()"> Activité Cardiaque</label>
+                    <label class="checkbox-item"><input type="checkbox" id="mouvementsActifs" checked onchange="calculerTerme()"> Mouvements (MAF)</label>
                 </div>
             </div>
 
@@ -103,7 +99,7 @@
 
             <div class="form-group">
                 <label>PRATICIEN</label>
-                <input id="doctorSig" type="text" placeholder="Dr. " oninput="updateReport()">
+                <input id="doctorSig" type="text" placeholder="Dr." oninput="updateReport()">
             </div>
 
             <div class="actions-group">
@@ -121,6 +117,7 @@
                         <div class="cert-tag">OCEAN MEDICAL CENTER — OBSTÉTRIQUE</div>
                         <h1 class="cert-main-title">DOSSIER DE GROSSESSE</h1>
                         <div id="display-date-top" style="font-size: 12px; color: #64748b; font-weight: bold;"></div>
+                        <div id="exam-type-auto" style="font-size: 14px; color: #000; font-weight: 800; margin-top:5px; text-transform:uppercase;">TYPE EXAMEN AUTO</div>
                     </div>
                 </header>
 
@@ -179,8 +176,7 @@
 
                         <div class="biometrics-panel">
                             <h5>BIOMÉTRIES FOETALES</h5>
-                            <ul class="bio-list" id="bio-list-content">
-                                </ul>
+                            <ul class="bio-list" id="bio-list-content"></ul>
                             
                             <h5 style="margin-top: 15px;">VITALITÉ</h5>
                             <ul class="bio-list">
@@ -204,8 +200,7 @@
                     <h4 class="section-title" style="color: #0f172a; border-color:#0f172a;">ORDONNANCE SUGGÉRÉE</h4>
                     <div style="display:flex; gap: 20px;">
                         <div style="flex:1;">
-                            <ul id="ordo-list" style="list-style: square; padding-left: 15px; font-size: 12px; line-height: 1.6; color: #000;">
-                                </ul>
+                            <ul id="ordo-list" style="list-style: square; padding-left: 15px; font-size: 12px; line-height: 1.6; color: #000;"></ul>
                         </div>
                         <div style="width: 100px; display:flex; align-items:center; justify-content:center;">
                             <div class="ordo-stamp">VALIDÉ</div>
