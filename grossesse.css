@@ -1,5 +1,5 @@
 /* FORMAT A4 AJUSTABLE */
-.document-vertical {
+.document-vertical { 
     width: 750px; 
     height: auto !important; /* Laisse le document grandir */
     min-height: 1100px;
