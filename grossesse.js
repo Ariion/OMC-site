@@ -207,21 +207,33 @@ function genererOrdonnance(sante) {
     const list = document.getElementById('ordo-list');
     list.innerHTML = "";
 
-    // Base
-    if (currentSA < 14) list.innerHTML += "<li>Folix Acid 0.4mg (1 cp/j)</li>"; // Ancien : Acide Folique
-    if (currentSA >= 4) list.innerHTML += "<li>VitaMom / Vitamines Grossesse (1 cp/j)</li>"; // Ancien : Gestarelle
+    // DÉBUT GROSSESSE : Vitamines
+    if (currentSA < 14) list.innerHTML += "<li>Folix Acid 0.4mg (Prévention) - 1 cp/j</li>";
+    if (currentSA >= 4) list.innerHTML += "<li>VitaMom (Vitamines Grossesse) - 1 cp/j</li>";
 
-    // Symptômes courants
-    if (currentSA > 20) list.innerHTML += "<li>Gastrol (Si aigreurs d'estomac)</li>"; // Ancien : Gaviscon
+    // SYMPTÔMES COURANTS
+    // Gastrol (Anti-acide) au lieu de Gaviscon
+    if (currentSA > 20) list.innerHTML += "<li>Gastrol (Si aigreurs d'estomac)</li>";
+    
+    // Jambes lourdes
     if (currentSA > 28) list.innerHTML += "<li>Bas de Contention classe 2 (Port diurne)</li>";
-    if (currentSA > 30) list.innerHTML += "<li>Magnésium B6 (Crampes/Fatigue)</li>";
+    
+    // Crampes (Magnésium)
+    if (currentSA > 30) list.innerHTML += "<li>MagneLife B6 (Crampes/Fatigue)</li>";
 
-    // Pathologie
-    if (sante < 60) list.innerHTML += "<li>FerroMax 80mg (Fer) - 1 cp matin</li>"; // Ancien : Tardyferon
-    if (sante < 40) list.innerHTML += "<li>Spasmex (Si contractions) - Repos strict</li>"; // Ancien : Spasfon
+    // PATHOLOGIES & COMPLICATIONS
+    // Anémie : FerroMax au lieu de Tardyferon
+    if (sante < 60) list.innerHTML += "<li>FerroMax 80mg (Fer) - 1 cp matin</li>";
+    
+    // Contractions : Spasmex au lieu de Spasfon
+    if (sante < 45) list.innerHTML += "<li>Spasmex (Si contractions) - Repos strict</li>";
 
-    // Dépassement
-    if (currentSA >= 41) list.innerHTML += "<li><strong>Monitoring (RCF) toutes les 48h</strong></li>";
+    // Douleurs / Fièvre (Seul le Paracétamol est autorisé)
+    // Acetamax au lieu de Doliprane
+    if (sante < 70) list.innerHTML += "<li>Acetamax 1g (Si douleurs/fièvre) - Max 3g/j</li>";
+
+    // DÉPASSEMENT DE TERME
+    if (currentSA >= 41) list.innerHTML += "<li><strong>Monitoring (RCF) toutes les 48h à l'hôpital</strong></li>";
 }
 
 // 3. MISE A JOUR VISUELLE
