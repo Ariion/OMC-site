@@ -1,27 +1,14 @@
-// Initialisation au chargement
-document.addEventListener('DOMContentLoaded', () => {
-    init();
-    setAutoDate();
-    determinerGroupeAleatoire();
-    
-    // --- AUTOCOMPLETE CENTRALISÉ ---
-    setupPatientAutocomplete({
-        nameId: 'patientName',
-        birthId: 'patientBirth',
-        bloodId: 'patientBlood', 
-        callback: function(p) {
-            // Mise à jour visuelle quand on clique sur un patient
-            up('d-nom', p.nom);
-            upDate('d-ddn', p.naissance);
-            if(p.groupe) up('d-groupe', p.groupe);
-        }
-    });
+/* ============================================================
+   LABORATOIRE - VERSION FUSIONNÉE (MÉDICAL + FIREBASE)
+   ============================================================ */
 
-    updateLiveQRCode();
-});
- 
+// 1. IMPORTS ET CONFIG
+import { setupPatientAutocomplete, ajouterEvenementPatient } from "./global.js";
+
+const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
+
 // ==========================================
-// 1. BASE DE DONNÉES MÉDICALE
+// 2. BASE DE DONNÉES MÉDICALE (LOCALE AU FICHIER)
 // ==========================================
 const database = {
     "HÉMATOLOGIE (SANG)": [
@@ -86,10 +73,35 @@ const database = {
 };
 
 // ==========================================
-// 2. INITIALISATION ET AFFICHAGE
+// 3. INITIALISATION
 // ==========================================
 
-function init() {
+document.addEventListener('DOMContentLoaded', () => {
+    initInterface();
+    setAutoDate();
+    determinerGroupeAleatoire();
+    
+    // --- AUTOCOMPLETE CENTRALISÉ VIA FIREBASE ---
+    // (Cette fonction est importée depuis global.js)
+    if(window.setupPatientAutocomplete) {
+        window.setupPatientAutocomplete({
+            nameId: 'patientName',
+            birthId: 'patientBirth',
+            bloodId: 'patientBlood', 
+            callback: function(p) {
+                // Mise à jour visuelle quand on clique sur un patient
+                if(window.up) window.up('d-nom', p.nom);
+                if(window.upDate) window.upDate('d-ddn', p.naissance);
+                if(p.groupe && window.up) window.up('d-groupe', p.groupe);
+            }
+        });
+    }
+
+    updateLiveQRCode();
+});
+
+// Création de l'interface (Onglets + Champs)
+function initInterface() {
     const tabsContainer = document.getElementById('dynamic-tabs');
     const sectionsContainer = document.getElementById('dynamic-sections');
     if (!tabsContainer || !sectionsContainer) return;
@@ -119,12 +131,14 @@ function init() {
         sec.innerHTML = `<div class="section-title">${cat}</div>`;
 
         database[cat].forEach(item => {
+            // Création des inputs dans la sidebar
             contentDiv.innerHTML += `
                 <div class="input-group-manual">
                     <label class="manual-label">${item.label}</label>
-                    <input type="text" class="analysis-input" data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" oninput="res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
+                    <input type="text" class="analysis-input" data-id="${item.id}" data-label="${item.label}" data-norm="${item.norm}" oninput="window.res('${item.id}', this.value, '${cat}')" placeholder="Valeur...">
                 </div>`;
             
+            // Création des lignes dans le document
             sec.innerHTML += `
                 <div class="row" id="row-${item.id}">
                     <span>${item.label}</span>
@@ -139,7 +153,12 @@ function init() {
     }
 }
 
-function res(id, val, cat) {
+// ==========================================
+// 4. LOGIQUE MÉTIER (RENDUE PUBLIQUE)
+// ==========================================
+
+// Fonction mise à jour des résultats (attachée à window pour le HTML)
+window.res = function(id, val, cat) {
     const cleanCatId = cat.replace(/\s+/g, '-').replace(/[()]/g, '');
     const row = document.getElementById('row-' + id);
     const valSpan = document.getElementById('val-' + id);
@@ -176,11 +195,15 @@ function res(id, val, cat) {
     updateLiveQRCode();
 }
 
-// ==========================================
-// 3. GÉNÉRATEURS ET LOGIQUE
-// ==========================================
+window.switchMode = function(mode) {
+    document.getElementById('panel-auto').style.display = (mode === 'auto' ? 'block' : 'none');
+    document.getElementById('panel-manual').style.display = (mode === 'manual' ? 'block' : 'none');
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    if(mode === 'auto') document.getElementById('btn-auto').classList.add('active');
+    else document.getElementById('btn-manual').classList.add('active');
+}
 
-function lancerGenerationAuto() {
+window.lancerGenerationAuto = function() {
     const grav = parseInt(document.getElementById('gravity-range').value);
     const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
     let f = (grav - 1) / 9; 
@@ -218,24 +241,22 @@ function lancerGenerationAuto() {
 
     for (let id in results) {
         let cat = Object.keys(database).find(c => database[c].some(i => i.id === id));
-        if (cat) res(id, results[id].toString(), cat);
+        if (cat) window.res(id, results[id].toString(), cat);
     }
     
     fusionnerConclusionSpecifique(diagPrincipal);
 }
 
-// --- NOUVEAU : TEST GROSSESSE ---
-function lancerTestGrossesse() {
+window.lancerTestGrossesse = function() {
     resetSeulementBio(false);
     const isEnceinte = Math.random() > 0.3; // 70% chance positif pour le RP
     
     let hcg = isEnceinte ? Math.floor(Math.random() * 5000) + 50 : Math.floor(Math.random() * 5);
     
-    res('hcg', hcg.toString(), 'ENDOCRINOLOGIE & FERTILITÉ');
+    window.res('hcg', hcg.toString(), 'ENDOCRINOLOGIE & FERTILITÉ');
     
     let texte = "";
     if(isEnceinte) {
-        // Calcul approx SA
         let sa = 0;
         if(hcg < 50) sa = 3;
         else if(hcg < 500) sa = 4;
@@ -249,11 +270,9 @@ function lancerTestGrossesse() {
     fusionnerConclusionSpecifique(texte);
 }
 
-// --- NOUVEAU : BILAN FERTILITÉ ---
-function lancerFertilite() {
+window.lancerFertilite = function() {
     resetSeulementBio(false);
     
-    // Normal ou Patho ?
     const isPatho = Math.random() > 0.7;
     
     let amh = (Math.random() * 4 + 2).toFixed(2);
@@ -266,26 +285,26 @@ function lancerFertilite() {
     if (isPatho) {
         const type = Math.random();
         if (type < 0.5) {
-            // Insuffisance
-            amh = (Math.random() * 1).toFixed(2); // Bas
-            fsh = (Math.random() * 15 + 15).toFixed(1); // Haut
+            amh = (Math.random() * 1).toFixed(2); 
+            fsh = (Math.random() * 15 + 15).toFixed(1); 
             diag = "INSUFFISANCE OVARIENNE DÉBUTANTE.\nAMH basse et FSH élevée. Réserve ovarienne diminuée.";
         } else {
-            // OPK
-            lh = (fsh * 2.5).toFixed(1); // Ratio LH/FSH inversé
+            lh = (fsh * 2.5).toFixed(1); 
             diag = "PROFIL OPK SUSPECTÉ.\nInversion du ratio LH/FSH. À corréler avec l'échographie.";
         }
     }
 
-    res('amh', amh, 'ENDOCRINOLOGIE & FERTILITÉ');
-    res('fsh', fsh, 'ENDOCRINOLOGIE & FERTILITÉ');
-    res('lh', lh, 'ENDOCRINOLOGIE & FERTILITÉ');
-    res('prolac', prolac, 'ENDOCRINOLOGIE & FERTILITÉ');
+    window.res('amh', amh, 'ENDOCRINOLOGIE & FERTILITÉ');
+    window.res('fsh', fsh, 'ENDOCRINOLOGIE & FERTILITÉ');
+    window.res('lh', lh, 'ENDOCRINOLOGIE & FERTILITÉ');
+    window.res('prolac', prolac, 'ENDOCRINOLOGIE & FERTILITÉ');
     
     fusionnerConclusionSpecifique(diag);
 }
 
-// --- FONCTIONS SYSTÈME ---
+// ==========================================
+// 5. FONCTIONS UTILITAIRES INTERNES
+// ==========================================
 
 function determinerGroupeAleatoire() {
     const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -293,7 +312,7 @@ function determinerGroupeAleatoire() {
     const select = document.getElementById('patientBlood');
     if(select) {
         select.value = resultat;
-        up('d-groupe', resultat);
+        if(window.up) window.up('d-groupe', resultat);
     }
 }
 
@@ -315,23 +334,6 @@ function updateLiveQRCode() {
     }
 }
 
-function up(id, val) {
-    const el = document.getElementById(id);
-    if (el) {
-        el.innerText = val;
-        updateLiveQRCode(); 
-    }
-}
-
-function upDate(id, val) {
-    if(!val) return;
-    const dateObj = new Date(val);
-    const dateStr = dateObj.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
-    const el = document.getElementById(id);
-    if(el) el.innerText = dateStr;
-    updateLiveQRCode();
-}
-
 function resetSeulementBio(confirmNeeded = true) {
     if (confirmNeeded && !confirm("Vider les analyses ?")) return;
     document.querySelectorAll('.analysis-input').forEach(el => el.value = "");
@@ -346,48 +348,9 @@ function fusionnerConclusionSpecifique(nouveauTexte) {
     document.getElementById('d-concl').innerText = nouveauTexte;
 }
 
-function switchMode(mode) {
-    document.getElementById('panel-auto').style.display = (mode === 'auto' ? 'block' : 'none');
-    document.getElementById('panel-manual').style.display = (mode === 'manual' ? 'block' : 'none');
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    if(mode === 'auto') document.getElementById('btn-auto').classList.add('active');
-    else document.getElementById('btn-manual').classList.add('active');
-}
-
-/* ============================================================
-   LABO.JS - VERSION FIREBASE COMPATIBLE
-   ============================================================ */
-
-import { savePatientToDB, ajouterEvenementHistorique } from "./global.js";
-
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
-
-// 1. AUTOCOMPLETION
-document.addEventListener('DOMContentLoaded', () => {
-    // Configuration de l'autocomplétion pour le patient
-    setupPatientAutocomplete({
-        nameId: 'patientName',
-        birthId: 'patientBirth',
-        // Pas de callback spécial ici, juste le remplissage standard
-        callback: function(p) {
-            // On met à jour manuellement les champs visuels du papier
-            if(window.up) {
-                window.up('d-nom', p.nom);
-                window.up('d-ddn', p.naissance);
-            }
-        }
-    });
-
-    // Date du jour auto
-    const today = new Date().toISOString().split('T')[0];
-    const dateInput = document.getElementById('labDate');
-    if(dateInput) {
-        dateInput.value = today;
-        if(window.upDate) window.upDate('d-date', today);
-    }
-});
-
-// 2. FONCTIONS D'EXPORT (Attachées à window pour que le HTML les voie)
+// ==========================================
+// 6. EXPORT IMAGE ET DISCORD
+// ==========================================
 
 window.genererImage = async function() {
     const doc = document.getElementById('document');
@@ -416,12 +379,8 @@ window.genererImage = async function() {
             const imgUrl = result.data.url;
             const nomPatient = document.getElementById('patientName').value;
 
-            // SAUVEGARDE HISTORIQUE VIA GLOBAL.JS
-            if(nomPatient) {
-                // On utilise la fonction globale importée ou celle de window
-                if(window.ajouterEvenementPatient) {
-                    window.ajouterEvenementPatient(nomPatient, "Laboratoire", "Bilan Biologique", imgUrl);
-                }
+            if(nomPatient && window.ajouterEvenementPatient) {
+                window.ajouterEvenementPatient(nomPatient, "Laboratoire", "Bilan Biologique", imgUrl);
             }
 
             document.getElementById('direct-link').value = result.data.url;
@@ -449,10 +408,7 @@ window.envoyerDiscord = async function() {
     doc.classList.add('mode-capture');
 
     try {
-        const canvas = await html2canvas(doc, { 
-            scale: 2, 
-            useCORS: true 
-        });
+        const canvas = await html2canvas(doc, { scale: 2, useCORS: true });
         
         btn.innerText = "ENVOI...";
 
@@ -471,12 +427,9 @@ window.envoyerDiscord = async function() {
             const response = await fetch(url + "?wait=true", { method: 'POST', body: formData });
             
             if(response.ok) { 
-                // SAUVEGARDE HISTORIQUE (Pas d'URL d'image ici car c'est un blob Discord, 
-                // mais on note quand même que c'est fait)
                 if(window.ajouterEvenementPatient) {
                     window.ajouterEvenementPatient(nom, "Laboratoire", "Envoyé sur Discord (Pas de lien image)");
                 }
-
                 alert("✅ Rapport Labo envoyé !"); 
                 btn.innerText = "ENVOYÉ"; 
             } else {
@@ -494,7 +447,6 @@ window.envoyerDiscord = async function() {
     }
 }
 
-// Utilitaires de popup
 window.copyLink = function() {
     const copyText = document.getElementById("direct-link");
     copyText.select();
