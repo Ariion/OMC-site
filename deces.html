@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>OMC - Acte de Décès</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="deces.css">
 </head>
 <body class="labo-body">
     <div class="interface-container">
+        
         <aside class="sidebar">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; gap: 10px;">
                 <a href="index.html" class="back-link" style="margin-bottom: 0;">← RETOUR</a>
-                <button onclick="toggleTheme()" id="theme-btn-toggle">🌓 <span id="theme-text">Mode Sombre</span></button>
+                <button onclick="toggleTheme()" id="theme-btn-toggle" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px;">🌓 <span id="theme-text">Mode Sombre</span></button>
             </div>
             
             <h1 class="sidebar-title">CERTIFICAT DE DÉCÈS</h1>
@@ -35,13 +35,14 @@
                     <input type="time" oninput="up('d-heure', this.value)" style="flex: 1;">
                 </div>
             </div>
+
             <div class="form-group">
                 <label>Lieu du Décès</label>
                 <input type="text" oninput="up('d-lieu', this.value)" placeholder="ex: Los Santos">
             </div>
 
             
-<div class="form-group">
+            <div class="form-group">
                 <label>Cause du Décès (Type)</label>
                 <select id="cause-type" onchange="updateCausesSub(this.value)">
                     <option value="">-- Sélectionner --</option>
@@ -54,7 +55,7 @@
                 </select>
             </div>
 
-        <div class="form-group">
+            <div class="form-group">
                 <label>Précision de la cause</label>
                 <select id="cause-precision" onchange="updateCauseFinale(this.value)">
                     <option value="">-- Attente type --</option>
@@ -66,8 +67,8 @@
                 <input type="text" oninput="upSignature(this.value)" placeholder="Nom du médecin">
             </div>
 
-            <button type="button" onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
-            <button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
+            <button type="button" onclick="sauvegarderPatientDepuisFormulaire(); genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
+            <button id="discord-btn" onclick="sauvegarderPatientDepuisFormulaire(); envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
         </aside>
 
         <main class="preview-area">
@@ -112,21 +113,9 @@
             <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px;">
         </div>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="deces.js"></script>
     <script src="global.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
