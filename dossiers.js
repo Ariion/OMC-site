@@ -1,29 +1,26 @@
 /* ============================================================
-   DOSSIERS.JS - GESTION DES ARCHIVES (V2 FIREBASE)
+   DOSSIERS.JS - VERSION SIMPLE (SANS IMPORT)
    ============================================================ */
 
-// 1. IMPORTS
-// On récupère les fonctions de connexion depuis le fichier central
-import { getPatientsDB, savePatientToDB, deletePatientFromDB, ecouterPatients } from "./global.js";
+console.log("✅ Dossiers.js chargé !");
 
-// Variable locale pour stocker la liste (utilisée pour la recherche et l'édition)
-let patientsLocaux = [];
-
-// 2. INITIALISATION
-document.addEventListener('DOMContentLoaded', () => {
-    // Écoute temps réel : Dès que Firebase change, cette fonction s'active
-    ecouterPatients((liste) => {
-        patientsLocaux = liste; // Mise à jour de la mémoire locale
-        afficherGrille(liste);  // Mise à jour visuelle
-        updateStats(liste);     // Mise à jour des compteurs
-    });
-});
+// 1. INITIALISATION
+// Pas besoin d'écouteur ici, c'est global.js qui va déclencher "window.chargerPatients" tout seul !
 
 /* ============================================================
    FONCTIONS INTERNES (UI)
    ============================================================ */
 
-function afficherGrille(liste) {
+// Cette fonction est appelée automatiquement par Global.js quand la base change
+window.chargerPatients = function() {
+    console.log("🔄 Mise à jour de la grille...");
+    
+    // On récupère la liste depuis la mémoire de Global.js
+    const liste = window.getPatientsDB ? window.getPatientsDB() : [];
+    
+    // On met à jour la variable locale pour les recherches
+    window.patientsLocaux = liste; 
+
     const grid = document.getElementById('patients-grid');
     const emptyState = document.getElementById('empty-state');
     
@@ -37,8 +34,8 @@ function afficherGrille(liste) {
     }
     if(emptyState) emptyState.style.display = "none";
 
-    // Génération des cartes
-    liste.forEach(p => {
+    // Génération des cartes (inversé pour avoir les derniers ajouts en haut)
+    [...liste].reverse().forEach(p => {
         const card = document.createElement('div');
         card.className = 'patient-card';
         
@@ -58,6 +55,8 @@ function afficherGrille(liste) {
         card.onclick = () => window.ouvrirPanelEdition(p);
         grid.appendChild(card);
     });
+    
+    updateStats(liste);
 }
 
 /* ============================================================
@@ -83,7 +82,6 @@ window.ouvrirPanelEdition = function(p) {
     document.getElementById('panel-edition').style.display = 'block';
 
     // Remplissage des champs
-    // IMPORTANT : On stocke l'ID Firebase caché pour savoir qui on modifie
     document.getElementById('edit-original-name').value = p.id || p.nom;
     
     document.getElementById('edit-nom').value = p.nom;
@@ -100,10 +98,8 @@ window.ouvrirPanelEdition = function(p) {
             p.historique.forEach((h, index) => {
                 const dateH = new Date(h.date).toLocaleDateString('fr-FR');
                 
-                // Bouton VOIR (si une image existe)
+                // Boutons
                 let btnVoir = h.url ? `<button onclick="voirDocument('${h.url}')" style="background:#3b82f6;border:none;color:white;cursor:pointer;font-size:10px;margin-right:5px;border-radius:2px;padding:2px 5px;">👁️</button>` : "";
-                
-                // Bouton SUPPRIMER
                 let btnSuppr = `<button onclick="supprimerLigneHist('${p.id || p.nom}', ${index})" style="color:#ef4444;border:none;background:none;cursor:pointer;">✖</button>`;
 
                 histDiv.innerHTML += `
@@ -119,7 +115,6 @@ window.ouvrirPanelEdition = function(p) {
             histDiv.innerHTML = '<div style="color:#475569; font-size:10px; padding:5px;">Aucun historique récent.</div>';
         }
     }
-    // Scroll automatique en haut du panneau
     document.querySelector('.sidebar').scrollTop = 0;
 }
 
@@ -139,26 +134,31 @@ window.creerPatient = async function() {
         dateCreation: new Date().toISOString()
     };
 
-    // Sauvegarde Cloud
-    await savePatientToDB(newP);
-    
-    // Reset du formulaire
-    document.getElementById('new-nom').value = "";
-    document.getElementById('new-ddn').value = "";
-    document.getElementById('new-job').value = "";
-    document.getElementById('new-notes').value = "";
+    // On appelle la fonction de global.js
+    if(window.savePatientToDB) {
+        await window.savePatientToDB(newP);
+        
+        // Reset du formulaire
+        document.getElementById('new-nom').value = "";
+        document.getElementById('new-ddn').value = "";
+        document.getElementById('new-job').value = "";
+        document.getElementById('new-notes').value = "";
+    } else {
+        alert("Erreur : global.js ne semble pas chargé.");
+    }
 }
 
 window.sauvegarderEdition = async function() {
     const id = document.getElementById('edit-original-name').value;
     
-    // On retrouve le patient original (par ID Firebase ou Nom)
-    const originalP = patientsLocaux.find(p => p.id === id || p.nom === id);
+    // On retrouve le patient original
+    // window.patientsLocaux est défini dans chargerPatients plus haut
+    const originalP = window.patientsLocaux ? window.patientsLocaux.find(p => p.id === id || p.nom === id) : null;
 
     if(!originalP) return alert("Erreur : Patient introuvable");
 
     const updatedP = {
-        id: originalP.id, // On garde l'ID pour que Firebase sache qui modifier
+        id: originalP.id, 
         nom: document.getElementById('edit-nom').value,
         naissance: document.getElementById('edit-ddn').value,
         groupe: document.getElementById('edit-groupe').value,
@@ -168,16 +168,20 @@ window.sauvegarderEdition = async function() {
         historique: originalP.historique || []
     };
 
-    await savePatientToDB(updatedP);
-    window.fermerTout();
-    alert("✅ Dossier mis à jour !");
+    if(window.savePatientToDB) {
+        await window.savePatientToDB(updatedP);
+        window.fermerTout();
+        alert("✅ Dossier mis à jour !");
+    }
 }
 
 window.supprimerPatient = async function() {
     const id = document.getElementById('edit-original-name').value;
-    if(confirm("⛔ Supprimer définitivement ce dossier ? Cette action est irréversible.")) {
-        await deletePatientFromDB(id);
-        window.fermerTout();
+    if(confirm("⛔ Supprimer définitivement ce dossier ?")) {
+        if(window.deletePatientFromDB) {
+            await window.deletePatientFromDB(id);
+            window.fermerTout();
+        }
     }
 }
 
@@ -186,13 +190,10 @@ window.supprimerPatient = async function() {
 window.supprimerLigneHist = async function(patientId, index) {
     if(!confirm("Supprimer cette ligne d'historique ?")) return;
     
-    const p = patientsLocaux.find(pat => pat.id === patientId || pat.nom === patientId);
+    const p = window.patientsLocaux ? window.patientsLocaux.find(pat => pat.id === patientId || pat.nom === patientId) : null;
     if(p) {
-        // On retire l'élément du tableau
         p.historique.splice(index, 1);
-        // On sauvegarde le patient complet
-        await savePatientToDB(p);
-        // On rafraichit l'affichage
+        await window.savePatientToDB(p);
         window.ouvrirPanelEdition(p);
     }
 }
@@ -201,15 +202,27 @@ window.supprimerLigneHist = async function(patientId, index) {
 
 window.filtrerPatients = function() {
     const term = document.getElementById('search-input').value.toLowerCase();
-    const listeFiltree = patientsLocaux.filter(p => p.nom.toLowerCase().includes(term));
-    afficherGrille(listeFiltree);
+    const liste = window.patientsLocaux || [];
+    const listeFiltree = liste.filter(p => p.nom.toLowerCase().includes(term));
+    // On ne recharge pas tout, on utilise juste l'affichage interne
+    // (Mais pour faire simple, on filtre visuellement les cartes)
+    document.querySelectorAll('.patient-card').forEach(card => {
+        const name = card.querySelector('.p-name').innerText.toLowerCase();
+        card.style.display = name.includes(term) ? "block" : "none";
+    });
 }
 
-function updateStats(liste) {
+// Appelée aussi par global.js si besoin
+window.updateStats = function(liste) {
+    if(!liste) liste = window.patientsLocaux || [];
     const totalEl = document.getElementById('stat-total');
     const lastEl = document.getElementById('stat-last');
     if(totalEl) totalEl.innerText = liste.length;
-    if(lastEl) lastEl.innerText = liste.length > 0 ? liste[0].nom : "-";
+    if(lastEl) lastEl.innerText = liste.length > 0 ? liste[liste.length-1].nom : "-";
+}
+
+function updateStats(liste) {
+     window.updateStats(liste);
 }
 
 function formatDate(s) { 
@@ -234,18 +247,4 @@ window.copierLienDoc = function() {
     copyText.select();
     document.execCommand("copy");
     alert("Lien copié !");
-}
-
-// --- 6. EXPORT / IMPORT (SAUVEGARDE LOCALE) ---
-
-window.exporterDonnees = function() {
-    const dataStr = JSON.stringify(patientsLocaux, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `OMC_BACKUP_${new Date().toISOString().slice(0,10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
 }
