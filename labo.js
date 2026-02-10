@@ -1,36 +1,22 @@
 // Initialisation au chargement
 document.addEventListener('DOMContentLoaded', () => {
-    const savedPatient = localStorage.getItem('currentPatient');
-    if (savedPatient) {
-        const p = JSON.parse(savedPatient);
-        
-        // On remplit les inputs de la sidebar
-        // Note: Dans labo, les inputs n'ont pas toujours d'ID, on cible par sélecteur ou fonction
-        
-        // 1. Nom
-        const inputNom = document.querySelector('input[placeholder="ex: Garret Freeman"]');
-        if (inputNom) {
-            inputNom.value = p.nom;
-            up('d-nom', p.nom); // Met à jour la preview
-        }
-
-        // 2. Date de Naissance
-        const inputDDN = document.querySelector('input[oninput*="d-ddn"]'); 
-        if (inputDDN) {
-            inputDDN.value = p.naissance;
-            upDate('d-ddn', p.naissance); // Met à jour la preview
-        }
-
-        // 3. Groupe Sanguin
-        const selectGroupe = document.getElementById('select-groupe');
-        if (selectGroupe && p.groupe) {
-            selectGroupe.value = p.groupe;
-            up('d-groupe', p.groupe); // Met à jour la preview
-        }
-    }
     init();
     setAutoDate();
     determinerGroupeAleatoire();
+    
+    // --- AUTOCOMPLETE CENTRALISÉ ---
+    setupPatientAutocomplete({
+        nameId: 'patientName',
+        birthId: 'patientBirth',
+        bloodId: 'patientBlood', 
+        callback: function(p) {
+            // Mise à jour visuelle quand on clique sur un patient
+            up('d-nom', p.nom);
+            upDate('d-ddn', p.naissance);
+            if(p.groupe) up('d-groupe', p.groupe);
+        }
+    });
+
     updateLiveQRCode();
 });
  
@@ -164,7 +150,6 @@ function res(id, val, cat) {
         // Logic de couleur simple pour valeurs numériques
         const item = Object.values(database).flat().find(i => i.id === id);
         if (item && val.trim() !== "" && item.norm.includes('-')) {
-            // Tentative d'extraction de range simple "min - max"
             try {
                 const parts = item.norm.split('-');
                 if(parts.length === 2) {
@@ -305,7 +290,7 @@ function lancerFertilite() {
 function determinerGroupeAleatoire() {
     const groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
     const resultat = groupes[Math.floor(Math.random() * groupes.length)];
-    const select = document.getElementById('select-groupe');
+    const select = document.getElementById('patientBlood');
     if(select) {
         select.value = resultat;
         up('d-groupe', resultat);
@@ -378,22 +363,32 @@ let lastImageUrl = "";
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
+    
+    window.scrollTo(0,0);
     btn.innerText = "GÉNÉRATION...";
     btn.disabled = true;
-    window.scrollTo(0,0);
+    
+    // --- FIX CROP ---
+    const originalHeight = doc.style.height;
+    doc.style.height = (doc.scrollHeight + 50) + "px";
 
     try {
         const canvas = await html2canvas(doc, { 
             scale: 2, 
             useCORS: true, 
+            scrollY: 0,
             backgroundColor: "#ffffff",
-            height: doc.scrollHeight
+            height: doc.scrollHeight + 50,
+            windowHeight: doc.scrollHeight + 50
         });
+        
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
         const formData = new FormData();
         formData.append("image", imageData);
+        
         const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
         const result = await response.json();
+        
         if (result.success) {
             lastImageUrl = result.data.url;
             document.getElementById('direct-link').value = lastImageUrl;
@@ -403,6 +398,7 @@ async function genererImage() {
     } catch (e) {
         alert("Erreur lors de la génération.");
     } finally {
+        doc.style.height = originalHeight;
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
@@ -413,11 +409,23 @@ async function envoyerDiscord() {
     const btn = document.getElementById('discord-btn'); 
     const doc = document.getElementById('document'); 
 
+    window.scrollTo(0,0);
     btn.disabled = true;
     btn.innerText = "CAPTURE...";
+    
+    // --- FIX CROP ---
+    const originalHeight = doc.style.height;
+    doc.style.height = (doc.scrollHeight + 50) + "px";
 
     try {
-        const canvas = await html2canvas(doc, { scale: 2, useCORS: true });
+        const canvas = await html2canvas(doc, { 
+            scale: 2, 
+            useCORS: true,
+            scrollY: 0,
+            height: doc.scrollHeight + 50,
+            windowHeight: doc.scrollHeight + 50
+        });
+        
         btn.innerText = "ENVOI...";
 
         canvas.toBlob(async (blob) => {
@@ -446,8 +454,11 @@ async function envoyerDiscord() {
     } catch (e) {
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
+    } finally {
+        doc.style.height = originalHeight;
     }
 }
+
 function copyLink() {
     const copyText = document.getElementById("direct-link");
     copyText.select();
