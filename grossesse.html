@@ -46,7 +46,7 @@
 
             <div class="form-group">
                 <label>DATE DU JOUR</label>
-                <input id="examDate" type="date" oninput="calculerTerme()">
+                <input id="examDate" type="date" oninput="calculerTerme(); updateReport()">
             </div>
 
             <hr style="border: 0; border-top: 1px solid #1e293b; margin: 15px 0;">
@@ -57,8 +57,8 @@
             </div>
 
             <div class="form-group">
-                <label>OBSERVATIONS / ÉTAT GÉNÉRAL (Visible si rempli)</label>
-                <textarea id="obsHealth" rows="2" placeholder="Ex: Patiente fatiguée, nausées importantes..." oninput="updateReport()" style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
+                <label>OBSERVATIONS / ÉTAT GÉNÉRAL</label>
+                <textarea id="obsHealth" rows="2" placeholder="Ex: Patiente fatiguée..." oninput="updateReport()" style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
             </div>
 
             <div class="form-group" style="background: #162032; padding: 10px; border-radius: 6px; border: 1px solid #334155;">
@@ -73,21 +73,19 @@
             <div class="form-group">
                 <label>SPÉCIFICITÉS</label>
                 <div class="checkbox-grid">
-                    <label class="checkbox-item"><input type="checkbox" id="isGemellaire" onchange="calculerTerme()"> 👶👶 Grossesse Gémellaire (Jumeaux)</label>
-                    <label class="checkbox-item"><input type="checkbox" id="measureCol" onchange="calculerTerme()"> 📏 Mesure du Col (Urgence)</label>
+                    <label class="checkbox-item"><input type="checkbox" id="isGemellaire" onchange="calculerTerme()"> 👶👶 Jumeaux</label>
+                    <label class="checkbox-item"><input type="checkbox" id="measureCol" onchange="calculerTerme()"> 📏 Mesure Col</label>
                 </div>
             </div>
 
-            <div class="form-group-row">
-                <div class="form-group" style="width:100%;">
-                    <label>SEXE FOETAL (VISUEL ÉCHO)</label>
-                    <select id="sexeFoetal" onchange="calculerTerme()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
-                        <option value="Indéterminé">Indéterminé / Trop tôt</option>
-                        <option value="Féminin">Féminin</option>
-                        <option value="Masculin">Masculin</option>
-                        <option value="Caché">Non visible</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <label>SEXE FOETAL</label>
+                <select id="sexeFoetal" onchange="calculerTerme()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
+                    <option value="Indéterminé">Indéterminé / Trop tôt</option>
+                    <option value="Féminin">Féminin</option>
+                    <option value="Masculin">Masculin</option>
+                    <option value="Caché">Non visible</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -134,12 +132,10 @@
                 <div class="patient-banner" id="banner-status">
                     <div>
                         <small>PATIENTE</small>
-                        <span id="display-patient">...</span>
-                    </div>
+                        <span id="display-patient">...</span> </div>
                     <div>
                         <small>NAISSANCE</small>
-                        <span id="display-birth">...</span>
-                    </div>
+                        <span id="display-birth">...</span> </div>
                     <div style="border-left: 1px solid #cbd5e1; padding-left: 15px;">
                         <small>TERME ACTUEL</small>
                         <span id="display-sa" style="color: #000; font-weight: 900; font-size: 16px;">-- SA</span>
@@ -206,9 +202,7 @@
 
                 <div class="section-block" style="flex-grow: 1;">
                     <h4 class="section-title">CONCLUSION & CONDUITE À TENIR</h4>
-                    <p id="display-conclusion" style="font-size: 12px; line-height: 1.5; color: #000000; white-space: pre-wrap; font-weight: 500;">
-                        Examen en attente.
-                    </p>
+                    <p id="display-conclusion" style="font-size: 12px; line-height: 1.5; color: #000000; white-space: pre-wrap; font-weight: 500;">Examen en attente.</p>
                 </div>
 
                 <div id="section-ordo" class="section-block ordo-block">
@@ -244,7 +238,7 @@
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
         <div class="popup-content">
-            <h3 style="color:white; margin-bottom:15px;">APERÇU DU DOSSIER</h3>
+            <h3>APERÇU DU DOSSIER</h3>
             <img id="preview-img-result" src="" alt="Dossier">
             <div class="popup-actions" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
                 <input type="text" id="direct-link" readonly onclick="this.select()" style="width: 100%; padding: 10px; border-radius: 4px; border: none; text-align: center;">
