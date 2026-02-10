@@ -106,19 +106,21 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
     width: 800px !important;
     min-width: 800px !important;
     
-    /* C'EST ICI QUE ÇA SE JOUE : */
-    height: auto !important;       /* La hauteur s'adapte au contenu */
-    min-height: 500px !important;  /* Minimum visuel, mais pas A4 complet */
+    /* HAUTEUR AUTOMATIQUE : S'adapte au contenu */
+    height: auto !important;       
+    min-height: 500px !important;  /* Juste pour pas qu'il soit minuscule si vide */
     
     background: white !important;
+    color: #000 !important;
     
-    /* Padding : Haut Droite Bas(Grand espace) Gauche */
-    padding: 40px 40px 80px 40px !important; 
+    /* PADDING : On met 60px en bas pour être sûr que la signature respire */
+    padding: 40px 40px 60px 40px !important; 
     
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     position: relative;
     box-sizing: border-box;
-    color: #111 !important;
+    overflow: visible !important; /* IMPORTANT pour ne pas couper */
+}
 }#print-btn, #discord-btn { width: 100%; padding: 15px; background: var(--omc-cyan); border: none; font-weight: bold; cursor: pointer; margin-top: 12px; border-radius: 5px; }
 #discord-btn { background: #5865F2; color: white; }
 
