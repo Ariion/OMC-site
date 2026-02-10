@@ -167,3 +167,24 @@ function setupPatientAutocomplete(config) {
     });
 }
 
+
+// AJOUTER UN EVENEMENT DANS L'HISTORIQUE DU PATIENT
+function ajouterEvenementPatient(nomPatient, typeEvent, details) {
+    let db = getPatientsDB();
+    const index = db.findIndex(p => p.nom.toLowerCase() === nomPatient.toLowerCase());
+
+    if (index >= 0) {
+        // Si le patient n'a pas encore d'historique, on crée le tableau
+        if (!db[index].historique) db[index].historique = [];
+
+        // On ajoute l'événement en haut de la liste (le plus récent d'abord)
+        db[index].historique.unshift({
+            date: new Date().toISOString(),
+            type: typeEvent, // "Ordonnance", "Labo", "Constat"
+            details: details
+        });
+
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
+        console.log(`Événement ${typeEvent} ajouté pour ${nomPatient}`);
+    }
+}
