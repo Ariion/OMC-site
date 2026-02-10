@@ -14,10 +14,7 @@
         <aside class="sidebar">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
                 <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
-                <button onclick="toggleTheme()" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-                    <span>🌓</span>
-                    <span id="theme-text">Passer mode sombre</span> 
-                </button>
+                <button onclick="toggleTheme()" class="btn-theme-mini">🌓</button>
             </div>
         
             <h1 class="sidebar-title">CONSTAT LÉSIONNEL</h1>
@@ -25,7 +22,7 @@
             <div class="form-group-row">
                 <div class="form-group">
                     <label>NOM DU PATIENT</label>
-                    <input id="patientId" type="text" placeholder="Ex: Garret Freeman" oninput="updateReport()">
+                    <input id="patientName" type="text" placeholder="Ex: Garret Freeman" oninput="updateReport()">
                 </div>
                 <div class="form-group">
                     <label>DATE DE NAISSANCE</label>
@@ -46,10 +43,7 @@
 
             <div class="form-group" style="margin-top: 10px; border-top: 1px solid #1e293b; padding-top: 10px;">
                 <label style="color:#64ffda;">CIRCONSTANCES D'INTERVENTION</label>
-                <textarea id="circumInput" rows="3" 
-                          placeholder="Détails de l'intervention (ex: AVP, agression...)" 
-                          oninput="updateReport()" 
-                          style="width: 100%; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; font-family: inherit; resize: none;"></textarea>
+                <textarea id="circumInput" rows="3" placeholder="Détails de l'intervention..." oninput="updateReport()" style="width: 100%; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
             </div>
 
             <div class="form-group" style="margin-top: 15px;">
@@ -91,10 +85,7 @@
 
             <div class="form-group" style="margin-top: 20px; border-top: 1px solid #1e293b; padding-top: 15px;">
                 <label>OBSERVATIONS SUPPLÉMENTAIRES</label>
-                <textarea id="obsSupInput" rows="4" 
-                          placeholder="Saisissez ici vos notes complémentaires..." 
-                          oninput="updateReport()" 
-                          style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; font-family: inherit; resize: none;"></textarea>
+                <textarea id="obsSupInput" rows="4" placeholder="Saisissez ici vos notes complémentaires..." oninput="updateReport()" style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
             </div>
 
             <div class="form-group">
@@ -103,8 +94,8 @@
             </div>
 
             <div class="actions-group">
-                <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
-                <button class="btn-discord" onclick="envoyerDiscord()">Envoyer sur Discord</button>
+                <button class="btn-image" onclick="sauvegarderPatientDepuisFormulaire(); genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
+                <button class="btn-discord" onclick="sauvegarderPatientDepuisFormulaire(); envoyerDiscord()">Envoyer sur Discord</button>
             </div>
         </aside>
 
@@ -133,8 +124,8 @@
                         <div class="report-header-grid">
                             <div class="info-box"><small>PATIENT</small><div id="display-patient">...</div></div>
                             <div class="info-box"><small>NAISSANCE</small><div id="display-birth">...</div></div>
-                            <div class="info-box"><small>DATE D'ÉTABLISSEMENT</small><div id="display-date">22/01/2026</div></div>
-                            <div class="info-box"><small>RÉFÉRENCE DOSSIER</small><div id="display-ref">#22012300</div></div>
+                            <div class="info-box"><small>DATE D'ÉTABLISSEMENT</small><div id="display-date">--/--/----</div></div>
+                            <div class="info-box"><small>RÉFÉRENCE DOSSIER</small><div id="display-ref">#...</div></div>
                             <div class="info-box"><small>IMAGERIE RÉALISÉE PAR</small><div id="display-imaging">...</div></div>
                         </div>
 
