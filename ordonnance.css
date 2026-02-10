@@ -11,16 +11,24 @@
 #document {
     width: 800px !important;
     min-width: 800px !important;
+    
+    /* LE SECRET : Pas de height fixe, pas de min-height bloquant */
     height: auto !important;
-    min-height: 0 !important;
+    min-height: auto !important;
+    
     background: white !important;
-    /* PADDING BAS AUGMENTÉ POUR ÉVITER LE CROP */
-    padding: 50px 50px 80px 50px !important; 
     color: #111 !important;
+    
+    /* Padding : Haut Droite Bas Gauche */
+    padding: 50px 50px 80px 50px !important;
+    
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    display: block;
     position: relative;
-    overflow: hidden;
+    box-sizing: border-box;
+    overflow: visible !important;
+    
+    /* Marge en bas pour ne pas coller au bord de l'écran */
+    margin-bottom: 50px;
 }
 
 
