@@ -1,5 +1,33 @@
 // Initialisation au chargement
 document.addEventListener('DOMContentLoaded', () => {
+    const savedPatient = localStorage.getItem('currentPatient');
+    if (savedPatient) {
+        const p = JSON.parse(savedPatient);
+        
+        // On remplit les inputs de la sidebar
+        // Note: Dans labo, les inputs n'ont pas toujours d'ID, on cible par sélecteur ou fonction
+        
+        // 1. Nom
+        const inputNom = document.querySelector('input[placeholder="ex: Garret Freeman"]');
+        if (inputNom) {
+            inputNom.value = p.nom;
+            up('d-nom', p.nom); // Met à jour la preview
+        }
+
+        // 2. Date de Naissance
+        const inputDDN = document.querySelector('input[oninput*="d-ddn"]'); 
+        if (inputDDN) {
+            inputDDN.value = p.naissance;
+            upDate('d-ddn', p.naissance); // Met à jour la preview
+        }
+
+        // 3. Groupe Sanguin
+        const selectGroupe = document.getElementById('select-groupe');
+        if (selectGroupe && p.groupe) {
+            selectGroupe.value = p.groupe;
+            up('d-groupe', p.groupe); // Met à jour la preview
+        }
+    }
     init();
     setAutoDate();
     determinerGroupeAleatoire();
