@@ -70,8 +70,15 @@
                 <input type="text" oninput="upSignature(this.value)" placeholder="Nom du médecin">
             </div>
 
-            <button type="button" onclick="sauvegarderPatientDepuisFormulaire(); genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
-            <button id="discord-btn" onclick="sauvegarderPatientDepuisFormulaire(); envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
+            <div class="actions-group">
+                <button type="button" class="btn-image" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; genererImage()">
+                    🖼️ GÉNÉRER L'IMAGE
+                </button>
+            
+                <button id="discord-btn" class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; envoyerDiscord()">
+                    ENVOYER SUR DISCORD
+                </button>
+            </div>
         </aside>
 
         <main class="preview-area">
@@ -122,4 +129,5 @@
     <script src="global.js"></script>
 </body>
 </html>
+
 
