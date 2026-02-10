@@ -1,39 +1,40 @@
 /* ============================================================
-   GESTIONNAIRE D'ARCHIVES PATIENTS - VERSION FINALISÉE
+   Dossiers.js - VERSION TEMPS RÉEL (FIREBASE)
    ============================================================ */
 
+// On importe les fonctions depuis global.js
+import { ecouterPatients, savePatientToDB, deletePatientFromDB } from "./global.js";
+
+let patientsLocaux = []; // Copie locale pour la recherche
+
 document.addEventListener('DOMContentLoaded', () => {
-    chargerPatients();
-    updateStats();
+    // ON LANCE L'ÉCOUTE (C'est la magie du temps réel)
+    ecouterPatients((liste) => {
+        patientsLocaux = liste; // On met à jour notre copie locale
+        afficherGrille(liste);  // On dessine l'écran
+        updateStats(liste);     // On met à jour les chiffres
+    });
 });
 
-// 1. CHARGEMENT ET AFFICHAGE (GRILLE)
-function chargerPatients() {
-    const db = getPatientsDB(); 
+// 1. AFFICHAGE GRILLE
+function afficherGrille(liste) {
     const grid = document.getElementById('patients-grid');
     const emptyState = document.getElementById('empty-state');
     
-    // Sécurité
-    if(!grid || !emptyState) return;
-
+    if(!grid) return;
     grid.innerHTML = "";
 
-    // Gestion état vide
-    if (db.length === 0) {
-        emptyState.style.display = "block";
+    if (liste.length === 0) {
+        if(emptyState) emptyState.style.display = "block";
         return;
     }
-    emptyState.style.display = "none";
+    if(emptyState) emptyState.style.display = "none";
 
-    // Affichage des cartes (Inversé pour voir les nouveaux en premier)
-    [...db].reverse().forEach(p => {
+    liste.forEach(p => {
         const card = document.createElement('div');
         card.className = 'patient-card';
         
-        // Initiales
         const initiales = p.nom ? p.nom.split(' ').map(n => n[0]).join('').toUpperCase() : "?";
-        
-        // Indicateur visuel si notes présentes
         const hasNotes = p.notes && p.notes.trim().length > 0;
 
         card.innerHTML = `
@@ -45,206 +46,161 @@ function chargerPatients() {
             ${hasNotes ? '<div class="p-info" style="color:#fbbf24; font-size:10px; margin-top:5px;">⚠️ Notes présentes</div>' : ''}
         `;
         
-        card.onclick = () => ouvrirPanelEdition(p);
+        // Au clic, on passe l'objet complet
+        card.addEventListener('click', () => ouvrirPanelEdition(p));
         grid.appendChild(card);
     });
 }
 
-// 2. OUVERTURE DU DOSSIER (SIDEBAR)
-function ouvrirPanelEdition(p) {
-    // UI : On cache les stats et la création pour faire de la place
+// 2. OUVERTURE DOSSIER
+// On doit attacher ces fonctions à window car on est dans un module
+window.ouvrirPanelEdition = function(p) {
     document.getElementById('sidebar-stats').style.display = 'none';
     document.getElementById('panel-creation').style.display = 'none';
-    
-    // UI : On affiche l'édition
-    const panel = document.getElementById('panel-edition');
-    panel.style.display = 'block';
+    document.getElementById('panel-edition').style.display = 'block';
 
-    // Remplissage des champs
-    document.getElementById('edit-original-name').value = p.nom;
+    // IMPORTANT : On stocke l'ID Firebase caché
+    document.getElementById('edit-original-name').value = p.id; // On utilise l'ID ici !
+
     document.getElementById('edit-nom').value = p.nom;
     document.getElementById('edit-ddn').value = p.naissance;
     document.getElementById('edit-groupe').value = p.groupe;
     document.getElementById('edit-job').value = p.job;
     document.getElementById('edit-notes').value = p.notes || "";
-    
-    // AFFICHAGE DE L'HISTORIQUE
+
+    // Historique
     const histDiv = document.getElementById('edit-historique');
     if(histDiv) {
-        histDiv.innerHTML = ""; 
-        
+        histDiv.innerHTML = "";
         if (p.historique && p.historique.length > 0) {
-            // On ajoute l'index dans la boucle pour savoir quoi supprimer
             p.historique.forEach((h, index) => {
                 const dateH = new Date(h.date).toLocaleDateString('fr-FR');
-                
-                // Bouton VOIR (si URL)
-                let btnVoir = "";
-                if (h.url) {
-                    btnVoir = `<button onclick="voirDocument('${h.url}')" style="background: #3b82f6; border: none; color: white; border-radius: 3px; cursor: pointer; padding: 2px 6px; font-size: 10px; margin-right: 5px;">👁️ VOIR</button>`;
-                }
-
-                // Bouton SUPPRIMER (La nouveauté)
-                // On passe le nom du patient et l'index de la ligne
-                let btnSuppr = `<button onclick="clicSupprimerHist('${p.nom}', ${index})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 12px; padding: 0;">✖</button>`;
+                let btnVoir = h.url ? `<button onclick="voirDocument('${h.url}')" style="background:#3b82f6;border:none;color:white;cursor:pointer;font-size:10px;margin-right:5px;">👁️</button>` : "";
+                // On passe l'ID et l'index pour la suppression
+                let btnSuppr = `<button onclick="supprimerLigneHist('${p.id}', ${index})" style="color:#ef4444;border:none;background:none;cursor:pointer;">✖</button>`;
 
                 histDiv.innerHTML += `
-                    <div style="font-size: 10px; margin-bottom: 8px; border-left: 2px solid #3b82f6; padding-left: 8px; position: relative;">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <div>
-                                <span style="color: #94a3b8;">${dateH}</span> - <strong style="color:white;">${h.type}</strong>
-                            </div>
-                            <div style="display:flex; align-items:center;">
-                                ${btnVoir}
-                                ${btnSuppr}
-                            </div>
+                    <div style="font-size:10px;margin-bottom:8px;border-left:2px solid #3b82f6;padding-left:8px;">
+                        <div style="display:flex;justify-content:space-between;">
+                            <span>${dateH} - <strong>${h.type}</strong></span>
+                            <div>${btnVoir}${btnSuppr}</div>
                         </div>
-                        <span style="color: #cbd5e1; font-style: italic; display:block; margin-top:2px;">${h.details}</span>
-                    </div>
-                `;
+                        <span style="color:#cbd5e1;font-style:italic;">${h.details}</span>
+                    </div>`;
             });
         } else {
-            histDiv.innerHTML = '<div style="font-size:10px; color:#475569; padding:5px; font-style:italic;">Aucun historique disponible.</div>';
+            histDiv.innerHTML = '<div style="color:#475569;font-size:10px;">Aucun historique.</div>';
         }
     }
-    
-    // Scroll en haut de la sidebar pour bien voir le dossier
     document.querySelector('.sidebar').scrollTop = 0;
 }
 
-// --- NOUVELLES FONCTIONS POUR LE VISUALISEUR ---
-
-function voirDocument(url) {
-    const modal = document.getElementById('modal-document');
-    const img = document.getElementById('doc-viewer-img');
-    const input = document.getElementById('doc-viewer-url');
-
-    img.src = url;
-    input.value = url;
-    modal.style.display = 'flex';
-}
-
-function fermerVisualiseur() {
-    document.getElementById('modal-document').style.display = 'none';
-}
-
-function copierLienDoc() {
-    const copyText = document.getElementById("doc-viewer-url");
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); 
-    document.execCommand("copy");
-    alert("Lien copié ! Vous pouvez le coller dans le jeu.");
-}
-
-// 3. FERMETURE DU DOSSIER
-function fermerTout() {
-    // UI : On cache l'édition
+window.fermerTout = function() {
     document.getElementById('panel-edition').style.display = 'none';
-    
-    // UI : On réaffiche la création et les stats
     document.getElementById('sidebar-stats').style.display = 'block';
     document.getElementById('panel-creation').style.display = 'block';
 }
 
-// 4. SAUVEGARDE DES MODIFICATIONS
-function sauvegarderEdition() {
-    const originalName = document.getElementById('edit-original-name').value;
-    
-    // On récupère la DB actuelle pour ne pas perdre l'historique existant
-    let db = getPatientsDB();
-    const existingP = db.find(p => p.nom === originalName);
-
-    const updatedP = {
-        nom: document.getElementById('edit-nom').value,
-        naissance: document.getElementById('edit-ddn').value,
-        groupe: document.getElementById('edit-groupe').value,
-        job: document.getElementById('edit-job').value,
-        notes: document.getElementById('edit-notes').value,
-        // On garde la date de création et l'historique originaux s'ils existent
-        dateCreation: existingP ? existingP.dateCreation : new Date().toISOString(),
-        historique: existingP ? (existingP.historique || []) : []
-    };
-
-    savePatientToDB(updatedP);
-    alert("✅ Dossier mis à jour !");
-    fermerTout();
-    chargerPatients();
-}
-
-// 5. CRÉATION D'UN NOUVEAU PATIENT
-function creerPatient() {
+// 3. ACTIONS (SAUVEGARDER, CRÉER, SUPPRIMER)
+window.creerPatient = async function() {
     const nom = document.getElementById('new-nom').value;
-    const notes = document.getElementById('new-notes').value; 
-    
-    if (!nom) { 
-        alert("⚠️ Le nom est obligatoire !"); 
-        return; 
-    }
-    
+    if (!nom) return alert("Nom obligatoire !");
+
     const newP = {
         nom: nom,
         naissance: document.getElementById('new-ddn').value,
         groupe: document.getElementById('new-groupe').value,
         job: document.getElementById('new-job').value,
-        notes: notes,
-        historique: [], // Tableau vide au départ
+        notes: document.getElementById('new-notes').value,
+        historique: [],
         dateCreation: new Date().toISOString()
     };
 
-    savePatientToDB(newP);
-    chargerPatients();
-    updateStats();
+    await savePatientToDB(newP);
+    // Pas besoin de recharger, ecouterPatients le fera tout seul !
     
-    // Reset du formulaire
+    // Reset
     document.getElementById('new-nom').value = "";
     document.getElementById('new-ddn').value = "";
     document.getElementById('new-job').value = "";
     document.getElementById('new-notes').value = "";
 }
 
-// 6. SUPPRESSION
-function supprimerPatient() {
-    const nom = document.getElementById('edit-nom').value;
-    if(confirm(`⛔ Êtes-vous sûr de vouloir supprimer définitivement le dossier de ${nom} ?`)) {
-        let db = getPatientsDB().filter(p => p.nom !== nom);
-        localStorage.setItem('omc_patients_db', JSON.stringify(db));
-        
+window.sauvegarderEdition = async function() {
+    const id = document.getElementById('edit-original-name').value;
+    
+    // On retrouve le patient actuel dans notre liste locale pour ne pas perdre l'historique
+    const originalP = patientsLocaux.find(p => p.id === id);
+
+    const updatedP = {
+        id: id, // IMPORTANT : On garde l'ID Firebase
+        nom: document.getElementById('edit-nom').value,
+        naissance: document.getElementById('edit-ddn').value,
+        groupe: document.getElementById('edit-groupe').value,
+        job: document.getElementById('edit-job').value,
+        notes: document.getElementById('edit-notes').value,
+        dateCreation: originalP.dateCreation,
+        historique: originalP.historique || []
+    };
+
+    await savePatientToDB(updatedP);
+    fermerTout();
+    alert("✅ Dossier mis à jour (Synchronisé) !");
+}
+
+window.supprimerPatient = async function() {
+    const id = document.getElementById('edit-original-name').value;
+    if(confirm("Supprimer définitivement ce dossier de la base commune ?")) {
+        await deletePatientFromDB(id);
         fermerTout();
-        chargerPatients();
-        updateStats();
     }
 }
 
-// 7. BARRE DE RECHERCHE
-function filtrerPatients() {
+// 4. GESTION HISTORIQUE
+window.supprimerLigneHist = async function(patientId, index) {
+    if(!confirm("Supprimer cette ligne ?")) return;
+    
+    const p = patientsLocaux.find(pat => pat.id === patientId);
+    if(p) {
+        p.historique.splice(index, 1); // On retire la ligne
+        await savePatientToDB(p); // On sauvegarde
+        // L'interface se mettra à jour toute seule grâce au listener, 
+        // mais comme le panneau est ouvert, on le rafraichit manuellement :
+        ouvrirPanelEdition(p);
+    }
+}
+
+// 5. RECHERCHE ET UTILS
+window.filtrerPatients = function() {
     const term = document.getElementById('search-input').value.toLowerCase();
-    document.querySelectorAll('.patient-card').forEach(card => {
-        const name = card.querySelector('.p-name').innerText.toLowerCase();
-        card.style.display = name.includes(term) ? "block" : "none";
-    });
+    const listeFiltree = patientsLocaux.filter(p => p.nom.toLowerCase().includes(term));
+    afficherGrille(listeFiltree);
 }
 
-// 8. STATISTIQUES
-function updateStats() {
-    const db = getPatientsDB();
-    document.getElementById('stat-total').innerText = db.length;
-    document.getElementById('stat-last').innerText = db.length > 0 ? db[db.length-1].nom : "-";
+function updateStats(liste) {
+    document.getElementById('stat-total').innerText = liste.length;
+    document.getElementById('stat-last').innerText = liste.length > 0 ? liste[0].nom : "-";
 }
 
-// UTILITAIRE
 function formatDate(s) { 
     return s ? new Date(s).toLocaleDateString('fr-FR') : "??/??/????"; 
 }
 
-// Fonction intermédiaire pour gérer la suppression et rafraichir l'affichage sans fermer le dossier
-function clicSupprimerHist(nom, index) {
-    if(confirm("Supprimer cette entrée de l'historique ?")) {
-        // Appelle la fonction de global.js
-        const patientMisAJour = supprimerEvenementHistorique(nom, index);
-        
-        if(patientMisAJour) {
-            // Astuce : On ré-ouvre le panneau avec le patient mis à jour pour voir le changement immédiatement
-            ouvrirPanelEdition(patientMisAJour);
-        }
+// Fonctions pour le visualiseur d'image
+window.voirDocument = function(url) {
+    const modal = document.getElementById('modal-document');
+    if(modal) {
+        document.getElementById('doc-viewer-img').src = url;
+        document.getElementById('doc-viewer-url').value = url;
+        modal.style.display = 'flex';
     }
+}
+window.fermerVisualiseur = function() {
+    document.getElementById('modal-document').style.display = 'none';
+}
+window.copierLienDoc = function() {
+    const copyText = document.getElementById("doc-viewer-url");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Lien copié !");
 }
