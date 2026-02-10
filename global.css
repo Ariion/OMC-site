@@ -254,61 +254,44 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 .autocomplete-item:hover small { color: #e2e8f0; }
 
 /* ============================================================
-   MODE CLAIR (LIGHT THEME OVERRIDES)
+   GESTION DU THÈME (LIGHT MODE)
+   Uniquement pour le fond de droite
    ============================================================ */
-body.light-mode {
-    background-color: #f1f5f9 !important; /* Gris très clair fond */
-    color: #1e293b !important; /* Texte foncé */
+
+/* 1. PAR DÉFAUT (Mode Sombre) */
+/* La sidebar est déjà définie en sombre plus haut dans ton CSS */
+.preview-area {
+    background-color: #0f172a !important; /* Bleu nuit sombre */
+    transition: background-color 0.3s ease;
 }
 
-/* Sidebar en blanc */
+/* 2. MODE CLAIR (Activé par le bouton) */
+/* On change UNIQUEMENT le fond derrière la feuille */
+body.light-mode .preview-area {
+    background-color: #d1d5db !important; /* Gris clair bureau */
+}
+
+/* 3. FORCAGE (Sécurité) */
+/* On s'assure que la sidebar reste sombre même si le body a la classe light-mode */
 body.light-mode .sidebar {
-    background-color: #ffffff !important;
-    border-right: 1px solid #cbd5e1 !important;
-    color: #334155 !important;
+    background-color: #0a1324 !important;
+    color: white !important;
+    border-right: 1px solid #1e293b !important;
 }
 
-/* Titres sidebar */
+/* On s'assure que les inputs de la sidebar restent sombres */
+body.light-mode .sidebar input,
+body.light-mode .sidebar select,
+body.light-mode .sidebar textarea,
+body.light-mode .sidebar .form-group {
+    background-color: #111b2d !important;
+    color: white !important;
+    border-color: #334155 !important;
+}
+
+/* On s'assure que les titres sidebar restent clairs */
+body.light-mode .sidebar label,
+body.light-mode .sidebar h1, 
 body.light-mode .sidebar-title {
-    color: #2563eb !important; /* Bleu foncé au lieu de cyan */
-}
-
-/* Inputs, Selects, Textarea */
-body.light-mode input,
-body.light-mode select,
-body.light-mode textarea,
-body.light-mode .form-group[style*="background"] { /* Cible les blocs grisés */
-    background-color: #f8fafc !important;
-    color: #0f172a !important;
-    border-color: #cbd5e1 !important;
-}
-
-/* Labels */
-body.light-mode label {
-    color: #475569 !important;
-}
-
-/* Boutons */
-body.light-mode .btn-edit, 
-body.light-mode .btn-dice {
-    background-color: #e2e8f0 !important;
-    color: #334155 !important;
-    border-color: #94a3b8 !important;
-}
-
-/* Page Dossiers - Cartes */
-body.light-mode .card,
-body.light-mode .search-bar-container {
-    background-color: #ffffff !important;
-    border-color: #e2e8f0 !important;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
-}
-
-body.light-mode .card h3 {
-    color: #2563eb !important;
-}
-
-body.light-mode #p-name,
-body.light-mode strong {
-    color: #000000 !important;
+    color: #94a3b8 !important; /* Ou ta couleur cyan --omc-cyan */
 }
