@@ -211,3 +211,45 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
         padding: 10px;
     }
 }
+
+
+/* --- AUTOCOMPLETE (GLOBAL) --- */
+.autocomplete-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 0 0 6px 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 9999;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.autocomplete-item {
+    padding: 10px 15px;
+    border-bottom: 1px solid #334155;
+    cursor: pointer;
+    color: #e2e8f0;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    transition: background 0.2s;
+}
+
+.autocomplete-item:hover {
+    background: #3b82f6; /* Bleu OMC au survol */
+    color: white;
+}
+
+.autocomplete-item strong { display: block; font-size: 13px; }
+.autocomplete-item small { color: #94a3b8; }
+.autocomplete-item:hover small { color: #e2e8f0; }
+
