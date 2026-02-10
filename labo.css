@@ -11,17 +11,26 @@
 }
 
 #document {
-    width: 800px;
-    min-width: 800px;
+    width: 800px !important;
+    min-width: 800px !important;
+    
+    /* LE SECRET : Pas de height, pas de min-height géant */
+    height: auto !important;
+    min-height: auto !important; /* Laisse le contenu décider */
+    
     background: white !important;
-    padding: 40px 50px !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    color: #000 !important;
+    
+    /* Padding confortable */
+    padding: 50px !important;
+    
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
     box-sizing: border-box;
-    height: auto !important; /* IMPORTANT: Permet d'agrandir */
-    min-height: 1000px;      /* Taille min A4 */
-    display: block;
+    overflow: visible !important;
+    
+    /* Marge en bas pour ne pas coller au bord de l'écran */
     margin-bottom: 50px;
-    color: black;
 }
 
 /* Boutons spéciaux Grossesse/Fertilité */
