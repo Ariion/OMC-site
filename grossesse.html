@@ -1,4 +1,4 @@
-<!DOCTYPE html>  
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -40,7 +40,7 @@
                 </div>
                 <div class="form-group">
                     <label>GROUPE SANGUIN</label>
-                    <input id="bloodGroup" type="text" placeholder="Ex: A+" oninput="updateReport()" style="text-align:center; font-weight:bold; color:#64ffda;">
+                    <input id="patientBlood" type="text" placeholder="Ex: A+" oninput="updateReport()" style="text-align:center; font-weight:bold; color:#64ffda;">
                 </div>
             </div>
 
@@ -113,8 +113,8 @@
             </div>
 
             <div class="actions-group">
-                <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
-                <button class="btn-discord" onclick="envoyerDiscord()">Envoyer sur Discord</button>
+                <button class="btn-image" onclick="sauvegarderPatientDepuisFormulaire(); genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
+                <button class="btn-discord" onclick="sauvegarderPatientDepuisFormulaire(); envoyerDiscord()">Envoyer sur Discord</button>
             </div>
         </aside>
 
