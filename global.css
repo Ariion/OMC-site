@@ -282,3 +282,17 @@ body.light-mode .sidebar label,
 body.light-mode .sidebar h1 {
     /* On ne touche à RIEN ici pour garder le menu sombre */
 }
+
+
+/* --- CORRECTION ICÔNE CALENDRIER (DATE) --- */
+/* Inverse les couleurs de l'icône pour qu'elle soit blanche sur fond sombre */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+/* Change aussi le curseur au survol */
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
