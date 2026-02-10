@@ -345,3 +345,24 @@ function copyLink() {
     alert("Lien copié !");
 }
 function closePopup() { document.getElementById('image-popup').style.display = 'none'; }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const savedPatient = localStorage.getItem('currentPatient');
+    
+    if (savedPatient) {
+        const p = JSON.parse(savedPatient);
+        
+        // Adapte les IDs selon ce que tu as mis dans ordonnance.html
+        // Si ton input s'appelle "patientName", garde ça. Sinon change l'ID.
+        if(document.getElementById('patientName')) {
+            document.getElementById('patientName').value = p.nom;
+            // Si tu as une fonction qui met à jour le visuel (ex: updateReport), appelle-la ici :
+            if(typeof updateReport === 'function') updateReport();
+        }
+        
+        if(document.getElementById('patientBirth')) {
+            document.getElementById('patientBirth').value = p.naissance;
+            if(typeof updateReport === 'function') updateReport();
+        }
+    }
+});
