@@ -30,8 +30,14 @@
                 </select>
             </div>
 
-            <div class="form-group"><label>Patient</label><input type="text" id="f-nom" oninput="updateCertif()"></div>
-            <div class="form-group"><label>Date de naissance</label><input type="date" oninput="upDate('d-naiss', this.value)"></div>
+            <div class="form-group">
+                <label>Patient</label>
+                <input type="text" id="patientName" oninput="updateCertif()">
+            </div>
+            <div class="form-group">
+                <label>Date de naissance</label>
+                <input type="date" id="patientBirth" oninput="upDate('d-naiss', this.value)">
+            </div>
             <div class="form-group"><label>Date d'établissement</label><input type="date" oninput="upDate('d-date', this.value)"></div>
             <div class="form-group" id="side-entreprise-block"><label>Entreprise</label><input type="text" id="f-entreprise" oninput="updateCertif()"></div>
 
