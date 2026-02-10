@@ -97,9 +97,14 @@
             </div>
 
             <div class="actions-group">
-                <button class="btn-image" onclick="sauvegarderPatientDepuisFormulaire(); genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
-                <button class="btn-discord" onclick="sauvegarderPatientDepuisFormulaire(); envoyerDiscord()">Envoyer sur Discord</button>
-            </div>
+    <button type="button" class="btn-image" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; genererImage()">
+        🖼️ GÉNÉRER L'IMAGE
+    </button>
+
+    <button id="discord-btn" class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; envoyerDiscord()">
+        ENVOYER SUR DISCORD
+    </button>
+</div>
         </aside>
 
         <main class="preview-area">
