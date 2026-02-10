@@ -11,27 +11,20 @@ const ECHO_IMAGES = {
 
 // --- INITIALISATION ---
 window.onload = () => {
-    // 1. Date du jour
     document.getElementById('examDate').valueAsDate = new Date();
-    
-    // 2. Initialisation interface
     updateHealthColor();
     toggleSections();
 
-    // 3. AUTOCOMPLETE (Liaison Base de Données)
     setupPatientAutocomplete({
         nameId: 'patientName',
         birthId: 'patientBirth',
         bloodId: 'patientBlood', 
         callback: function(p) {
-            // Important : Force la mise à jour visuelle après avoir cliqué sur un nom
-            updateReport(); 
-            // Si on a une date de naissance, on peut recalculer (optionnel)
-            calculerTerme();
+            updateReport();
+            calculerTerme(); // Juste pour recalculer les SA si la date change
         }
     });
     
-    // 4. Premier appel pour vider/initialiser les champs
     updateReport();
 };
 
@@ -46,7 +39,7 @@ function toggleSections() {
     document.getElementById('section-bio').style.display = showBio ? 'block' : 'none';
     document.getElementById('section-echo').style.display = showEcho ? 'block' : 'none';
     document.getElementById('section-ordo').style.display = showOrdo ? 'block' : 'none';
-    calculerTerme();
+    // On ne recalcule pas tout, juste la visibilité
 }
 
 function updateHealthColor() {
@@ -58,12 +51,12 @@ function updateHealthColor() {
     else txt.style.color = "#ef4444";
 }
 
-// 1. CALCUL DU TERME ET LOGIQUE PRINCIPALE
+// 1. CALCUL DU TERME (UNIQUEMENT)
 function calculerTerme() {
     const debut = new Date(document.getElementById('dateDebut').value);
     const today = new Date(document.getElementById('examDate').value);
     
-    if (!isNaN(debut)) {
+    if (!isNaN(debut) && !isNaN(today)) {
         const diffTime = Math.abs(today - debut);
         const daysIRL = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
         
@@ -76,7 +69,7 @@ function calculerTerme() {
         dpa.setDate(dpa.getDate() + 64);
         document.getElementById('display-dpa').innerText = dpa.toLocaleDateString('fr-FR');
 
-        // Alerte Dépassement
+        // Alerte
         const banner = document.getElementById('banner-status');
         if (currentSA >= 41) {
             banner.classList.add('alert-term');
@@ -85,7 +78,7 @@ function calculerTerme() {
             banner.classList.remove('alert-term');
         }
 
-        // Type Examen Auto
+        // Définition du type d'examen (sans générer l'image)
         const isCol = document.getElementById('measureCol').checked;
         if (isCol) examTypeLabel = "Mesure du Col (Urgence)";
         else if (currentSA < 11) examTypeLabel = "Échographie de Datation";
@@ -94,20 +87,27 @@ function calculerTerme() {
         else examTypeLabel = "Échographie Croissance T3";
         
         document.getElementById('exam-type-auto').innerText = examTypeLabel;
-
-        genererTout();
     }
 }
 
-function genererTout() {
+// 2. FONCTION DE GÉNÉRATION (ACTIVÉE PAR LE BOUTON UNIQUEMENT)
+function lancerGenerationResultats() {
+    // On s'assure que le terme est à jour
+    calculerTerme();
+    
     const sante = parseInt(document.getElementById('santeMaman').value);
+    
+    // On lance les générateurs
     genererBiologieEvolutive(sante);
     genererEchoLogic(sante);
     genererOrdonnance(sante);
+    
+    // On met à jour les textes annexes
     updateReport();
 }
 
-// 2. BIOLOGIE ÉVOLUTIVE (HCG RÉALISTE)
+// --- LES GÈNÉRATEURS (RNG) ---
+
 function genererBiologieEvolutive(sante) {
     const tbody = document.getElementById('bio-tbody');
     tbody.innerHTML = ""; 
@@ -155,7 +155,6 @@ function genererBiologieEvolutive(sante) {
     }
 }
 
-// 3. ECHOGRAPHIE LOGIC
 function genererEchoLogic(sante) {
     const sexe = document.getElementById('sexeFoetal').value;
     const isGemellaire = document.getElementById('isGemellaire').checked;
@@ -200,6 +199,7 @@ function genererEchoLogic(sante) {
     document.getElementById('val-maf').innerText = "Présents";
     document.getElementById('val-poids').innerText = "Voir biométries";
 
+    // Conclusion Auto (mise à jour du champ textarea)
     let txt = `Terme : ${currentSA} SA.\n`;
     if (isCol) txt += "Examen du col utérin réalisé.\n";
     else if (isGemellaire) txt += "Grossesse Gémellaire Bi-choriale Bi-amniotique évolutive.\n";
@@ -211,7 +211,6 @@ function genererEchoLogic(sante) {
     document.getElementById('conclusionInput').value = txt;
 }
 
-// 4. ORDONNANCE COMPLÈTE
 function genererOrdonnance(sante) {
     const list = document.getElementById('ordo-list');
     list.innerHTML = "";
@@ -226,18 +225,17 @@ function genererOrdonnance(sante) {
     if (currentSA >= 41) list.innerHTML += "<li><strong>Monitoring (RCF) toutes les 48h</strong></li>";
 }
 
-// --- FONCTION DE MISE À JOUR VISUELLE (Celle qui faisait défaut) ---
+// 3. MISE A JOUR VISUELLE (Texte seulement)
 function updateReport() {
-    // 1. Récupération des valeurs
+    // On récupère les valeurs
     const nom = document.getElementById('patientName').value;
     const dateNaiss = document.getElementById('patientBirth').value;
     const medecin = document.getElementById('doctorSig').value;
     const conclusion = document.getElementById('conclusionInput').value;
     
-    // 2. Injection dans le document (Partie Droite)
+    // On met à jour l'affichage
     document.getElementById('display-patient').innerText = nom || "...";
     
-    // Formatage date naissance
     if(dateNaiss) {
         document.getElementById('display-birth').innerText = new Date(dateNaiss).toLocaleDateString('fr-FR');
     } else {
@@ -247,7 +245,7 @@ function updateReport() {
     document.getElementById('d-sig').innerText = medecin || "...";
     document.getElementById('display-conclusion').innerText = conclusion;
     
-    // 3. Observations
+    // Observations
     const obs = document.getElementById('obsHealth').value;
     const obsBlock = document.getElementById('obs-block');
     if (obs && obs.trim() !== "") {
@@ -257,12 +255,11 @@ function updateReport() {
         obsBlock.style.display = 'none';
     }
 
-    // 4. Dates
+    // Dates & QR
     const dateStr = new Date(document.getElementById('examDate').value).toLocaleDateString('fr-FR');
     document.getElementById('display-date-top').innerText = dateStr;
     document.getElementById('echo-date-display').innerText = dateStr;
 
-    // 5. QR Code
     const qrData = encodeURIComponent(`OMC-OBST-${nom || "Inconnu"}-${currentSA}SA`);
     document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}&margin=1`;
 }
@@ -277,6 +274,7 @@ async function genererImage() {
     btn.innerText = "CHARGEMENT...";
     
     const captureZone = document.getElementById('capture-zone');
+    // On force la hauteur pour tout capturer
     const originalHeight = captureZone.style.height;
     captureZone.style.height = captureZone.scrollHeight + "px"; 
 
@@ -294,12 +292,13 @@ async function genererImage() {
         }
     } catch (e) { alert("Erreur: " + e.message); }
     
+    // On remet la hauteur normale
     captureZone.style.height = originalHeight; 
     btn.innerText = "GÉNÉRER L'IMAGE";
 }
 
 async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1470764297930936464/9IaG5scbmjGXkCpq3wvXaxGDAasyAJExRw9j853V0W99wl__MXI7SS3e0GNQcdeS0RGk";
+    const url = "https://discord.com/api/webhooks/1421780761731928194/ZFSpiLTHfytIGT02QBf5SBOIEDzWMaf_PMHtDB9sd-GmF5chHnQqQic-9YpLnYHJIRPo";
     try {
         window.scrollTo(0,0);
         const canvas = await html2canvas(document.getElementById('capture-zone'), { scale: 2, useCORS: true });
