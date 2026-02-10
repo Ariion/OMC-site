@@ -64,8 +64,8 @@
     </div>
 
     <div id="modal-creation" class="popup-overlay" style="display: none;">
-        <div class="popup-content" style="text-align: left; width: 400px;">
-            <h3 style="color: #64ffda; margin-bottom: 20px; text-align: center;">NOUVEAU DOSSIER</h3>
+        <div class="popup-content" style="text-align: left; width: 450px; border: 1px solid #10b981;">
+            <h3 style="color: #10b981; margin-bottom: 20px; text-align: center;">NOUVEAU DOSSIER</h3>
             
             <div class="form-group">
                 <label>Nom & Prénom</label>
@@ -93,14 +93,14 @@
                 </div>
             </div>
 
-            <div class="actions-group" style="flex-direction: row; margin-top: 20px;">
-                <button onclick="creerPatient()" class="btn-discord" style="background: #10b981;">ENREGISTRER</button>
-                <button onclick="fermerModal()" class="btn-image" style="background: #ef4444; color: white; border: none;">ANNULER</button>
+            <div class="actions-group">
+                <button onclick="fermerModal()" class="btn-action btn-cancel">ANNULER</button>
+                <button onclick="creerPatient()" class="btn-action btn-save">ENREGISTRER</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-edition" class="popup-overlay" style="display: none;">
+   <div id="modal-edition" class="popup-overlay" style="display: none;">
         <div class="popup-content" style="text-align: left; width: 500px; border-color: #3b82f6;">
             <h3 style="color: #3b82f6; margin-bottom: 20px; text-align: center;">DOSSIER PATIENT</h3>
             
@@ -135,15 +135,14 @@
 
             <div class="form-group">
                 <label style="color: #fbbf24;">⚠️ ALLERGIES & ANTÉCÉDENTS</label>
-                <textarea id="edit-notes" rows="4" placeholder="Noter ici les allergies, traitements chroniques, historique..." style="width: 100%; background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 4px; resize: vertical;"></textarea>
+                <textarea id="edit-notes" rows="4" style="width: 100%; background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 4px; resize: vertical;"></textarea>
             </div>
 
             <div class="actions-group" style="justify-content: space-between;">
                 <button onclick="supprimerPatient()" class="btn-action btn-delete">🗑️ SUPPRIMER</button>
-                
                 <div style="display: flex; gap: 10px;">
                     <button onclick="fermerModalEdition()" class="btn-action btn-cancel">FERMER</button>
-                    <button onclick="sauvegarderEdition()" class="btn-action btn-save">SAUVEGARDER</button>
+                    <button onclick="sauvegarderEdition()" class="btn-action btn-save" style="background: #3b82f6;">SAUVEGARDER</button>
                 </div>
             </div>
         </div>
