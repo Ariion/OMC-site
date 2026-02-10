@@ -1,129 +1,171 @@
 /* ============================================================
-   GESTIONNAIRE DE DOSSIERS PATIENTS
+   GESTIONNAIRE D'ARCHIVES PATIENTS (GRID VIEW)
    ============================================================ */
 
-let currentDisplayedPatient = null; // Pour savoir qui est affiché
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    chargerPatients();
+    updateStats();
+});
 
-window.onload = () => {
-    refreshStats();
-    setupSearch();
-};
+// 1. CHARGEMENT ET AFFICHAGE (GRILLE)
+function chargerPatients() {
+    // On récupère la base de données via global.js
+    const db = getPatientsDB(); 
+    const grid = document.getElementById('patients-grid');
+    const emptyState = document.getElementById('empty-state');
+    
+    // Sécurité si un élément manque
+    if(!grid || !emptyState) return;
 
-// 1. BARRE DE RECHERCHE DYNAMIQUE
-function setupSearch() {
-    const input = document.getElementById('searchInput');
-    const resultsDiv = document.getElementById('search-results');
+    grid.innerHTML = "";
 
-    input.addEventListener('input', function() {
-        const val = this.value.toLowerCase();
-        resultsDiv.innerHTML = "";
+    // Si la base est vide
+    if (db.length === 0) {
+        emptyState.style.display = "block";
+        return;
+    } else {
+        emptyState.style.display = "none";
+    }
+
+    // On inverse pour afficher les derniers ajoutés en premier (en haut à gauche)
+    const dbReverse = [...db].reverse();
+
+    dbReverse.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'patient-card';
         
-        if (val.length < 2) {
-            resultsDiv.style.display = 'none';
-            return;
+        // Création des initiales pour l'avatar (Ex: Garret Freeman -> GF)
+        const initiales = p.nom ? p.nom.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() : "?";
+        
+        // Calcul de l'âge (approximatif)
+        let age = "Âge inconnu";
+        if(p.naissance) {
+            const birthDate = new Date(p.naissance);
+            const diff = Date.now() - birthDate.getTime();
+            const ageDate = new Date(diff); 
+            age = Math.abs(ageDate.getUTCFullYear() - 1970) + " ans";
         }
 
-        // On utilise la fonction de global.js pour récupérer la vraie DB
-        const patients = getPatientsDB(); 
-        const filtered = patients.filter(p => p.nom.toLowerCase().includes(val));
+        // Construction de la carte HTML
+        card.innerHTML = `
+            <div class="p-tag">${p.groupe || '?'}</div>
+            <div class="p-avatar">${initiales}</div>
+            <div class="p-name">${p.nom}</div>
+            <div class="p-info">📅 ${formatDate(p.naissance)} (${age})</div>
+            <div class="p-info">💼 ${p.job || 'Civil'}</div>
+        `;
+        
+        // Interaction au clic (Pour l'instant simple alerte, plus tard édition)
+        card.onclick = () => {
+            alert(`Dossier : ${p.nom}\nStatut : ${p.job}\nGroupe : ${p.groupe}`);
+        };
 
-        if (filtered.length > 0) {
-            resultsDiv.style.display = 'block';
-            filtered.forEach(p => {
-                const div = document.createElement('div');
-                div.className = 'search-result-item';
-                div.innerHTML = `<strong>${p.nom}</strong> <span>${p.naissance}</span>`;
-                div.onclick = () => afficherPatient(p);
-                resultsDiv.appendChild(div);
-            });
+        grid.appendChild(card);
+    });
+}
+
+// 2. FILTRE DE RECHERCHE
+function filtrerPatients() {
+    const term = document.getElementById('search-input').value.toLowerCase();
+    const cards = document.querySelectorAll('.patient-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        // On cherche dans le nom affiché sur la carte
+        const name = card.querySelector('.p-name').innerText.toLowerCase();
+        
+        if (name.includes(term)) {
+            card.style.display = "block"; // On affiche
+            visibleCount++;
         } else {
-            resultsDiv.style.display = 'none';
+            card.style.display = "none"; // On cache
         }
     });
 
-    // Fermer si clic ailleurs
-    document.addEventListener('click', (e) => {
-        if (e.target !== input) resultsDiv.style.display = 'none';
-    });
+    // Gestion du message "Aucun résultat"
+    const emptyState = document.getElementById('empty-state');
+    const h3 = emptyState.querySelector('h3');
+    const p = emptyState.querySelector('p');
+
+    if (visibleCount === 0 && cards.length > 0) {
+        // Il y a des patients mais la recherche ne donne rien
+        emptyState.style.display = "block";
+        if(h3) h3.innerText = "Aucun résultat";
+        if(p) p.innerText = "Essayez une autre orthographe.";
+    } else if (cards.length === 0) {
+        // La base est vraiment vide
+        emptyState.style.display = "block"; 
+        if(h3) h3.innerText = "Aucun patient trouvé";
+        if(p) p.innerText = "Modifiez votre recherche ou créez un nouveau dossier.";
+    } else {
+        emptyState.style.display = "none";
+    }
 }
 
+// 3. STATISTIQUES SIDEBAR
+function updateStats() {
+    const db = getPatientsDB();
+    const statTotal = document.getElementById('stat-total');
+    const statLast = document.getElementById('stat-last');
 
-// 2. AFFICHER LE DOSSIER
-function afficherPatient(p) {
-    currentDisplayedPatient = p;
+    if(statTotal) statTotal.innerText = db.length;
     
-    // UI Switch
-    document.getElementById('empty-state').style.display = 'none';
-    document.getElementById('search-results').style.display = 'none';
-    document.getElementById('searchInput').value = p.nom;
-    document.getElementById('patient-folder').style.display = 'grid';
-
-    // Remplissage des champs
-    document.getElementById('p-name').innerText = p.nom;
-    document.getElementById('p-avatar').innerText = p.nom.substring(0,2).toUpperCase();
-    document.getElementById('p-birth').innerText = p.naissance || "--/--/----";
-    document.getElementById('p-phone').innerText = p.telephone || "Non renseigné";
-    document.getElementById('p-blood').innerText = p.groupe || "?";
-    document.getElementById('p-job').innerText = p.job || "Civil";
-    
-    // Notes & Alertes (éditables)
-    document.getElementById('p-alerts').value = p.alerts || "";
-    document.getElementById('p-notes').value = p.notes || "";
+    if(statLast) {
+        if(db.length > 0) {
+            // Le dernier ajouté est le dernier du tableau
+            statLast.innerText = db[db.length-1].nom;
+        } else {
+            statLast.innerText = "-";
+        }
+    }
 }
 
-// 3. SAUVEGARDER LES NOTES MODIFIÉES
-function saveCurrentNotes() {
-    if (!currentDisplayedPatient) return;
-    
-    currentDisplayedPatient.alerts = document.getElementById('p-alerts').value;
-    currentDisplayedPatient.notes = document.getElementById('p-notes').value;
-    
-    // On met à jour dans la base globale
-    savePatientToDB(currentDisplayedPatient);
-    alert("Notes mises à jour !");
+// 4. GESTION DE LA MODALE (POPUP)
+function ouvrirModalCreation() {
+    document.getElementById('modal-creation').style.display = 'flex';
 }
 
-// 4. CRÉATION DE PATIENT (MODALE)
-function openNewPatientModal() {
-    document.getElementById('modal-new-patient').style.display = 'flex';
+function fermerModal() {
+    document.getElementById('modal-creation').style.display = 'none';
+    // On vide les champs pour la prochaine fois
+    document.getElementById('new-nom').value = "";
+    document.getElementById('new-ddn').value = "";
+    document.getElementById('new-job').value = "";
+    document.getElementById('new-groupe').value = "A+";
 }
 
-function closeModal() {
-    document.getElementById('modal-new-patient').style.display = 'none';
-}
-
-function saveNewPatient() {
+// 5. CRÉATION DU PATIENT
+function creerPatient() {
     const nom = document.getElementById('new-nom').value;
-    const birth = document.getElementById('new-birth').value;
-    
-    if(!nom) { alert("Le nom est obligatoire !"); return; }
+    const ddn = document.getElementById('new-ddn').value;
+    const groupe = document.getElementById('new-groupe').value;
+    const job = document.getElementById('new-job').value;
+
+    if (!nom) {
+        alert("Le nom est obligatoire !");
+        return;
+    }
 
     const newP = {
         nom: nom,
-        naissance: birth,
-        groupe: document.getElementById('new-blood').value,
-        job: document.getElementById('new-job').value,
-        telephone: document.getElementById('new-phone').value,
-        alerts: "",
-        notes: ""
+        naissance: ddn,
+        groupe: groupe,
+        job: job,
+        dateCreation: new Date().toISOString()
     };
 
-    // Sauvegarde via global.js
-    savePatientToDB(newP);
+    // Sauvegarde via la fonction centrale de global.js
+    savePatientToDB(newP); 
     
-    alert("Dossier patient créé avec succès !");
-    closeModal();
-    afficherPatient(newP); // Affiche direct le nouveau dossier
-    refreshStats();
+    fermerModal();
+    chargerPatients(); // On recharge la grille pour voir le nouveau
+    updateStats();     // On met à jour les compteurs
 }
 
-// 5. NAVIGATION
-function goTo(page) {
-    window.location.href = page;
-}
-
-// 6. STATISTIQUES (COSMÉTIQUE)
-function refreshStats() {
-    const db = getPatientsDB();
-    document.getElementById('stats-total').innerText = db.length;
+// Petit utilitaire pour formater la date proprement
+function formatDate(dateString) {
+    if(!dateString) return "??/??/????";
+    const d = new Date(dateString);
+    return d.toLocaleDateString('fr-FR');
 }
