@@ -307,7 +307,7 @@ async function genererImage() {
     doc.classList.add('mode-capture');
 
     try {
-        // Capture simple, sans forcer la hauteur
+        // Capture simple
         const canvas = await html2canvas(doc, {
             scale: 2, 
             useCORS: true, 
@@ -322,6 +322,16 @@ async function genererImage() {
         const result = await response.json();
 
         if (result.success) {
+            // === C'EST ICI QUE J'AI AJOUTÉ LA SAUVEGARDE ===
+            const imgUrl = result.data.url;
+            const nomPatient = document.getElementById('patientName').value; // On récupère le nom
+            
+            // Si on a un nom, on enregistre dans l'historique
+            if(nomPatient) {
+                ajouterEvenementPatient(nomPatient, "Ordonnance", "Prescription générée", imgUrl);
+            }
+            // ===============================================
+
             document.getElementById('direct-link').value = result.data.url;
             document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
