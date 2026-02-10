@@ -279,3 +279,56 @@ textarea {
     width: 450px; border: 1px solid #475569;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }
+
+/* --- BOUTONS ACTIONS MODALES (Style Standard) --- */
+.actions-group {
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end; /* Aligne les boutons à droite */
+    align-items: center;
+}
+
+.btn-action {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 11px;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-action:active {
+    transform: scale(0.98);
+}
+
+/* Bouton VALIDATION (Bleu) */
+.btn-save {
+    background: #3b82f6;
+    color: white;
+}
+.btn-save:hover {
+    background: #2563eb;
+}
+
+/* Bouton ANNULATION / FERMER (Gris foncé) */
+.btn-cancel {
+    background: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+}
+.btn-cancel:hover {
+    background: #475569;
+    color: white;
+}
+
+/* Bouton SUPPRESSION (Rouge) */
+.btn-delete {
+    background: #ef4444;
+    color: white;
+}
+.btn-delete:hover {
+    background: #dc2626;
+}
