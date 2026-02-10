@@ -24,12 +24,12 @@
 
             <div class="form-group">
                 <label>Nom & Prénom du Patient</label>
-                <input type="text" oninput="up('d-nom', this.value)" placeholder="ex: Garret Freeman">
+                <input type="text" id="patientName" oninput="up('d-nom', this.value)" placeholder="ex: Garret Freeman">
             </div>
 
             <div class="form-group">
                 <label>Date de Naissance</label>
-                <input type="date" oninput="upDate('d-ddn', this.value)">
+                <input type="date" id="patientBirth" oninput="upDate('d-ddn', this.value)">
             </div>
 
             <div class="form-group">
@@ -49,7 +49,7 @@
                 <label>Groupe Sanguin</label>
                 <div style="display:flex; gap:10px">
                     <button type="button" onclick="determinerGroupeAleatoire()" class="btn-dice">🎲 RNG</button>
-                    <select id="select-groupe" onchange="up('d-groupe', this.value)" style="flex-grow: 1; background: #111b2d; color: white; border: 1px solid #334155; padding: 5px; border-radius: 4px;">
+                    <select id="patientBlood" onchange="up('d-groupe', this.value)" style="flex-grow: 1; background: #111b2d; color: white; border: 1px solid #334155; padding: 5px; border-radius: 4px;">
                         <option value="...">--</option>
                         <option value="A+">A+</option><option value="A-">A-</option>
                         <option value="B+">B+</option><option value="B-">B-</option>
@@ -109,8 +109,8 @@
             </div>
 
             <div class="actions-group">
-                <button type="button" onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
-                <button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
+                <button type="button" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
+                <button id="discord-btn" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
             </div>
         </aside>
 
@@ -160,8 +160,7 @@
                     </div>
 
                     <div class="qr-container" style="text-align: center;">
-                        <img id="qr-ref" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=INITIALIZING" 
-                             alt="QR" style="width: 85px; height: 85px; border: 1px solid #0a192f; border-radius: 8px; padding: 2px; background: white;">
+                        <img id="qr-ref" src="" alt="QR" style="width: 85px; height: 85px; border: 1px solid #0a192f; border-radius: 8px; padding: 2px; background: white;">
                         <div style="font-size: 10px; font-weight: 900; color: #0a192f; margin-top: 5px; text-transform: uppercase;">OMC CERTIFIED</div>
                     </div>
                 </div>
@@ -190,4 +189,3 @@
     <script src="labo.js"></script>
 </body>
 </html>
-
