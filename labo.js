@@ -360,6 +360,7 @@ function switchMode(mode) {
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
 let lastImageUrl = "";
 
+// --- EXPORT IMAGE ---
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
@@ -368,9 +369,8 @@ async function genererImage() {
     btn.innerText = "GÉNÉRATION...";
     btn.disabled = true;
     
-    // --- FIX ANTI-CROP : Ajout de hauteur temporaire ---
-    const originalHeight = doc.style.height;
-    doc.style.height = (doc.scrollHeight + 50) + "px";
+    // On capture la hauteur RÉELLE du contenu + 50px de marge de sécurité en bas
+    const contentHeight = doc.scrollHeight + 50; 
 
     try {
         const canvas = await html2canvas(doc, { 
@@ -378,8 +378,8 @@ async function genererImage() {
             useCORS: true, 
             scrollY: 0,
             backgroundColor: "#ffffff",
-            height: doc.scrollHeight + 50,
-            windowHeight: doc.scrollHeight + 50
+            height: contentHeight,      // Hauteur calculée
+            windowHeight: contentHeight // Fenêtre simulée
         });
         
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
@@ -398,13 +398,12 @@ async function genererImage() {
     } catch (e) {
         alert("Erreur lors de la génération.");
     } finally {
-        // Restauration de la hauteur
-        doc.style.height = originalHeight;
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
 }
 
+// --- ENVOI DISCORD ---
 async function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1468219484245332171/OwqxaLPAJznP0W5gxsmNEhuPIJHWukIEX6OZDXpElPWOz0Bbjjc3I9ahKsJ73dCUaQln";
     const btn = document.getElementById('discord-btn'); 
@@ -414,17 +413,16 @@ async function envoyerDiscord() {
     btn.disabled = true;
     btn.innerText = "CAPTURE...";
     
-    // --- FIX ANTI-CROP ---
-    const originalHeight = doc.style.height;
-    doc.style.height = (doc.scrollHeight + 50) + "px";
+    // Calcul de la hauteur exacte + marge
+    const contentHeight = doc.scrollHeight + 50;
 
     try {
         const canvas = await html2canvas(doc, { 
             scale: 2, 
             useCORS: true,
             scrollY: 0,
-            height: doc.scrollHeight + 50,
-            windowHeight: doc.scrollHeight + 50
+            height: contentHeight,
+            windowHeight: contentHeight
         });
         
         btn.innerText = "ENVOI...";
@@ -455,8 +453,6 @@ async function envoyerDiscord() {
     } catch (e) {
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
-    } finally {
-        doc.style.height = originalHeight;
     }
 }
 
