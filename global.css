@@ -253,3 +253,62 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
 .autocomplete-item small { color: #94a3b8; }
 .autocomplete-item:hover small { color: #e2e8f0; }
 
+/* ============================================================
+   MODE CLAIR (LIGHT THEME OVERRIDES)
+   ============================================================ */
+body.light-mode {
+    background-color: #f1f5f9 !important; /* Gris très clair fond */
+    color: #1e293b !important; /* Texte foncé */
+}
+
+/* Sidebar en blanc */
+body.light-mode .sidebar {
+    background-color: #ffffff !important;
+    border-right: 1px solid #cbd5e1 !important;
+    color: #334155 !important;
+}
+
+/* Titres sidebar */
+body.light-mode .sidebar-title {
+    color: #2563eb !important; /* Bleu foncé au lieu de cyan */
+}
+
+/* Inputs, Selects, Textarea */
+body.light-mode input,
+body.light-mode select,
+body.light-mode textarea,
+body.light-mode .form-group[style*="background"] { /* Cible les blocs grisés */
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+
+/* Labels */
+body.light-mode label {
+    color: #475569 !important;
+}
+
+/* Boutons */
+body.light-mode .btn-edit, 
+body.light-mode .btn-dice {
+    background-color: #e2e8f0 !important;
+    color: #334155 !important;
+    border-color: #94a3b8 !important;
+}
+
+/* Page Dossiers - Cartes */
+body.light-mode .card,
+body.light-mode .search-bar-container {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+}
+
+body.light-mode .card h3 {
+    color: #2563eb !important;
+}
+
+body.light-mode #p-name,
+body.light-mode strong {
+    color: #000000 !important;
+}
