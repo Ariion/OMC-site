@@ -168,23 +168,25 @@ function setupPatientAutocomplete(config) {
 }
 
 
-// AJOUTER UN EVENEMENT DANS L'HISTORIQUE DU PATIENT
-function ajouterEvenementPatient(nomPatient, typeEvent, details) {
+// AJOUTER UN EVENEMENT (AVEC URL D'IMAGE OPTIONNELLE)
+function ajouterEvenementPatient(nomPatient, typeEvent, details, urlImage = null) {
     let db = getPatientsDB();
-    const index = db.findIndex(p => p.nom.toLowerCase() === nomPatient.toLowerCase());
+    // On nettoie le nom pour éviter les problèmes d'espaces/majuscules
+    const index = db.findIndex(p => p.nom.trim().toLowerCase() === nomPatient.trim().toLowerCase());
 
     if (index >= 0) {
-        // Si le patient n'a pas encore d'historique, on crée le tableau
         if (!db[index].historique) db[index].historique = [];
 
-        // On ajoute l'événement en haut de la liste (le plus récent d'abord)
         db[index].historique.unshift({
             date: new Date().toISOString(),
-            type: typeEvent, // "Ordonnance", "Labo", "Constat"
-            details: details
+            type: typeEvent,
+            details: details,
+            url: urlImage // NOUVEAU : On stocke l'URL ImgBB
         });
 
         localStorage.setItem(DB_KEY, JSON.stringify(db));
-        console.log(`Événement ${typeEvent} ajouté pour ${nomPatient}`);
+        console.log(`✅ Événement ${typeEvent} ajouté pour ${nomPatient}`);
+    } else {
+        console.warn(`Patient ${nomPatient} non trouvé dans la base.`);
     }
 }
