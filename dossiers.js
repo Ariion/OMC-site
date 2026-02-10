@@ -70,21 +70,31 @@ function sauvegarderEdition() {
 
 function creerPatient() {
     const nom = document.getElementById('new-nom').value;
-    if (!nom) { alert("Nom obligatoire !"); return; }
+    const notes = document.getElementById('new-notes').value; // On récupère les notes
+    
+    if (!nom) { 
+        alert("Le nom est obligatoire !"); 
+        return; 
+    }
     
     const newP = {
         nom: nom,
         naissance: document.getElementById('new-ddn').value,
         groupe: document.getElementById('new-groupe').value,
         job: document.getElementById('new-job').value,
-        notes: "",
+        notes: notes, // Enregistrement des notes
         dateCreation: new Date().toISOString()
     };
+
     savePatientToDB(newP);
     chargerPatients();
     updateStats();
-    // Reset
+    
+    // Reset du formulaire de création
     document.getElementById('new-nom').value = "";
+    document.getElementById('new-ddn').value = "";
+    document.getElementById('new-job').value = "";
+    document.getElementById('new-notes').value = "";
 }
 
 function supprimerPatient() {
