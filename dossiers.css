@@ -1,0 +1,141 @@
+/* --- CONFIG GLOBALE --- */
+.labo-body {
+    background-color: #0d1117;
+    height: 100vh;
+    display: flex;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: #e2e8f0;
+    overflow: hidden;
+}
+
+/* SIDEBAR SPECIFIQUE */
+.sidebar {
+    width: 300px;
+    background: #0a1324;
+    border-right: 1px solid #1e293b;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.sidebar-title { color: #64ffda; text-align: center; margin-bottom: 5px; font-size: 18px; }
+.stats-box { background: #162032; padding: 15px; border-radius: 8px; border: 1px solid #334155; font-size: 12px; }
+.stats-box div { display: flex; justify-content: space-between; margin-bottom: 5px; color: #94a3b8; }
+.stats-box span { color: white; font-weight: bold; }
+.btn-theme-mini { background: #1e293b; border: 1px solid #334155; color: white; border-radius: 4px; cursor: pointer; padding: 5px 10px; }
+.btn-new-patient { width: 100%; background: #2563eb; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.btn-new-patient:hover { background: #1d4ed8; }
+
+/* --- MAIN DASHBOARD --- */
+.dashboard-area {
+    flex: 1;
+    background: #f1f5f9; /* Fond clair pour le bureau */
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+/* BARRE RECHERCHE */
+.search-header { position: relative; margin-bottom: 30px; }
+.search-bar-container {
+    display: flex; align-items: center;
+    background: white; border: 1px solid #cbd5e1;
+    padding: 15px 20px; border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+.search-icon { font-size: 20px; margin-right: 15px; opacity: 0.5; }
+#searchInput {
+    border: none; outline: none; font-size: 16px; width: 100%; color: #0f172a; font-weight: 600;
+}
+.search-dropdown {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: white; border: 1px solid #cbd5e1;
+    border-radius: 0 0 12px 12px; margin-top: 5px;
+    display: none; z-index: 100; box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
+.search-result-item {
+    padding: 12px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; color: #0f172a; display: flex; justify-content: space-between;
+}
+.search-result-item:hover { background: #f8fafc; }
+
+/* GRID LAYOUT */
+.folder-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr; /* Identité fixe, Historique flexible */
+    gap: 25px;
+    height: 100%;
+}
+
+/* CARTES GÉNÉRALES */
+.card {
+    background: white; border: 1px solid #e2e8f0;
+    border-radius: 12px; padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    margin-bottom: 20px; color: #0f172a;
+}
+.card h3 { font-size: 12px; color: #64748b; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+
+/* IDENTITÉ */
+.id-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+.avatar-placeholder {
+    width: 60px; height: 60px; background: #0f172a; color: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: bold;
+}
+#p-name { margin: 0; font-size: 18px; font-weight: 800; color: #0f172a; }
+.badge-role { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+
+.detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; border-bottom: 1px dashed #f1f5f9; padding-bottom: 5px; }
+.detail-row span { color: #64748b; }
+.blood-type { color: #dc2626; background: #fef2f2; padding: 2px 6px; border-radius: 4px; }
+
+textarea {
+    width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;
+    font-size: 12px; color: #334155; resize: none; background: #f8fafc;
+    height: 60px;
+}
+.alerts-card textarea { border-left: 3px solid #ef4444; background: #fef2f2; color: #b91c1c; }
+.notes-card textarea { border-left: 3px solid #f59e0b; background: #fffbeb; color: #92400e; }
+
+/* ACTIONS RAPIDES */
+.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+.action-btn {
+    background: white; border: 1px solid #e2e8f0; padding: 15px;
+    border-radius: 12px; cursor: pointer; text-align: center;
+    font-size: 12px; font-weight: bold; color: #0f172a;
+    transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.action-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #3b82f6; color: #3b82f6; }
+.action-btn .icon { font-size: 24px; }
+
+/* HISTORIQUE (TIMELINE) */
+.history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.btn-filter { background: transparent; border: 1px solid #e2e8f0; padding: 5px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; color: #64748b; }
+
+.timeline { display: flex; flex-direction: column; gap: 15px; }
+.timeline-item {
+    display: flex; align-items: center; gap: 20px;
+    padding: 15px; border-radius: 8px; background: #f8fafc;
+    border-left: 4px solid #cbd5e1; transition: 0.2s;
+}
+.timeline-item:hover { background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+
+.item-emergency { border-left-color: #ef4444; } /* Rouge pour urgences */
+.item-labo { border-left-color: #3b82f6; } /* Bleu pour labo */
+.item-admin { border-left-color: #64748b; } /* Gris pour admin */
+
+.tl-date { font-size: 11px; font-weight: bold; color: #64748b; width: 70px; text-align: center; }
+.tl-content { flex: 1; }
+.tl-content strong { display: block; font-size: 13px; color: #0f172a; }
+.tl-content p { margin: 2px 0; font-size: 12px; color: #475569; }
+.tl-content small { font-size: 10px; color: #94a3b8; }
+
+.btn-see { background: transparent; border: 1px solid #cbd5e1; padding: 5px 10px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; color: #0f172a; }
+.btn-see:hover { background: #0f172a; color: white; }
+
+/* EMPTY STATE */
+.empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; color: #94a3b8; text-align: center;
+}
+.empty-icon { font-size: 60px; margin-bottom: 20px; opacity: 0.5; }
