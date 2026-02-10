@@ -29,10 +29,18 @@
 .dashboard-area {
     flex-grow: 1;
     background-color: #0f172a;
-    padding: 30px;
+    /* HAUT/BAS = 40px, GAUCHE/DROITE = 100px (C'est ça qui décolle du bord) */
+    padding: 40px 100px; 
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+}
+
+/* Si l'écran est petit, on réduit un peu les marges pour pas que ça écrase tout */
+@media (max-width: 1200px) {
+    .dashboard-area {
+        padding: 40px 40px;
+    }
 }
 
 /* --- BARRE DE RECHERCHE (Style Sombre) --- */
@@ -285,12 +293,11 @@ textarea {
     margin-top: 25px;
     display: flex;
     gap: 10px;
-    justify-content: flex-end; /* Aligne les boutons à droite */
+    justify-content: flex-end; /* Aligne à droite */
     align-items: center;
 }
-
 .btn-action {
-    padding: 10px 15px;
+    padding: 10px 20px; /* Un peu plus large */
     border: none;
     border-radius: 4px;
     font-weight: bold;
@@ -298,37 +305,22 @@ textarea {
     font-size: 11px;
     text-transform: uppercase;
     transition: background-color 0.2s ease, transform 0.1s ease;
+    color: white; /* Force le texte en blanc */
 }
 
 .btn-action:active {
     transform: scale(0.98);
 }
 
-/* Bouton VALIDATION (Bleu) */
-.btn-save {
-    background: #3b82f6;
-    color: white;
-}
-.btn-save:hover {
-    background: #2563eb;
-}
+/* VERT (Enregistrer) */
+.btn-save { background: #10b981; }
+.btn-save:hover { background: #059669; }
 
-/* Bouton ANNULATION / FERMER (Gris foncé) */
-.btn-cancel {
-    background: #334155;
-    color: #cbd5e1;
-    border: 1px solid #475569;
-}
-.btn-cancel:hover {
-    background: #475569;
-    color: white;
-}
+/* GRIS (Annuler) */
+.btn-cancel { background: #334155; color: #cbd5e1; border: 1px solid #475569; }
+.btn-cancel:hover { background: #475569; color: white; }
 
-/* Bouton SUPPRESSION (Rouge) */
-.btn-delete {
-    background: #ef4444;
-    color: white;
-}
-.btn-delete:hover {
-    background: #dc2626;
+/* ROUGE (Supprimer) */
+.btn-delete { background: #ef4444; }
+.btn-delete:hover { background: #dc2626; }
 }
