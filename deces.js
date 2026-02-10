@@ -229,3 +229,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Premier rendu du QR Code
     updateQR();
 });
+
+
+
+// --- AUTO-REMPLISSAGE PATIENT ---
+document.addEventListener('DOMContentLoaded', () => {
+    const savedPatient = localStorage.getItem('currentPatient');
+    
+    if (savedPatient) {
+        const p = JSON.parse(savedPatient);
+        
+        // Remplissage du Nom
+        if(document.getElementById('defuntName')) {
+            document.getElementById('defuntName').value = p.nom;
+            // Met à jour la prévisualisation si la fonction existe
+            if(typeof updatePreview === 'function') updatePreview();
+        }
+        
+        // Remplissage Date Naissance
+        if(document.getElementById('defuntBirth')) {
+            document.getElementById('defuntBirth').value = p.naissance;
+            if(typeof updatePreview === 'function') updatePreview();
+        }
+        
+        // Remplissage Job/Métier (si tu as ce champ dans décès)
+        if(document.getElementById('defuntJob') && p.job) {
+            document.getElementById('defuntJob').value = p.job;
+        }
+    }
+});
