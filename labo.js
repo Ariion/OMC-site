@@ -1,14 +1,11 @@
 /* ============================================================
-   LABORATOIRE - VERSION FINALE (FIREBASE + MODULES)
+   LABORATOIRE - VERSION FINALE (CORRIGÉE)
    ============================================================ */
-
-// 1. IMPORTS
-import { setupPatientAutocomplete, ajouterEvenementPatient } from "./global.js";
 
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 
 // ==========================================
-// 2. BASE DE DONNÉES MÉDICALE (CONSTANTES)
+// 1. BASE DE DONNÉES MÉDICALE
 // ==========================================
 const database = {
     "HÉMATOLOGIE (SANG)": [
@@ -73,27 +70,29 @@ const database = {
 };
 
 // ==========================================
-// 3. INITIALISATION (DOMContentLoaded)
+// 2. INITIALISATION
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
     initInterface();
-    window.setAutoDate(); // On appelle la version window
-    window.determinerGroupeAleatoire();
+    if(window.setAutoDate) window.setAutoDate();
+    if(window.determinerGroupeAleatoire) window.determinerGroupeAleatoire();
     
     // --- AUTOCOMPLETE CENTRALISÉ ---
-    // On utilise la fonction importée de global.js
-    setupPatientAutocomplete({
-        nameId: 'patientName',
-        birthId: 'patientBirth',
-        bloodId: 'patientBlood', 
-        callback: function(p) {
-            // Mise à jour visuelle quand on clique sur un patient
-            if(window.up) window.up('d-nom', p.nom);
-            if(window.upDate) window.upDate('d-ddn', p.naissance);
-            if(p.groupe && window.up) window.up('d-groupe', p.groupe);
-        }
-    });
+    // On appelle directement la fonction globale
+    if(window.setupPatientAutocomplete) {
+        window.setupPatientAutocomplete({
+            nameId: 'patientName',
+            birthId: 'patientBirth',
+            bloodId: 'patientBlood', 
+            callback: function(p) {
+                // Mise à jour visuelle quand on clique sur un patient
+                if(window.up) window.up('d-nom', p.nom);
+                if(window.upDate) window.upDate('d-ddn', p.naissance);
+                if(p.groupe && window.up) window.up('d-groupe', p.groupe);
+            }
+        });
+    }
 
     updateLiveQRCode();
 });
@@ -149,30 +148,10 @@ function initInterface() {
 }
 
 // ==========================================
-// 4. FONCTIONS PUBLIQUES (ATTACHÉES À WINDOW)
+// 3. FONCTIONS PUBLIQUES (WINDOW)
 // ==========================================
-// C'est ICI que ça corrige tes problèmes de clics
 
-// Mise à jour texte + QR Code
-window.up = function(id, val) {
-    const el = document.getElementById(id);
-    if (el) {
-        el.innerText = val || "...";
-        if(id === 'd-sig' && !val) el.innerText = "DOCTEUR";
-        updateLiveQRCode(); // Important pour le QR Code du labo
-    }
-}
-
-// Mise à jour date + QR Code
-window.upDate = function(id, val) {
-    if (!val) return;
-    const [y, m, d] = val.split('-');
-    const el = document.getElementById(id);
-    if (el) el.innerText = `${d}/${m}/${y}`;
-    updateLiveQRCode();
-}
-
-// Mise à jour des résultats d'analyse (Couleurs + Affichage)
+// Mise à jour des résultats (Couleurs + Affichage)
 window.res = function(id, val, cat) {
     const cleanCatId = cat.replace(/\s+/g, '-').replace(/[()]/g, '');
     const row = document.getElementById('row-' + id);
@@ -224,7 +203,7 @@ window.determinerGroupeAleatoire = function() {
     const select = document.getElementById('patientBlood');
     if(select) {
         select.value = resultat;
-        window.up('d-groupe', resultat);
+        if(window.up) window.up('d-groupe', resultat);
     }
 }
 
@@ -389,8 +368,8 @@ window.genererImage = async function() {
             const nomPatient = document.getElementById('patientName').value;
 
             // SAUVEGARDE HISTORIQUE (Firebase)
-            if(nomPatient) {
-                ajouterEvenementPatient(nomPatient, "Laboratoire", "Bilan Biologique", imgUrl);
+            if(nomPatient && window.ajouterEvenementPatient) {
+                window.ajouterEvenementPatient(nomPatient, "Laboratoire", "Bilan Biologique", imgUrl);
             }
 
             document.getElementById('direct-link').value = result.data.url;
@@ -419,6 +398,7 @@ window.envoyerDiscord = async function() {
 
     try {
         const canvas = await html2canvas(doc, { scale: 2, useCORS: true });
+        
         btn.innerText = "ENVOI...";
 
         canvas.toBlob(async (blob) => {
@@ -436,8 +416,8 @@ window.envoyerDiscord = async function() {
             const response = await fetch(url + "?wait=true", { method: 'POST', body: formData });
             
             if(response.ok) { 
-                if(nom !== "..." && nom !== "Inconnu") {
-                    ajouterEvenementPatient(nom, "Laboratoire", "Envoyé sur Discord (Pas de lien image)");
+                if(nom !== "..." && nom !== "Inconnu" && window.ajouterEvenementPatient) {
+                    window.ajouterEvenementPatient(nom, "Laboratoire", "Envoyé sur Discord (Pas de lien image)");
                 }
                 alert("✅ Rapport Labo envoyé !"); 
                 btn.innerText = "ENVOYÉ"; 
@@ -454,12 +434,6 @@ window.envoyerDiscord = async function() {
     } finally {
         doc.classList.remove('mode-capture');
     }
-}
-
-// Fonction utilitaire pour sauvegarder si on n'a pas utilisé l'autocomplete
-window.sauvegarderPatientDepuisFormulaire = function() {
-    // Cette fonction est optionnelle, l'historique gère déjà l'ajout via le nom.
-    // On la garde vide pour éviter les erreurs "function not found" dans le HTML onclick
 }
 
 window.copyLink = function() {
