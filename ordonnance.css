@@ -76,7 +76,6 @@
 .row-group { display: flex; gap: 10px; }
 .btn-add { background: var(--omc-cyan); color: var(--omc-dark); border: none; padding: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 4px; }
 .btn-clear { background: #ef4444; color: white; border: none; padding: 8px; width: 30%; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 4px; }
-.btn-image { background: #ffffff !important; color: #000000 !important; border: 1px solid #ccc !important; text-transform: uppercase; font-size: 11px; padding: 10px !important; cursor: pointer; width: 100%; margin-top: 15px; }
 
 /* Popup */
 .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
@@ -112,4 +111,45 @@
 /* CLASSE SPÉCIALE : Cache les croix pendant la photo */
 .mode-capture .del-btn {
     display: none !important;
+}
+
+/* --- BOUTONS D'ACTION (Style "Constat") --- */
+
+/* Conteneur pour l'espacement entre les boutons */
+.actions-group {
+    margin-top: 20px; /* Un peu d'espace au-dessus */
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espace entre les deux boutons */
+}
+
+/* Style commun aux deux boutons */
+.btn-image, .btn-discord {
+    width: 100%;
+    padding: 12px;
+    border: none; /* Important : enlève le style "moche" par défaut */
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 11px;
+    transition: background-color 0.2s ease; /* Petite transition fluide au survol */
+}
+
+/* Bouton Blanc (Générer l'image) */
+.btn-image {
+    background: #ffffff;
+    color: #0a1324;
+}
+.btn-image:hover {
+    background: #f1f5f9; /* Gris très clair au survol */
+}
+
+/* Bouton Bleu (Discord) */
+.btn-discord {
+    background: #5865f2; /* Bleu Discord officiel */
+    color: #ffffff;
+}
+.btn-discord:hover {
+    background: #4752c4; /* Bleu un peu plus foncé au survol */
 }
