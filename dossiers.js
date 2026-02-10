@@ -72,14 +72,25 @@ function ouvrirPanelEdition(p) {
     // Note: Il faut que la div id="edit-historique" existe dans ton HTML (voir instruction précédente)
     const histDiv = document.getElementById('edit-historique');
     if(histDiv) {
-        histDiv.innerHTML = ""; // On vide avant de remplir
+        histDiv.innerHTML = ""; 
         
         if (p.historique && p.historique.length > 0) {
             p.historique.forEach(h => {
                 const dateH = new Date(h.date).toLocaleDateString('fr-FR');
+                
+                // On prépare le bouton VOIR si une URL existe
+                let btnVoir = "";
+                if (h.url) {
+                    // On utilise onclick avec des guillemets simples échappés pour l'URL
+                    btnVoir = `<button onclick="voirDocument('${h.url}')" style="background: #3b82f6; border: none; color: white; border-radius: 3px; cursor: pointer; padding: 2px 6px; font-size: 10px; margin-left: 5px;">👁️ VOIR</button>`;
+                }
+
                 histDiv.innerHTML += `
                     <div style="font-size: 10px; margin-bottom: 8px; border-left: 2px solid #3b82f6; padding-left: 8px;">
-                        <span style="color: #94a3b8;">${dateH}</span> - <strong style="color:white;">${h.type}</strong><br>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="color: #94a3b8;">${dateH} - <strong style="color:white;">${h.type}</strong></span>
+                            ${btnVoir}
+                        </div>
                         <span style="color: #cbd5e1; font-style: italic;">${h.details}</span>
                     </div>
                 `;
@@ -91,6 +102,30 @@ function ouvrirPanelEdition(p) {
     
     // Scroll en haut de la sidebar pour bien voir le dossier
     document.querySelector('.sidebar').scrollTop = 0;
+}
+
+// --- NOUVELLES FONCTIONS POUR LE VISUALISEUR ---
+
+function voirDocument(url) {
+    const modal = document.getElementById('modal-document');
+    const img = document.getElementById('doc-viewer-img');
+    const input = document.getElementById('doc-viewer-url');
+
+    img.src = url;
+    input.value = url;
+    modal.style.display = 'flex';
+}
+
+function fermerVisualiseur() {
+    document.getElementById('modal-document').style.display = 'none';
+}
+
+function copierLienDoc() {
+    const copyText = document.getElementById("doc-viewer-url");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); 
+    document.execCommand("copy");
+    alert("Lien copié ! Vous pouvez le coller dans le jeu.");
 }
 
 // 3. FERMETURE DU DOSSIER
