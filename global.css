@@ -258,19 +258,21 @@ input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border
    ============================================================ */
 
 /* 1. PAR DÉFAUT (Mode Sombre) */
-.preview-area {
+/* On cible .preview-area (Labo/Constat...) ET .dashboard-area (Dossiers) */
+.preview-area, .dashboard-area {
     background-color: #0f172a !important; /* Bleu nuit sombre par défaut */
     transition: background-color 0.3s ease;
 }
 
 /* 2. MODE CLAIR (Activé par le bouton) */
-/* On cible UNIQUEMENT la zone de droite (.preview-area) */
-body.light-mode .preview-area {
+/* On change le fond des deux types de zones */
+body.light-mode .preview-area,
+body.light-mode .dashboard-area {
     background-color: #d1d5db !important; /* Gris clair bureau */
 }
 
 /* 3. PROTECTION ABSOLUE DE LA SIDEBAR */
-/* On s'assure que rien ne change à gauche, peu importe le mode */
+/* On s'assure que rien ne change à gauche */
 body.light-mode .sidebar,
 body.light-mode .sidebar input,
 body.light-mode .sidebar select,
@@ -278,7 +280,5 @@ body.light-mode .sidebar textarea,
 body.light-mode .sidebar button:not(#theme-btn-toggle), 
 body.light-mode .sidebar label,
 body.light-mode .sidebar h1 {
-    /* On ne change RIEN ici. 
-       Les couleurs restent celles définies dans tes fichiers .css spécifiques (labo.css, etc.)
-       qui sont déjà en mode sombre par défaut. */
+    /* On ne touche à RIEN ici pour garder le menu sombre */
 }
