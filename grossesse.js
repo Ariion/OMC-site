@@ -15,6 +15,14 @@ window.onload = () => {
     document.getElementById('examDate').valueAsDate = new Date();
     updateHealthColor();
     toggleSections();
+
+    const savedPatient = localStorage.getItem('currentPatient');
+    if (savedPatient) {
+        const p = JSON.parse(savedPatient);
+        // Constat utilise "patientId" pour le nom
+        if(document.getElementById('patientId')) document.getElementById('patientId').value = p.nom;
+        if(document.getElementById('patientBirth')) document.getElementById('patientBirth').value = p.naissance;
+    }
 };
 
 let currentSA = 0;
