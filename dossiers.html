@@ -13,20 +13,20 @@
         <aside class="sidebar">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
                 <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
-                <button onclick="toggleTheme()" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; flex-shrink: 0;">
-                    🌓 <span id="theme-text">Mode Clair</span>
+                <button onclick="toggleTheme()" id="theme-btn-toggle" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px;">
+                    🌓 <span id="theme-text">Passer mode Clair</span>
                 </button>
             </div>
 
-            <h1 class="sidebar-title">ARCHIVES</h1>
+            <h1 class="sidebar-title" style="color: #64ffda;">ARCHIVES PATIENTS</h1>
 
-            <div id="panel-edition" class="sidebar-panel" style="display: none; border-color: #3b82f6;">
+            <div id="panel-edition" class="sidebar-panel" style="display: none; border-color: #3b82f6; margin-bottom: 20px;">
                 <h3 style="color: #3b82f6;">📝 DOSSIER PATIENT</h3>
                 <input type="hidden" id="edit-original-name">
                 
                 <div class="form-group">
                     <label>NOM & PRÉNOM</label>
-                    <input type="text" id="edit-nom" readonly style="opacity: 0.6; cursor: not-allowed;">
+                    <input type="text" id="edit-nom" readonly style="opacity: 0.6;">
                 </div>
                 <div class="form-group">
                     <label>DATE DE NAISSANCE</label>
@@ -52,33 +52,53 @@
                     <textarea id="edit-notes" rows="3"></textarea>
                 </div>
                 <div class="actions-group-sidebar">
-                    <button onclick="supprimerPatient()" class="btn-action btn-delete" title="Supprimer">🗑️</button>
+                    <button onclick="supprimerPatient()" class="btn-action btn-delete">🗑️</button>
                     <button onclick="fermerTout()" class="btn-action btn-cancel">FERMER</button>
-                    <button onclick="sauvegarderEdition()" class="btn-action btn-save" style="background: #3b82f6;">OK</button>
+                    <button onclick="sauvegarderEdition()" class="btn-action btn-save" style="background: #3b82f6;">SAUVEGARDER</button>
                 </div>
             </div>
 
-            <div id="sidebar-stats" class="stats-box" style="margin-bottom: 20px;">
-                <div class="stat-row"><span>Total Dossiers</span><span id="stat-total">0</span></div>
-                <div class="stat-row"><span>Dernier</span><span id="stat-last">-</span></div>
+            <div id="sidebar-stats" class="stats-box" style="margin-bottom: 25px;">
+                <div class="stat-row">
+                    <span>Total Dossiers</span>
+                    <span id="stat-total" style="color: white; font-weight: bold;">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Dernier ajout</span>
+                    <span id="stat-last" style="color: #64ffda;">-</span>
+                </div>
             </div>
 
             <div id="panel-creation" class="sidebar-panel" style="margin-top: auto; border-color: #10b981;">
                 <h3 style="color: #10b981;">🆕 NOUVEAU PATIENT</h3>
                 <div class="form-group">
-                    <input type="text" id="new-nom" placeholder="Nom & Prénom">
+                    <label>NOM & PRÉNOM</label>
+                    <input type="text" id="new-nom" placeholder="Garret Freeman">
                 </div>
                 <div class="form-group">
+                    <label>DATE DE NAISSANCE</label>
                     <input type="date" id="new-ddn">
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <select id="new-groupe" style="flex:1;">
-                        <option value="A+">A+</option><option value="O+">O+</option>
-                        <option value="B+">B+</option><option value="AB+">AB+</option>
-                    </select>
-                    <input type="text" id="new-job" placeholder="Métier" style="flex:1;">
+                    <div class="form-group" style="flex:1;">
+                        <label>GROUPE</label>
+                        <select id="new-groupe">
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>MÉTIER</label>
+                        <input type="text" id="new-job" placeholder="LSPD">
+                    </div>
                 </div>
-                <button onclick="creerPatient()" class="btn-action btn-save" style="width: 100%; margin-top: 10px;">➕ ENREGISTRER</button>
+                <div class="form-group">
+                    <label>NOTES & ALLERGIES</label>
+                    <textarea id="new-notes" rows="2" placeholder="Allergies, antécédents..."></textarea>
+                </div>
+                <button onclick="creerPatient()" class="btn-action btn-save" style="width: 100%; margin-top: 5px;">➕ ENREGISTRER</button>
             </div>
         </aside>
 
@@ -86,7 +106,7 @@
             <div class="search-header">
                 <div class="search-wrapper">
                     <span class="search-icon">🔍</span>
-                    <input type="text" id="search-input" placeholder="Rechercher un patient..." oninput="filtrerPatients()">
+                    <input type="text" id="search-input" placeholder="Rechercher un patient (Nom, Prénom...)" oninput="filtrerPatients()">
                 </div>
             </div>
 
