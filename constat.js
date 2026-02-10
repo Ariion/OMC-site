@@ -63,21 +63,18 @@ window.onload = () => {
     initTraitements();
     
     const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    
-    window.sessionRef = `#${day}${month}${hours}${minutes}`;
+    window.sessionRef = `#${String(now.getDate()).padStart(2,'0')}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}`;
     document.getElementById('constatDate').valueAsDate = now;
 
-    const savedPatient = localStorage.getItem('currentPatient');
-    if (savedPatient) {
-        const p = JSON.parse(savedPatient);
-        // Constat utilise "patientId" pour le nom
-        if(document.getElementById('patientId')) document.getElementById('patientId').value = p.nom;
-        if(document.getElementById('patientBirth')) document.getElementById('patientBirth').value = p.naissance;
-    }
+    // --- AUTOCOMPLETE CENTRALISÉ ---
+    setupPatientAutocomplete({
+        nameId: 'patientName', // Nouvel ID standard
+        birthId: 'patientBirth',
+        callback: function(p) {
+            updateReport(); // Force la mise à jour visuelle
+        }
+    });
+
     updateReport();
 };
 
@@ -277,8 +274,8 @@ function initTraitements() {
 }
 
 function updateReport() {
-    // 1. Récupération des Inputs
-    const patientVal = document.getElementById('patientId').value || "...";
+    // 1. Récupération des Inputs (Avec ID Corrigé)
+    const patientVal = document.getElementById('patientName').value || "...";
     const birthInput = document.getElementById('patientBirth').value;
     const imagingVal = document.getElementById('imagingDoc').value || "...";
     const dateInput = document.getElementById('constatDate').value;
@@ -420,7 +417,7 @@ async function envoyerDiscord() {
         const canvas = await html2canvas(document.getElementById('capture-zone'), { scale: 2, useCORS: true });
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
-            const nom = document.getElementById('patientId').value || "Inconnu";
+            const nom = document.getElementById('patientName').value || "Inconnu";
             formData.append("payload_json", JSON.stringify({
                 thread_name: `Imagerie - ${nom} - (${window.sessionRef})`,
                 content: `🚑 **Nouveau Constat Lésionnel** : ${nom}`
