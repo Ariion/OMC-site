@@ -297,22 +297,24 @@ function updateQR() {
 // 7. EXPORT
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 
+// 7. EXPORT SIMPLE ET EFFICACE
+const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
+
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
+    
+    window.scrollTo(0,0);
     btn.innerText = "GÉNÉRATION...";
     btn.disabled = true;
     doc.classList.add('mode-capture');
-    
-    // Fix anti-crop
-    const originalHeight = doc.style.height;
-    doc.style.height = (doc.scrollHeight + 50) + "px";
 
     try {
+        // Capture simple, sans forcer la hauteur
         const canvas = await html2canvas(doc, {
-            scale: 2, useCORS: true, backgroundColor: "#ffffff",
-            height: doc.scrollHeight + 50, 
-            windowHeight: doc.scrollHeight + 50
+            scale: 2, 
+            useCORS: true, 
+            backgroundColor: "#ffffff"
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
@@ -327,9 +329,9 @@ async function genererImage() {
             document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
         }
-    } catch (e) { alert("Erreur génération image"); } 
-    finally {
-        doc.style.height = originalHeight;
+    } catch (e) { 
+        alert("Erreur génération image"); 
+    } finally {
         doc.classList.remove('mode-capture');
         btn.innerText = "🖼️ GÉNÉRER L'ORDONNANCE";
         btn.disabled = false;
@@ -341,26 +343,22 @@ async function envoyerDiscord() {
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
 
+    window.scrollTo(0,0);
     btn.disabled = true;
     btn.innerText = "CAPTURE...";
     doc.classList.add('mode-capture');
-    
-    // Fix anti-crop
-    const originalHeight = doc.style.height;
-    doc.style.height = (doc.scrollHeight + 50) + "px";
 
     try {
+        // Capture simple
         const canvas = await html2canvas(doc, { 
             scale: 2, 
-            useCORS: true,
-            height: doc.scrollHeight + 50,
-            windowHeight: doc.scrollHeight + 50
+            useCORS: true
         });
 
         doc.classList.remove('mode-capture');
         btn.innerText = "ENVOI...";
 
-       canvas.toBlob(async (blob) => {
+        canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const nom = document.getElementById('patientName').value || "Inconnu";
             const datePost = new Date().toLocaleDateString('fr-FR');
@@ -391,8 +389,6 @@ async function envoyerDiscord() {
         doc.classList.remove('mode-capture');
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
-    } finally {
-        doc.style.height = originalHeight;
     }
 }
 
