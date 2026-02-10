@@ -368,7 +368,7 @@ async function genererImage() {
     btn.innerText = "GÉNÉRATION...";
     btn.disabled = true;
     
-    // --- FIX CROP ---
+    // --- FIX ANTI-CROP : Ajout de hauteur temporaire ---
     const originalHeight = doc.style.height;
     doc.style.height = (doc.scrollHeight + 50) + "px";
 
@@ -398,6 +398,7 @@ async function genererImage() {
     } catch (e) {
         alert("Erreur lors de la génération.");
     } finally {
+        // Restauration de la hauteur
         doc.style.height = originalHeight;
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
@@ -413,7 +414,7 @@ async function envoyerDiscord() {
     btn.disabled = true;
     btn.innerText = "CAPTURE...";
     
-    // --- FIX CROP ---
+    // --- FIX ANTI-CROP ---
     const originalHeight = doc.style.height;
     doc.style.height = (doc.scrollHeight + 50) + "px";
 
