@@ -1,263 +1,321 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMC — Dossier Obstétrique</title>
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="constat.css">
-    <link rel="stylesheet" href="grossesse.css">
-    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
-</head>
-<body class="labo-body">
-    <div class="interface-container">
+const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";  
+
+const ECHO_IMAGES = {
+    sac: "assets/echo_sac.jpg",
+    t1: "assets/echo_t1.jpg",
+    t2: "assets/echo_t1.jpg",
+    t3: "assets/echo_t3_3d.jpg",
+    twins: "assets/echo_twins.jpg",
+    col: "https://placehold.co/600x400/000000/FFFFFF?text=MESURE+COL"
+};
+
+// --- INITIALISATION ---
+window.onload = () => {
+    // 1. Date du jour
+    document.getElementById('examDate').valueAsDate = new Date();
+    
+    // 2. Initialisation interface
+    updateHealthColor();
+    toggleSections();
+
+    // 3. AUTOCOMPLETE (Liaison Base de Données)
+    setupPatientAutocomplete({
+        nameId: 'patientName',
+        birthId: 'patientBirth',
+        bloodId: 'patientBlood', 
+        callback: function(p) {
+            // Important : Force la mise à jour visuelle après avoir cliqué sur un nom
+            updateReport(); 
+            // Si on a une date de naissance, on peut recalculer (optionnel)
+            calculerTerme();
+        }
+    });
+    
+    // 4. Premier appel pour vider/initialiser les champs
+    updateReport();
+};
+
+let currentSA = 0;
+let examTypeLabel = "Standard";
+
+function toggleSections() {
+    const showBio = document.getElementById('toggleBio').checked;
+    const showEcho = document.getElementById('toggleEcho').checked;
+    const showOrdo = document.getElementById('toggleOrdo').checked;
+
+    document.getElementById('section-bio').style.display = showBio ? 'block' : 'none';
+    document.getElementById('section-echo').style.display = showEcho ? 'block' : 'none';
+    document.getElementById('section-ordo').style.display = showOrdo ? 'block' : 'none';
+    calculerTerme();
+}
+
+function updateHealthColor() {
+    const val = document.getElementById('santeMaman').value;
+    const txt = document.getElementById('healthValue');
+    txt.innerText = val + "%";
+    if(val > 75) txt.style.color = "#4ade80";
+    else if(val > 40) txt.style.color = "#facc15";
+    else txt.style.color = "#ef4444";
+}
+
+// 1. CALCUL DU TERME ET LOGIQUE PRINCIPALE
+function calculerTerme() {
+    const debut = new Date(document.getElementById('dateDebut').value);
+    const today = new Date(document.getElementById('examDate').value);
+    
+    if (!isNaN(debut)) {
+        const diffTime = Math.abs(today - debut);
+        const daysIRL = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
         
-        <aside class="sidebar">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
-                <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
-            </div>
+        currentSA = Math.floor(daysIRL * 0.64);
+        const joursRestants = Math.floor((daysIRL * 0.64 - currentSA) * 7);
+
+        document.getElementById('display-sa').innerText = `${currentSA} SA + ${joursRestants}j`;
         
-            <h1 class="sidebar-title">SUIVI DE GROSSESSE</h1>
+        const dpa = new Date(debut);
+        dpa.setDate(dpa.getDate() + 64);
+        document.getElementById('display-dpa').innerText = dpa.toLocaleDateString('fr-FR');
 
-            <div class="form-group" style="background: #162032; padding: 10px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 15px;">
-                <label style="color: #64ffda;">CONTENU DU DOSSIER</label>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <label class="checkbox-item"><input type="checkbox" id="toggleBio" checked onchange="toggleSections()"> 🩸 Inclure Prise de Sang</label>
-                    <label class="checkbox-item"><input type="checkbox" id="toggleEcho" checked onchange="toggleSections()"> 🖥️ Inclure Échographie</label>
-                    <label class="checkbox-item"><input type="checkbox" id="toggleOrdo" checked onchange="toggleSections()"> 💊 Inclure Ordonnance</label>
-                </div>
-            </div>
+        // Alerte Dépassement
+        const banner = document.getElementById('banner-status');
+        if (currentSA >= 41) {
+            banner.classList.add('alert-term');
+            document.getElementById('display-sa').innerText += " (DÉPASSÉ)";
+        } else {
+            banner.classList.remove('alert-term');
+        }
 
-            <div class="form-group">
-                <label>PATIENTE</label>
-                <input id="patientName" type="text" placeholder="Nom Prénom" oninput="updateReport()">
-            </div>
-            
-            <div class="form-group-row">
-                <div class="form-group">
-                    <label>DATE NAISSANCE</label>
-                    <input id="patientBirth" type="date" oninput="updateReport()">
-                </div>
-                <div class="form-group">
-                    <label>GROUPE SANGUIN</label>
-                    <input id="patientBlood" type="text" placeholder="Ex: A+" oninput="updateReport()" style="text-align:center; font-weight:bold; color:#64ffda;">
-                </div>
-            </div>
+        // Type Examen Auto
+        const isCol = document.getElementById('measureCol').checked;
+        if (isCol) examTypeLabel = "Mesure du Col (Urgence)";
+        else if (currentSA < 11) examTypeLabel = "Échographie de Datation";
+        else if (currentSA >= 11 && currentSA < 14) examTypeLabel = "Échographie T1 (12 SA)";
+        else if (currentSA >= 14 && currentSA < 28) examTypeLabel = "Échographie Morphologique T2";
+        else examTypeLabel = "Échographie Croissance T3";
+        
+        document.getElementById('exam-type-auto').innerText = examTypeLabel;
 
-            <div class="form-group">
-                <label>DATE DU JOUR</label>
-                <input id="examDate" type="date" oninput="calculerTerme()">
-            </div>
+        genererTout();
+    }
+}
 
-            <hr style="border: 0; border-top: 1px solid #1e293b; margin: 15px 0;">
+function genererTout() {
+    const sante = parseInt(document.getElementById('santeMaman').value);
+    genererBiologieEvolutive(sante);
+    genererEchoLogic(sante);
+    genererOrdonnance(sante);
+    updateReport();
+}
 
-            <div class="form-group">
-                <label style="color: #64ffda;">DÉBUT DE GROSSESSE (DDR)</label>
-                <input id="dateDebut" type="date" onchange="calculerTerme()" style="border: 1px solid #64ffda;">
-            </div>
+// 2. BIOLOGIE ÉVOLUTIVE (HCG RÉALISTE)
+function genererBiologieEvolutive(sante) {
+    const tbody = document.getElementById('bio-tbody');
+    tbody.innerHTML = ""; 
+    const bloodGroup = document.getElementById('patientBlood').value || "Non renseigné";
 
-            <div class="form-group">
-                <label>OBSERVATIONS / ÉTAT GÉNÉRAL (Visible si rempli)</label>
-                <textarea id="obsHealth" rows="2" placeholder="Ex: Patiente fatiguée, nausées importantes..." oninput="updateReport()" style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
-            </div>
+    const addRow = (nom, res, unit, ref, isBad = false, comment = "") => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td><strong>${nom}</strong></td><td class="${isBad ? 'result-bad' : 'result-good'}">${res} ${unit}</td><td style="color:#64748b; font-size:10px;">${ref}</td><td style="font-style:italic;">${isBad ? '⚠️ ' + comment : 'Normal'}</td>`;
+        tbody.appendChild(row);
+    };
 
-            <div class="form-group" style="background: #162032; padding: 10px; border-radius: 6px; border: 1px solid #334155;">
-                <label>ÉTAT DE SANTÉ (IMPACT RÉSULTATS)</label>
-                <input type="range" id="santeMaman" min="0" max="100" value="100" oninput="updateHealthColor()" onchange="calculerTerme()" style="width: 100%; cursor: pointer;">
-                <div style="display: flex; justify-content: space-between; font-size: 10px; margin-top: 5px;">
-                    <span style="color: #ef4444;">Pathologique</span>
-                    <span id="healthValue" style="color: #64ffda; font-weight: bold;">Parfaite (100%)</span>
-                </div>
-            </div>
+    addRow("Groupe Sanguin / Rhésus", bloodGroup, "", "Info Patient");
 
-            <div class="form-group">
-                <label>SPÉCIFICITÉS</label>
-                <div class="checkbox-grid">
-                    <label class="checkbox-item"><input type="checkbox" id="isGemellaire" onchange="calculerTerme()"> 👶👶 Grossesse Gémellaire (Jumeaux)</label>
-                    <label class="checkbox-item"><input type="checkbox" id="measureCol" onchange="calculerTerme()"> 📏 Mesure du Col (Urgence)</label>
-                </div>
-            </div>
+    let hcg = 0; let normHcg = "";
+    if (currentSA <= 3) { hcg = rand(10, 50); normHcg = "10 - 50"; }
+    else if (currentSA <= 4) { hcg = rand(50, 500); normHcg = "50 - 500"; }
+    else if (currentSA <= 5) { hcg = rand(500, 5000); normHcg = "100 - 5000"; }
+    else if (currentSA <= 6) { hcg = rand(5000, 50000); normHcg = "1000 - 50000"; }
+    else if (currentSA <= 12) { hcg = rand(50000, 200000); normHcg = "Pic maximal (T1)"; }
+    else { hcg = rand(20000, 60000); normHcg = "Baisse physiologique T2/T3"; }
+    
+    if (currentSA > 0) addRow("Beta-hCG Plasmatique", formatNumber(hcg), "mIU/ml", normHcg);
 
-            <div class="form-group-row">
-                <div class="form-group" style="width:100%;">
-                    <label>SEXE FOETAL (VISUEL ÉCHO)</label>
-                    <select id="sexeFoetal" onchange="calculerTerme()" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px;">
-                        <option value="Indéterminé">Indéterminé / Trop tôt</option>
-                        <option value="Féminin">Féminin</option>
-                        <option value="Masculin">Masculin</option>
-                        <option value="Caché">Non visible</option>
-                    </select>
-                </div>
-            </div>
+    if (currentSA > 4 && currentSA <= 20) {
+        const toxo = sante < 30 ? "IgM POSITIF" : "Négatif";
+        addRow("Sérologie Toxoplasmose", toxo, "", "Négatif", toxo.includes("POSITIF"), "Infection active");
+        addRow("Sérologie Rubéole", "Immunisée", "", "Immunisée");
+    }
 
-            <div class="form-group">
-                <label>VITALITÉ</label>
-                <div class="checkbox-grid">
-                    <label class="checkbox-item"><input type="checkbox" id="activiteCardiaque" checked onchange="calculerTerme()"> Activité Cardiaque</label>
-                    <label class="checkbox-item"><input type="checkbox" id="mouvementsActifs" checked onchange="calculerTerme()"> Mouvements (MAF)</label>
-                </div>
-            </div>
+    if (currentSA > 14) {
+        let hemo = sante < 60 ? rand(95, 105) : rand(115, 130);
+        addRow("Hémoglobine (NFS)", hemo, "g/L", "> 110 g/L", hemo < 110, "Anémie gravidique");
+        
+        if (currentSA > 20) {
+            let glyc = sante < 40 ? "1.35" : "0.85";
+            addRow("Glycémie (HGPO)", glyc, "g/L", "< 0.92 g/L", parseFloat(glyc) > 0.92, "Diabète Gestationnel");
+        }
+    }
 
-             <div class="edit-btns-container">
-                <button class="btn-edit" onclick="calculerTerme()">🎲 RELANCER LES RÉSULTATS (RNG)</button>
-            </div>
+    if (currentSA >= 28) {
+        addRow("Plaquettes", rand(150, 400), "G/L", "150 - 400");
+        addRow("TP (Taux Prothrombine)", rand(80, 100), "%", "> 70%", false, "OK Anesthésie");
+        let prot = sante < 20 ? "0.45" : "0.10"; 
+        addRow("Protéinurie", prot, "g/24h", "< 0.30", parseFloat(prot) > 0.3, "Risque Pré-éclampsie");
+    }
+}
 
-            <div class="form-group" style="margin-top: 20px;">
-                <label>CONCLUSION</label>
-                <textarea id="conclusionInput" rows="4" oninput="updateReport()" style="width: 100%; background: #111b2d; border: 1px solid #334155; color: white; border-radius: 4px; padding: 10px; font-size: 11px; resize: none;"></textarea>
-            </div>
+// 3. ECHOGRAPHIE LOGIC
+function genererEchoLogic(sante) {
+    const sexe = document.getElementById('sexeFoetal').value;
+    const isGemellaire = document.getElementById('isGemellaire').checked;
+    const isCol = document.getElementById('measureCol').checked;
+    
+    let imgUrl = ECHO_IMAGES.sac;
+    if (isCol) imgUrl = ECHO_IMAGES.col;
+    else if (isGemellaire && ECHO_IMAGES.twins) imgUrl = ECHO_IMAGES.twins;
+    else if (currentSA >= 10 && currentSA < 14) imgUrl = ECHO_IMAGES.t1;
+    else if (currentSA >= 14 && currentSA < 28) imgUrl = ECHO_IMAGES.t2;
+    else if (currentSA >= 28) imgUrl = ECHO_IMAGES.t3;
+    
+    document.getElementById('echo-img-display').src = imgUrl;
+    document.getElementById('echo-label-img').innerText = isGemellaire ? "GÉMELLAIRE - " + examTypeLabel.toUpperCase() : examTypeLabel.toUpperCase();
 
-            <div class="form-group">
-                <label>PRATICIEN</label>
-                <input id="doctorSig" type="text" placeholder="Dr." oninput="updateReport()">
-            </div>
+    const list = document.getElementById('bio-list-content');
+    list.innerHTML = ""; 
 
-            <div class="actions-group">
-                <button class="btn-image" onclick="sauvegarderPatientDepuisFormulaire(); genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
-                <button class="btn-discord" onclick="sauvegarderPatientDepuisFormulaire(); envoyerDiscord()">Envoyer sur Discord</button>
-            </div>
-        </aside>
+    if (isCol) {
+        let col = sante < 50 ? rand(15, 25) : rand(30, 45);
+        list.innerHTML += `<li><span>Longueur Cervicale :</span> <strong>${col} mm</strong></li>`;
+        list.innerHTML += `<li><span>Orifice Interne :</span> <strong>${col < 25 ? "OUVERT" : "Fermé"}</strong></li>`;
+    } else {
+        const bip = currentSA > 12 ? (currentSA * 2.5) + rand(-3, 3) : 0;
+        const lf = currentSA > 12 ? (currentSA * 1.8) + rand(-2, 2) : 0;
+        const poids = currentSA > 12 ? (Math.pow(currentSA, 2.9) * 0.13) : 0;
 
-        <main class="preview-area">
-            <div id="capture-zone" class="document-final document-vertical">
-                
-                <header class="header-cert">
-                    <img src="assets/logo_omc.png" style="height: 60px;">
-                    <div style="flex:1; text-align: left; margin-left: 15px;">
-                        <div class="cert-tag">OCEAN MEDICAL CENTER — OBSTÉTRIQUE</div>
-                        <h1 class="cert-main-title">DOSSIER DE GROSSESSE</h1>
-                        <div id="display-date-top" style="font-size: 12px; color: #64748b; font-weight: bold;"></div>
-                        <div id="exam-type-auto" style="font-size: 14px; color: #000; font-weight: 800; margin-top:5px; text-transform:uppercase;">TYPE EXAMEN AUTO</div>
-                    </div>
-                </header>
+        if (isGemellaire) {
+            list.innerHTML += `<li style="font-weight:bold; color:#0f172a;">JUMEAU A / JUMEAU B</li>`;
+            list.innerHTML += `<li><span>BIP (Tête) :</span> <strong>${bip.toFixed(1)} / ${(bip-1).toFixed(1)} mm</strong></li>`;
+            list.innerHTML += `<li><span>Poids Estimé :</span> <strong>${poids.toFixed(0)} / ${(poids-50).toFixed(0)} g</strong></li>`;
+        } else {
+            list.innerHTML += `<li><span>BIP (Tête) :</span> <strong>${bip.toFixed(1)} mm</strong></li>`;
+            list.innerHTML += `<li><span>LF (Fémur) :</span> <strong>${lf.toFixed(1)} mm</strong></li>`;
+            list.innerHTML += `<li><span>Poids Estimé :</span> <strong>${poids.toFixed(0)} g</strong></li>`;
+        }
+    }
 
-                <div class="patient-banner" id="banner-status">
-                    <div>
-                        <small>PATIENTE</small>
-                        <span id="display-patient">...</span>
-                    </div>
-                    <div>
-                        <small>NAISSANCE</small>
-                        <span id="display-birth">...</span>
-                    </div>
-                    <div style="border-left: 1px solid #cbd5e1; padding-left: 15px;">
-                        <small>TERME ACTUEL</small>
-                        <span id="display-sa" style="color: #000; font-weight: 900; font-size: 16px;">-- SA</span>
-                    </div>
-                    <div>
-                        <small>TERME PRÉVU AUTOUR DU</small>
-                        <span id="display-dpa">--/--/----</span>
-                    </div>
-                </div>
+    const acf = rand(130, 160);
+    document.getElementById('val-acf').innerText = isGemellaire ? `${acf} / ${acf-5} bpm` : `${acf} bpm`;
+    document.getElementById('val-sexe').innerText = (currentSA > 14) ? sexe : "Incertain";
+    document.getElementById('val-maf').innerText = "Présents";
+    document.getElementById('val-poids').innerText = "Voir biométries";
 
-                <div id="obs-block" style="margin-bottom: 20px; padding: 10px; background: #fffbeb; border-left: 4px solid #f59e0b; display:none;">
-                    <small style="font-weight:bold; color: #b45309; text-transform:uppercase;">État clinique / Observations :</small>
-                    <p id="display-obs" style="margin: 5px 0 0 0; font-size: 12px; color: #000; font-style: italic;">...</p>
-                </div>
+    let txt = `Terme : ${currentSA} SA.\n`;
+    if (isCol) txt += "Examen du col utérin réalisé.\n";
+    else if (isGemellaire) txt += "Grossesse Gémellaire Bi-choriale Bi-amniotique évolutive.\n";
+    else txt += "Grossesse singleton évolutive.\n";
 
-                <div id="section-bio" class="section-block">
-                    <h4 class="section-title">BILAN BIOLOGIQUE & SANGUIN</h4>
-                    <table class="bio-table">
-                        <thead>
-                            <tr>
-                                <th>Analyse</th>
-                                <th>Résultat</th>
-                                <th>Normes (Selon Terme)</th>
-                                <th>Interprétation</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bio-tbody"></tbody>
-                    </table>
-                </div>
+    if (currentSA >= 41) txt += "⚠️ TERME DÉPASSÉ. Déclenchement requis.\n";
+    if (sante < 50) txt += "Surveillance pathologique nécessaire.\n";
+    
+    document.getElementById('conclusionInput').value = txt;
+}
 
-                <div id="section-echo" class="section-block">
-                    <h4 class="section-title">IMAGERIE : ÉCHOGRAPHIE OBSTÉTRICALE</h4>
-                    
-                    <div class="echo-container">
-                        <div style="width: 60%; display:flex; flex-direction:column; gap:5px;">
-                            <div class="echo-frame">
-                                <div class="echo-overlay-text top-left">OMC RADIOLOGY<br>OB/GYN</div>
-                                <div class="echo-overlay-text top-right" id="echo-date-display">00/00/0000</div>
-                                <div class="echo-overlay-text bottom-left">Mi: 1.2 Tis: 0.4</div>
-                                <div class="echo-overlay-text bottom-center" id="echo-label-img"></div>
-                                <img id="echo-img-display" src="assets/echo_placeholder.jpg" alt="Echo Main">
-                            </div>
-                            <div class="echo-thumbnails">
-                                <div class="thumb-frame"><img id="thumb-1" src="" alt="View 1"></div>
-                                <div class="thumb-frame"><img id="thumb-2" src="" alt="View 2"></div>
-                                <div class="thumb-frame"><img id="thumb-3" src="" alt="View 3"></div>
-                            </div>
-                        </div>
+// 4. ORDONNANCE COMPLÈTE
+function genererOrdonnance(sante) {
+    const list = document.getElementById('ordo-list');
+    list.innerHTML = "";
 
-                        <div class="biometrics-panel">
-                            <h5>BIOMÉTRIES FOETALES</h5>
-                            <ul class="bio-list" id="bio-list-content"></ul>
-                            
-                            <h5 style="margin-top: 15px;">VITALITÉ</h5>
-                            <ul class="bio-list">
-                                <li><span>Activité Cardiaque :</span> <strong id="val-acf">--</strong></li>
-                                <li><span>Mouvements (MAF) :</span> <strong id="val-maf">--</strong></li>
-                                <li><span>Sexe Foetal :</span> <strong id="val-sexe">--</strong></li>
-                                <li><span>Poids Estimé :</span> <strong id="val-poids">-- g</strong></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+    if (currentSA < 14) list.innerHTML += "<li>Acide Folique 0.4mg (1 cp/j)</li>";
+    if (currentSA >= 4) list.innerHTML += "<li>Gestarelle / Vitamines Grossesse (1 cp/j)</li>";
+    if (currentSA > 20) list.innerHTML += "<li>Gaviscon (Si aigreurs d'estomac)</li>";
+    if (currentSA > 28) list.innerHTML += "<li>Bas de Contention classe 2 (Port diurne)</li>";
+    if (currentSA > 30) list.innerHTML += "<li>Magnésium B6 (Crampes/Fatigue)</li>";
+    if (sante < 60) list.innerHTML += "<li>Tardyferon 80mg (Fer) - 1 cp matin</li>";
+    if (sante < 40) list.innerHTML += "<li>Spasfon (Si contractions) - Repos strict</li>";
+    if (currentSA >= 41) list.innerHTML += "<li><strong>Monitoring (RCF) toutes les 48h</strong></li>";
+}
 
-                <div class="section-block" style="flex-grow: 1;">
-                    <h4 class="section-title">CONCLUSION & CONDUITE À TENIR</h4>
-                    <p id="display-conclusion" style="font-size: 12px; line-height: 1.5; color: #000000; white-space: pre-wrap; font-weight: 500;">
-                        Examen en attente.
-                    </p>
-                </div>
+// --- FONCTION DE MISE À JOUR VISUELLE (Celle qui faisait défaut) ---
+function updateReport() {
+    // 1. Récupération des valeurs
+    const nom = document.getElementById('patientName').value;
+    const dateNaiss = document.getElementById('patientBirth').value;
+    const medecin = document.getElementById('doctorSig').value;
+    const conclusion = document.getElementById('conclusionInput').value;
+    
+    // 2. Injection dans le document (Partie Droite)
+    document.getElementById('display-patient').innerText = nom || "...";
+    
+    // Formatage date naissance
+    if(dateNaiss) {
+        document.getElementById('display-birth').innerText = new Date(dateNaiss).toLocaleDateString('fr-FR');
+    } else {
+        document.getElementById('display-birth').innerText = "...";
+    }
 
-                <div id="section-ordo" class="section-block ordo-block">
-                    <h4 class="section-title" style="color: #0f172a; border-color:#0f172a;">ORDONNANCE SUGGÉRÉE</h4>
-                    <div style="display:flex; gap: 20px;">
-                        <div style="flex:1;">
-                            <ul id="ordo-list" style="list-style: square; padding-left: 15px; font-size: 12px; line-height: 1.6; color: #000;"></ul>
-                        </div>
-                        <div style="width: 100px; display:flex; align-items:center; justify-content:center;">
-                            <div class="ordo-stamp">VALIDÉ</div>
-                        </div>
-                    </div>
-                </div>
+    document.getElementById('d-sig').innerText = medecin || "...";
+    document.getElementById('display-conclusion').innerText = conclusion;
+    
+    // 3. Observations
+    const obs = document.getElementById('obsHealth').value;
+    const obsBlock = document.getElementById('obs-block');
+    if (obs && obs.trim() !== "") {
+        obsBlock.style.display = 'block';
+        document.getElementById('display-obs').innerText = obs;
+    } else {
+        obsBlock.style.display = 'none';
+    }
 
-                <div class="cert-footer">
-                    <div class="cert-signature">
-                        Praticien :<br>
-                        <span id="d-sig">...</span>
-                    </div>
-                    <div class="round-stamp">
-                        <img id="qr-ref" class="qr-code" src="" crossorigin="anonymous"> 
-                        <div class="stamp-text">OMC OBSTETRICS</div>
-                    </div>
-                </div>
+    // 4. Dates
+    const dateStr = new Date(document.getElementById('examDate').value).toLocaleDateString('fr-FR');
+    document.getElementById('display-date-top').innerText = dateStr;
+    document.getElementById('echo-date-display').innerText = dateStr;
 
-                <p class="legal-text">
-                    Résultat fourni par le service d'Obstétrique de l'Ocean Medical Center. Toute reproduction est interdite. Falsification punie par la loi San Andreas.
-                </p>
+    // 5. QR Code
+    const qrData = encodeURIComponent(`OMC-OBST-${nom || "Inconnu"}-${currentSA}SA`);
+    document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}&margin=1`;
+}
 
-            </div>
-        </main>
-    </div>
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); }
+function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
 
-    <div id="image-popup" class="popup-overlay" style="display:none;">
-        <div class="popup-content">
-            <h3 style="color:white; margin-bottom:15px;">APERÇU DU DOSSIER</h3>
-            <img id="preview-img-result" src="" alt="Dossier">
-            <div class="popup-actions" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                <input type="text" id="direct-link" readonly onclick="this.select()" style="width: 100%; padding: 10px; border-radius: 4px; border: none; text-align: center;">
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="copyLink()" style="flex: 1; background: #64ffda; color: #0a1324; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">COPIER LE LIEN</button>
-                    <button onclick="closePopup()" style="flex: 1; background: #64748b; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">FERMER</button>
-                </div>
-            </div>
-        </div>
-    </div>
+// --- EXPORT IMAGE ---
+async function genererImage() {
+    const btn = event.currentTarget;
+    window.scrollTo(0,0);
+    btn.innerText = "CHARGEMENT...";
+    
+    const captureZone = document.getElementById('capture-zone');
+    const originalHeight = captureZone.style.height;
+    captureZone.style.height = captureZone.scrollHeight + "px"; 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="grossesse.js"></script>
-    <script src="global.js"></script>
-</body>
-</html>
+    try {
+        const canvas = await html2canvas(captureZone, { scale: 2, useCORS: true, scrollY: -window.scrollY });
+        const imgData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+        const formData = new FormData(); formData.append("image", imgData);
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+        const json = await res.json();
+        
+        if (json.success) {
+            document.getElementById('preview-img-result').src = json.data.url;
+            document.getElementById('direct-link').value = json.data.url;
+            document.getElementById('image-popup').style.display = 'flex';
+        }
+    } catch (e) { alert("Erreur: " + e.message); }
+    
+    captureZone.style.height = originalHeight; 
+    btn.innerText = "GÉNÉRER L'IMAGE";
+}
+
+async function envoyerDiscord() {
+    const url = "https://discord.com/api/webhooks/1470764297930936464/9IaG5scbmjGXkCpq3wvXaxGDAasyAJExRw9j853V0W99wl__MXI7SS3e0GNQcdeS0RGk";
+    try {
+        window.scrollTo(0,0);
+        const canvas = await html2canvas(document.getElementById('capture-zone'), { scale: 2, useCORS: true });
+        canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            const nom = document.getElementById('patientName').value || "Inconnu";
+            formData.append("payload_json", JSON.stringify({
+                thread_name: `Obstétrique - ${nom}`,
+                content: `🤰 **Nouveau Dossier Obstétrique** : ${nom}`
+            }));
+            formData.append("file", blob, `grossesse_${nom}.png`);
+            await fetch(url + "?wait=true", { method: 'POST', body: formData });
+            alert("✅ Dossier envoyé !");
+        }, 'image/png');
+    } catch (e) { alert("Erreur Discord"); }
+}
+
+function copyLink() { navigator.clipboard.writeText(document.getElementById("direct-link").value); alert("Copié !"); }
+function closePopup() { document.getElementById('image-popup').style.display = 'none'; }
