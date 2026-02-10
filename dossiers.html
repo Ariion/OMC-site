@@ -138,11 +138,12 @@
                 <textarea id="edit-notes" rows="4" placeholder="Noter ici les allergies, traitements chroniques, historique..." style="width: 100%; background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 4px; resize: vertical;"></textarea>
             </div>
 
-            <div class="actions-group" style="flex-direction: row; margin-top: 20px; justify-content: space-between;">
-                <button onclick="supprimerPatient()" class="btn-image" style="background: #ef4444; color: white; border: none; width: auto;">🗑️ SUPPRIMER</button>
+            <div class="actions-group" style="justify-content: space-between;">
+                <button onclick="supprimerPatient()" class="btn-action btn-delete">🗑️ SUPPRIMER</button>
+                
                 <div style="display: flex; gap: 10px;">
-                    <button onclick="fermerModalEdition()" class="btn-image" style="background: #334155; color: white; border: none; width: auto;">FERMER</button>
-                    <button onclick="sauvegarderEdition()" class="btn-discord" style="background: #3b82f6; width: auto;">SAUVEGARDER</button>
+                    <button onclick="fermerModalEdition()" class="btn-action btn-cancel">FERMER</button>
+                    <button onclick="sauvegarderEdition()" class="btn-action btn-save">SAUVEGARDER</button>
                 </div>
             </div>
         </div>
