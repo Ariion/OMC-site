@@ -44,7 +44,24 @@ function ouvrirPanelEdition(p) {
     document.getElementById('edit-job').value = p.job;
     document.getElementById('edit-notes').value = p.notes || "";
     
-    // Scroll auto vers le haut pour voir l'édition
+    // AFFICHAGE DE L'HISTORIQUE
+    const histDiv = document.getElementById('edit-historique');
+    histDiv.innerHTML = ""; // On vide
+
+    if (p.historique && p.historique.length > 0) {
+        p.historique.forEach(h => {
+            const dateH = new Date(h.date).toLocaleDateString('fr-FR');
+            histDiv.innerHTML += `
+                <div style="font-size: 10px; margin-bottom: 8px; border-left: 2px solid #3b82f6; padding-left: 8px;">
+                    <span style="color: #94a3b8;">${dateH}</span> - <strong>${h.type}</strong><br>
+                    <span style="color: #cbd5e1; font-style: italic;">${h.details}</span>
+                </div>
+            `;
+        });
+    } else {
+        histDiv.innerHTML = '<div style="font-size:10px; color:#475569; padding:5px;">Aucun historique.</div>';
+    }
+    
     document.querySelector('.sidebar').scrollTop = 0;
 }
 
