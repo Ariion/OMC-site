@@ -1,42 +1,42 @@
-// 1. BASE DE DONNÉES DES MÉDICAMENTS
+// 1. BASE DE DONNÉES DES MÉDICAMENTS (FICTIFS RP)
 const medsDB = {
     "Médecine Générale": [
-        { name: "Paracétamol", info: "Antidouleur / Fièvre", doses: ["500 mg", "1 g (1000 mg)"] },
-        { name: "Ibuprofène", info: "Anti-inflammatoire", doses: ["200 mg", "400 mg"] },
-        { name: "Amoxicilline", info: "Antibiotique", doses: ["250 mg","500 mg", "1 g", "Sirop pédiatrique"] },
-        { name: "Spasfon", info: "Douleurs ventre", doses: ["80 mg (Lyoc)", "160 mg (2 cp)"] },
-        { name: "Oméprazole", info: "Protection estomac", doses: ["10 mg", "20 mg"] },
-        { name: "Prednisolone", info: "Cortisone", doses: ["20 mg", "40 mg"] },
-        { name: "Ventoline", info: "Asthme", doses: ["100 µg (1 bouffée)", "200 µg (2 bouffées)"] }
+        { name: "Acetamax 500", info: "Antidouleur / Fièvre (Palier 1)", doses: ["1 cp", "2 cp"] },
+        { name: "Ibuprolex", info: "Anti-inflammatoire standard", doses: ["200 mg", "400 mg"] },
+        { name: "Bacteryn", info: "Antibiotique large spectre", doses: ["250 mg", "500 mg", "1 g"] },
+        { name: "Spasmex", info: "Douleurs abdominales / Spasmes", doses: ["1 cp", "2 cp"] },
+        { name: "Gastrol", info: "Protection estomac / Acidité", doses: ["1 gélule"] },
+        { name: "Cortisyl", info: "Corticoïde / Inflammation sévère", doses: ["20 mg", "40 mg"] },
+        { name: "AirFlow", info: "Inhalateur Asthme", doses: ["1 bouffée", "2 bouffées"] }
     ],
     "Psychologie": [
-        { name: "Sertraline", info: "Antidépresseur", doses: ["25 mg", "50 mg", "100 mg"] },
-        { name: "Xanax", info: "Anxiolytique", doses: ["0.25 mg", "0.50 mg", "1 mg"] },
-        { name: "Valium", info: "Sédatif / Angoisse", doses: ["5 mg", "10 mg"] },
-        { name: "Zolpidem", info: "Somnifère puissant", doses: ["10 mg"] },
-        { name: "Quétiapine", info: "Régulateur humeur", doses: ["50 mg", "300 mg (LP)"] }
+        { name: "Serenyx", info: "Antidépresseur / Stabilisateur", doses: ["25 mg", "50 mg"] },
+        { name: "Calmax", info: "Anxiolytique (Crise angoisse)", doses: ["0.25 mg", "0.50 mg", "1 mg"] },
+        { name: "Zenith", info: "Sédatif puissant", doses: ["5 mg", "10 mg"] },
+        { name: "Noctyl", info: "Somnifère / Troubles sommeil", doses: ["1 cp au coucher"] },
+        { name: "Psychotrol", info: "Régulateur humeur (Bipolaire)", doses: ["LP 50 mg", "LP 300 mg"] }
     ],
-    "Chirurgie": [
-        { name: "Tramadol", info: "Douleur modérée (Palier 2)", doses: ["50 mg", "100 mg (LP)", "150 mg"] },
-        { name: "Izalgi", info: "Douleur intense (Opium)", doses: ["500mg/25mg"] },
-        { name: "Augmentin", info: "Antibiotique large spectre", doses: ["1 g"] },
-        { name: "Lovenox", info: "Anticoagulant (Injection)", doses: ["2000 UI", "4000 UI", "6000 UI"] },
-        { name: "Bétadine", info: "Antiseptique local", doses: ["Solution dermique", "Scrub (Rouge)"] },
-        { name: "Morphine", info: "Douleur sévère (Palier 3)", doses: ["10 mg", "30 mg", "60 mg"] }
+    "Chirurgie & Urgence": [
+        { name: "Tramadolix", info: "Douleur modérée (Palier 2)", doses: ["50 mg", "100 mg"] },
+        { name: "Oxycodin", info: "Douleur intense (Opioïde)", doses: ["5 mg", "10 mg"] },
+        { name: "InfectBlock", info: "Antibiotique post-opératoire", doses: ["1 g"] },
+        { name: "Fluidex", info: "Anticoagulant (Injection)", doses: ["2000 UI", "4000 UI"] },
+        { name: "Dermaclean", info: "Désinfectant chirurgical", doses: ["Application locale"] },
+        { name: "Morphinax", info: "Douleur sévère (Palier 3)", doses: ["10 mg", "30 mg"] }
     ],
-    "Gynécologie": [
-        { name: "Spasfon", info: "Douleurs règles", doses: ["80 mg", "160 mg"] },
-        { name: "Antadys", info: "Anti-inflammatoire règles", doses: ["100 mg"] },
-        { name: "Monazol", info: "Antifongique (Ovule)", doses: ["1 ovule le soir"] },
-        { name: "Acide Folique", info: "Grossesse", doses: ["0.4 mg", "5 mg"] },
-        { name: "Pilule", info: "Contraceptif", doses: ["1 cp/jour"] }
+    "Gynécologie & Obstétrique": [
+        { name: "Spasmex Femina", info: "Douleurs menstruelles", doses: ["80 mg", "160 mg"] },
+        { name: "Uteryl", info: "Anti-inflammatoire pelvien", doses: ["100 mg"] },
+        { name: "MycoStop", info: "Antifongique (Ovule)", doses: ["1 ovule le soir"] },
+        { name: "VitaMom", info: "Vitamines Grossesse", doses: ["1 cp/jour"] },
+        { name: "Folix Acid", info: "Supplémentation Grossesse", doses: ["0.4 mg"] },
+        { name: "ContraPill", info: "Contraceptif oral", doses: ["1 cp/jour"] }
     ],
-    "Kiné": [
-        { name: "Voltarène Gel", info: "Anti-inflammatoire local", doses: ["Application locale"] },
-        { name: "Bi-Profenid", info: "Anti-inflammatoire", doses: ["100 mg"] },
-        { name: "Doliprane", info: "Douleur", doses: ["1 g"] },
-        { name: "Lumirelax", info: "Décontractant musculaire", doses: ["500 mg"] },
-        { name: "Flector Tissugel", info: "Patch anti-douleur", doses: ["1 patch / 12h"] }
+    "Kiné & Rééducation": [
+        { name: "FlexiGel", info: "Pommade anti-douleur", doses: ["Application locale"] },
+        { name: "Ketoflex", info: "Anti-inflammatoire articulaire", doses: ["100 mg"] },
+        { name: "Muscloril", info: "Décontractant musculaire", doses: ["500 mg"] },
+        { name: "Patch-X", info: "Patch diffusant (12h)", doses: ["1 patch matin/soir"] }
     ]
 };
 
@@ -204,10 +204,16 @@ function viderOrdonnance() {
     }
 }
 
-// 6. RÉFÉRENCE
+// 6. RÉFÉRENCE (CORRIGÉE : MOIS-JOUR-HEURE-MINUTE)
 function genererReference() {
     const n = new Date();
-    const ref = `${n.getDate().toString().padStart(2, '0')}${n.getMinutes().toString().padStart(2, '0')}`;
+    const mm = (n.getMonth() + 1).toString().padStart(2, '0'); // MOIS D'ABORD
+    const jj = n.getDate().toString().padStart(2, '0');        // PUIS JOUR
+    const hh = n.getHours().toString().padStart(2, '0');
+    const min = n.getMinutes().toString().padStart(2, '0');
+    
+    // FORMAT : MOIS JOUR HEURE MIN
+    const ref = `${mm}${jj}${hh}${min}`;
     document.getElementById('d-ref').innerText = "#" + ref;
     updateQR();
 }
