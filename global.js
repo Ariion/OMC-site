@@ -190,3 +190,19 @@ function ajouterEvenementPatient(nomPatient, typeEvent, details, urlImage = null
         console.warn(`Patient ${nomPatient} non trouvé dans la base.`);
     }
 }
+
+// SUPPRIMER UN ÉVÉNEMENT DE L'HISTORIQUE
+function supprimerEvenementHistorique(nomPatient, index) {
+    let db = getPatientsDB();
+    const pIndex = db.findIndex(p => p.nom === nomPatient);
+
+    if (pIndex >= 0 && db[pIndex].historique) {
+        // On retire l'élément à l'index donné
+        db[pIndex].historique.splice(index, 1);
+        
+        // On sauvegarde
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
+        return db[pIndex]; // On renvoie le patient mis à jour pour rafraichir l'affichage
+    }
+    return null;
+}
