@@ -100,6 +100,54 @@
         </div>
     </div>
 
+    <div id="modal-edition" class="popup-overlay" style="display: none;">
+        <div class="popup-content" style="text-align: left; width: 500px; border-color: #3b82f6;">
+            <h3 style="color: #3b82f6; margin-bottom: 20px; text-align: center;">DOSSIER PATIENT</h3>
+            
+            <input type="hidden" id="edit-original-name">
+
+            <div class="form-group-row" style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 2;">
+                    <label>Nom & Prénom</label>
+                    <input type="text" id="edit-nom" readonly style="opacity: 0.7; cursor: not-allowed;">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Groupe Sanguin</label>
+                    <select id="edit-groupe">
+                        <option value="A+">A+</option><option value="A-">A-</option>
+                        <option value="B+">B+</option><option value="B-">B-</option>
+                        <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        <option value="O+">O+</option><option value="O-">O-</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group-row" style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Date de Naissance</label>
+                    <input type="date" id="edit-ddn">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Métier / Statut</label>
+                    <input type="text" id="edit-job">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label style="color: #fbbf24;">⚠️ ALLERGIES & ANTÉCÉDENTS</label>
+                <textarea id="edit-notes" rows="4" placeholder="Noter ici les allergies, traitements chroniques, historique..." style="width: 100%; background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 4px; resize: vertical;"></textarea>
+            </div>
+
+            <div class="actions-group" style="flex-direction: row; margin-top: 20px; justify-content: space-between;">
+                <button onclick="supprimerPatient()" class="btn-image" style="background: #ef4444; color: white; border: none; width: auto;">🗑️ SUPPRIMER</button>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="fermerModalEdition()" class="btn-image" style="background: #334155; color: white; border: none; width: auto;">FERMER</button>
+                    <button onclick="sauvegarderEdition()" class="btn-discord" style="background: #3b82f6; width: auto;">SAUVEGARDER</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="global.js"></script>
     <script src="dossiers.js"></script>
 </body>
