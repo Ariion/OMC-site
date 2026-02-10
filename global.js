@@ -6,19 +6,38 @@ function updateThemeButtonText(theme) {
 }
 
 function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    // 2. Basculer la classe
+    document.body.classList.toggle('light-mode');
     
-    document.documentElement.setAttribute('data-theme', targetTheme);
-    localStorage.setItem('theme', targetTheme);
-    updateThemeButtonText(targetTheme);
+    // 3. Sauvegarder le choix
+    if (document.body.classList.contains('light-mode')) {
+        localStorage.setItem('omc_theme', 'light');
+    } else {
+        localStorage.setItem('omc_theme', 'dark'); // Par défaut
+    }
+    
+    // 4. Mettre à jour le texte du bouton
+    updateThemeButton();
+}
+
+function updateThemeButton() {
+    const btnText = document.getElementById('theme-text');
+    const isLight = document.body.classList.contains('light-mode');
+    
+    // On met à jour le texte si le bouton existe sur la page
+    if (btnText) {
+        btnText.innerText = isLight ? "Passer mode Sombre" : "Passer mode Clair";
+    }
 }
 
 // Initialisation au chargement
 document.addEventListener('DOMContentLoaded', () => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeButtonText(savedTheme);
+    // 1. Appliquer le thème sauvegardé au chargement
+    const savedTheme = localStorage.getItem('omc_theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+    }
+    updateThemeButton();
 });
 
 // Fonction de liaison simple (Nom, Lieu, Heure, Signature)
