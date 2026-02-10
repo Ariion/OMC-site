@@ -4,10 +4,10 @@
     flex-grow: 1;
     display: flex;
     justify-content: center; 
-    align-items: flex-start; /* IMPORTANT: Pour le scroll */
+    align-items: flex-start; 
     padding: 40px 20px;      
     overflow-y: auto;
-    background-color: var(--bg-preview) !important;
+    /* On laisse global.css gérer la couleur de fond via !important */
 }
 
 #document {
