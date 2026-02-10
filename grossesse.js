@@ -1,5 +1,8 @@
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";  
 
+// LIEN DISCORD MIS À JOUR
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1470764297930936464/9IaG5scbmjGXkCpq3wvXaxGDAasyAJExRw9j853V0W99wl__MXI7SS3e0GNQcdeS0RGk";
+
 const ECHO_IMAGES = {
     sac: "assets/echo_sac.jpg",
     t1: "assets/echo_t1.jpg",
@@ -21,7 +24,7 @@ window.onload = () => {
         bloodId: 'patientBlood', 
         callback: function(p) {
             updateReport();
-            calculerTerme(); // Juste pour recalculer les SA si la date change
+            calculerTerme(); 
         }
     });
     
@@ -39,7 +42,6 @@ function toggleSections() {
     document.getElementById('section-bio').style.display = showBio ? 'block' : 'none';
     document.getElementById('section-echo').style.display = showEcho ? 'block' : 'none';
     document.getElementById('section-ordo').style.display = showOrdo ? 'block' : 'none';
-    // On ne recalcule pas tout, juste la visibilité
 }
 
 function updateHealthColor() {
@@ -78,7 +80,6 @@ function calculerTerme() {
             banner.classList.remove('alert-term');
         }
 
-        // Définition du type d'examen (sans générer l'image)
         const isCol = document.getElementById('measureCol').checked;
         if (isCol) examTypeLabel = "Mesure du Col (Urgence)";
         else if (currentSA < 11) examTypeLabel = "Échographie de Datation";
@@ -90,24 +91,17 @@ function calculerTerme() {
     }
 }
 
-// 2. FONCTION DE GÉNÉRATION (ACTIVÉE PAR LE BOUTON UNIQUEMENT)
+// 2. FONCTION DE GÉNÉRATION (ACTIVÉE PAR LE BOUTON)
 function lancerGenerationResultats() {
-    // On s'assure que le terme est à jour
     calculerTerme();
-    
     const sante = parseInt(document.getElementById('santeMaman').value);
-    
-    // On lance les générateurs
     genererBiologieEvolutive(sante);
     genererEchoLogic(sante);
     genererOrdonnance(sante);
-    
-    // On met à jour les textes annexes
     updateReport();
 }
 
-// --- LES GÈNÉRATEURS (RNG) ---
-
+// --- GÉNÉRATEURS ---
 function genererBiologieEvolutive(sante) {
     const tbody = document.getElementById('bio-tbody');
     tbody.innerHTML = ""; 
@@ -140,7 +134,6 @@ function genererBiologieEvolutive(sante) {
     if (currentSA > 14) {
         let hemo = sante < 60 ? rand(95, 105) : rand(115, 130);
         addRow("Hémoglobine (NFS)", hemo, "g/L", "> 110 g/L", hemo < 110, "Anémie gravidique");
-        
         if (currentSA > 20) {
             let glyc = sante < 40 ? "1.35" : "0.85";
             addRow("Glycémie (HGPO)", glyc, "g/L", "< 0.92 g/L", parseFloat(glyc) > 0.92, "Diabète Gestationnel");
@@ -199,7 +192,6 @@ function genererEchoLogic(sante) {
     document.getElementById('val-maf').innerText = "Présents";
     document.getElementById('val-poids').innerText = "Voir biométries";
 
-    // Conclusion Auto (mise à jour du champ textarea)
     let txt = `Terme : ${currentSA} SA.\n`;
     if (isCol) txt += "Examen du col utérin réalisé.\n";
     else if (isGemellaire) txt += "Grossesse Gémellaire Bi-choriale Bi-amniotique évolutive.\n";
@@ -225,27 +217,22 @@ function genererOrdonnance(sante) {
     if (currentSA >= 41) list.innerHTML += "<li><strong>Monitoring (RCF) toutes les 48h</strong></li>";
 }
 
-// 3. MISE A JOUR VISUELLE (Texte seulement)
+// 3. MISE A JOUR VISUELLE
 function updateReport() {
-    // On récupère les valeurs
     const nom = document.getElementById('patientName').value;
     const dateNaiss = document.getElementById('patientBirth').value;
     const medecin = document.getElementById('doctorSig').value;
     const conclusion = document.getElementById('conclusionInput').value;
     
-    // On met à jour l'affichage
     document.getElementById('display-patient').innerText = nom || "...";
-    
     if(dateNaiss) {
         document.getElementById('display-birth').innerText = new Date(dateNaiss).toLocaleDateString('fr-FR');
     } else {
         document.getElementById('display-birth').innerText = "...";
     }
-
     document.getElementById('d-sig').innerText = medecin || "...";
     document.getElementById('display-conclusion').innerText = conclusion;
     
-    // Observations
     const obs = document.getElementById('obsHealth').value;
     const obsBlock = document.getElementById('obs-block');
     if (obs && obs.trim() !== "") {
@@ -255,7 +242,6 @@ function updateReport() {
         obsBlock.style.display = 'none';
     }
 
-    // Dates & QR
     const dateStr = new Date(document.getElementById('examDate').value).toLocaleDateString('fr-FR');
     document.getElementById('display-date-top').innerText = dateStr;
     document.getElementById('echo-date-display').innerText = dateStr;
@@ -267,21 +253,40 @@ function updateReport() {
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); }
 function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
 
-// --- EXPORT IMAGE ---
+// ============================================================
+// FONCTIONS D'EXPORT AMÉLIORÉES (FIX CROP)
+// ============================================================
+
 async function genererImage() {
     const btn = event.currentTarget;
-    window.scrollTo(0,0);
+    
+    // Scroll tout en haut pour éviter les bugs de décalage
+    window.scrollTo(0, 0);
     btn.innerText = "CHARGEMENT...";
+    btn.disabled = true;
     
     const captureZone = document.getElementById('capture-zone');
-    // On force la hauteur pour tout capturer
+    
+    // --- FIX CROP START ---
+    // On sauvegarde la hauteur d'origine
     const originalHeight = captureZone.style.height;
-    captureZone.style.height = captureZone.scrollHeight + "px"; 
+    // On force la hauteur à être égale au contenu total + un buffer de 50px pour le bas
+    captureZone.style.height = (captureZone.scrollHeight + 50) + "px"; 
+    // --- FIX CROP END ---
 
     try {
-        const canvas = await html2canvas(captureZone, { scale: 2, useCORS: true, scrollY: -window.scrollY });
+        const canvas = await html2canvas(captureZone, { 
+            scale: 2, 
+            useCORS: true, 
+            scrollY: 0, // Important : force le rendu à partir du haut
+            height: captureZone.scrollHeight + 50, // Force la hauteur de capture
+            windowHeight: captureZone.scrollHeight + 50 // Simule une fenêtre assez grande
+        });
+
         const imgData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-        const formData = new FormData(); formData.append("image", imgData);
+        const formData = new FormData(); 
+        formData.append("image", imgData);
+        
         const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
         const json = await res.json();
         
@@ -290,30 +295,65 @@ async function genererImage() {
             document.getElementById('direct-link').value = json.data.url;
             document.getElementById('image-popup').style.display = 'flex';
         }
-    } catch (e) { alert("Erreur: " + e.message); }
-    
-    // On remet la hauteur normale
-    captureZone.style.height = originalHeight; 
-    btn.innerText = "GÉNÉRER L'IMAGE";
+    } catch (e) { 
+        alert("Erreur: " + e.message); 
+    } finally {
+        // On remet la hauteur normale
+        captureZone.style.height = originalHeight; 
+        btn.innerText = "GÉNÉRER L'IMAGE";
+        btn.disabled = false;
+    }
 }
 
 async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1421780761731928194/ZFSpiLTHfytIGT02QBf5SBOIEDzWMaf_PMHtDB9sd-GmF5chHnQqQic-9YpLnYHJIRPo";
+    const btn = event.currentTarget; // Récupère le bouton cliqué pour le désactiver
+    
+    window.scrollTo(0, 0);
+    btn.disabled = true;
+    btn.innerText = "ENVOI...";
+
+    const captureZone = document.getElementById('capture-zone');
+    const originalHeight = captureZone.style.height;
+    captureZone.style.height = (captureZone.scrollHeight + 50) + "px"; 
+
     try {
-        window.scrollTo(0,0);
-        const canvas = await html2canvas(document.getElementById('capture-zone'), { scale: 2, useCORS: true });
+        const canvas = await html2canvas(captureZone, { 
+            scale: 2, 
+            useCORS: true, 
+            scrollY: 0,
+            height: captureZone.scrollHeight + 50,
+            windowHeight: captureZone.scrollHeight + 50
+        });
+
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const nom = document.getElementById('patientName').value || "Inconnu";
+            
             formData.append("payload_json", JSON.stringify({
                 thread_name: `Obstétrique - ${nom}`,
                 content: `🤰 **Nouveau Dossier Obstétrique** : ${nom}`
             }));
+            
             formData.append("file", blob, `grossesse_${nom}.png`);
-            await fetch(url + "?wait=true", { method: 'POST', body: formData });
-            alert("✅ Dossier envoyé !");
+            
+            const response = await fetch(DISCORD_WEBHOOK_URL + "?wait=true", { method: 'POST', body: formData });
+            
+            if(response.ok) {
+                alert("✅ Dossier envoyé avec succès !");
+                btn.innerText = "ENVOYÉ";
+            } else {
+                throw new Error("Erreur serveur Discord");
+            }
+            btn.disabled = false;
         }, 'image/png');
-    } catch (e) { alert("Erreur Discord"); }
+
+    } catch (e) { 
+        alert("Erreur Discord : " + e.message); 
+        btn.disabled = false;
+        btn.innerText = "RÉESSAYER";
+    } finally {
+        captureZone.style.height = originalHeight;
+    }
 }
 
 function copyLink() { navigator.clipboard.writeText(document.getElementById("direct-link").value); alert("Copié !"); }
