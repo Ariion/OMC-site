@@ -13,7 +13,7 @@ let typeSelectionne = "";
 function up(id, val) {
     const el = document.getElementById(id);
     if (el) el.innerText = val || "...";
-    updateQR(); // <--- CA DOIT ETRE LA
+    updateQR(); 
 }
 
 // Mise à jour des dates avec formatage automatique
@@ -28,12 +28,13 @@ function upDate(id, val) {
     }
     updateQR();
 }
+
 // Mise à jour de la signature manuscrite
 function upSignature(val) {
     const el = document.getElementById('display-sig');
     if (el) {
         el.innerText = val || "DOCTEUR";
-        updateQR(); // <--- CRUCIAL
+        updateQR();
     }
 }
 
@@ -83,12 +84,11 @@ function genererReference() {
 
 // QR Code dynamique synchronisé sur tous les champs
 function updateQR() {
-    // 1. On récupère la référence (le numéro #JJMMHHMM)
+    // 1. On récupère la référence
     const ref = document.getElementById('d-ref') ? document.getElementById('d-ref').innerText : "";
 
-    // 2. On récupère les valeurs directement dans les INPUTS de la sidebar
-    // On utilise querySelector pour être sûr de trouver le bon champ même sans ID
-    const nomInput = document.querySelector('input[placeholder*="John Doe"]');
+    // 2. On récupère les valeurs
+    const nomInput = document.getElementById('patientName');
     const medecinInput = document.querySelector('input[placeholder*="Nom du médecin"]');
     const dateInput = document.querySelector('input[type="date"][oninput*="d-date"]');
 
@@ -99,16 +99,38 @@ function updateQR() {
     // 3. On prépare l'image du QR
     const qrImg = document.getElementById('qr-ref');
     if (qrImg) {
-        // On crée la chaîne d'infos (on peut ajouter la date formatée si on veut)
         const dataStr = `OMC-DECES|REF:${ref}|DEFUNT:${nom}|MEDECIN:${medecin}|DATE:${dateValue}`;
-        
-        // Encodage pour l'URL
         const dataEncoded = encodeURIComponent(dataStr);
-        
-        // Mise à jour de l'image
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${dataEncoded}`;
     }
 }
+
+// --- INIT & AUTOCOMPLETE ---
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Génère la référence
+    genererReference();
+
+    // 2. Date du jour auto (Décès)
+    const aujourdhui = new Date().toISOString().split('T')[0];
+    const inputDateDeces = document.querySelector('input[type="date"][oninput*="d-date"]');
+    if (inputDateDeces) inputDateDeces.value = aujourdhui;
+    upDate('d-date', aujourdhui);
+
+    // 3. QR Code initial
+    updateQR();
+
+    // 4. SYSTÈME AUTOCOMPLETE CENTRALISÉ
+    setupPatientAutocomplete({
+        nameId: 'patientName',
+        birthId: 'patientBirth',
+        callback: function(p) {
+            // Callback: Mettre à jour visuellement le document quand on clique sur un nom
+            up('d-nom', p.nom);
+            upDate('d-ddn', p.naissance);
+            updateQR(); // Force la mise à jour du QR Code avec les nouvelles données
+        }
+    });
+});
 
 // Export Image avec Crop
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
@@ -208,53 +230,3 @@ function copyLink() {
 function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
 }
-
-// Initialisation au chargement
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Génère la référence (numéro de dossier)
-    genererReference();
-
-    // 2. AUTOMATISATION DE LA DATE DU JOUR
-    const aujourdhui = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
-    
-    // Met à jour le champ de saisie (input) dans la sidebar
-    const inputDateDeces = document.querySelector('input[type="date"][oninput*="d-date"]');
-    if (inputDateDeces) {
-        inputDateDeces.value = aujourdhui;
-    }
-
-    // Met à jour l'affichage sur le document (le span #d-date)
-    upDate('d-date', aujourdhui);
-
-    // 3. Premier rendu du QR Code
-    updateQR();
-});
-
-
-
-// --- AUTO-REMPLISSAGE PATIENT ---
-document.addEventListener('DOMContentLoaded', () => {
-    const savedPatient = localStorage.getItem('currentPatient');
-    
-    if (savedPatient) {
-        const p = JSON.parse(savedPatient);
-        
-        // Remplissage du Nom
-        if(document.getElementById('defuntName')) {
-            document.getElementById('defuntName').value = p.nom;
-            // Met à jour la prévisualisation si la fonction existe
-            if(typeof updatePreview === 'function') updatePreview();
-        }
-        
-        // Remplissage Date Naissance
-        if(document.getElementById('defuntBirth')) {
-            document.getElementById('defuntBirth').value = p.naissance;
-            if(typeof updatePreview === 'function') updatePreview();
-        }
-        
-        // Remplissage Job/Métier (si tu as ce champ dans décès)
-        if(document.getElementById('defuntJob') && p.job) {
-            document.getElementById('defuntJob').value = p.job;
-        }
-    }
-});
