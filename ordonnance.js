@@ -355,6 +355,11 @@ async function envoyerDiscord() {
         doc.classList.remove('mode-capture');
         btn.innerText = "ENVOI...";
 
+        const nomPatient = document.getElementById('d-nom').innerText;
+if(nomPatient && nomPatient !== "...") {
+    ajouterEvenementPatient(nomPatient, "Ordonnance", "Prescription médicale générée");
+}
+
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             const nom = document.getElementById('patientName').value || "Inconnu";
