@@ -207,13 +207,20 @@ function genererOrdonnance(sante) {
     const list = document.getElementById('ordo-list');
     list.innerHTML = "";
 
-    if (currentSA < 14) list.innerHTML += "<li>Acide Folique 0.4mg (1 cp/j)</li>";
-    if (currentSA >= 4) list.innerHTML += "<li>Gestarelle / Vitamines Grossesse (1 cp/j)</li>";
-    if (currentSA > 20) list.innerHTML += "<li>Gaviscon (Si aigreurs d'estomac)</li>";
+    // Base
+    if (currentSA < 14) list.innerHTML += "<li>Folix Acid 0.4mg (1 cp/j)</li>"; // Ancien : Acide Folique
+    if (currentSA >= 4) list.innerHTML += "<li>VitaMom / Vitamines Grossesse (1 cp/j)</li>"; // Ancien : Gestarelle
+
+    // Symptômes courants
+    if (currentSA > 20) list.innerHTML += "<li>Gastrol (Si aigreurs d'estomac)</li>"; // Ancien : Gaviscon
     if (currentSA > 28) list.innerHTML += "<li>Bas de Contention classe 2 (Port diurne)</li>";
     if (currentSA > 30) list.innerHTML += "<li>Magnésium B6 (Crampes/Fatigue)</li>";
-    if (sante < 60) list.innerHTML += "<li>Tardyferon 80mg (Fer) - 1 cp matin</li>";
-    if (sante < 40) list.innerHTML += "<li>Spasfon (Si contractions) - Repos strict</li>";
+
+    // Pathologie
+    if (sante < 60) list.innerHTML += "<li>FerroMax 80mg (Fer) - 1 cp matin</li>"; // Ancien : Tardyferon
+    if (sante < 40) list.innerHTML += "<li>Spasmex (Si contractions) - Repos strict</li>"; // Ancien : Spasfon
+
+    // Dépassement
     if (currentSA >= 41) list.innerHTML += "<li><strong>Monitoring (RCF) toutes les 48h</strong></li>";
 }
 
