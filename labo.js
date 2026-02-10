@@ -361,27 +361,19 @@ const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 let lastImageUrl = "";
 
 async function genererImage() {
-    const doc = document.getElementById('document');
-    const btn = event.target;
+    const btn = event.currentTarget;
+    const doc = document.getElementById('document'); // On cible #document, pas #capture-zone si l'ID a changé
     
-    // 1. Préparation
     window.scrollTo(0,0);
-    btn.innerText = "GÉNÉRATION...";
+    btn.innerText = "CHARGEMENT...";
     btn.disabled = true;
-    
-    // 2. Calcul de la hauteur exacte du contenu
-    // On prend la hauteur totale du papier + 20px de marge pour être sûr
-    const exactHeight = doc.scrollHeight + 20;
 
     try {
+        // Capture simple, sans forcer la hauteur
         const canvas = await html2canvas(doc, { 
             scale: 2, 
-            useCORS: true, 
-            scrollY: 0,
-            backgroundColor: "#ffffff",
-            // ON FORCE LA HAUTEUR CALCULÉE
-            height: exactHeight,
-            windowHeight: exactHeight + 50 // Simule une fenêtre un peu plus grande
+            useCORS: true,
+            backgroundColor: "#ffffff"
         });
         
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
@@ -392,13 +384,11 @@ async function genererImage() {
         const result = await response.json();
         
         if (result.success) {
-            lastImageUrl = result.data.url;
-            document.getElementById('direct-link').value = lastImageUrl;
-            document.getElementById('preview-img-result').src = lastImageUrl;
+            document.getElementById('direct-link').value = result.data.url;
+            document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
         }
     } catch (e) {
-        console.error(e);
         alert("Erreur lors de la génération.");
     } finally {
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
@@ -411,21 +401,15 @@ async function envoyerDiscord() {
     const btn = document.getElementById('discord-btn'); 
     const doc = document.getElementById('document'); 
 
-    // 1. Préparation
     window.scrollTo(0,0);
     btn.disabled = true;
     btn.innerText = "CAPTURE...";
     
-    // 2. Calcul hauteur exacte
-    const exactHeight = doc.scrollHeight + 20;
-
     try {
+        // Capture simple
         const canvas = await html2canvas(doc, { 
             scale: 2, 
-            useCORS: true,
-            scrollY: 0,
-            height: exactHeight,
-            windowHeight: exactHeight + 50
+            useCORS: true 
         });
         
         btn.innerText = "ENVOI...";
@@ -454,7 +438,6 @@ async function envoyerDiscord() {
         }, 'image/png');
 
     } catch (e) {
-        console.error(e);
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
     }
