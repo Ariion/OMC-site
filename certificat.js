@@ -190,16 +190,32 @@ function closePopup() {
 }
 
 window.onload = function() {
+    // Initialisation Date du jour
     if(document.getElementById('d-date')) {
         document.getElementById('d-date').innerText = new Date().toLocaleDateString('fr-FR');
     }
+    
     genererReference();
-    toggleMotifs(); // Lance l'initialisation des titres et motifs
-    const savedPatient = localStorage.getItem('currentPatient');
-    if (savedPatient) {
-        const p = JSON.parse(savedPatient);
-        // Constat utilise "patientId" pour le nom
-        if(document.getElementById('patientId')) document.getElementById('patientId').value = p.nom;
-        if(document.getElementById('patientBirth')) document.getElementById('patientBirth').value = p.naissance;
-    }
+    toggleMotifs(); // Init interface
+
+    // --- AUTOCOMPLETE CENTRALISÉ (GLOBAL.JS) ---
+    setupPatientAutocomplete({
+        nameId: 'patientName',   // L'ID que tu viens de changer dans le HTML
+        birthId: 'patientBirth', // L'ID que tu viens d'ajouter
+        callback: function(p) {
+            // Cette fonction est appelée quand on clique sur un patient dans la liste
+            // Elle sert à mettre à jour la prévisualisation (la feuille blanche)
+            
+            // 1. Met à jour le nom sur le document
+            document.getElementById('d-nom').innerText = p.nom;
+            
+            // 2. Met à jour la date de naissance sur le document
+            if (p.naissance) {
+                upDate('d-naiss', p.naissance);
+            }
+            
+            // 3. Optionnel : Si tu veux aussi remplir le métier s'il existe
+            // (Il faudrait un champ job dans ton certificat, mais sinon on laisse)
+        }
+    });
 };
