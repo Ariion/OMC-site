@@ -1,5 +1,5 @@
 /* ============================================================
-   DOSSIERS.JS - VERSION SIMPLE (SANS IMPORT)
+   DOSSIERS.JS - VERSION FINALE (CORRECTION COULEUR DATE)
    ============================================================ */
 
 console.log("✅ Dossiers.js chargé !");
@@ -102,13 +102,16 @@ window.ouvrirPanelEdition = function(p) {
                 let btnVoir = h.url ? `<button onclick="voirDocument('${h.url}')" style="background:#3b82f6;border:none;color:white;cursor:pointer;font-size:10px;margin-right:5px;border-radius:2px;padding:2px 5px;">👁️</button>` : "";
                 let btnSuppr = `<button onclick="supprimerLigneHist('${p.id || p.nom}', ${index})" style="color:#ef4444;border:none;background:none;cursor:pointer;">✖</button>`;
 
+                // ICI : J'ai ajouté le style color pour la date
                 histDiv.innerHTML += `
                     <div style="font-size:10px; margin-bottom:8px; border-left:2px solid #3b82f6; padding-left:8px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span>${dateH} - <strong style="color:white;">${h.type}</strong></span>
+                            <span>
+                                <span style="color: #cbd5e1;">${dateH}</span> - <strong style="color:white;">${h.type}</strong>
+                            </span>
                             <div>${btnVoir}${btnSuppr}</div>
                         </div>
-                        <span style="color:#cbd5e1; font-style:italic;">${h.details}</span>
+                        <span style="color:#94a3b8; font-style:italic;">${h.details}</span>
                     </div>`;
             });
         } else {
@@ -152,7 +155,6 @@ window.sauvegarderEdition = async function() {
     const id = document.getElementById('edit-original-name').value;
     
     // On retrouve le patient original
-    // window.patientsLocaux est défini dans chargerPatients plus haut
     const originalP = window.patientsLocaux ? window.patientsLocaux.find(p => p.id === id || p.nom === id) : null;
 
     if(!originalP) return alert("Erreur : Patient introuvable");
@@ -204,8 +206,6 @@ window.filtrerPatients = function() {
     const term = document.getElementById('search-input').value.toLowerCase();
     const liste = window.patientsLocaux || [];
     const listeFiltree = liste.filter(p => p.nom.toLowerCase().includes(term));
-    // On ne recharge pas tout, on utilise juste l'affichage interne
-    // (Mais pour faire simple, on filtre visuellement les cartes)
     document.querySelectorAll('.patient-card').forEach(card => {
         const name = card.querySelector('.p-name').innerText.toLowerCase();
         card.style.display = name.includes(term) ? "block" : "none";
@@ -247,4 +247,43 @@ window.copierLienDoc = function() {
     copyText.select();
     document.execCommand("copy");
     alert("Lien copié !");
+}
+
+// --- 6. EXPORT / IMPORT (SAUVEGARDE LOCALE) ---
+
+window.exporterDonnees = function() {
+    const dataStr = JSON.stringify(window.patientsLocaux || [], null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `OMC_BACKUP_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+window.importerDonnees = function(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const json = JSON.parse(e.target.result);
+            if (Array.isArray(json)) {
+                if(confirm(`⚠️ Remplacer la base par ${json.length} dossiers ?`)) {
+                    // Pour Firebase, on devrait idéalement boucler et ajouter, 
+                    // mais ici c'est un import de secours.
+                    alert("L'import massif vers Firebase n'est pas activé pour éviter les doublons. Contactez le dev.");
+                }
+            } else {
+                alert("❌ Fichier invalide.");
+            }
+        } catch (err) {
+            alert("❌ Erreur lecture fichier.");
+        }
+    };
+    reader.readAsText(file);
+    input.value = '';
 }
