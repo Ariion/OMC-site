@@ -68,30 +68,38 @@ function ouvrirPanelEdition(p) {
     document.getElementById('edit-job').value = p.job;
     document.getElementById('edit-notes').value = p.notes || "";
     
-    // AFFICHAGE DE L'HISTORIQUE (Ordonnances, etc.)
-    // Note: Il faut que la div id="edit-historique" existe dans ton HTML (voir instruction précédente)
+    // AFFICHAGE DE L'HISTORIQUE
     const histDiv = document.getElementById('edit-historique');
     if(histDiv) {
         histDiv.innerHTML = ""; 
         
         if (p.historique && p.historique.length > 0) {
-            p.historique.forEach(h => {
+            // On ajoute l'index dans la boucle pour savoir quoi supprimer
+            p.historique.forEach((h, index) => {
                 const dateH = new Date(h.date).toLocaleDateString('fr-FR');
                 
-                // On prépare le bouton VOIR si une URL existe
+                // Bouton VOIR (si URL)
                 let btnVoir = "";
                 if (h.url) {
-                    // On utilise onclick avec des guillemets simples échappés pour l'URL
-                    btnVoir = `<button onclick="voirDocument('${h.url}')" style="background: #3b82f6; border: none; color: white; border-radius: 3px; cursor: pointer; padding: 2px 6px; font-size: 10px; margin-left: 5px;">👁️ VOIR</button>`;
+                    btnVoir = `<button onclick="voirDocument('${h.url}')" style="background: #3b82f6; border: none; color: white; border-radius: 3px; cursor: pointer; padding: 2px 6px; font-size: 10px; margin-right: 5px;">👁️ VOIR</button>`;
                 }
 
+                // Bouton SUPPRIMER (La nouveauté)
+                // On passe le nom du patient et l'index de la ligne
+                let btnSuppr = `<button onclick="clicSupprimerHist('${p.nom}', ${index})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 12px; padding: 0;">✖</button>`;
+
                 histDiv.innerHTML += `
-                    <div style="font-size: 10px; margin-bottom: 8px; border-left: 2px solid #3b82f6; padding-left: 8px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="color: #94a3b8;">${dateH} - <strong style="color:white;">${h.type}</strong></span>
-                            ${btnVoir}
+                    <div style="font-size: 10px; margin-bottom: 8px; border-left: 2px solid #3b82f6; padding-left: 8px; position: relative;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <span style="color: #94a3b8;">${dateH}</span> - <strong style="color:white;">${h.type}</strong>
+                            </div>
+                            <div style="display:flex; align-items:center;">
+                                ${btnVoir}
+                                ${btnSuppr}
+                            </div>
                         </div>
-                        <span style="color: #cbd5e1; font-style: italic;">${h.details}</span>
+                        <span style="color: #cbd5e1; font-style: italic; display:block; margin-top:2px;">${h.details}</span>
                     </div>
                 `;
             });
@@ -226,4 +234,17 @@ function updateStats() {
 // UTILITAIRE
 function formatDate(s) { 
     return s ? new Date(s).toLocaleDateString('fr-FR') : "??/??/????"; 
+}
+
+// Fonction intermédiaire pour gérer la suppression et rafraichir l'affichage sans fermer le dossier
+function clicSupprimerHist(nom, index) {
+    if(confirm("Supprimer cette entrée de l'historique ?")) {
+        // Appelle la fonction de global.js
+        const patientMisAJour = supprimerEvenementHistorique(nom, index);
+        
+        if(patientMisAJour) {
+            // Astuce : On ré-ouvre le panneau avec le patient mis à jour pour voir le changement immédiatement
+            ouvrirPanelEdition(patientMisAJour);
+        }
+    }
 }
