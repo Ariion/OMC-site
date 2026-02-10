@@ -12,7 +12,6 @@
     width: 800px !important;
     min-width: 800px !important;
     
-    /* LE SECRET : Pas de height fixe, pas de min-height bloquant */
     height: auto !important;
     min-height: auto !important;
     
@@ -20,14 +19,16 @@
     color: #111 !important;
     
     /* Padding : Haut Droite Bas Gauche */
-    padding: 50px 50px 80px 50px !important;
+    /* On passe de 50px à 40px en haut */
+    padding: 40px 50px 80px 50px !important; 
     
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     position: relative;
     box-sizing: border-box;
     overflow: visible !important;
     
-    /* Marge en bas pour ne pas coller au bord de l'écran */
+    /* Marge extérieure pour décoller du bord de l'écran */
+    margin-top: 40px;
     margin-bottom: 50px;
 }
 
