@@ -2,10 +2,10 @@
 const medsDB = {
     "Médecine Générale": [
         { 
-            name: "Acetamax 1000", 
+            name: "Acetamax", 
             player_hint: "Paracétamol (Classique) - Attention insuffisance hépatique", 
             doc_label: "Antidouleur / Fièvre",
-            doses: ["1 cp", "2 cp"] 
+            doses: ["500 mg", "1000 mg"] 
         },
         { 
             name: "Ibuprolex", 
