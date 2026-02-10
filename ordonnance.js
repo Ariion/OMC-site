@@ -1,4 +1,4 @@
-// 1. BASE DE DONNÉES DES MÉDICAMENTS (FICTIFS RP)
+// 1. BASE DE DONNÉES DES MÉDICAMENTS (FICTIFS RP & HRP)
 const medsDB = {
     "Médecine Générale": [
         { 
@@ -294,10 +294,7 @@ function updateQR() {
     }
 }
 
-// 7. EXPORT
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
-
-// 7. EXPORT SIMPLE ET EFFICACE
+// 7. EXPORT SIMPLE ET EFFICACE (FLUX NATUREL)
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 
 async function genererImage() {
