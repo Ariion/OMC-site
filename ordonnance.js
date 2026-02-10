@@ -1,63 +1,103 @@
 // 1. BASE DE DONNÉES DES MÉDICAMENTS (FICTIFS RP)
 const medsDB = {
     "Médecine Générale": [
-        // --- LES CLASSIQUES ---
-        { name: "Acetamax 1000", info: "Paracétamol (Douleur/Fièvre) - Sauf insuffisance hépatique", doses: ["1 cp", "2 cp"] },
-        { name: "Ibuprolex", info: "Ibuprofène (Anti-inflammatoire) - INTERDIT si enceinte", doses: ["200 mg", "400 mg"] },
-        { name: "Bacteryn", info: "Amoxicilline (Antibiotique standard)", doses: ["1 g matin/soir"] },
-        { name: "Spasmex", info: "Spasfon (Douleurs ventre/Règles)", doses: ["2 cp si douleur"] },
-        
-        // --- LES ALTERNATIVES (PLAN B) ---
-        { name: "Nefolix (Acupan)", info: "Antidouleur puissant (Alternative si allergie Aspirine/Ibuprofène)", doses: ["20 mg sur un sucre", "20 mg en injection"] },
-        { name: "Azithrox", info: "Antibiotique Macrolide (Alternative si allergie Pénicilline)", doses: ["250 mg (1 cp/jour)"] },
-        { name: "Cortisyl", info: "Cortisone (Anti-inflammatoire si allergie Ibuprofène)", doses: ["20 mg", "40 mg"] },
-        
-        // --- CONFORT ---
-        { name: "Gastrol", info: "Pansement gastrique (Brûlures d'estomac)", doses: ["1 gélule le soir"] },
-        { name: "AirFlow", info: "Ventoline (Crise d'asthme)", doses: ["2 bouffées si crise"] }
+        { 
+            name: "Acetamax 1000", 
+            player_hint: "Paracétamol (Classique) - Attention insuffisance hépatique", 
+            doc_label: "Antidouleur / Fièvre",
+            doses: ["1 cp", "2 cp"] 
+        },
+        { 
+            name: "Ibuprolex", 
+            player_hint: "Ibuprofène (AINS) - INTERDIT si enceinte ou ulcère", 
+            doc_label: "Anti-inflammatoire",
+            doses: ["200 mg", "400 mg"] 
+        },
+        { 
+            name: "Bacteryn", 
+            player_hint: "Amoxicilline (Antibio) - Attention allergie Pénicilline", 
+            doc_label: "Antibiotique",
+            doses: ["1 g matin/soir"] 
+        },
+        { 
+            name: "Spasmex", 
+            player_hint: "Spasfon - Douleurs ventre/règles", 
+            doc_label: "Antispasmodique",
+            doses: ["2 cp si douleur"] 
+        },
+        // ALTERNATIVES
+        { 
+            name: "Nefolix (Acupan)", 
+            player_hint: "PLAN B : Si allergie Aspirine/Ibuprofène", 
+            doc_label: "Antidouleur (Palier 1)",
+            doses: ["20 mg sur un sucre", "20 mg en injection"] 
+        },
+        { 
+            name: "Azithrox", 
+            player_hint: "PLAN B : Si allergie Pénicilline", 
+            doc_label: "Antibiotique (Macrolide)",
+            doses: ["250 mg (1 cp/jour)"] 
+        },
+        { 
+            name: "Cortisyl", 
+            player_hint: "Cortisone - Anti-inflammatoire stéroïdien", 
+            doc_label: "Corticoïde",
+            doses: ["20 mg", "40 mg"] 
+        },
+        // CONFORT
+        { 
+            name: "Gastrol", 
+            player_hint: "Pansement gastrique (Gaviscon/Oméprazole)", 
+            doc_label: "Protecteur gastrique",
+            doses: ["1 gélule le soir"] 
+        },
+        { 
+            name: "AirFlow", 
+            player_hint: "Ventoline - Crise d'asthme", 
+            doc_label: "Bronchodilatateur",
+            doses: ["2 bouffées si crise"] 
+        }
     ],
 
     "Psychologie": [
-        { name: "Serenyx", info: "Antidépresseur (Sertraline)", doses: ["1 cp le matin"] },
-        { name: "Calmax", info: "Xanax (Crise d'angoisse immédiate)", doses: ["0.5 mg sous la langue"] },
-        { name: "Zenith", info: "Valium (Sédatif musculaire et nerveux)", doses: ["10 mg"] },
-        { name: "Noctyl", info: "Somnifère (Zolpidem) - Risque dépendance", doses: ["1 cp au coucher"] },
-        { name: "Laroxyl", info: "Douleurs chroniques (Si échec autres traitements)", doses: ["25 mg le soir"] }
+        { name: "Serenyx", player_hint: "Antidépresseur (Sertraline)", doc_label: "Antidépresseur", doses: ["1 cp le matin"] },
+        { name: "Calmax", player_hint: "Xanax - Crise d'angoisse immédiate", doc_label: "Anxiolytique", doses: ["0.5 mg sous la langue"] },
+        { name: "Zenith", player_hint: "Valium - Sédatif musculaire et nerveux", doc_label: "Sédatif / Myorelaxant", doses: ["10 mg"] },
+        { name: "Noctyl", player_hint: "Somnifère (Zolpidem) - Risque dépendance", doc_label: "Hypnotique", doses: ["1 cp au coucher"] },
+        { name: "Laroxyl", player_hint: "Pour douleurs neuro (Si échec antidouleurs)", doc_label: "Traitement de fond", doses: ["25 mg le soir"] }
     ],
 
     "Chirurgie": [
-        // --- DOULEUR FORTE ---
-        { name: "Tramadolix", info: "Dérivé d'Opium (Attention nausées)", doses: ["50 mg", "100 mg LP"] },
-        { name: "Morphinax", info: "Morphine (Douleur Sévère)", doses: ["10 mg", "30 mg"] },
-        { name: "Oxycodin", info: "Oxycodone (Douleur Très Sévère)", doses: ["10 mg", "20 mg"] },
+        // OPIACÉS
+        { name: "Tramadolix", player_hint: "Palier 2 (Opium) - Attention nausées", doc_label: "Antalgique Palier 2", doses: ["50 mg", "100 mg LP"] },
+        { name: "Morphinax", player_hint: "Morphine - Douleur Sévère", doc_label: "Antalgique Palier 3", doses: ["10 mg", "30 mg"] },
+        { name: "Oxycodin", player_hint: "Oxycodone - Douleur Très Sévère", doc_label: "Antalgique Majeur", doses: ["10 mg", "20 mg"] },
 
-        // --- ALTERNATIVES SANS OPIUM (SI ALLERGIE MORPHINE) ---
-        { name: "Keta-Analgesic", info: "Kétamine faible dose (Douleur rebelle sans opiacés)", doses: ["Low Dose 10mg"] },
-        { name: "Profeniject", info: "Anti-inflammatoire injectable (Si allergie morphine)", doses: ["100 mg IM"] },
-        { name: "LidoPatch", info: "Patch anesthésiant (Douleur locale uniquement)", doses: ["1 patch sur zone"] },
+        // ALTERNATIVES OPIACÉS
+        { name: "Keta-Analgesic", player_hint: "PLAN B : Kétamine faible dose (Sans morphine)", doc_label: "Antalgique non-opiacé", doses: ["Low Dose 10mg"] },
+        { name: "Profeniject", player_hint: "PLAN B : Anti-inf injectable (Si allergie morphine)", doc_label: "Anti-inflammatoire Inj.", doses: ["100 mg IM"] },
+        { name: "LidoPatch", player_hint: "PLAN B : Patch anesthésiant local", doc_label: "Anesthésique local", doses: ["1 patch sur zone"] },
 
-        // --- SOINS ---
-        { name: "InfectBlock", info: "Antibiotique post-opératoire", doses: ["1 g"] },
-        { name: "Fluidex", info: "Anticoagulant (Prévention Phlébite)", doses: ["0.4 ml SC"] },
-        { name: "Dermaclean", info: "Soins de plaie (Bétadine)", doses: ["Pansement tous les 2 jours"] }
+        // SOINS
+        { name: "InfectBlock", player_hint: "Antibiotique post-opératoire", doc_label: "Antibioprophylaxie", doses: ["1 g"] },
+        { name: "Fluidex", player_hint: "Anticoagulant (Piqûre ventre)", doc_label: "Anticoagulant", doses: ["0.4 ml SC"] },
+        { name: "Dermaclean", player_hint: "Bétadine - Nettoyage plaie", doc_label: "Antiseptique local", doses: ["Pansement tous les 2 jours"] }
     ],
 
     "Gynécologie": [
-        { name: "Spasmex Femina", info: "Douleurs de règles / Contractions", doses: ["160 mg"] },
-        { name: "Uteryl", info: "Anti-inflammatoire pelvien (Interdit si enceinte)", doses: ["100 mg"] },
-        { name: "MycoStop", info: "Ovule antifongique (Mycose)", doses: ["1 ovule le soir"] },
-        
-        // --- GROSSESSE ---
-        { name: "Folix Acid", info: "Vitamines B9 (Début de grossesse)", doses: ["0.4 mg"] },
-        { name: "FerroMax", info: "Fer (Si anémie / fatigue)", doses: ["80 mg"] },
-        { name: "GastroMum", info: "Anti-acide (Brûlures estomac)", doses: ["1 sachet si besoin"] }
+        { name: "Spasmex Femina", player_hint: "Douleurs de règles", doc_label: "Antispasmodique", doses: ["160 mg"] },
+        { name: "Uteryl", player_hint: "Anti-inflammatoire pelvien (Interdit enceinte)", doc_label: "AINS", doses: ["100 mg"] },
+        { name: "MycoStop", player_hint: "Ovule pour Mycose", doc_label: "Antifongique local", doses: ["1 ovule le soir"] },
+        { name: "Folix Acid", player_hint: "Vitamines B9 (Début grossesse)", doc_label: "Supplémentation B9", doses: ["0.4 mg"] },
+        { name: "FerroMax", player_hint: "Fer (Si fatigue/anémie)", doc_label: "Supplémentation Fer", doses: ["80 mg"] },
+        { name: "GastroMum", player_hint: "Anti-acide (OK Grossesse)", doc_label: "Pansement gastrique", doses: ["1 sachet si besoin"] }
     ],
 
     "Kiné": [
-        { name: "FlexiGel", info: "Pommade Diclofénac (Entorse/Coup)", doses: ["Application locale"] },
-        { name: "Ketoflex", info: "Anti-inflammatoire puissant (Dos bloqué)", doses: ["100 mg"] },
-        { name: "Muscloril", info: "Décontractant musculaire (Si courbatures)", doses: ["1 cp le soir"] },
-        { name: "Patch-X", info: "Patch chauffant / anti-douleur", doses: ["1 patch matin/soir"] }
+        { name: "FlexiGel", player_hint: "Pommade Diclofénac (Entorse)", doc_label: "Gel Anti-inflammatoire", doses: ["Application locale"] },
+        { name: "Ketoflex", player_hint: "Anti-inflammatoire puissant (Dos)", doc_label: "Anti-inflammatoire", doses: ["100 mg"] },
+        { name: "Muscloril", player_hint: "Décontractant musculaire", doc_label: "Myorelaxant", doses: ["1 cp le soir"] },
+        { name: "Patch-X", player_hint: "Patch chauffant", doc_label: "Dispositif antalgique", doses: ["1 patch matin/soir"] }
     ]
 };
 
@@ -138,12 +178,14 @@ function updateMeds(service) {
         medsDB[service].forEach((med, index) => {
             let opt = document.createElement('option');
             opt.value = index; 
-            opt.innerText = `${med.name} - ${med.info}`;
+            // MENU GAUCHE : On montre le nom + l'aide joueur (Allergies, nom réel)
+            opt.innerText = `${med.name} — [${med.player_hint}]`;
             select.appendChild(opt);
         });
         updateDosages();
     }
 }
+
 document.getElementById('med-select').addEventListener('change', selectMed);
 
 function updateDosages() {
@@ -195,7 +237,7 @@ function ajouterLigne() {
     const li = document.createElement('li');
     li.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
-            <span class="med-name">${medData.name} <small style="font-weight: normal; color: #666;">(${medData.info})</small></span>
+            <span class="med-name">${medData.name} <small style="font-weight: normal; color: #666; font-style:italic;">(${medData.doc_label})</small></span>
             <span style="font-weight: bold; font-size: 14px;">${dosage} / ${duree}</span>
         </div>
         <div class="med-details">➤ ${poso}</div>
