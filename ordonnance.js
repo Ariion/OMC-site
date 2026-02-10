@@ -51,6 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if(dateInput) dateInput.value = today;
     upDate('d-date', today);
     
+    // AUTOCOMPLETE CENTRALISÉ
+    setupPatientAutocomplete({
+        nameId: 'patientName',
+        birthId: 'patientBirth',
+        callback: function(p) {
+            up('d-nom', p.nom);
+            upDate('d-ddn', p.naissance);
+        }
+    });
+
     updateQR();
 });
 
@@ -106,12 +116,10 @@ function updateMeds(service) {
     if(medsDB[service]) {
         medsDB[service].forEach((med, index) => {
             let opt = document.createElement('option');
-            opt.value = index; // On garde l'index pour retrouver les infos plus tard
+            opt.value = index; 
             opt.innerText = `${med.name} - ${med.info}`;
             select.appendChild(opt);
         });
-        
-        // IMPORTANT : On force la mise à jour des dosages pour le 1er médicament de la liste
         updateDosages();
     }
 }
@@ -119,16 +127,13 @@ document.getElementById('med-select').addEventListener('change', selectMed);
 
 function updateDosages() {
     const service = document.getElementById('service-select').value;
-    const medIndex = document.getElementById('med-select').value; // Récupère l'index
+    const medIndex = document.getElementById('med-select').value; 
     const dosageSelect = document.getElementById('dosage-select');
     
-    dosageSelect.innerHTML = ""; // On vide l'ancien dosage
+    dosageSelect.innerHTML = ""; 
     
-    // On vérifie que le médicament existe bien dans la DB
     if (medsDB[service] && medsDB[service][medIndex]) {
         const med = medsDB[service][medIndex];
-        
-        // On boucle sur les doses disponibles de CE médicament
         med.doses.forEach(dose => {
             let opt = document.createElement('option');
             opt.value = dose;
@@ -141,8 +146,6 @@ function updateDosages() {
 function selectMed() {
     const select = document.getElementById('med-select');
     const selectedOption = select.options[select.selectedIndex];
-    
-    // Remplit le champ dosage automatiquement avec la valeur de la DB
     if(selectedOption && selectedOption.dataset.dose) {
         document.getElementById('input-dosage').value = selectedOption.dataset.dose;
     }
@@ -158,7 +161,6 @@ function ajouterLigne() {
     const select = document.getElementById('med-select');
     if (select.selectedIndex === -1) return;
 
-    // Récupération des données
     const medIndex = select.value;
     const medData = medsDB[service][medIndex];
     const dosage = document.getElementById('dosage-select').value;
@@ -170,8 +172,6 @@ function ajouterLigne() {
     if(emptyMsg) emptyMsg.remove();
 
     const li = document.createElement('li');
-    
-    // Création de la ligne HTML
     li.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
             <span class="med-name">${medData.name} <small style="font-weight: normal; color: #666;">(${medData.info})</small></span>
@@ -180,15 +180,10 @@ function ajouterLigne() {
         <div class="med-details">➤ ${poso}</div>
         <span class="del-btn" onclick="supprimerLigne(this)">✖</span>
     `;
-    
     list.appendChild(li);
 
-    // 1. On remet le menu déroulant sur l'option par défaut (vide)
     document.getElementById('poso-select').value = "";
-    // 2. On vide aussi le champ texte pour éviter les erreurs
     document.getElementById('input-poso').value = "";
-    // ---------------------------------
-
     updateQR();
 }
 
@@ -209,21 +204,17 @@ function viderOrdonnance() {
     }
 }
 
-// 6. RÉFÉRENCE JJMMHHMM
+// 6. RÉFÉRENCE
 function genererReference() {
     const n = new Date();
-    const jj = n.getDate().toString().padStart(2, '0');
-    const mm = (n.getMonth() + 1).toString().padStart(2, '0');
-    const hh = n.getHours().toString().padStart(2, '0');
-    const min = n.getMinutes().toString().padStart(2, '0');
-    const ref = `${jj}${mm}${hh}${min}`;
+    const ref = `${n.getDate().toString().padStart(2, '0')}${n.getMinutes().toString().padStart(2, '0')}`;
     document.getElementById('d-ref').innerText = "#" + ref;
     updateQR();
 }
 
 function updateQR() {
     const ref = document.getElementById('d-ref').innerText;
-    const nom = document.getElementById('input-nom').value || "Inconnu";
+    const nom = document.getElementById('patientName').value || "Inconnu";
     const medecin = document.getElementById('display-sig').innerText;
     const nbMeds = document.querySelectorAll('#ordo-list li:not(.empty-msg)').length;
 
@@ -234,7 +225,7 @@ function updateQR() {
     }
 }
 
-// 7. EXPORT IMAGE (Même logique que Décès)
+// 7. EXPORT
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 
 async function genererImage() {
@@ -243,11 +234,16 @@ async function genererImage() {
     btn.innerText = "GÉNÉRATION...";
     btn.disabled = true;
     doc.classList.add('mode-capture');
+    
+    // Fix anti-crop
+    const originalHeight = doc.style.height;
+    doc.style.height = (doc.scrollHeight + 50) + "px";
 
     try {
         const canvas = await html2canvas(doc, {
             scale: 2, useCORS: true, backgroundColor: "#ffffff",
-            height: doc.scrollHeight, windowHeight: doc.scrollHeight
+            height: doc.scrollHeight + 50, 
+            windowHeight: doc.scrollHeight + 50
         });
 
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
@@ -264,13 +260,13 @@ async function genererImage() {
         }
     } catch (e) { alert("Erreur génération image"); } 
     finally {
+        doc.style.height = originalHeight;
         doc.classList.remove('mode-capture');
         btn.innerText = "🖼️ GÉNÉRER L'ORDONNANCE";
         btn.disabled = false;
     }
 }
 
-// 8. ENVOI DISCORD
 async function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1424039813593698456/ew_fnKRv1gLQooCf64qMKWP1IOxth2iOpHYsRE9UaJMKWd-aUfcTc69amPI7ye4ppWxA";
     const btn = document.getElementById('discord-btn');
@@ -278,51 +274,43 @@ async function envoyerDiscord() {
 
     btn.disabled = true;
     btn.innerText = "CAPTURE...";
-
-    // 1. On cache les croix rouges
     doc.classList.add('mode-capture');
+    
+    // Fix anti-crop
+    const originalHeight = doc.style.height;
+    doc.style.height = (doc.scrollHeight + 50) + "px";
 
     try {
-        // On capture le document propre
         const canvas = await html2canvas(doc, { 
             scale: 2, 
             useCORS: true,
-            // On s'assure de tout capturer même si c'est long
-            height: doc.scrollHeight,
-            windowHeight: doc.scrollHeight
+            height: doc.scrollHeight + 50,
+            windowHeight: doc.scrollHeight + 50
         });
 
-        // 2. On réaffiche les croix tout de suite après la photo (pas besoin d'attendre l'envoi)
         doc.classList.remove('mode-capture');
-        
         btn.innerText = "ENVOI...";
 
        canvas.toBlob(async (blob) => {
-    const formData = new FormData();
-    const nom = document.getElementById('input-nom').value || "Inconnu";
-    
-    // On récupère la date pour le titre du post
-    const datePost = new Date().toLocaleDateString('fr-FR');
+            const formData = new FormData();
+            const nom = document.getElementById('patientName').value || "Inconnu";
+            const datePost = new Date().toLocaleDateString('fr-FR');
 
-    formData.append("payload_json", JSON.stringify({
-        // C'est ICI que la magie opère pour les Forums
-        thread_name: `Rapport - ${nom} (${datePost})`, 
-        content: `💊 **Nouvelle Ordonnance médicale enregistrée**\n👤 Patient : ${nom}`
-    }));
-    
-    formData.append("file", blob, `ordo_${nom}.png`);
+            formData.append("payload_json", JSON.stringify({
+                thread_name: `Ordo - ${nom} (${datePost})`, 
+                content: `💊 **Nouvelle Ordonnance médicale enregistrée**\n👤 Patient : ${nom}`
+            }));
+            
+            formData.append("file", blob, `ordo_${nom}.png`);
 
-    // AJOUTE ?wait=true à la fin de ton URL pour être sûr que Discord valide la création
-    const response = await fetch(url + "?wait=true", { method: 'POST', body: formData });
-                
+            const response = await fetch(url + "?wait=true", { method: 'POST', body: formData });
+            
             if(response.ok) { 
                 alert("✅ Envoyé sur l'intranet !"); 
                 btn.innerText = "ENVOYÉ"; 
             } else {
                 throw new Error("Erreur serveur Discord");
             }
-            
-            // On réactive le bouton après l'envoi
             btn.disabled = false;
             setTimeout(() => { btn.innerText = "ENVOYER SUR DISCORD"; }, 2000);
 
@@ -331,11 +319,11 @@ async function envoyerDiscord() {
     } catch (e) {
         console.error(e);
         alert("❌ Erreur lors de l'envoi.");
-        
-        // Sécurité : on réaffiche les croix si ça plante
         doc.classList.remove('mode-capture');
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
+    } finally {
+        doc.style.height = originalHeight;
     }
 }
 
@@ -345,24 +333,3 @@ function copyLink() {
     alert("Lien copié !");
 }
 function closePopup() { document.getElementById('image-popup').style.display = 'none'; }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const savedPatient = localStorage.getItem('currentPatient');
-    
-    if (savedPatient) {
-        const p = JSON.parse(savedPatient);
-        
-        // Adapte les IDs selon ce que tu as mis dans ordonnance.html
-        // Si ton input s'appelle "patientName", garde ça. Sinon change l'ID.
-        if(document.getElementById('patientName')) {
-            document.getElementById('patientName').value = p.nom;
-            // Si tu as une fonction qui met à jour le visuel (ex: updateReport), appelle-la ici :
-            if(typeof updateReport === 'function') updateReport();
-        }
-        
-        if(document.getElementById('patientBirth')) {
-            document.getElementById('patientBirth').value = p.naissance;
-            if(typeof updateReport === 'function') updateReport();
-        }
-    }
-});
