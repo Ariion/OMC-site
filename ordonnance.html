@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>OMC - Ordonnance Médicale</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="ordonnance.css">
@@ -20,14 +19,13 @@
             <h1 class="sidebar-title">PRESCRIPTION</h1>
             
             <div class="sidebar-section">
-                
                 <div class="form-group">
                     <label>Patient(e)</label>
-                    <input type="text" id="input-nom" oninput="up('d-nom', this.value)" placeholder="Nom Prénom">
+                    <input type="text" id="patientName" oninput="up('d-nom', this.value)" placeholder="Nom Prénom">
                 </div>
                 <div class="form-group">
                     <label>Date de Naissance</label>
-                    <input type="date" oninput="upDate('d-ddn', this.value)">
+                    <input type="date" id="patientBirth" oninput="upDate('d-ddn', this.value)">
                 </div>
                 <div class="form-group">
                     <label>Date de consultation</label>
@@ -55,15 +53,13 @@
 
                 <div class="form-group">
                     <label>Médicament (avec aide)</label>
-                    <select id="med-select" onchange="updateDosages()">
-                        </select>
+                    <select id="med-select" onchange="updateDosages()"></select>
                 </div>
 
                 <div class="row-group">
                     <div class="form-group" style="flex:1">
                         <label>Dosage</label>
-                        <select id="dosage-select">
-                            </select>
+                        <select id="dosage-select"></select>
                     </div>
                     <div class="form-group" style="flex:1">
                         <label>Durée</label>
@@ -97,8 +93,8 @@
                 <textarea id="input-inst" oninput="upInst(this.value)" rows="3" placeholder="Repos, arrêt de travail, recommandations..."></textarea>
             </div>
 
-            <button type="button" onclick="genererImage()" class="btn-image">🖼️ GÉNÉRER L'ORDONNANCE</button>
-            <button id="discord-btn" onclick="envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
+            <button type="button" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; genererImage()" class="btn-image">🖼️ GÉNÉRER L'ORDONNANCE</button>
+            <button id="discord-btn" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
         </aside>
 
         <main class="preview-area">
