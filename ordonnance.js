@@ -1,59 +1,63 @@
 // 1. BASE DE DONNÉES DES MÉDICAMENTS (FICTIFS RP)
 const medsDB = {
     "Médecine Générale": [
-        // CLASSIQUES
-        { name: "Acetamax 1000", info: "Paracétamol (Douleur/Fièvre)", doses: ["1 cp", "2 cp"] },
-        { name: "Ibuprolex", info: "Anti-inflammatoire (AINS)", doses: ["200 mg", "400 mg"] },
-        { name: "Bacteryn", info: "Antibiotique (Pénicilline)", doses: ["1 g matin/soir"] },
-        { name: "Spasmex", info: "Douleurs abdominales", doses: ["2 cp si douleur"] },
+        // --- LES CLASSIQUES ---
+        { name: "Acetamax 1000", info: "Paracétamol (Douleur/Fièvre) - Sauf insuffisance hépatique", doses: ["1 cp", "2 cp"] },
+        { name: "Ibuprolex", info: "Ibuprofène (Anti-inflammatoire) - INTERDIT si enceinte", doses: ["200 mg", "400 mg"] },
+        { name: "Bacteryn", info: "Amoxicilline (Antibiotique standard)", doses: ["1 g matin/soir"] },
+        { name: "Spasmex", info: "Spasfon (Douleurs ventre/Règles)", doses: ["2 cp si douleur"] },
         
-        // ALTERNATIVES ALLERGIES
-        { name: "Nefolix (Acupan)", info: "Douleur (Alt. aux AINS/Opioïdes)", doses: ["20 mg (1 ampoule buvable)"] },
-        { name: "Azithrox", info: "Antibiotique (Alt. Pénicilline)", doses: ["250 mg (1 cp/jour)"] },
-        { name: "Cortisyl", info: "Cortisone (Alt. aux AINS)", doses: ["20 mg", "40 mg"] },
+        // --- LES ALTERNATIVES (PLAN B) ---
+        { name: "Nefolix (Acupan)", info: "Antidouleur puissant (Alternative si allergie Aspirine/Ibuprofène)", doses: ["20 mg sur un sucre", "20 mg en injection"] },
+        { name: "Azithrox", info: "Antibiotique Macrolide (Alternative si allergie Pénicilline)", doses: ["250 mg (1 cp/jour)"] },
+        { name: "Cortisyl", info: "Cortisone (Anti-inflammatoire si allergie Ibuprofène)", doses: ["20 mg", "40 mg"] },
         
-        // AUTRES
-        { name: "Gastrol", info: "Protection estomac", doses: ["1 gélule le soir"] },
-        { name: "AirFlow", info: "Inhalateur Asthme", doses: ["2 bouffées si crise"] }
+        // --- CONFORT ---
+        { name: "Gastrol", info: "Pansement gastrique (Brûlures d'estomac)", doses: ["1 gélule le soir"] },
+        { name: "AirFlow", info: "Ventoline (Crise d'asthme)", doses: ["2 bouffées si crise"] }
     ],
-    "Psychologie & Neurologie": [
-        { name: "Serenyx", info: "Antidépresseur", doses: ["1 cp le matin"] },
-        { name: "Calmax", info: "Anxiolytique (Crise)", doses: ["0.5 mg sous la langue"] },
-        { name: "Zenith", info: "Sédatif puissant", doses: ["10 mg"] },
-        { name: "Noctyl", info: "Somnifère", doses: ["1 cp au coucher"] },
-        { name: "Laroxyl", info: "Douleurs neuro (Alt. classiques)", doses: ["25 mg le soir"] }
-    ],
-    "Chirurgie & Urgence": [
-        // PALIERS 2 & 3
-        { name: "Tramadolix", info: "Douleur modérée (Contient Opium)", doses: ["50 mg", "100 mg LP"] },
-        { name: "Morphinax", info: "Douleur sévère (Morphine)", doses: ["10 mg", "30 mg"] },
-        { name: "Oxycodin", info: "Douleur très sévère (Oxycodone)", doses: ["10 mg", "20 mg"] },
 
-        // ALTERNATIVES ALLERGIES OPIOÏDES
-        { name: "Keta-Analgesic", info: "Douleur (Alt. Morphine)", doses: ["Low Dose 10mg"] },
-        { name: "LidoPatch", info: "Patch anesthésiant local (Alt. Morphine)", doses: ["1 patch sur zone"] },
-        { name: "Profeniject", info: "Anti-inflammatoire inj. (Alt. Morphine)", doses: ["100 mg IM"] },
+    "Psychologie": [
+        { name: "Serenyx", info: "Antidépresseur (Sertraline)", doses: ["1 cp le matin"] },
+        { name: "Calmax", info: "Xanax (Crise d'angoisse immédiate)", doses: ["0.5 mg sous la langue"] },
+        { name: "Zenith", info: "Valium (Sédatif musculaire et nerveux)", doses: ["10 mg"] },
+        { name: "Noctyl", info: "Somnifère (Zolpidem) - Risque dépendance", doses: ["1 cp au coucher"] },
+        { name: "Laroxyl", info: "Douleurs chroniques (Si échec autres traitements)", doses: ["25 mg le soir"] }
+    ],
 
-        // SOINS
-        { name: "InfectBlock", info: "Antibiotique post-op", doses: ["1 g"] },
-        { name: "Fluidex", info: "Anticoagulant", doses: ["0.4 ml SC"] },
-        { name: "Dermaclean", info: "Soins infirmiers", doses: ["Pansement tous les 2 jours"] }
+    "Chirurgie": [
+        // --- DOULEUR FORTE ---
+        { name: "Tramadolix", info: "Dérivé d'Opium (Attention nausées)", doses: ["50 mg", "100 mg LP"] },
+        { name: "Morphinax", info: "Morphine (Douleur Sévère)", doses: ["10 mg", "30 mg"] },
+        { name: "Oxycodin", info: "Oxycodone (Douleur Très Sévère)", doses: ["10 mg", "20 mg"] },
+
+        // --- ALTERNATIVES SANS OPIUM (SI ALLERGIE MORPHINE) ---
+        { name: "Keta-Analgesic", info: "Kétamine faible dose (Douleur rebelle sans opiacés)", doses: ["Low Dose 10mg"] },
+        { name: "Profeniject", info: "Anti-inflammatoire injectable (Si allergie morphine)", doses: ["100 mg IM"] },
+        { name: "LidoPatch", info: "Patch anesthésiant (Douleur locale uniquement)", doses: ["1 patch sur zone"] },
+
+        // --- SOINS ---
+        { name: "InfectBlock", info: "Antibiotique post-opératoire", doses: ["1 g"] },
+        { name: "Fluidex", info: "Anticoagulant (Prévention Phlébite)", doses: ["0.4 ml SC"] },
+        { name: "Dermaclean", info: "Soins de plaie (Bétadine)", doses: ["Pansement tous les 2 jours"] }
     ],
-    "Gynécologie & Obstétrique": [
-        { name: "Spasmex Femina", info: "Douleurs menstruelles", doses: ["160 mg"] },
-        { name: "Uteryl", info: "Anti-inflammatoire pelvien", doses: ["100 mg"] },
-        { name: "MycoStop", info: "Antifongique", doses: ["1 ovule le soir"] },
+
+    "Gynécologie": [
+        { name: "Spasmex Femina", info: "Douleurs de règles / Contractions", doses: ["160 mg"] },
+        { name: "Uteryl", info: "Anti-inflammatoire pelvien (Interdit si enceinte)", doses: ["100 mg"] },
+        { name: "MycoStop", info: "Ovule antifongique (Mycose)", doses: ["1 ovule le soir"] },
         
-        // GROSSESSE
-        { name: "Folix Acid", info: "Vitamines Grossesse", doses: ["0.4 mg"] },
-        { name: "FerroMax", info: "Fer (Anémie)", doses: ["80 mg"] },
-        { name: "GastroMum", info: "Anti-acide (Grossesse OK)", doses: ["1 sachet si besoin"] }
+        // --- GROSSESSE ---
+        { name: "Folix Acid", info: "Vitamines B9 (Début de grossesse)", doses: ["0.4 mg"] },
+        { name: "FerroMax", info: "Fer (Si anémie / fatigue)", doses: ["80 mg"] },
+        { name: "GastroMum", info: "Anti-acide (Brûlures estomac)", doses: ["1 sachet si besoin"] }
     ],
-    "Kiné & Rhumatologie": [
-        { name: "FlexiGel", info: "Pommade (Diclofenac)", doses: ["Application locale"] },
-        { name: "Ketoflex", info: "Anti-inflammatoire puissant", doses: ["100 mg"] },
-        { name: "Muscloril", info: "Décontractant musculaire", doses: ["1 cp le soir"] },
-        { name: "Patch-X", info: "Patch diffusant (12h)", doses: ["1 patch matin/soir"] }
+
+    "Kiné": [
+        { name: "FlexiGel", info: "Pommade Diclofénac (Entorse/Coup)", doses: ["Application locale"] },
+        { name: "Ketoflex", info: "Anti-inflammatoire puissant (Dos bloqué)", doses: ["100 mg"] },
+        { name: "Muscloril", info: "Décontractant musculaire (Si courbatures)", doses: ["1 cp le soir"] },
+        { name: "Patch-X", info: "Patch chauffant / anti-douleur", doses: ["1 patch matin/soir"] }
     ]
 };
 
