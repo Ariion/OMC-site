@@ -18,22 +18,18 @@ function toggleMotifs() {
 
 function updateCertif() {
     const type = document.getElementById('f-type').value;
-    const sideEnt = document.getElementById('side-entreprise-block');
-    const sideConcl = document.getElementById('side-concl-block');
-    const sideDiv = document.getElementById('side-divers-block');
-    const docEnt = document.getElementById('doc-entreprise-block');
-    const docConcl = document.getElementById('doc-concl-block');
-    const docDiv = document.getElementById('doc-divers-block');
+    
+    // Visibilité des blocs
+    document.getElementById('side-entreprise-block').style.display = (type === "Aptitude professionnelle") ? "block" : "none";
+    document.getElementById('doc-entreprise-block').style.display = (type === "Aptitude professionnelle") ? "block" : "none";
+    
+    document.getElementById('side-concl-block').style.display = (type !== "Divers") ? "block" : "none";
+    document.getElementById('doc-concl-block').style.display = (type !== "Divers") ? "block" : "none";
+    
+    document.getElementById('side-divers-block').style.display = (type === "Divers") ? "block" : "none";
+    document.getElementById('doc-divers-block').style.display = (type === "Divers") ? "block" : "none";
 
-    // Visibilité des blocs de saisie et de document
-    sideEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
-    docEnt.style.display = (type === "Aptitude professionnelle") ? "block" : "none";
-    sideConcl.style.display = (type !== "Divers") ? "block" : "none";
-    docConcl.style.display = (type !== "Divers") ? "block" : "none";
-    sideDiv.style.display = (type === "Divers") ? "block" : "none";
-    docDiv.style.display = (type === "Divers") ? "block" : "none";
-
-    // RÉTABLISSEMENT DES TITRES EXACTS (Majuscules et Accents)
+    // Titres
     const titres = {
         "Aptitude professionnelle": "CERTIFICAT D'APTITUDE PROFESSIONNELLE",
         "Port d'arme (PPA)": "CERTIFICAT DE CAPACITÉ À PASSER L'EXAMEN DU PPA",
@@ -41,27 +37,36 @@ function updateCertif() {
     };
     document.getElementById('d-titre-doc').innerText = titres[type] || "CERTIFICAT MÉDICAL";
 
-    // Mise à jour des textes de base
-    document.getElementById('d-nom').innerText = document.getElementById('f-nom').value || "...";
+    // --- CORRECTION MAJEURE ICI (LIAISON) ---
+    // On prend les nouveaux IDs (patientName, patientBirth)
+    const inputNom = document.getElementById('patientName');
+    const inputDate = document.getElementById('patientBirth');
+
+    document.getElementById('d-nom').innerText = inputNom && inputNom.value ? inputNom.value : "...";
+    
+    // Pour la date, on formate si elle existe
+    if(inputDate && inputDate.value) {
+        document.getElementById('d-naiss').innerText = new Date(inputDate.value).toLocaleDateString('fr-FR');
+    } else {
+        document.getElementById('d-naiss').innerText = "...";
+    }
+    // ----------------------------------------
+
     document.getElementById('d-entreprise').innerText = document.getElementById('f-entreprise').value || "...";
     document.getElementById('d-sig').innerText = document.getElementById('f-medecin').value || "DOCTEUR";
 
-    // GESTION DES CONCLUSIONS AVEC MOTIFS RAPIDES
+    // Conclusions
     if (type !== "Divers") {
         const c = document.querySelector('input[name="concl"]:checked').value;
         let texteFinal = "";
 
-        if (c === "Apte") {
-            texteFinal = "Apte — Aucune contre-indication clinique.";
-        } 
+        if (c === "Apte") texteFinal = "Apte — Aucune contre-indication clinique.";
         else if (c === "Réserve") {
             const motif = document.getElementById('f-motif-reserve').value;
-            // Si un motif est choisi, on l'ajoute à la phrase
             texteFinal = "Apte avec réserve" + (motif ? ` — ${motif}` : ".");
         } 
         else if (c === "Inapte") {
             const motif = document.getElementById('f-motif-inapte').value;
-            // Si un motif est choisi, on l'ajoute à la phrase
             texteFinal = "Inapte" + (motif ? ` — ${motif}` : ".");
         }
         document.getElementById('d-concl').innerText = texteFinal;
@@ -72,29 +77,48 @@ function updateCertif() {
 
 function genererReference() {
     const n = new Date();
-    const jj = n.getDate().toString().padStart(2, '0');
-    const mm = (n.getMonth() + 1).toString().padStart(2, '0');
-    const hh = n.getHours().toString().padStart(2, '0');
-    const min = n.getMinutes().toString().padStart(2, '0');
-    const ref = `${jj}${mm}${hh}${min}`;
+    const ref = `${n.getDate()}${n.getMonth()+1}${n.getHours()}${n.getMinutes()}`;
     
-    const refEl = document.getElementById('d-ref');
-    if(refEl) {
-        refEl.innerText = "#" + ref;
-        refEl.style.color = "#1e293b"; 
+    if(document.getElementById('d-ref')) {
+        document.getElementById('d-ref').innerText = "#" + ref;
     }
-    
-    const qrImg = document.getElementById('qr-ref');
-    if(qrImg) {
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
+    if(document.getElementById('qr-ref')) {
+        document.getElementById('qr-ref').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OMC-CERT-${ref}`;
     }
 }
 
+// Fonction utilitaire pour mise à jour rapide date (gardée pour compatibilité)
 function upDate(targetId, val) {
     if(!val) return;
     document.getElementById(targetId).innerText = new Date(val).toLocaleDateString('fr-FR');
 }
 
+// --- INIT & AUTOCOMPLETE ---
+window.onload = function() {
+    // Date du jour auto
+    if(document.getElementById('d-date')) {
+        const today = new Date();
+        document.getElementById('d-date').innerText = today.toLocaleDateString('fr-FR');
+        // On remplit aussi l'input date du jour s'il existe (optionnel)
+        const dateInput = document.querySelector('input[oninput*="d-date"]');
+        if(dateInput) dateInput.valueAsDate = today;
+    }
+    
+    genererReference();
+    toggleMotifs(); 
+
+    // SYSTÈME DE PATIENT CENTRALISÉ
+    setupPatientAutocomplete({
+        nameId: 'patientName',
+        birthId: 'patientBirth',
+        callback: function(p) {
+            // Force la mise à jour visuelle après avoir cliqué sur un nom
+            updateCertif();
+        }
+    });
+};
+
+// ... (Garde tes fonctions genererImage, envoyerDiscord, copyLink, closePopup inchangées en dessous) ...
 async function genererImage() {
     const doc = document.getElementById('document');
     const btn = event.target;
@@ -102,12 +126,10 @@ async function genererImage() {
     btn.disabled = true;
 
     try {
-        // Correction du crop : On utilise les dimensions exactes du contenu
         const canvas = await html2canvas(doc, { 
             scale: 2, 
             useCORS: true, 
             backgroundColor: "#ffffff",
-            // Ces deux lignes règlent le problème du crop et du blanc inutile :
             height: doc.scrollHeight, 
             windowHeight: doc.scrollHeight,
             y: 0,
@@ -154,7 +176,6 @@ async function envoyerDiscord() {
             const formData = new FormData();
             const nom = document.getElementById('d-nom').innerText || "Inconnu";
             const typeDoc = document.getElementById('d-titre-doc').innerText || "Certificat";
-            const datePost = new Date().toLocaleDateString('fr-FR');
 
             formData.append("payload_json", JSON.stringify({
                 thread_name: `📝 ${typeDoc} - ${nom}`,
@@ -188,34 +209,3 @@ function copyLink() {
 function closePopup() {
     document.getElementById('image-popup').style.display = 'none';
 }
-
-window.onload = function() {
-    // Initialisation Date du jour
-    if(document.getElementById('d-date')) {
-        document.getElementById('d-date').innerText = new Date().toLocaleDateString('fr-FR');
-    }
-    
-    genererReference();
-    toggleMotifs(); // Init interface
-
-    // --- AUTOCOMPLETE CENTRALISÉ (GLOBAL.JS) ---
-    setupPatientAutocomplete({
-        nameId: 'patientName',   // L'ID que tu viens de changer dans le HTML
-        birthId: 'patientBirth', // L'ID que tu viens d'ajouter
-        callback: function(p) {
-            // Cette fonction est appelée quand on clique sur un patient dans la liste
-            // Elle sert à mettre à jour la prévisualisation (la feuille blanche)
-            
-            // 1. Met à jour le nom sur le document
-            document.getElementById('d-nom').innerText = p.nom;
-            
-            // 2. Met à jour la date de naissance sur le document
-            if (p.naissance) {
-                upDate('d-naiss', p.naissance);
-            }
-            
-            // 3. Optionnel : Si tu veux aussi remplir le métier s'il existe
-            // (Il faudrait un champ job dans ton certificat, mais sinon on laisse)
-        }
-    });
-};
