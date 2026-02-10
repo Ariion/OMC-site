@@ -354,28 +354,57 @@ function switchMode(mode) {
     else document.getElementById('btn-manual').classList.add('active');
 }
 
-// ==========================================
-// 5. EXPORT IMAGE ET DISCORD (FIX CROP)
-// ==========================================
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
-let lastImageUrl = "";
+/* ============================================================
+   LABO.JS - VERSION FIREBASE COMPATIBLE
+   ============================================================ */
 
-async function genererImage() {
-    const btn = event.currentTarget;
-    const doc = document.getElementById('document'); // On cible #document, pas #capture-zone si l'ID a changé
+import { savePatientToDB, ajouterEvenementHistorique } from "./global.js";
+
+const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
+
+// 1. AUTOCOMPLETION
+document.addEventListener('DOMContentLoaded', () => {
+    // Configuration de l'autocomplétion pour le patient
+    setupPatientAutocomplete({
+        nameId: 'patientName',
+        birthId: 'patientBirth',
+        // Pas de callback spécial ici, juste le remplissage standard
+        callback: function(p) {
+            // On met à jour manuellement les champs visuels du papier
+            if(window.up) {
+                window.up('d-nom', p.nom);
+                window.up('d-ddn', p.naissance);
+            }
+        }
+    });
+
+    // Date du jour auto
+    const today = new Date().toISOString().split('T')[0];
+    const dateInput = document.getElementById('labDate');
+    if(dateInput) {
+        dateInput.value = today;
+        if(window.upDate) window.upDate('d-date', today);
+    }
+});
+
+// 2. FONCTIONS D'EXPORT (Attachées à window pour que le HTML les voie)
+
+window.genererImage = async function() {
+    const doc = document.getElementById('document');
+    const btn = event.target;
     
     window.scrollTo(0,0);
-    btn.innerText = "CHARGEMENT...";
+    btn.innerText = "GÉNÉRATION...";
     btn.disabled = true;
+    doc.classList.add('mode-capture');
 
     try {
-        // Capture simple, sans forcer la hauteur
         const canvas = await html2canvas(doc, { 
             scale: 2, 
-            useCORS: true,
+            useCORS: true, 
             backgroundColor: "#ffffff"
         });
-        
+
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
         const formData = new FormData();
         formData.append("image", imageData);
@@ -384,19 +413,32 @@ async function genererImage() {
         const result = await response.json();
         
         if (result.success) {
+            const imgUrl = result.data.url;
+            const nomPatient = document.getElementById('patientName').value;
+
+            // SAUVEGARDE HISTORIQUE VIA GLOBAL.JS
+            if(nomPatient) {
+                // On utilise la fonction globale importée ou celle de window
+                if(window.ajouterEvenementPatient) {
+                    window.ajouterEvenementPatient(nomPatient, "Laboratoire", "Bilan Biologique", imgUrl);
+                }
+            }
+
             document.getElementById('direct-link').value = result.data.url;
             document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
         }
     } catch (e) {
+        console.error(e);
         alert("Erreur lors de la génération.");
     } finally {
+        doc.classList.remove('mode-capture');
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
 }
 
-async function envoyerDiscord() {
+window.envoyerDiscord = async function() {
     const url = "https://discord.com/api/webhooks/1468219484245332171/OwqxaLPAJznP0W5gxsmNEhuPIJHWukIEX6OZDXpElPWOz0Bbjjc3I9ahKsJ73dCUaQln";
     const btn = document.getElementById('discord-btn'); 
     const doc = document.getElementById('document'); 
@@ -404,9 +446,9 @@ async function envoyerDiscord() {
     window.scrollTo(0,0);
     btn.disabled = true;
     btn.innerText = "CAPTURE...";
-    
+    doc.classList.add('mode-capture');
+
     try {
-        // Capture simple
         const canvas = await html2canvas(doc, { 
             scale: 2, 
             useCORS: true 
@@ -429,6 +471,12 @@ async function envoyerDiscord() {
             const response = await fetch(url + "?wait=true", { method: 'POST', body: formData });
             
             if(response.ok) { 
+                // SAUVEGARDE HISTORIQUE (Pas d'URL d'image ici car c'est un blob Discord, 
+                // mais on note quand même que c'est fait)
+                if(window.ajouterEvenementPatient) {
+                    window.ajouterEvenementPatient(nom, "Laboratoire", "Envoyé sur Discord (Pas de lien image)");
+                }
+
                 alert("✅ Rapport Labo envoyé !"); 
                 btn.innerText = "ENVOYÉ"; 
             } else {
@@ -438,18 +486,19 @@ async function envoyerDiscord() {
         }, 'image/png');
 
     } catch (e) {
+        console.error(e);
         btn.disabled = false;
         btn.innerText = "RÉESSAYER";
+    } finally {
+        doc.classList.remove('mode-capture');
     }
 }
 
-function copyLink() {
+// Utilitaires de popup
+window.copyLink = function() {
     const copyText = document.getElementById("direct-link");
     copyText.select();
     document.execCommand("copy");
     alert("Lien copié !");
 }
-
-function closePopup() {
-    document.getElementById('image-popup').style.display = 'none';
-}
+window.closePopup = function() { document.getElementById('image-popup').style.display = 'none'; }
