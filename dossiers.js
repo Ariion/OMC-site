@@ -98,9 +98,15 @@ function updateStats() {
 }
 
 // ============================================================
-// GESTION MODALE CRÉATION (NOUVEAU)
+// GESTION MODALE CRÉATION
 // ============================================================
+function fermerTout() {
+    document.getElementById('modal-creation').style.display = 'none';
+    document.getElementById('modal-edition').style.display = 'none';
+}
+
 function ouvrirModalCreation() {
+    fermerTout(); // On ferme tout d'abord !
     document.getElementById('modal-creation').style.display = 'flex';
 }
 
@@ -139,13 +145,15 @@ function creerPatient() {
 // GESTION MODALE ÉDITION (MODIFIER / SUPPRIMER)
 // ============================================================
 function ouvrirModalEdition(p) {
-    // Remplissage des champs
-    document.getElementById('edit-original-name').value = p.nom; // Pour retrouver le patient
+    fermerTout(); // On ferme tout d'abord !
+    
+    // Remplissage des champs (Code existant inchangé)
+    document.getElementById('edit-original-name').value = p.nom;
     document.getElementById('edit-nom').value = p.nom;
     document.getElementById('edit-ddn').value = p.naissance;
     document.getElementById('edit-groupe').value = p.groupe;
     document.getElementById('edit-job').value = p.job;
-    document.getElementById('edit-notes').value = p.notes || ""; // Charge les notes existantes
+    document.getElementById('edit-notes').value = p.notes || "";
 
     document.getElementById('modal-edition').style.display = 'flex';
 }
