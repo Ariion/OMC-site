@@ -1,5 +1,5 @@
 /* ============================================================
-   LABORATOIRE - VERSION FINALE (CORRIGÉE)
+   LABORATOIRE - VERSION INTELLIGENTE (AGE + SEXE RÉELS)
    ============================================================ */
 
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
@@ -9,63 +9,63 @@ const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 // ==========================================
 const database = {
     "HÉMATOLOGIE (SANG)": [
-        { id: "gb", label: "Leucocytes (Globules Blancs)", unit: "G/L", norm: "4.0 - 10.0", help: "Infection." },
-        { id: "hb", label: "Hémoglobine", unit: "g/dL", norm: "13.0 - 17.0", help: "Anémie." },
-        { id: "ht", label: "Hématocrite", unit: "%", norm: "40 - 52", help: "Volume." },
-        { id: "pla", label: "Plaquettes", unit: "G/L", norm: "150 - 400", help: "Coagulation." },
-        { id: "vgm", label: "VGM", unit: "fL", norm: "80 - 100", help: "Taille." },
-        { id: "tcmh", label: "TCMH", unit: "pg", norm: "27 - 32", help: "Hémoglobine." },
-        { id: "poly_n", label: "Polynucléaires Neutrophiles", unit: "%", norm: "40 - 75", help: "Bactéries." },
-        { id: "lympho", label: "Lymphocytes", unit: "%", norm: "20 - 45", help: "Virus." }
+        { id: "gb", label: "Leucocytes", unit: "G/L", norm: "4.0 - 10.0" },
+        { id: "hb", label: "Hémoglobine", unit: "g/dL", norm: "13.0 - 17.0" },
+        { id: "ht", label: "Hématocrite", unit: "%", norm: "40 - 52" },
+        { id: "pla", label: "Plaquettes", unit: "G/L", norm: "150 - 400" },
+        { id: "vgm", label: "VGM", unit: "fL", norm: "80 - 100" },
+        { id: "tcmh", label: "TCMH", unit: "pg", norm: "27 - 32" },
+        { id: "poly_n", label: "Polynucléaires", unit: "%", norm: "40 - 75" },
+        { id: "lympho", label: "Lymphocytes", unit: "%", norm: "20 - 45" }
     ],
     "COAGULATION": [
-        { id: "tp", label: "Taux de Prothrombine (TP)", unit: "%", norm: "70 - 100", help: "Vitesse." },
-        { id: "inr", label: "INR", unit: "-", norm: "0.8 - 1.2", help: "Suivi." },
-        { id: "tca", label: "TCA", unit: "sec", norm: "24 - 38", help: "Temps." },
-        { id: "fibri", label: "Fibrinogène", unit: "g/L", norm: "2.0 - 4.0", help: "Facteur." }
+        { id: "tp", label: "Taux Prothrombine", unit: "%", norm: "70 - 100" },
+        { id: "inr", label: "INR", unit: "-", norm: "0.8 - 1.2" },
+        { id: "tca", label: "TCA", unit: "sec", norm: "24 - 38" },
+        { id: "fibri", label: "Fibrinogène", unit: "g/L", norm: "2.0 - 4.0" }
     ],
     "BIOCHIMIE MÉTABOLIQUE": [
-        { id: "gly", label: "Glycémie à jeun", unit: "g/L", norm: "0.70 - 1.10", help: "Sucre." },
-        { id: "uree", label: "Urée", unit: "g/L", norm: "0.15 - 0.45", help: "Déchets." },
-        { id: "crea", label: "Créatinine", unit: "mg/L", norm: "7.0 - 12.0", help: "Reins." },
-        { id: "crp", label: "CRP", unit: "mg/L", norm: "0 - 5.0", help: "Inflammation." },
-        { id: "vs", label: "Vitesse Sédimentation", unit: "mm/h", norm: "0 - 20", help: "Chronique." }
+        { id: "gly", label: "Glycémie (Jeun)", unit: "g/L", norm: "0.70 - 1.10" },
+        { id: "uree", label: "Urée", unit: "g/L", norm: "0.15 - 0.45" },
+        { id: "crea", label: "Créatinine", unit: "mg/L", norm: "7.0 - 12.0" },
+        { id: "crp", label: "CRP", unit: "mg/L", norm: "0 - 5.0" },
+        { id: "vs", label: "Vitesse Sédim.", unit: "mm/h", norm: "0 - 20" }
     ],
-    "IONOGRAMME (SELS)": [
-        { id: "na", label: "Sodium (Na+)", unit: "mmol/L", norm: "135 - 145", help: "Hydratation." },
-        { id: "k", label: "Potassium (K+)", unit: "mmol/L", norm: "3.5 - 5.0", help: "Cœur." },
-        { id: "cl", label: "Chlore (Cl-)", unit: "mmol/L", norm: "95 - 105", help: "Acide." },
-        { id: "ca", label: "Calcium", unit: "mg/L", norm: "85 - 105", help: "Os." }
+    "IONOGRAMME": [
+        { id: "na", label: "Sodium (Na+)", unit: "mmol/L", norm: "135 - 145" },
+        { id: "k", label: "Potassium (K+)", unit: "mmol/L", norm: "3.5 - 5.0" },
+        { id: "cl", label: "Chlore (Cl-)", unit: "mmol/L", norm: "95 - 105" },
+        { id: "ca", label: "Calcium", unit: "mg/L", norm: "85 - 105" }
     ],
-    "BILAN HÉPATIQUE (FOIE)": [
-        { id: "asat", label: "ASAT (TGO)", unit: "UI/L", norm: "0 - 35", help: "Foie." },
-        { id: "alat", label: "ALAT (TGP)", unit: "UI/L", norm: "0 - 45", help: "Foie." },
-        { id: "ggt", label: "Gamma-GT", unit: "UI/L", norm: "0 - 55", help: "Alcool." },
-        { id: "bili_t", label: "Bilirubine Totale", unit: "mg/L", norm: "0 - 12", help: "Jaunisse." }
+    "BILAN HÉPATIQUE": [
+        { id: "asat", label: "ASAT (TGO)", unit: "UI/L", norm: "0 - 35" },
+        { id: "alat", label: "ALAT (TGP)", unit: "UI/L", norm: "0 - 45" },
+        { id: "ggt", label: "Gamma-GT", unit: "UI/L", norm: "0 - 55" },
+        { id: "bili_t", label: "Bilirubine Tot.", unit: "mg/L", norm: "0 - 12" }
     ],
     "MARQUEURS CARDIAQUES": [
-        { id: "tropo", label: "Troponine I", unit: "ng/L", norm: "0 - 15", help: "Infarctus." },
-        { id: "bnp", label: "BNP", unit: "pg/mL", norm: "0 - 100", help: "Cœur." }
+        { id: "tropo", label: "Troponine I", unit: "ng/L", norm: "0 - 15" },
+        { id: "bnp", label: "BNP", unit: "pg/mL", norm: "0 - 100" }
     ],
-    "GAZ DU SANG (AA)": [
-        { id: "ph", label: "pH Artériel", unit: "", norm: "7.38 - 7.42", help: "Acidité." },
-        { id: "pco2", label: "PCO2", unit: "mmHg", norm: "35 - 45", help: "CO2." },
-        { id: "po2", label: "PO2", unit: "mmHg", norm: "80 - 100", help: "Oxygène." },
-        { id: "lact", label: "Lactates", unit: "mmol/L", norm: "0.5 - 2.0", help: "Choc." }
+    "GAZ DU SANG": [
+        { id: "ph", label: "pH Artériel", unit: "", norm: "7.38 - 7.42" },
+        { id: "pco2", label: "PCO2", unit: "mmHg", norm: "35 - 45" },
+        { id: "po2", label: "PO2", unit: "mmHg", norm: "80 - 100" },
+        { id: "lact", label: "Lactates", unit: "mmol/L", norm: "0.5 - 2.0" }
     ],
-    "TOXICOLOGIE (LSPD/BCSO)": [
-        { id: "alc", label: "Alcoolémie", unit: "g/L", norm: "0 - 0.10", help: "Alcool." },
-        { id: "thc", label: "Cannabis (THC)", unit: "-", norm: "Négatif", help: "Drogue." },
-        { id: "coc", label: "Cocaïne", unit: "-", norm: "Négatif", help: "Drogue." },
-        { id: "amp", label: "Amphétamines", unit: "-", norm: "Négatif", help: "Drogue." }
+    "TOXICOLOGIE": [
+        { id: "alc", label: "Alcoolémie", unit: "g/L", norm: "0 - 0.10" },
+        { id: "thc", label: "Cannabis", unit: "-", norm: "Négatif" },
+        { id: "coc", label: "Cocaïne", unit: "-", norm: "Négatif" },
+        { id: "amp", label: "Amphétamines", unit: "-", norm: "Négatif" }
     ],
     "ENDOCRINOLOGIE & FERTILITÉ": [
-        { id: "tsh", label: "TSH", unit: "mUI/L", norm: "0.4 - 4.0", help: "Thyroïde." },
-        { id: "hcg", label: "Bêta-HCG (Grossesse)", unit: "mUI/mL", norm: "< 5", help: "Grossesse." },
-        { id: "amh", label: "AMH (Réserve Ovarienne)", unit: "ng/mL", norm: "2.0 - 6.8", help: "Fertilité." },
-        { id: "fsh", label: "FSH (J3 cycle)", unit: "UI/L", norm: "3.5 - 12.5", help: "Stimulation." },
-        { id: "lh", label: "LH", unit: "UI/L", norm: "2.4 - 12.6", help: "Ovulation." },
-        { id: "prolac", label: "Prolactine", unit: "ng/mL", norm: "4.8 - 23.3", help: "Hormone." }
+        { id: "tsh", label: "TSH", unit: "mUI/L", norm: "0.4 - 4.0" },
+        { id: "hcg", label: "Bêta-HCG", unit: "mUI/mL", norm: "< 5" },
+        { id: "amh", label: "AMH (Réserve)", unit: "ng/mL", norm: "2.0 - 6.8" },
+        { id: "fsh", label: "FSH", unit: "UI/L", norm: "3.5 - 12.5" },
+        { id: "lh", label: "LH", unit: "UI/L", norm: "2.4 - 12.6" },
+        { id: "prolac", label: "Prolactine", unit: "ng/mL", norm: "4.8 - 23.3" }
     ]
 };
 
@@ -78,15 +78,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if(window.setAutoDate) window.setAutoDate();
     if(window.determinerGroupeAleatoire) window.determinerGroupeAleatoire();
     
-    // --- AUTOCOMPLETE CENTRALISÉ ---
-    // On appelle directement la fonction globale
+    // --- AUTOCOMPLETE ---
     if(window.setupPatientAutocomplete) {
         window.setupPatientAutocomplete({
             nameId: 'patientName',
             birthId: 'patientBirth',
             bloodId: 'patientBlood', 
             callback: function(p) {
-                // Mise à jour visuelle quand on clique sur un patient
                 if(window.up) window.up('d-nom', p.nom);
                 if(window.upDate) window.upDate('d-ddn', p.naissance);
                 if(p.groupe && window.up) window.up('d-groupe', p.groupe);
@@ -148,10 +146,150 @@ function initInterface() {
 }
 
 // ==========================================
-// 3. FONCTIONS PUBLIQUES (WINDOW)
+// 3. FONCTIONS UTILITAIRES (CALCUL AGE)
 // ==========================================
 
-// Mise à jour des résultats (Couleurs + Affichage)
+function getInfosPatient() {
+    const ddnStr = document.getElementById('patientBirth').value;
+    const sexe = document.getElementById('patientSex') ? document.getElementById('patientSex').value : 'F';
+    
+    let age = 30; // Valeur par défaut
+    if (ddnStr) {
+        const ddn = new Date(ddnStr);
+        const diff = Date.now() - ddn.getTime();
+        const ageDate = new Date(diff); 
+        age = Math.abs(ageDate.getUTCFullYear() - 1970);
+    }
+    
+    return { age, sexe };
+}
+
+// ==========================================
+// 4. SCÉNARIOS GYNÉCO / URO (INTELLIGENTS)
+// ==========================================
+
+// --- TEST DE GROSSESSE ---
+window.lancerTestGrossesse = function() {
+    window.resetSeulementBio(false);
+    const { age, sexe } = getInfosPatient();
+    
+    if(sexe === 'H') {
+        window.res('hcg', '0', 'ENDOCRINOLOGIE & FERTILITÉ');
+        fusionnerConclusionSpecifique("TEST NON APPLICABLE.\nPatient de sexe masculin.\nL'hormone Bêta-HCG n'est pas produite par l'organisme masculin.");
+        return;
+    }
+
+    // Hasard : 70% de chance d'être enceinte si RP
+    const isEnceinte = Math.random() > 0.3; 
+    let hcg = 0;
+    let texte = "";
+
+    if(isEnceinte) {
+        hcg = Math.floor(Math.random() * 5000) + 100;
+        let sa = 4; // Semaines d'aménorrhée estimées
+        if(hcg > 500) sa = 5;
+        if(hcg > 2000) sa = 6;
+        
+        texte = `POSITIVE (GROSSESSE DÉTECTÉE).\n\nANALYSE :\n- Bêta-HCG : ${hcg} mUI/mL (Seuil > 5).\n\nINTERPRÉTATION :\nGrossesse biochimique confirmée. Terme estimé à ${sa} SA.\n\nRECOMMANDATION :\nÉchographie pelvienne de datation requise.`;
+    } else {
+        hcg = Math.floor(Math.random() * 5);
+        texte = `NÉGATIVE (ABSENCE DE GROSSESSE).\n\nANALYSE :\n- Bêta-HCG : < 5 mUI/mL (Indétectable).\n\nINTERPRÉTATION :\nAbsence de grossesse évolutive à ce jour.`;
+    }
+    
+    window.res('hcg', hcg.toString(), 'ENDOCRINOLOGIE & FERTILITÉ');
+    fusionnerConclusionSpecifique(texte);
+}
+
+// --- BILAN FERTILITÉ (Le "Score") ---
+window.lancerFertilite = function() {
+    window.resetSeulementBio(false);
+    const { age, sexe } = getInfosPatient();
+    let conclusion = "";
+
+    // === HOMME ===
+    if (sexe === 'H') {
+        let conc, mob, qualite;
+        
+        // Calcul selon l'âge
+        if (age < 50) {
+            // Homme jeune/adulte : Fertilité Top
+            conc = Math.floor(Math.random() * 60 + 40); // 40-100 M/ml
+            mob = Math.floor(Math.random() * 30 + 50);  // 50-80%
+            qualite = "EXCELLENTE";
+        } else {
+            // Homme âgé : Déclin naturel
+            conc = Math.floor(Math.random() * 30 + 10); // 10-40 M/ml
+            mob = Math.floor(Math.random() * 30 + 20);  // 20-50%
+            qualite = "DIMINUÉE (LIÉE À L'ÂGE)";
+        }
+
+        conclusion = `BILAN ANDROLOGIQUE (Patient de ${age} ans).\n\nSPERMOGRAMME :\n- Concentration : ${conc} M/ml.\n- Mobilité : ${mob}%.\n\nCONCLUSION :\nQualité spermatique ${qualite}.\nLa fertilité naturelle est préservée.`;
+    } 
+    
+    // === FEMME ===
+    else {
+        let amh, fsh, lh, etat;
+
+        if (age < 38) {
+            // JEUNE : Fertilité optimale
+            amh = (Math.random() * 2 + 2.5).toFixed(2); // Haute
+            fsh = (Math.random() * 3 + 4).toFixed(1);   // Basse
+            etat = "RÉSERVE OVARIENNE OPTIMALE.\nPotentiel de fertilité excellent.";
+        } 
+        else if (age >= 38 && age < 48) {
+            // QUARANTAINE : Déclin
+            amh = (Math.random() * 1 + 0.5).toFixed(2); // Basse
+            fsh = (Math.random() * 5 + 9).toFixed(1);   // Monte
+            etat = "RÉSERVE OVARIENNE DIMINUÉE.\nLe stock ovocytaire s'épuise naturellement. Fertilité spontanée réduite.";
+        } 
+        else {
+            // > 48 ANS : Ménopause
+            amh = "0.05"; // Nulle
+            fsh = (Math.random() * 20 + 30).toFixed(1); // Explosive
+            etat = "PROFIL MÉNOPAUSIQUE.\nArrêt physiologique de la fonction ovarienne lié à l'âge.";
+        }
+
+        window.res('amh', amh, 'ENDOCRINOLOGIE & FERTILITÉ');
+        window.res('fsh', fsh, 'ENDOCRINOLOGIE & FERTILITÉ');
+        
+        conclusion = `BILAN GYNÉCOLOGIQUE (Patiente de ${age} ans).\n\nDOSAGE HORMONAL :\n- AMH : ${amh} ng/mL.\n- FSH : ${fsh} UI/L.\n\nCONCLUSION :\n${etat}`;
+    }
+
+    fusionnerConclusionSpecifique(conclusion);
+}
+
+// --- TEST DE STÉRILITÉ (Le "Diagnostic de cause") ---
+window.lancerSterilite = function() {
+    window.resetSeulementBio(false);
+    const { age, sexe } = getInfosPatient();
+    let conclusion = "";
+
+    // === HOMME : AZOOSPERMIE ===
+    if (sexe === 'H') {
+        conclusion = `DIAGNOSTIC D'INFERTILITÉ MASCULINE.\n\nANALYSE :\n- Spermatozoïdes totaux : 0 (Absence complète).\n- pH séminal : 7.2.\n\nVERDICT : AZOOSPERMIE SÉCRÉTOIRE.\nStérilité masculine confirmée.\nOrigine probable : Atrophie testiculaire ou obstruction bilatérale des canaux déférents.`;
+    } 
+    
+    // === FEMME : OBSTRUCTION ou MÉNOPAUSE ===
+    else {
+        // Si elle est jeune (< 45), c'est une maladie
+        if (age < 45) {
+            window.res('amh', '2.5', 'ENDOCRINOLOGIE & FERTILITÉ'); // Hormones OK
+            conclusion = `DIAGNOSTIC D'INFERTILITÉ TUBAIRE.\n\nANALYSE HORMONALE :\n- AMH et FSH normales (L'ovulation fonctionne).\n\nHYSTÉROSALPINGOGRAPHIE :\n- Obstruction bilatérale des trompes de Fallope.\n\nVERDICT : STÉRILITÉ MÉCANIQUE.\nLa rencontre ovule/spermatozoïde est physiquement impossible.`;
+        } 
+        // Si elle est âgée (> 45), c'est l'âge
+        else {
+            window.res('amh', '0.01', 'ENDOCRINOLOGIE & FERTILITÉ');
+            window.res('fsh', '50.0', 'ENDOCRINOLOGIE & FERTILITÉ');
+            conclusion = `DIAGNOSTIC DE STÉRILITÉ PHYSIOLOGIQUE.\n\nANALYSE :\n- Effondrement total des hormones de réserve.\n\nVERDICT : MÉNOPAUSE CONFIRMÉE.\nInfertilité définitive et naturelle due à l'âge de la patiente (${age} ans).`;
+        }
+    }
+    fusionnerConclusionSpecifique(conclusion);
+}
+
+// ==========================================
+// 5. FONCTIONS PUBLIQUES (WINDOW)
+// ==========================================
+
 window.res = function(id, val, cat) {
     const cleanCatId = cat.replace(/\s+/g, '-').replace(/[()]/g, '');
     const row = document.getElementById('row-' + id);
@@ -160,7 +298,6 @@ window.res = function(id, val, cat) {
 
     if (valSpan) {
         valSpan.innerText = val;
-        // Logic de couleur simple
         const item = Object.values(database).flat().find(i => i.id === id);
         if (item && val.trim() !== "" && item.norm.includes('-')) {
             try {
@@ -224,8 +361,6 @@ window.resetSeulementBio = function(confirmNeeded = true) {
     updateLiveQRCode();
 }
 
-// --- GÉNÉRATEURS DE SCÉNARIOS ---
-
 window.lancerGenerationAuto = function() {
     const grav = parseInt(document.getElementById('gravity-range').value);
     const scenarios = Array.from(document.querySelectorAll('.sidebar input[type="checkbox"]:checked')).map(i => i.value);
@@ -270,60 +405,8 @@ window.lancerGenerationAuto = function() {
     fusionnerConclusionSpecifique(diagPrincipal);
 }
 
-window.lancerTestGrossesse = function() {
-    window.resetSeulementBio(false);
-    const isEnceinte = Math.random() > 0.3; 
-    let hcg = isEnceinte ? Math.floor(Math.random() * 5000) + 50 : Math.floor(Math.random() * 5);
-    
-    window.res('hcg', hcg.toString(), 'ENDOCRINOLOGIE & FERTILITÉ');
-    
-    let texte = "";
-    if(isEnceinte) {
-        let sa = 0;
-        if(hcg < 50) sa = 3;
-        else if(hcg < 500) sa = 4;
-        else if(hcg < 5000) sa = 5;
-        else sa = 6;
-        texte = `TEST DE GROSSESSE POSITIF.\nTaux Beta-HCG : ${hcg} mUI/mL.\nTerme estimé : ${sa} SA environ.\nNécessite échographie de datation.`;
-    } else {
-        texte = `TEST DE GROSSESSE NÉGATIF.\nTaux Beta-HCG : < 5 mUI/mL.\nAbsence de grossesse biologique détectable ce jour.`;
-    }
-    fusionnerConclusionSpecifique(texte);
-}
-
-window.lancerFertilite = function() {
-    window.resetSeulementBio(false);
-    const isPatho = Math.random() > 0.7;
-    
-    let amh = (Math.random() * 4 + 2).toFixed(2);
-    let fsh = (Math.random() * 8 + 3).toFixed(1);
-    let lh = (Math.random() * 8 + 3).toFixed(1);
-    let prolac = (Math.random() * 15 + 5).toFixed(1);
-    
-    let diag = "BILAN FERTILITÉ NORMAL. Réserve ovarienne satisfaisante.";
-
-    if (isPatho) {
-        const type = Math.random();
-        if (type < 0.5) {
-            amh = (Math.random() * 1).toFixed(2); 
-            fsh = (Math.random() * 15 + 15).toFixed(1); 
-            diag = "INSUFFISANCE OVARIENNE DÉBUTANTE.\nAMH basse et FSH élevée. Réserve ovarienne diminuée.";
-        } else {
-            lh = (fsh * 2.5).toFixed(1); 
-            diag = "PROFIL OPK SUSPECTÉ.\nInversion du ratio LH/FSH. À corréler avec l'échographie.";
-        }
-    }
-
-    window.res('amh', amh, 'ENDOCRINOLOGIE & FERTILITÉ');
-    window.res('fsh', fsh, 'ENDOCRINOLOGIE & FERTILITÉ');
-    window.res('lh', lh, 'ENDOCRINOLOGIE & FERTILITÉ');
-    window.res('prolac', prolac, 'ENDOCRINOLOGIE & FERTILITÉ');
-    
-    fusionnerConclusionSpecifique(diag);
-}
-
 // ==========================================
-// 5. FONCTIONS INTERNES
+// 6. FONCTIONS INTERNES
 // ==========================================
 
 function updateLiveQRCode() {
@@ -342,7 +425,7 @@ function fusionnerConclusionSpecifique(nouveauTexte) {
 }
 
 // ==========================================
-// 6. EXPORT IMAGE ET DISCORD
+// 7. EXPORT IMAGE ET DISCORD
 // ==========================================
 
 window.genererImage = async function() {
@@ -367,7 +450,6 @@ window.genererImage = async function() {
             const imgUrl = result.data.url;
             const nomPatient = document.getElementById('patientName').value;
 
-            // SAUVEGARDE HISTORIQUE (Firebase)
             if(nomPatient && window.ajouterEvenementPatient) {
                 window.ajouterEvenementPatient(nomPatient, "Laboratoire", "Bilan Biologique", imgUrl);
             }
