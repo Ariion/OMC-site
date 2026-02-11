@@ -1,6 +1,6 @@
 .labo-body { background: var(--omc-bg); height: 100vh; display: flex; overflow: hidden; color: #e2e8f0; }
  
-.preview-area {
+.preview-area { 
     flex-grow: 1;
     display: flex;
     justify-content: center; 
