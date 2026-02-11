@@ -164,128 +164,109 @@ function getInfosPatient() {
     return { age, sexe };
 }
 
-// ==========================================
-// 4. SCÉNARIOS GYNÉCO / URO (INTELLIGENTS)
-// ==========================================
+/* ==========================================
+   4. SCÉNARIOS GYNÉCO / URO (STRICTS)
+   ========================================== */
 
-// --- TEST DE GROSSESSE ---
+// Fonction pour mettre à jour le sexe sur le papier
+window.updateSexe = function(val) {
+    const el = document.getElementById('d-sexe');
+    if(!el) return;
+    
+    if(val === 'F') el.innerText = "Femme";
+    else if(val === 'H') el.innerText = "Homme";
+    else el.innerText = "Autre";
+}
+
+// 1. TEST DE GROSSESSE (FEMME UNIQUEMENT)
 window.lancerTestGrossesse = function() {
     window.resetSeulementBio(false);
-    const { age, sexe } = getInfosPatient();
     
-    if(sexe === 'H') {
-        window.res('hcg', '0', 'ENDOCRINOLOGIE & FERTILITÉ');
-        fusionnerConclusionSpecifique("TEST NON APPLICABLE.\nPatient de sexe masculin.\nL'hormone Bêta-HCG n'est pas produite par l'organisme masculin.");
+    const sexe = document.getElementById('patientSex').value;
+    
+    if(sexe !== 'F') {
+        alert("⛔ ERREUR : Ce test est réservé aux patients de sexe FÉMININ.");
         return;
     }
 
-    // Hasard : 70% de chance d'être enceinte si RP
-    const isEnceinte = Math.random() > 0.3; 
+    const isEnceinte = Math.random() > 0.3; // 30% négatif, 70% positif (pour le RP)
     let hcg = 0;
     let texte = "";
 
     if(isEnceinte) {
         hcg = Math.floor(Math.random() * 5000) + 100;
-        let sa = 4; // Semaines d'aménorrhée estimées
+        let sa = 4;
         if(hcg > 500) sa = 5;
         if(hcg > 2000) sa = 6;
-        
-        texte = `POSITIVE (GROSSESSE DÉTECTÉE).\n\nANALYSE :\n- Bêta-HCG : ${hcg} mUI/mL (Seuil > 5).\n\nINTERPRÉTATION :\nGrossesse biochimique confirmée. Terme estimé à ${sa} SA.\n\nRECOMMANDATION :\nÉchographie pelvienne de datation requise.`;
+        texte = `POSITIVE (GROSSESSE DÉTECTÉE).\n\nANALYSE :\n- Bêta-HCG : ${hcg} mUI/mL.\n\nINTERPRÉTATION :\nGrossesse biochimique confirmée. Terme estimé à ${sa} SA.\n\nRECOMMANDATION :\nÉchographie de datation requise.`;
     } else {
         hcg = Math.floor(Math.random() * 5);
-        texte = `NÉGATIVE (ABSENCE DE GROSSESSE).\n\nANALYSE :\n- Bêta-HCG : < 5 mUI/mL (Indétectable).\n\nINTERPRÉTATION :\nAbsence de grossesse évolutive à ce jour.`;
+        texte = `NÉGATIVE (ABSENCE DE GROSSESSE).\n\nANALYSE :\n- Bêta-HCG : < 5 mUI/mL (Indétectable).\n\nINTERPRÉTATION :\nPas de grossesse détectée ce jour.`;
     }
     
     window.res('hcg', hcg.toString(), 'ENDOCRINOLOGIE & FERTILITÉ');
     fusionnerConclusionSpecifique(texte);
 }
 
-// --- BILAN FERTILITÉ (Le "Score") ---
+// 2. BILAN FERTILITÉ (FEMME UNIQUEMENT)
 window.lancerFertilite = function() {
     window.resetSeulementBio(false);
-    const { age, sexe } = getInfosPatient();
-    let conclusion = "";
-
-    // === HOMME ===
-    if (sexe === 'H') {
-        let conc, mob, qualite;
-        
-        // Calcul selon l'âge
-        if (age < 50) {
-            // Homme jeune/adulte : Fertilité Top
-            conc = Math.floor(Math.random() * 60 + 40); // 40-100 M/ml
-            mob = Math.floor(Math.random() * 30 + 50);  // 50-80%
-            qualite = "EXCELLENTE";
-        } else {
-            // Homme âgé : Déclin naturel
-            conc = Math.floor(Math.random() * 30 + 10); // 10-40 M/ml
-            mob = Math.floor(Math.random() * 30 + 20);  // 20-50%
-            qualite = "DIMINUÉE (LIÉE À L'ÂGE)";
-        }
-
-        conclusion = `BILAN ANDROLOGIQUE (Patient de ${age} ans).\n\nSPERMOGRAMME :\n- Concentration : ${conc} M/ml.\n- Mobilité : ${mob}%.\n\nCONCLUSION :\nQualité spermatique ${qualite}.\nLa fertilité naturelle est préservée.`;
-    } 
     
-    // === FEMME ===
-    else {
-        let amh, fsh, lh, etat;
-
-        if (age < 38) {
-            // JEUNE : Fertilité optimale
-            amh = (Math.random() * 2 + 2.5).toFixed(2); // Haute
-            fsh = (Math.random() * 3 + 4).toFixed(1);   // Basse
-            etat = "RÉSERVE OVARIENNE OPTIMALE.\nPotentiel de fertilité excellent.";
-        } 
-        else if (age >= 38 && age < 48) {
-            // QUARANTAINE : Déclin
-            amh = (Math.random() * 1 + 0.5).toFixed(2); // Basse
-            fsh = (Math.random() * 5 + 9).toFixed(1);   // Monte
-            etat = "RÉSERVE OVARIENNE DIMINUÉE.\nLe stock ovocytaire s'épuise naturellement. Fertilité spontanée réduite.";
-        } 
-        else {
-            // > 48 ANS : Ménopause
-            amh = "0.05"; // Nulle
-            fsh = (Math.random() * 20 + 30).toFixed(1); // Explosive
-            etat = "PROFIL MÉNOPAUSIQUE.\nArrêt physiologique de la fonction ovarienne lié à l'âge.";
-        }
-
-        window.res('amh', amh, 'ENDOCRINOLOGIE & FERTILITÉ');
-        window.res('fsh', fsh, 'ENDOCRINOLOGIE & FERTILITÉ');
-        
-        conclusion = `BILAN GYNÉCOLOGIQUE (Patiente de ${age} ans).\n\nDOSAGE HORMONAL :\n- AMH : ${amh} ng/mL.\n- FSH : ${fsh} UI/L.\n\nCONCLUSION :\n${etat}`;
+    const sexe = document.getElementById('patientSex').value;
+    if(sexe !== 'F') {
+        alert("⛔ ERREUR : Le bilan de fertilité ovarienne est réservé aux FEMMES.\nPour un homme, utilisez le Test de Stérilité (Spermogramme).");
+        return;
     }
 
+    // SCÉNARIO FEMME (Réserve Ovarienne)
+    const isFertile = Math.random() > 0.3; 
+    let amh, fsh, conclusion;
+
+    if(isFertile) {
+        amh = (Math.random()*2 + 2).toFixed(2); // Haute
+        fsh = (Math.random()*4 + 4).toFixed(1);   // Basse
+        conclusion = `BILAN FERTILITÉ : EXCELLENT.\n\nDOSAGE HORMONAL :\n- AMH (Réserve) : ${amh} ng/mL (Normale).\n- FSH : ${fsh} UI/L (Normale).\n\nCONCLUSION :\nRéserve ovarienne satisfaisante. Potentiel de fertilité optimal.`;
+    } else {
+        amh = (Math.random()*0.8 + 0.1).toFixed(2); // Basse
+        fsh = (Math.random()*5 + 10).toFixed(1);   // Haute
+        conclusion = `BILAN FERTILITÉ : RÉSERVE DIMINUÉE.\n\nDOSAGE HORMONAL :\n- AMH basse : ${amh} ng/mL.\n- FSH élevée : ${fsh} UI/L.\n\nCONCLUSION :\nLe stock d'ovules est faible. La fertilité naturelle est réduite.`;
+    }
+
+    window.res('amh', amh, 'ENDOCRINOLOGIE & FERTILITÉ');
+    window.res('fsh', fsh, 'ENDOCRINOLOGIE & FERTILITÉ');
     fusionnerConclusionSpecifique(conclusion);
 }
 
-// --- TEST DE STÉRILITÉ (Le "Diagnostic de cause") ---
+// 3. TEST DE STÉRILITÉ (HOMME UNIQUEMENT)
 window.lancerSterilite = function() {
     window.resetSeulementBio(false);
-    const { age, sexe } = getInfosPatient();
+    
+    const sexe = document.getElementById('patientSex').value;
+    if(sexe !== 'H') {
+        alert("⛔ ERREUR : Le test de stérilité (Spermogramme) est réservé aux HOMMES.\nPour une femme, utilisez le Bilan Fertilité.");
+        return;
+    }
+
+    // SCÉNARIO HOMME (Spermogramme)
+    // On décide au hasard s'il est stérile ou juste "moyen" ou "bon"
+    const rand = Math.random();
     let conclusion = "";
 
-    // === HOMME : AZOOSPERMIE ===
-    if (sexe === 'H') {
-        conclusion = `DIAGNOSTIC D'INFERTILITÉ MASCULINE.\n\nANALYSE :\n- Spermatozoïdes totaux : 0 (Absence complète).\n- pH séminal : 7.2.\n\nVERDICT : AZOOSPERMIE SÉCRÉTOIRE.\nStérilité masculine confirmée.\nOrigine probable : Atrophie testiculaire ou obstruction bilatérale des canaux déférents.`;
-    } 
-    
-    // === FEMME : OBSTRUCTION ou MÉNOPAUSE ===
-    else {
-        // Si elle est jeune (< 45), c'est une maladie
-        if (age < 45) {
-            window.res('amh', '2.5', 'ENDOCRINOLOGIE & FERTILITÉ'); // Hormones OK
-            conclusion = `DIAGNOSTIC D'INFERTILITÉ TUBAIRE.\n\nANALYSE HORMONALE :\n- AMH et FSH normales (L'ovulation fonctionne).\n\nHYSTÉROSALPINGOGRAPHIE :\n- Obstruction bilatérale des trompes de Fallope.\n\nVERDICT : STÉRILITÉ MÉCANIQUE.\nLa rencontre ovule/spermatozoïde est physiquement impossible.`;
-        } 
-        // Si elle est âgée (> 45), c'est l'âge
-        else {
-            window.res('amh', '0.01', 'ENDOCRINOLOGIE & FERTILITÉ');
-            window.res('fsh', '50.0', 'ENDOCRINOLOGIE & FERTILITÉ');
-            conclusion = `DIAGNOSTIC DE STÉRILITÉ PHYSIOLOGIQUE.\n\nANALYSE :\n- Effondrement total des hormones de réserve.\n\nVERDICT : MÉNOPAUSE CONFIRMÉE.\nInfertilité définitive et naturelle due à l'âge de la patiente (${age} ans).`;
-        }
+    if (rand < 0.2) {
+        // AZOOSPERMIE (Stérile complet)
+        conclusion = `DIAGNOSTIC DE STÉRILITÉ CONFIRMÉ.\n\nSPERMOGRAMME :\n- Concentration : 0 M/ml (Absence totale).\n- Mobilité : 0%.\n\nVERDICT : AZOOSPERMIE.\nAbsence de spermatozoïdes dans l'éjaculat. Stérilité d'origine sécrétoire ou obstructive.`;
+    } else if (rand < 0.5) {
+        // HYPOFERTILITÉ (Pas stérile, mais galère)
+        let conc = Math.floor(Math.random()*10 + 2);
+        conclusion = `HYPOFERTILITÉ MASCULINE.\n\nSPERMOGRAMME :\n- Concentration : ${conc} M/ml (Faible).\n- Mobilité : Réduite.\n\nCONCLUSION :\nOligospermie. La conception est possible mais difficile.`;
+    } else {
+        // NORMAL (Il va bien, c'est juste un contrôle)
+        let conc = Math.floor(Math.random()*60 + 20);
+        conclusion = `ABSENCE DE STÉRILITÉ.\n\nSPERMOGRAMME :\n- Concentration : ${conc} M/ml (Normale).\n- Mobilité : Excellente.\n\nCONCLUSION :\nLe patient n'est pas stérile. Paramètres spermatiques normaux.`;
     }
+
     fusionnerConclusionSpecifique(conclusion);
 }
-
 // ==========================================
 // 5. FONCTIONS PUBLIQUES (WINDOW)
 // ==========================================
