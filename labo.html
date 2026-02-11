@@ -33,11 +33,11 @@
             </div>
 
             <div class="form-group">
-                <label>Sexe du Patient</label>
-                <select id="patientSex" style="width: 100%; background: #111b2d; color: white; border: 1px solid #334155; padding: 5px; border-radius: 4px;">
+                <label>Sexe / Genre</label>
+                <select id="patientSex" onchange="window.updateSexe(this.value)" style="width: 100%; background: #111b2d; color: white; border: 1px solid #334155; padding: 5px; border-radius: 4px;">
                     <option value="F">Femme</option>
                     <option value="H">Homme</option>
-                    <option value="A">Autre</option>
+                    <option value="A">Autre / Non-binaire</option>
                 </select>
             </div>
 
@@ -154,6 +154,7 @@
                 <div class="patient-card">
                     <div>
                         Patient : <strong id="d-nom">...</strong><br>
+                        Sexe : <span id="d-sexe" style="color: #cbd5e1;">...</span><br>
                         Naissance : <span id="d-ddn">...</span><br>
                         Groupe : <strong id="d-groupe">...</strong>
                     </div>
@@ -209,6 +210,7 @@
 <script type="module" src="labo.js"></script>
 </body>
 </html>
+
 
 
 
