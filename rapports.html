@@ -32,7 +32,7 @@
                 <label style="color: #38bdf8; font-weight: bold; margin-bottom: 10px;">IDENTITÉ DU PATIENT / DÉFUNT</label>
                 
                 <label>Nom & Prénom</label>
-                <input type="text" id="in-nom" oninput="up('d-nom', this.value); up('d-nom-titre', this.value);" placeholder="Ex: Carter JAYDEN" style="margin-bottom: 10px;">
+                <input type="text" id="in-nom" oninput="up('d-nom', this.value); up('d-nom-titre', this.value); genererRef();" placeholder="Ex: Edmon DEBUCHE" style="margin-bottom: 10px;">
                 
                 <div style="display: flex; gap: 10px;">
                     <div style="flex: 1;">
@@ -66,24 +66,24 @@
             <div id="fields-med" class="dynamic-fields">
                 <div class="form-group">
                     <label>Circonstances / Déclarations</label>
-                    <textarea id="in-med-circ" rows="3" oninput="upBlock('d-med-circ', 'wrap-med-circ', this.value)" placeholder="Patient retrouvé inconscient..."></textarea>
+                    <textarea id="in-med-circ" rows="3" oninput="upBlock('d-med-circ', 'wrap-med-circ', this.value)" placeholder="Intervention sur Sandy Shores..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Bilan Clinique & Imagerie</label>
-                    <textarea id="in-med-bilan" rows="3" oninput="upBlock('d-med-bilan', 'wrap-med-bilan', this.value)" placeholder="- Ecchymoses visage..."></textarea>
+                    <textarea id="in-med-bilan" rows="3" oninput="upBlock('d-med-bilan', 'wrap-med-bilan', this.value)" placeholder="Luxation genou, fracture cheville..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Protocole de Soins</label>
-                    <textarea id="in-med-soins" rows="2" oninput="upBlock('d-med-soins', 'wrap-med-soins', this.value)" placeholder="Nettoyage des plaies..."></textarea>
+                    <textarea id="in-med-soins" rows="2" oninput="upBlock('d-med-soins', 'wrap-med-soins', this.value)" placeholder="Plâtre posé, stabilisation..."></textarea>
                 </div>
                 <div style="display: flex; gap: 10px;">
                     <div class="form-group" style="flex: 2;">
-                        <label>Temps de repos estimé</label>
-                        <input type="text" id="in-med-repos" oninput="upMedSuivi()" placeholder="Ex: 5 heures">
+                        <label>Temps de récupération</label>
+                        <input type="text" id="in-med-repos" oninput="upMedSuivi()" placeholder="Ex: 24h">
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label>Facturation ($)</label>
-                        <input type="text" id="in-med-prix" oninput="upMedSuivi()" placeholder="640">
+                        <input type="text" id="in-med-prix" oninput="upMedSuivi()" placeholder="850">
                     </div>
                 </div>
             </div>
@@ -91,53 +91,46 @@
             <div id="fields-psy" class="dynamic-fields" style="display: none;">
                 <div class="form-group">
                     <label>Contexte / Motif</label>
-                    <textarea id="in-psy-circ" rows="2" oninput="upBlock('d-psy-circ', 'wrap-psy-circ', this.value)" placeholder="Évaluation d'aptitude / Traumatisme..."></textarea>
+                    <textarea id="in-psy-circ" rows="2" oninput="upBlock('d-psy-circ', 'wrap-psy-circ', this.value)" placeholder="Évaluation d'aptitude..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Observations Cliniques</label>
-                    <textarea id="in-psy-obs" rows="3" oninput="upBlock('d-psy-obs', 'wrap-psy-obs', this.value)" placeholder="Le patient présente une anxiété..."></textarea>
+                    <textarea id="in-psy-obs" rows="3" oninput="upBlock('d-psy-obs', 'wrap-psy-obs', this.value)" placeholder="Le patient présente..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Analyse & Diagnostic</label>
-                    <textarea id="in-psy-diag" rows="3" oninput="upBlock('d-psy-diag', 'wrap-psy-diag', this.value)" placeholder="Syndrome de stress post-traumatique..."></textarea>
+                    <textarea id="in-psy-diag" rows="3" oninput="upBlock('d-psy-diag', 'wrap-psy-diag', this.value)" placeholder="Syndrome de stress..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Conclusion & Recommandations</label>
-                    <textarea id="in-psy-reco" rows="2" oninput="upBlock('d-psy-reco', 'wrap-psy-reco', this.value)" placeholder="Apte au service / Inapte provisoire..."></textarea>
+                    <textarea id="in-psy-reco" rows="2" oninput="upBlock('d-psy-reco', 'wrap-psy-reco', this.value)" placeholder="Apte au service..."></textarea>
                 </div>
             </div>
 
             <div id="fields-auto" class="dynamic-fields" style="display: none;">
                 <div class="form-group">
                     <label>Heure estimée du décès</label>
-                    <input type="time" id="in-auto-heure" oninput="upBlock('d-auto-heure', 'd-info-auto', this.value, true)">
+                    <input type="time" id="in-auto-heure" oninput="upBlock('d-auto-heure', 'd-info-auto', this.value)">
                 </div>
                 <div class="form-group">
-                    <label>Examen Externe (Corps, plaies)</label>
-                    <textarea id="in-auto-ext" rows="3" oninput="upBlock('d-auto-ext', 'wrap-auto-ext', this.value)" placeholder="Lividités cadavériques... Orifices d'entrée..."></textarea>
+                    <label>Examen Externe</label>
+                    <textarea id="in-auto-ext" rows="3" oninput="upBlock('d-auto-ext', 'wrap-auto-ext', this.value)" placeholder="Plaies visibles..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Examen Interne (Organes, balles)</label>
-                    <textarea id="in-auto-int" rows="3" oninput="upBlock('d-auto-int', 'wrap-auto-int', this.value)" placeholder="Perforation pulmonaire gauche..."></textarea>
+                    <label>Examen Interne</label>
+                    <textarea id="in-auto-int" rows="3" oninput="upBlock('d-auto-int', 'wrap-auto-int', this.value)" placeholder="Perforation pulmonaire..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Conclusion Médico-légale (Cause décès)</label>
-                    <textarea id="in-auto-cause" rows="2" oninput="upBlock('d-auto-cause', 'wrap-auto-cause', this.value)" placeholder="Hémorragie interne massive suite à..."></textarea>
+                    <label>Conclusion Médico-légale</label>
+                    <textarea id="in-auto-cause" rows="2" oninput="upBlock('d-auto-cause', 'wrap-auto-cause', this.value)" placeholder="Hémorragie interne massive..."></textarea>
                 </div>
             </div>
 
             <div style="margin-top: 20px; border-top: 2px solid #334155; padding-top: 15px;">
-                <label style="color: #f472b6; font-weight: bold; margin-bottom: 10px; display: block;">➕ SECTIONS SUPPLÉMENTAIRES (Optionnel)</label>
-                
-                <div class="form-group" style="background: #0f172a; padding: 10px; border-radius: 6px;">
-                    <input type="text" id="in-c1-titre" placeholder="Titre du bloc 1 (ex: PRESCRIPTION)..." oninput="upCustom(1)" style="margin-bottom: 5px; font-weight: bold; color: #38bdf8; border: none; background: transparent; border-bottom: 1px solid #334155; border-radius: 0; padding-left: 0;">
-                    <textarea id="in-c1-text" rows="2" placeholder="Contenu du bloc 1..." oninput="upCustom(1)" style="border: none; background: #111b2d;"></textarea>
-                </div>
-                
-                <div class="form-group" style="background: #0f172a; padding: 10px; border-radius: 6px;">
-                    <input type="text" id="in-c2-titre" placeholder="Titre du bloc 2 (ex: AVIS LSPD)..." oninput="upCustom(2)" style="margin-bottom: 5px; font-weight: bold; color: #38bdf8; border: none; background: transparent; border-bottom: 1px solid #334155; border-radius: 0; padding-left: 0;">
-                    <textarea id="in-c2-text" rows="2" placeholder="Contenu du bloc 2..." oninput="upCustom(2)" style="border: none; background: #111b2d;"></textarea>
-                </div>
+                <button type="button" onclick="ajouterSectionCustom()" style="background: transparent; color: #f472b6; border: 1px dashed #f472b6; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; transition: 0.2s;">
+                    ➕ AJOUTER UNE SECTION SUPPLÉMENTAIRE
+                </button>
+                <div id="custom-inputs-container" style="margin-top: 15px;"></div>
             </div>
 
             <div class="actions-group" style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
@@ -245,23 +238,12 @@
                     </div>
                 </div>
 
-                <div id="render-custom">
-                    <div id="wrap-c1" style="display: none;">
-                        <h4 id="d-c1-titre" class="doc-h4"></h4>
-                        <p id="d-c1-text" class="doc-p"></p>
-                    </div>
-                    <div id="wrap-c2" style="display: none;">
-                        <h4 id="d-c2-titre" class="doc-h4"></h4>
-                        <p id="d-c2-text" class="doc-p"></p>
-                    </div>
-                </div>
+                <div id="render-custom"></div>
 
                 <div class="cert-footer" style="margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 5px;">
                     <div class="cert-signature" style="text-align: left;">
                         <span style="font-size: 12px; font-weight: bold;">Établi par :</span><br><br>
-                        <span id="d-sig" class="signature-line">
-                            
-                        </span>
+                        <span id="d-sig" class="signature-line" style="display: none;"></span>
                     </div>
 
                     <div class="qr-container" style="text-align: center;">
@@ -291,6 +273,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script type="module" src="global.js"></script>
-    <script type="module" src="rapports.js"></script>
+    <script src="rapports.js"></script>
 </body>
 </html>
