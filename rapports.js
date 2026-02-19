@@ -164,7 +164,10 @@ window.genererRef = function() {
         const elRef = document.getElementById('d-ref');
         if(elRef) elRef.innerText = ref;
         
-        const nom = document.getElementById('in-nom').value || "Inconnu";
+        // CORRECTION ICI : On cherche le texte formaté 'd-nom' au lieu de l'input manquant 'in-nom'
+        const elNom = document.getElementById('d-nom');
+        const nom = (elNom && elNom.innerText !== '...') ? elNom.innerText : "Inconnu";
+
         const qrImg = document.getElementById('qr-ref');
         if (qrImg) {
             const data = encodeURIComponent(`OMC-${currentReportType.toUpperCase()}|${nom}|${ref}`);
@@ -190,22 +193,22 @@ window.switchReport = function(type) {
 
     const titreDoc = document.getElementById('d-titre-doc');
     const labelDoc = document.getElementById('label-doc');
-    const labelNom = document.getElementById('label-nom'); // <-- NOUVEAU
+    const labelNom = document.getElementById('label-nom'); 
     
     if(type === 'med') {
         titreDoc.innerText = "DOSSIER MÉDICAL";
         labelDoc.innerText = "Praticien intervenant";
-        labelNom.innerText = "Prénom & Nom du Patient"; // <-- NOUVEAU
+        if(labelNom) labelNom.innerText = "Prénom & Nom du Patient"; 
         document.getElementById('d-info-auto').style.display = 'none';
     } else if (type === 'psy') {
         titreDoc.innerText = "BILAN PSYCHOLOGIQUE";
         labelDoc.innerText = "Psychologue / Médecin";
-        labelNom.innerText = "Prénom & Nom du Patient"; // <-- NOUVEAU
+        if(labelNom) labelNom.innerText = "Prénom & Nom du Patient"; 
         document.getElementById('d-info-auto').style.display = 'none';
     } else if (type === 'auto') {
         titreDoc.innerText = "RAPPORT D'AUTOPSIE";
         labelDoc.innerText = "Médecin Légiste (Coroner)";
-        labelNom.innerText = "Prénom & Nom du Défunt"; // <-- NOUVEAU
+        if(labelNom) labelNom.innerText = "Prénom & Nom du Défunt"; 
         const heure = document.getElementById('in-auto-heure').value;
         if(heure) document.getElementById('d-info-auto').style.display = 'block';
     }
@@ -217,7 +220,7 @@ window.ajouterSectionCustom = function() {
     customCount++;
     const id = customCount;
 
-    // 1. UI Gauche (Alignement propre du bouton supprimer en mode "Flexbox")
+    // 1. UI Gauche
     const containerIn = document.getElementById('custom-inputs-container');
     const htmlIn = `
         <div id="custom-block-${id}" class="form-group" style="background: #0f172a; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
@@ -245,8 +248,8 @@ window.supprimerSectionCustom = function(id) {
     const inputBlock = document.getElementById(`custom-block-${id}`);
     const renderBlock = document.getElementById(`wrap-c${id}`);
     
-    if(inputBlock) inputBlock.remove(); // Supprime à gauche
-    if(renderBlock) renderBlock.remove(); // Supprime à droite
+    if(inputBlock) inputBlock.remove(); 
+    if(renderBlock) renderBlock.remove(); 
 }
 
 window.upCustom = function(id) {
@@ -301,11 +304,13 @@ window.envoyerRapportDiscord = async function() {
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
     
-    const nom = document.getElementById('in-nom').value || "Inconnu";
+    // CORRECTION ICI : On cherche le texte formaté au lieu de l'input manquant
+    const elNom = document.getElementById('d-nom');
+    const nom = (elNom && elNom.innerText !== '...') ? elNom.innerText : "Inconnu";
+    
     const titreDoc = document.getElementById('d-titre-doc').innerText;
     const ref = document.getElementById('d-ref').innerText;
     
-    // Pour le message discord, on prend la signature ou le praticien en haut
     const praticien = document.getElementById('in-sig').value || document.getElementById('in-doc').value || "Non Renseigné";
 
     window.scrollTo(0,0);
@@ -313,24 +318,19 @@ window.envoyerRapportDiscord = async function() {
     btn.innerText = "CAPTURE EN COURS...";
 
     try {
-        // 1. Capture du document
         const canvas = await html2canvas(doc, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
         btn.innerText = "ENVOI SUR L'INTRANET...";
 
-        // 2. Transformation propre en Fichier (Blob) via une Promesse
         const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
 
-        // 3. Préparation du paquet pour Discord
         const formData = new FormData();
         formData.append("payload_json", JSON.stringify({
             username: "Intranet OMC",
             content: `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titreDoc}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Signataire :** ${praticien}\n━━━━━━━━━━━━━━━━━━━━`
         }));
         
-        // Nom du fichier simplifié pour éviter les bugs Discord
         formData.append("file", blob, "rapport_officiel.jpg");
 
-        // 4. Envoi effectif
         const response = await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', body: formData });
         
         if(response.ok) {
@@ -341,16 +341,14 @@ window.envoyerRapportDiscord = async function() {
             throw new Error("Refus de Discord : " + errText);
         }
         
-        // 5. Réinitialisation du bouton après succès
         setTimeout(() => {
             btn.innerText = "📨 ENVOYER SUR L'INTRANET";
             btn.disabled = false;
         }, 3000);
 
     } catch (e) {
-        // En cas d'erreur, on débloque le bouton pour pouvoir réessayer
         console.error("Erreur d'envoi Discord:", e);
-        alert("❌ Erreur d'envoi. Vérifiez le lien du Webhook ou la taille du document.");
+        alert("❌ Erreur d'envoi. Vérifiez la console.");
         btn.innerText = "RÉESSAYER";
         btn.disabled = false;
     }
