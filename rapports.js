@@ -407,6 +407,7 @@ window.envoyerRapportDiscord = async function() {
         const formData = new FormData();
         formData.append("payload_json", JSON.stringify({
             username: "Intranet OMC",
+            thread_name: `📄 ${titreDoc} - ${nom}`, // <-- LA LIGNE MAGIQUE POUR LES FORUMS DISCORD
             content: `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titreDoc}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Signataire :** ${praticien}\n━━━━━━━━━━━━━━━━━━━━`
         }));
         
