@@ -63,6 +63,33 @@ window.upBlock = function(textId, wrapId, val) {
     }
 }
 
+// Assemblage et formatage automatique du Prénom et Nom
+window.upNom = function() {
+    let prenom = document.getElementById('in-prenom').value.trim();
+    let nom = document.getElementById('in-nom-famille').value.trim();
+    
+    // Format Prénom : Première lettre Majuscule, le reste minuscule
+    if(prenom.length > 0) {
+        prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase();
+    }
+    
+    // Format Nom : TOUT EN MAJUSCULE
+    if(nom.length > 0) {
+        nom = nom.toUpperCase();
+    }
+    
+    // Assemblage final
+    let nomComplet = [];
+    if(prenom) nomComplet.push(prenom);
+    if(nom) nomComplet.push(nom);
+    
+    const texteFinal = nomComplet.length > 0 ? nomComplet.join(' ') : '...';
+    
+    // Envoi sur le document de droite
+    document.getElementById('d-nom').innerText = texteFinal;
+    document.getElementById('d-nom-titre').innerText = texteFinal;
+}
+
 // Ligne PRATICIEN du haut (Assemble le nom, le grade et l'hôpital)
 window.upDoc = function() {
     const elDoc = document.getElementById('in-doc');
@@ -163,18 +190,22 @@ window.switchReport = function(type) {
 
     const titreDoc = document.getElementById('d-titre-doc');
     const labelDoc = document.getElementById('label-doc');
+    const labelNom = document.getElementById('label-nom'); // <-- NOUVEAU
     
     if(type === 'med') {
         titreDoc.innerText = "DOSSIER MÉDICAL";
         labelDoc.innerText = "Praticien intervenant";
+        labelNom.innerText = "Prénom & Nom du Patient"; // <-- NOUVEAU
         document.getElementById('d-info-auto').style.display = 'none';
     } else if (type === 'psy') {
         titreDoc.innerText = "BILAN PSYCHOLOGIQUE";
         labelDoc.innerText = "Psychologue / Médecin";
+        labelNom.innerText = "Prénom & Nom du Patient"; // <-- NOUVEAU
         document.getElementById('d-info-auto').style.display = 'none';
     } else if (type === 'auto') {
         titreDoc.innerText = "RAPPORT D'AUTOPSIE";
         labelDoc.innerText = "Médecin Légiste (Coroner)";
+        labelNom.innerText = "Prénom & Nom du Défunt"; // <-- NOUVEAU
         const heure = document.getElementById('in-auto-heure').value;
         if(heure) document.getElementById('d-info-auto').style.display = 'block';
     }
