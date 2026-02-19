@@ -24,40 +24,51 @@ document.addEventListener('DOMContentLoaded', () => {
         up('d-heure', `${h}:${m}`);
         
         switchReport('med'); 
-        initToolbars(); // Initialise les barres d'outils Gras/Italique
+        initToolbars(); 
     } catch(e) {
         console.error("Erreur Initialisation", e);
     }
 });
 
 // ==========================================
-// FORMATAGE TEXTE RICHE (Markdown)
+// FORMATAGE TEXTE RICHE (Markdown) CORRIGÉ
 // ==========================================
 
 window.formatMD = function(text) {
     if(!text) return '';
-    let html = text.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // Sécurité
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Gras
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>'); // Italique
+    let html = text.replace(/</g, "&lt;").replace(/>/g, "&gt;"); 
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>'); 
     
-    // Puces (Listes)
     let lines = html.split('\n');
     let inList = false;
-    let out = [];
+    let out = "";
     
-    for(let line of lines) {
-        if(line.trim().startsWith('- ')) {
-            if(!inList) { out.push('<ul style="margin: 2px 0; padding-left: 20px;">'); inList = true; }
-            out.push('<li>' + line.trim().substring(2) + '</li>');
+    for(let i=0; i < lines.length; i++) {
+        let line = lines[i]; 
+        let trimmed = line.trim();
+        
+        if(trimmed.startsWith('- ')) {
+            if(!inList) {
+                // Début de la liste (marges propres)
+                out += '<ul style="margin: 5px 0; padding-left: 20px;">';
+                inList = true;
+            }
+            // Ligne de liste (pas de sauts de ligne supplémentaires)
+            out += '<li style="margin-bottom: 2px;">' + trimmed.substring(2) + '</li>';
         } else {
-            if(inList) { out.push('</ul>'); inList = false; }
-            out.push(line);
+            if(inList) {
+                out += '</ul>'; // Fin de la liste
+                inList = false;
+            }
+            // Sauts de ligne normaux pour le texte classique
+            out += line + (i < lines.length - 1 ? '<br>' : '');
         }
     }
-    if(inList) out.push('</ul>');
+    if(inList) out += '</ul>'; // Sécurité si la liste est tout à la fin
     
-    // Remplace les sauts de ligne classiques
-    return out.join('<br>').replace(/<br><ul/g, '<ul').replace(/<\/ul><br>/g, '</ul>');
+    // Évite d'avoir un énorme espace juste après une liste
+    return out.replace(/<\/ul><br>/g, '</ul>');
 }
 
 window.insertMD = function(id, type) {
@@ -85,13 +96,12 @@ window.insertMD = function(id, type) {
     }
     
     el.value = newVal;
-    el.dispatchEvent(new Event('input')); // Force la mise à jour visuelle
+    el.dispatchEvent(new Event('input')); 
     el.focus();
 }
 
 window.initToolbars = function() {
     document.querySelectorAll('textarea').forEach(ta => {
-        // Empêche de mettre deux barres d'outils sur le même champ
         if(ta.previousElementSibling && ta.previousElementSibling.classList.contains('md-toolbar')) return;
         
         const tb = document.createElement('div');
@@ -123,7 +133,6 @@ window.upDate = function(id, val) {
     }
 }
 
-// MISE A JOUR BLOCK AVEC LE MARKDOWN (Formatage Riche)
 window.upBlock = function(textId, wrapId, val) {
     const el = document.getElementById(textId);
     const wrap = document.getElementById(wrapId);
@@ -139,7 +148,6 @@ window.upBlock = function(textId, wrapId, val) {
     }
 }
 
-// Assemblage Prénom et Nom
 window.upNom = function() {
     let prenom = document.getElementById('in-prenom').value.trim();
     let nom = document.getElementById('in-nom-famille').value.trim();
@@ -157,7 +165,6 @@ window.upNom = function() {
     document.getElementById('d-nom-titre').innerText = texteFinal;
 }
 
-// Ligne PRATICIEN du haut (CORRIGÉ)
 window.upDoc = function() {
     const elDoc = document.getElementById('in-doc');
     const elGrade = document.getElementById('in-grade');
@@ -181,7 +188,6 @@ window.upDoc = function() {
     }
 }
 
-// Ligne SIGNATAIRE du bas (CORRIGÉ)
 window.upSig = function(val) {
     const text = val ? val.trim() : '';
     const dSig = document.getElementById('d-sig');
@@ -192,7 +198,6 @@ window.upSig = function(val) {
     }
 }
 
-// Gestion bloc Suivi & Conclusion (Formaté)
 window.upMedSuivi = function() {
     const concl = document.getElementById('in-med-conclusion').value.trim();
     const repos = document.getElementById('in-med-repos').value.trim();
@@ -308,7 +313,6 @@ window.ajouterSectionCustom = function() {
     `;
     containerOut.insertAdjacentHTML('beforeend', htmlOut);
     
-    // Injecte la barre d'outils sur le nouveau champ textarea créé !
     initToolbars();
 }
 
@@ -326,14 +330,13 @@ window.upCustom = function(id) {
     const wrap = document.getElementById(`wrap-c${id}`);
     
     document.getElementById(`d-c${id}-titre`).innerText = titre || `SECTION SUPPLÉMENTAIRE`;
-    // Utilise formatMD pour les sections personnalisées
     document.getElementById(`d-c${id}-text`).innerHTML = formatMD(texte); 
     
     wrap.style.display = (texte !== '') ? 'block' : 'none';
 }
 
 // ==========================================
-// ENVOIS (IMG + DISCORD)
+// ENVOIS (IMG + DISCORD) ROBUSIFIÉS
 // ==========================================
 
 window.genererImageRapport = async function() {
@@ -362,13 +365,14 @@ window.genererImageRapport = async function() {
         }
     } catch (e) {
         console.error(e);
-        alert("❌ Erreur de génération");
+        alert("❌ Erreur de génération de l'image.");
     } finally {
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
 }
 
+// Nouvelle version Ultra-Sécurisée pour Discord
 window.envoyerRapportDiscord = async function() {
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
@@ -388,10 +392,17 @@ window.envoyerRapportDiscord = async function() {
     btn.innerText = "CAPTURE EN COURS...";
 
     try {
-        const canvas = await html2canvas(doc, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+        // Capture à scale 1.5 au lieu de 2 pour éviter les fichiers trop lourds pour Discord
+        const canvas = await html2canvas(doc, { scale: 1.5, useCORS: true, backgroundColor: "#ffffff" });
         btn.innerText = "ENVOI SUR L'INTRANET...";
 
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+        // Création de l'image garantie sans bloquer
+        const blob = await new Promise((resolve, reject) => {
+            canvas.toBlob((b) => {
+                if(b) resolve(b);
+                else reject(new Error("Echec de la création du fichier image."));
+            }, 'image/png'); // Le PNG passe parfois mieux sur Discord
+        });
 
         const formData = new FormData();
         formData.append("payload_json", JSON.stringify({
@@ -399,7 +410,8 @@ window.envoyerRapportDiscord = async function() {
             content: `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titreDoc}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Signataire :** ${praticien}\n━━━━━━━━━━━━━━━━━━━━`
         }));
         
-        formData.append("file", blob, "rapport_officiel.jpg");
+        // Nom simplifié pour ne pas faire planter l'API Discord
+        formData.append("file", blob, "rapport_officiel.png");
 
         const response = await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', body: formData });
         
@@ -408,19 +420,21 @@ window.envoyerRapportDiscord = async function() {
             btn.innerText = "✅ ENVOYÉ !";
         } else {
             const errText = await response.text();
-            throw new Error("Refus de Discord : " + errText);
+            throw new Error("Discord a refusé l'envoi. Code: " + response.status + " | Message: " + errText);
         }
-        
-        setTimeout(() => {
-            btn.innerText = "📨 ENVOYER SUR L'INTRANET";
-            btn.disabled = false;
-        }, 3000);
 
     } catch (e) {
-        console.error("Erreur d'envoi Discord:", e);
-        alert("❌ Erreur d'envoi.");
+        console.error("Détails de l'erreur Discord:", e);
+        alert("❌ Erreur d'envoi. Cause : " + e.message);
         btn.innerText = "RÉESSAYER";
-        btn.disabled = false;
+    } finally {
+        // Dans tous les cas, on débloque le bouton après quelques secondes
+        setTimeout(() => {
+            if(btn.innerText !== "RÉESSAYER") {
+                btn.innerText = "📨 ENVOYER SUR L'INTRANET";
+            }
+            btn.disabled = false;
+        }, 3000);
     }
 }
 
