@@ -32,10 +32,10 @@
                 <label style="color: #38bdf8; font-weight: bold; margin-bottom: 10px; display: block;">INFORMATIONS GÉNÉRALES</label>
                 
                 <label>Sujet du rapport</label>
-                <input type="text" id="in-sujet" oninput="up('d-sujet', this.value)" placeholder="Ex: Constat Lésionnel suite Fusillade" style="margin-bottom: 10px;">
+                <input type="text" id="in-sujet" oninput="up('d-sujet', this.value)" placeholder="..." style="margin-bottom: 10px;">
 
                 <label>Nom & Prénom du Patient / Défunt</label>
-                <input type="text" id="in-nom" oninput="up('d-nom', this.value); genererRef();" placeholder="Ex: Edmon DEBUCHE" style="margin-bottom: 10px;">
+                <input type="text" id="in-nom" oninput="up('d-nom', this.value); genererRef();" placeholder="..." style="margin-bottom: 10px;">
                 
                 <div style="display: flex; gap: 10px;">
                     <div style="flex: 1;">
@@ -64,39 +64,39 @@
             <div class="form-group" style="display: flex; gap: 10px;">
                 <div style="flex: 1;">
                     <label id="label-doc">Praticien intervenant</label>
-                    <input type="text" id="in-doc" placeholder="Ex: Alejandro SANCHEZ" oninput="upDoc();">
+                    <input type="text" id="in-doc" placeholder="..." oninput="upDoc();">
                 </div>
                 <div style="flex: 1;">
                     <label>Grade du praticien</label>
-                    <input type="text" id="in-grade" placeholder="Ex: Aide-soignant" oninput="upDoc();">
+                    <input type="text" id="in-grade" placeholder="..." oninput="upDoc();">
                 </div>
             </div>
 
             <div id="fields-med" class="dynamic-fields">
                 <div class="form-group">
                     <label>Circonstances / Déclarations</label>
-                    <textarea id="in-med-circ" rows="3" oninput="upBlock('d-med-circ', 'wrap-med-circ', this.value)" placeholder="Intervention sur Sandy Shores..."></textarea>
+                    <textarea id="in-med-circ" rows="3" oninput="upBlock('d-med-circ', 'wrap-med-circ', this.value)" placeholder="Intervention sur..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Bilan Clinique & Imagerie</label>
-                    <textarea id="in-med-bilan" rows="3" oninput="upBlock('d-med-bilan', 'wrap-med-bilan', this.value)" placeholder="Luxation genou, fracture cheville..."></textarea>
+                    <textarea id="in-med-bilan" rows="3" oninput="upBlock('d-med-bilan', 'wrap-med-bilan', this.value)" placeholder="Lésions constatées..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Protocole de Soins</label>
-                    <textarea id="in-med-soins" rows="2" oninput="upBlock('d-med-soins', 'wrap-med-soins', this.value)" placeholder="Plâtre posé, stabilisation..."></textarea>
+                    <textarea id="in-med-soins" rows="2" oninput="upBlock('d-med-soins', 'wrap-med-soins', this.value)" placeholder="Soins apportés..."></textarea>
                 </div>
                 
                 <div class="form-group" style="border-top: 1px solid #334155; padding-top: 15px; margin-top: 10px;">
                     <label style="color: #a78bfa; font-weight: bold; margin-bottom: 5px; display: block;">SUIVI & CONCLUSION</label>
-                    <textarea id="in-med-conclusion" rows="2" oninput="upMedSuivi()" placeholder="Pronostic favorable. Le patient devra..." style="margin-bottom: 10px;"></textarea>
+                    <textarea id="in-med-conclusion" rows="2" oninput="upMedSuivi()" placeholder="Pronostic favorable..." style="margin-bottom: 10px;"></textarea>
                     <div style="display: flex; gap: 10px;">
                         <div class="form-group" style="flex: 2; margin-bottom: 0;">
                             <label>Temps de récupération</label>
-                            <input type="text" id="in-med-repos" oninput="upMedSuivi()" placeholder="Ex: 24h sans effort">
+                            <input type="text" id="in-med-repos" oninput="upMedSuivi()" placeholder="...">
                         </div>
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
                             <label>Facturation ($)</label>
-                            <input type="text" id="in-med-prix" oninput="upMedSuivi()" placeholder="850">
+                            <input type="text" id="in-med-prix" oninput="upMedSuivi()" placeholder="...">
                         </div>
                     </div>
                 </div>
@@ -105,19 +105,19 @@
             <div id="fields-psy" class="dynamic-fields" style="display: none;">
                 <div class="form-group">
                     <label>Contexte / Motif</label>
-                    <textarea id="in-psy-circ" rows="2" oninput="upBlock('d-psy-circ', 'wrap-psy-circ', this.value)" placeholder="Évaluation d'aptitude..."></textarea>
+                    <textarea id="in-psy-circ" rows="2" oninput="upBlock('d-psy-circ', 'wrap-psy-circ', this.value)" placeholder="..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Observations Cliniques</label>
-                    <textarea id="in-psy-obs" rows="3" oninput="upBlock('d-psy-obs', 'wrap-psy-obs', this.value)" placeholder="Le patient présente..."></textarea>
+                    <textarea id="in-psy-obs" rows="3" oninput="upBlock('d-psy-obs', 'wrap-psy-obs', this.value)" placeholder="..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Analyse & Diagnostic</label>
-                    <textarea id="in-psy-diag" rows="3" oninput="upBlock('d-psy-diag', 'wrap-psy-diag', this.value)" placeholder="Syndrome de stress..."></textarea>
+                    <textarea id="in-psy-diag" rows="3" oninput="upBlock('d-psy-diag', 'wrap-psy-diag', this.value)" placeholder="..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Conclusion & Recommandations</label>
-                    <textarea id="in-psy-reco" rows="2" oninput="upBlock('d-psy-reco', 'wrap-psy-reco', this.value)" placeholder="Apte au service..."></textarea>
+                    <textarea id="in-psy-reco" rows="2" oninput="upBlock('d-psy-reco', 'wrap-psy-reco', this.value)" placeholder="..."></textarea>
                 </div>
             </div>
 
@@ -128,15 +128,15 @@
                 </div>
                 <div class="form-group">
                     <label>Examen Externe</label>
-                    <textarea id="in-auto-ext" rows="3" oninput="upBlock('d-auto-ext', 'wrap-auto-ext', this.value)" placeholder="Plaies visibles..."></textarea>
+                    <textarea id="in-auto-ext" rows="3" oninput="upBlock('d-auto-ext', 'wrap-auto-ext', this.value)" placeholder="..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Examen Interne</label>
-                    <textarea id="in-auto-int" rows="3" oninput="upBlock('d-auto-int', 'wrap-auto-int', this.value)" placeholder="Perforation pulmonaire..."></textarea>
+                    <textarea id="in-auto-int" rows="3" oninput="upBlock('d-auto-int', 'wrap-auto-int', this.value)" placeholder="..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Conclusion Médico-légale</label>
-                    <textarea id="in-auto-cause" rows="2" oninput="upBlock('d-auto-cause', 'wrap-auto-cause', this.value)" placeholder="Hémorragie interne massive..."></textarea>
+                    <textarea id="in-auto-cause" rows="2" oninput="upBlock('d-auto-cause', 'wrap-auto-cause', this.value)" placeholder="..."></textarea>
                 </div>
             </div>
 
@@ -148,8 +148,8 @@
             </div>
 
             <div class="form-group" style="margin-top: 25px; border-top: 2px solid #334155; padding-top: 15px;">
-                <label style="color: #cbd5e1;">Signataire (Bas de page)</label>
-                <input type="text" id="in-sig" placeholder="Ex: Dr. Louis BRUNELLE" oninput="upSig(this.value);">
+                <label style="color: #cbd5e1; font-weight: bold;">Signataire (Bas de page)</label>
+                <input type="text" id="in-sig" placeholder="..." oninput="upSig(this.value);">
             </div>
 
             <div class="actions-group" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
@@ -276,7 +276,7 @@
                 </div>
 
                 <p class="legal-text" style="margin-top: 20px; font-size: 10px; color: #000; border-top: 1px solid #eee; padding-top: 10px; font-style: italic; margin-bottom: 0;">
-                    Ce document est un acte officiel de l'Ocean Medical Center. Destiné aux autorités compétentes (DOJ/LSPD). Toute falsification est passible de poursuites pénales.
+                    Ce document est un acte officiel de l'Ocean Medical Center. Destiné aux autorités compétentes (DOJ/LSPD/BCSO). Toute falsification est passible de poursuites pénales.
                 </p>
             </div> 
         </main>
