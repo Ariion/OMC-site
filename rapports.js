@@ -2,12 +2,8 @@
 // RAPPORTS OFFICIELS - OMC LOGIC
 // ==========================================
 
-// --- CONFIGURATION ---
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; // Clé pour héberger les images
-
-// ⚠️⚠️ REMPLACE LE LIEN CI-DESSOUS PAR CELUI QUE TU M'AS DONNÉ ⚠️⚠️
-const DISCORD_WEBHOOK_URL = "METTRE_TON_LIEN_WEBHOOK_ICI"; 
-
+const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG"; 
 
 let currentReportType = 'med'; // Par défaut
 
@@ -20,19 +16,71 @@ document.addEventListener('DOMContentLoaded', () => {
     const m = String(today.getMinutes()).padStart(2, '0');
     if(document.getElementById('in-heure-prel')) document.getElementById('in-heure-prel').value = `${h}:${m}`;
 
-    // Applique sur le document
     upDate('d-date', today.toISOString().split('T')[0]);
     up('d-heure', `${h}:${m}`);
     genererRef();
     
-    // FORCE LE MODE MÉDICAL AU DÉMARRAGE
+    // Force Mode Médical au chargement
     switchReport('med');
 });
 
 // --- FONCTIONS DE MISE À JOUR DOM ---
+
+// Fonction basique (pour l'identité)
 window.up = function(id, val) {
     const el = document.getElementById(id);
     if(el) el.innerText = val || '...';
+}
+
+// Fonction pour les blocs : Cache le bloc si le texte est vide
+window.upBlock = function(textId, wrapId, val, isFlex = false) {
+    const el = document.getElementById(textId);
+    const wrap = document.getElementById(wrapId);
+    if(el) el.innerText = val || '';
+    
+    if(wrap) {
+        if(val && val.trim() !== '') {
+            wrap.style.display = isFlex ? 'block' : 'block'; // Adaptable si besoin
+            if(wrapId === 'd-info-auto') wrap.style.display = 'block'; 
+        } else {
+            wrap.style.display = 'none';
+        }
+    }
+}
+
+// Fonction spécifique pour le Praticien
+window.upDoc = function(val) {
+    document.getElementById('d-doc').innerText = val || '';
+    document.getElementById('d-sig').innerText = val || '';
+    document.getElementById('wrap-doc').style.display = (val && val.trim() !== '') ? 'block' : 'none';
+}
+
+// Fonction spécifique pour la partie Suivi/Facture (Médical)
+window.upMedSuivi = function() {
+    const repos = document.getElementById('in-med-repos').value.trim();
+    const prix = document.getElementById('in-med-prix').value.trim();
+    
+    document.getElementById('d-med-repos').innerText = repos;
+    document.getElementById('wrap-med-repos').style.display = repos ? 'block' : 'none';
+    
+    document.getElementById('d-med-prix').innerText = prix;
+    document.getElementById('wrap-med-prix').style.display = prix ? 'block' : 'none';
+    
+    // Si l'un des deux existe, on affiche le bloc global
+    document.getElementById('wrap-med-suivi').style.display = (repos || prix) ? 'block' : 'none';
+}
+
+// Fonction pour les 2 blocs Personnalisés optionnels
+window.upCustom = function(index) {
+    const titre = document.getElementById(`in-c${index}-titre`).value.trim();
+    const texte = document.getElementById(`in-c${index}-text`).value.trim();
+    const wrap = document.getElementById(`wrap-c${index}`);
+    
+    document.getElementById(`d-c${index}-titre`).innerText = titre || `SECTION PERSONNALISÉE ${index}`;
+    document.getElementById(`d-c${index}-text`).innerText = texte;
+    
+    // Le bloc ne s'affiche QUE si du texte est entré
+    wrap.style.display = (texte !== '') ? 'block' : 'none';
 }
 
 window.upDate = function(id, val) {
@@ -47,19 +95,17 @@ window.upDate = function(id, val) {
 }
 
 window.genererRef = function() {
-    const date = document.getElementById('in-date-prel').value; // YYYY-MM-DD
-    const heure = document.getElementById('in-heure-prel').value; // HH:MM
+    const date = document.getElementById('in-date-prel').value;
+    const heure = document.getElementById('in-heure-prel').value;
     let ref = "#...";
     
     if(date && heure) {
-        let d = date.replace(/\D/g, '').substring(6, 8) + date.replace(/\D/g, '').substring(4, 6); // DDMM
-        let h = heure.replace(/\D/g, ''); // HHMM
+        let d = date.replace(/\D/g, '').substring(6, 8) + date.replace(/\D/g, '').substring(4, 6);
+        let h = heure.replace(/\D/g, '');
         ref = "#" + d + h;
     }
-    
     document.getElementById('d-ref').innerText = ref;
     
-    // Maj QR Code
     const nom = document.getElementById('in-nom').value || "Anonyme";
     const refTexte = document.getElementById('d-ref').innerText;
     const qrImg = document.getElementById('qr-ref');
@@ -73,39 +119,37 @@ window.genererRef = function() {
 window.switchReport = function(type) {
     currentReportType = type;
     
-    // 1. Boutons Sidebar
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('btn-' + type).classList.add('active');
 
-    // 2. Champs Sidebar
     document.querySelectorAll('.dynamic-fields').forEach(f => f.style.display = 'none');
     document.getElementById('fields-' + type).style.display = 'block';
 
-    // 3. Sections Document Rendu
     document.querySelectorAll('.render-section').forEach(s => s.style.display = 'none');
     document.getElementById('render-' + type).style.display = 'block';
 
-    // 4. Titres et spécificités
     const titreDoc = document.getElementById('d-titre-doc');
     const labelDoc = document.getElementById('label-doc');
-    const infoAuto = document.getElementById('d-info-auto'); // Heure décès
+    
+    // Cache ou affiche l'heure du décès selon l'onglet
+    const valAutoHeure = document.getElementById('in-auto-heure').value.trim();
 
     if(type === 'med') {
         titreDoc.innerText = "DOSSIER MÉDICAL";
         labelDoc.innerText = "Praticien intervenant";
-        infoAuto.style.display = 'none';
+        document.getElementById('d-info-auto').style.display = 'none';
     } else if (type === 'psy') {
         titreDoc.innerText = "BILAN PSYCHOLOGIQUE";
         labelDoc.innerText = "Psychologue / Médecin";
-        infoAuto.style.display = 'none';
+        document.getElementById('d-info-auto').style.display = 'none';
     } else if (type === 'auto') {
         titreDoc.innerText = "RAPPORT D'AUTOPSIE";
         labelDoc.innerText = "Médecin Légiste (Coroner)";
-        infoAuto.style.display = 'block';
+        if(valAutoHeure) document.getElementById('d-info-auto').style.display = 'block';
     }
-    
     genererRef();
 }
+
 
 // ==========================================
 // FONCTIONS DE GÉNÉRATION ET D'ENVOI (IMG + DISCORD)
@@ -121,23 +165,19 @@ window.genererImageRapport = async function() {
     btn.disabled = true;
 
     try {
-        // Capture
         const canvas = await html2canvas(doc, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
         const imageData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
         
-        // Envoi à ImgBB
         const formData = new FormData();
         formData.append("image", imageData);
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG}`, { method: "POST", body: formData });
         const result = await response.json();
         
         if (result.success) {
-            // Afficher le popup
             document.getElementById('direct-link').value = result.data.url;
             document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
             
-            // Sauvegarder dans les archives si possible
             const nomPatient = document.getElementById('in-nom').value;
             const titreDoc = document.getElementById('d-titre-doc').innerText;
             if(nomPatient && window.ajouterEvenementPatient) {
@@ -157,55 +197,43 @@ window.genererImageRapport = async function() {
 
 // 2. ENVOYER SUR L'INTRANET (Bouton Bleu Discord)
 window.envoyerRapportDiscord = async function() {
-    if(DISCORD_WEBHOOK_URL.includes("METTRE_TON_LIEN")) {
-        alert("⚠️ ERREUR CONFIG : Le lien du Webhook Discord n'a pas été configuré dans le fichier rapports.js !");
-        return;
-    }
-
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
     
-    // Récupération infos pour le titre du message Discord
     const nom = document.getElementById('in-nom').value || "Inconnu";
     const titreDoc = document.getElementById('d-titre-doc').innerText;
     const ref = document.getElementById('d-ref').innerText;
-    const praticien = document.getElementById('in-doc').value;
+    const praticien = document.getElementById('in-doc').value || "Non Renseigné";
 
     window.scrollTo(0,0);
     btn.disabled = true;
     btn.innerText = "CAPTURE EN COURS...";
 
     try {
-        // Capture
         const canvas = await html2canvas(doc, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
         btn.innerText = "ENVOI SUR L'INTRANET...";
 
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             
-            // Configuration du message Discord
             formData.append("payload_json", JSON.stringify({
                 username: "Intranet OMC",
-                avatar_url: "https://i.imgur.com/TempLogo.png", // Tu pourras mettre le lien de ton logo ici
                 content: `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titreDoc}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Praticien :** ${praticien}\n━━━━━━━━━━━━━━━━━━━━`,
             }));
             
-            // Ajout de l'image
             formData.append("file", blob, `rapport_${ref.replace('#','')}.jpg`);
 
-            // Envoi au Webhook
             const response = await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', body: formData });
             
             if(response.ok) {
                 alert("✅ Rapport envoyé avec succès sur l'intranet !");
                 btn.innerText = "✅ ENVOYÉ !";
                 
-                // Sauvegarder dans les archives
                 if(nom !== "Inconnu" && window.ajouterEvenementPatient) {
                     window.ajouterEvenementPatient(nom, "Rapports Officiels", `${titreDoc} (Envoyé sur Intranet)`);
                 }
             } else {
-                throw new Error("Erreur Discord: " + response.status);
+                throw new Error("Erreur Discord");
             }
             
             setTimeout(() => {
@@ -223,7 +251,6 @@ window.envoyerRapportDiscord = async function() {
     }
 }
 
-// --- FONCTIONS POPUP ---
 window.copyLink = function() {
     const copyText = document.getElementById("direct-link");
     copyText.select();
