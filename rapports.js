@@ -274,7 +274,7 @@ window.envoyerRapportDiscord = async function() {
     const titreDoc = document.getElementById('d-titre-doc').innerText;
     const ref = document.getElementById('d-ref').innerText;
     
-    // Pour le message discord, on prend la signature ou le praticien en haut (le premier rempli)
+    // Pour le message discord, on prend la signature ou le praticien en haut
     const praticien = document.getElementById('in-sig').value || document.getElementById('in-doc').value || "Non Renseigné";
 
     window.scrollTo(0,0);
@@ -282,38 +282,44 @@ window.envoyerRapportDiscord = async function() {
     btn.innerText = "CAPTURE EN COURS...";
 
     try {
+        // 1. Capture du document
         const canvas = await html2canvas(doc, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
         btn.innerText = "ENVOI SUR L'INTRANET...";
 
-        canvas.toBlob(async (blob) => {
-            const formData = new FormData();
-            
-            formData.append("payload_json", JSON.stringify({
-                username: "Intranet OMC",
-                content: `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titreDoc}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Signataire :** ${praticien}\n━━━━━━━━━━━━━━━━━━━━`
-            }));
-            
-            formData.append("file", blob, `rapport_${ref.replace('#','')}.jpg`);
+        // 2. Transformation propre en Fichier (Blob) via une Promesse
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
 
-            const response = await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', body: formData });
-            
-            if(response.ok) {
-                alert("✅ Rapport envoyé avec succès sur l'intranet !");
-                btn.innerText = "✅ ENVOYÉ !";
-            } else {
-                throw new Error("Erreur Discord");
-            }
-            
-            setTimeout(() => {
-                btn.innerText = "📨 ENVOYER SUR L'INTRANET";
-                btn.disabled = false;
-            }, 3000);
+        // 3. Préparation du paquet pour Discord
+        const formData = new FormData();
+        formData.append("payload_json", JSON.stringify({
+            username: "Intranet OMC",
+            content: `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titreDoc}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Signataire :** ${praticien}\n━━━━━━━━━━━━━━━━━━━━`
+        }));
+        
+        // Nom du fichier simplifié pour éviter les bugs Discord
+        formData.append("file", blob, "rapport_officiel.jpg");
 
-        }, 'image/jpeg', 0.9);
+        // 4. Envoi effectif
+        const response = await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', body: formData });
+        
+        if(response.ok) {
+            alert("✅ Rapport envoyé avec succès sur l'intranet !");
+            btn.innerText = "✅ ENVOYÉ !";
+        } else {
+            const errText = await response.text();
+            throw new Error("Refus de Discord : " + errText);
+        }
+        
+        // 5. Réinitialisation du bouton après succès
+        setTimeout(() => {
+            btn.innerText = "📨 ENVOYER SUR L'INTRANET";
+            btn.disabled = false;
+        }, 3000);
 
     } catch (e) {
-        console.error(e);
-        alert("❌ Erreur d'envoi");
+        // En cas d'erreur, on débloque le bouton pour pouvoir réessayer
+        console.error("Erreur d'envoi Discord:", e);
+        alert("❌ Erreur d'envoi. Vérifiez le lien du Webhook ou la taille du document.");
         btn.innerText = "RÉESSAYER";
         btn.disabled = false;
     }
