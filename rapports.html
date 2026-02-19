@@ -34,8 +34,15 @@
                 <label>Sujet du rapport</label>
                 <input type="text" id="in-sujet" oninput="up('d-sujet', this.value)" placeholder="..." style="margin-bottom: 10px;">
 
-                <label>Nom & Prénom du Patient / Défunt</label>
-                <input type="text" id="in-nom" oninput="up('d-nom', this.value); genererRef();" placeholder="..." style="margin-bottom: 10px;">
+                <label id="label-nom">Prénom & Nom du Patient</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div style="flex: 1;">
+                        <input type="text" id="in-prenom" placeholder="Prénom (ex: Carter)" oninput="upNom(); genererRef();">
+                    </div>
+                    <div style="flex: 1;">
+                        <input type="text" id="in-nom-famille" placeholder="Nom (ex: JAYDEN)" oninput="upNom(); genererRef();">
+                    </div>
+                </div>
                 
                 <div style="display: flex; gap: 10px;">
                     <div style="flex: 1;">
