@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Rapports - OMC</title>
+    <style>
+        /* --- STYLES DE BASE (Adaptés à l'OMC) --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            height: 100vh;
+            box-sizing: border-box;
+            gap: 20px;
+        }
+
+        /* --- COLONNE GAUCHE : FORMULAIRE (La Tablette) --- */
+        .sidebar {
+            width: 350px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow-y: auto;
+            border-top: 4px solid #0284c7; /* Bleu OMC */
+        }
+        .sidebar h2 { margin-top: 0; color: #0f172a; font-size: 18px; text-transform: uppercase; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; color: #64748b; font-weight: bold; margin-bottom: 5px; }
+        input, textarea {
+            width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 5px;
+            font-family: inherit; font-size: 13px; box-sizing: border-box;
+        }
+        textarea { resize: vertical; min-height: 60px; }
+        input:focus, textarea:focus { outline: none; border-color: #0284c7; }
+        
+        /* Bouton Copier */
+        .btn-copy {
+            background: #10b981; color: white; border: none; padding: 12px; width: 100%;
+            border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s;
+            text-transform: uppercase; font-size: 14px;
+        }
+        .btn-copy:hover { background: #059669; }
+
+        /* --- COLONNE DROITE : LE PAPIER OFFICIEL (Aperçu) --- */
+        .main-content {
+            flex: 1; background: white; padding: 40px; border-radius: 10px;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1); overflow-y: auto;
+            max-width: 800px; margin: 0 auto;
+        }
+        .papier { font-family: 'Times New Roman', Times, serif; color: #000; line-height: 1.5; font-size: 15px; }
+        .papier h3 { text-align: center; font-size: 20px; text-decoration: underline; text-transform: uppercase; margin-bottom: 5px; }
+        .papier h4 { color: #0284c7; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px; font-size: 16px; margin-top: 25px; margin-bottom: 10px; }
+        .papier p { margin: 5px 0; }
+        .papier .en-tete { text-align: center; color: #64748b; font-size: 13px; font-family: sans-serif; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>📱 Saisie Tablette OMC</h2>
+        
+        <div class="form-group">
+            <label>Nom et Prénom du patient :</label>
+            <input type="text" id="in_nom" placeholder="Ex: Carter JAYDEN" oninput="majApercu()">
+        </div>
+
+        <div class="form-group">
+            <label>Date (JJ/MM/AAAA) :</label>
+            <input type="text" id="in_date" placeholder="18/02/2026" oninput="majApercu()">
+        </div>
+
+        <div class="form-group">
+            <label>Heure (HHhMM) :</label>
+            <input type="text" id="in_heure" placeholder="23h45" oninput="majApercu()">
+        </div>
+
+        <div class="form-group">
+            <label>Praticien intervenant :</label>
+            <input type="text" id="in_doc" value="Dr. Louis BRUNELLE" oninput="majApercu()">
+        </div>
+
+        <div class="form-group">
+            <label>Circonstances de l'intervention :</label>
+            <textarea id="in_circonstances" placeholder="Patient retrouvé inconscient..." oninput="majApercu()"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Constat médical (Symptômes & Imagerie) :</label>
+            <textarea id="in_constat" placeholder="- Ecchymoses visage&#10;- Perforation tympan" oninput="majApercu()"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Soins Prodigués :</label>
+            <textarea id="in_soins" placeholder="- Nettoyage plaie&#10;- Scanner" oninput="majApercu()"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Temps de récupération :</label>
+            <input type="text" id="in_repos" placeholder="Ex: 5 heures sans effort" oninput="majApercu()">
+        </div>
+
+        <div class="form-group">
+            <label>Facturation ($) :</label>
+            <input type="text" id="in_prix" placeholder="640" oninput="majApercu()">
+        </div>
+
+        <button class="btn-copy" onclick="copierPourDiscord()">📋 Copier pour DOJ / Discord</button>
+    </div>
+
+    <div class="main-content">
+        <div class="papier" id="document-officiel">
+            <div class="en-tete">
+                <strong>OCEAN MEDICAL CENTER</strong><br>
+                Département des Urgences Médico-Chirurgicales
+            </div>
+
+            <h3>DOSSIER MÉDICAL : <span id="out_nom">...</span></h3>
+            <p><strong>Référence Dossier :</strong> <span id="out_ref">#...</span></p>
+            <p><strong>Date de prise en charge :</strong> <span id="out_date">...</span> à <span id="out_heure">...</span></p>
+
+            <h4>IDENTITÉ DU PATIENT</h4>
+            <p><strong>Nom/Prénom :</strong> <span id="out_nom2">...</span></p>
+            <p><strong>Date de Naissance :</strong> [À compléter par le DOJ]</p>
+            <p><strong>Genre :</strong> [À compléter par le DOJ]</p>
+
+            <h4>CIRCONSTANCES DE L'INTERVENTION</h4>
+            <p><strong>Praticien intervenant :</strong> <span id="out_doc">Dr. Louis BRUNELLE</span></p>
+            <p><strong>Déclarations recueillies :</strong> <span id="out_circonstances">...</span></p>
+
+            <h4>BILAN CLINIQUE ET IMAGERIE</h4>
+            <p id="out_constat" style="white-space: pre-wrap;">...</p>
+
+            <h4>PROTOCOLE DE SOINS APPLIQUÉ</h4>
+            <p id="out_soins" style="white-space: pre-wrap;">...</p>
+
+            <h4>SUIVI & CONCLUSION</h4>
+            <p><strong>Temps de récupération estimé :</strong> <span id="out_repos">...</span></p>
+            <p><strong>Facturation :</strong> <span id="out_prix">0</span> $</p>
+            <br><br>
+            <p style="text-align: right;"><em>Document établi numériquement par l'OMC.</em></p>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour mettre à jour l'aperçu en temps réel
+        function majApercu() {
+            const nom = document.getElementById('in_nom').value || '...';
+            const date = document.getElementById('in_date').value || '...';
+            const heure = document.getElementById('in_heure').value || '...';
+            const doc = document.getElementById('in_doc').value || '...';
+            const circonstances = document.getElementById('in_circonstances').value || '...';
+            const constat = document.getElementById('in_constat').value || '...';
+            const soins = document.getElementById('in_soins').value || '...';
+            const repos = document.getElementById('in_repos').value || '...';
+            const prix = document.getElementById('in_prix').value || '0';
+
+            // Génération de la référence (Ex: 18/02/2026 à 23h45 -> #18022345)
+            let ref = "#...";
+            if(date !== '...' && heure !== '...') {
+                let d = date.replace(/\D/g, '').substring(0, 4); // Prend 1802
+                let h = heure.replace(/\D/g, ''); // Prend 2345
+                ref = "#" + d + h;
+            }
+
+            // Affichage dans le HTML
+            document.getElementById('out_nom').innerText = nom;
+            document.getElementById('out_nom2').innerText = nom;
+            document.getElementById('out_date').innerText = date;
+            document.getElementById('out_heure').innerText = heure;
+            document.getElementById('out_ref').innerText = ref;
+            document.getElementById('out_doc').innerText = doc;
+            document.getElementById('out_circonstances').innerText = circonstances;
+            document.getElementById('out_constat').innerText = constat;
+            document.getElementById('out_soins').innerText = soins;
+            document.getElementById('out_repos').innerText = repos;
+            document.getElementById('out_prix').innerText = prix;
+        }
+
+        // Fonction pour générer le texte avec balises Discord et le copier
+        function copierPourDiscord() {
+            const nom = document.getElementById('in_nom').value || '[Nom]';
+            const date = document.getElementById('in_date').value || '[Date]';
+            const heure = document.getElementById('in_heure').value || '[Heure]';
+            const ref = document.getElementById('out_ref').innerText;
+            const doc = document.getElementById('in_doc').value || '[Docteur]';
+            const circonstances = document.getElementById('in_circonstances').value || '...';
+            const constat = document.getElementById('in_constat').value || '...';
+            const soins = document.getElementById('in_soins').value || '...';
+            const repos = document.getElementById('in_repos').value || '...';
+            const prix = document.getElementById('in_prix').value || '0';
+
+            // Construction du texte formaté pour Discord (Markdown)
+            const texteDiscord = `**DOSSIER MÉDICAL : ${nom}**
+**Référence Dossier :** ${ref}
+**Unité de Soins :** Ocean Medical Center — Service des Urgences
+**Date de prise en charge :** ${date} à ${heure}
+
+**IDENTITÉ DU PATIENT**
+* **Nom/Prénom :** ${nom}
+* **Date de Naissance :** À compléter
+* **Genre :** À compléter
+
+**CIRCONSTANCES DE L'INTERVENTION**
+* **Praticien intervenant :** ${doc}
+* **Déclarations recueillies :** ${circonstances}
+
+**BILAN CLINIQUE ET IMAGERIE**
+${constat}
+
+**PROTOCOLE DE SOINS APPLIQUÉ**
+${soins}
+
+**SUIVI & CONCLUSION**
+* **Temps de récupération estimé :** ${repos}
+* **Facturation :** ${prix}$
+
+_Établi par : ${doc} - Ocean Medical Center_`;
+
+            // Copie dans le presse-papier
+            navigator.clipboard.writeText(texteDiscord).then(() => {
+                const btn = document.querySelector('.btn-copy');
+                const texteOriginal = btn.innerText;
+                btn.innerText = "✅ COPIÉ AVEC SUCCÈS !";
+                btn.style.background = "#059669";
+                
+                // Remet le bouton normal après 2 secondes
+                setTimeout(() => {
+                    btn.innerText = texteOriginal;
+                    btn.style.background = "#10b981";
+                }, 2000);
+            }).catch(err => {
+                alert("Erreur lors de la copie. Vérifiez les permissions de votre navigateur.");
+            });
+        }
+
+        // Initialisation de l'aperçu au chargement
+        window.onload = majApercu;
+    </script>
+</body>
+</html>
