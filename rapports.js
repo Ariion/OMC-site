@@ -24,10 +24,86 @@ document.addEventListener('DOMContentLoaded', () => {
         up('d-heure', `${h}:${m}`);
         
         switchReport('med'); 
+        initToolbars(); // Initialise les barres d'outils Gras/Italique
     } catch(e) {
         console.error("Erreur Initialisation", e);
     }
 });
+
+// ==========================================
+// FORMATAGE TEXTE RICHE (Markdown)
+// ==========================================
+
+window.formatMD = function(text) {
+    if(!text) return '';
+    let html = text.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // Sécurité
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Gras
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>'); // Italique
+    
+    // Puces (Listes)
+    let lines = html.split('\n');
+    let inList = false;
+    let out = [];
+    
+    for(let line of lines) {
+        if(line.trim().startsWith('- ')) {
+            if(!inList) { out.push('<ul style="margin: 2px 0; padding-left: 20px;">'); inList = true; }
+            out.push('<li>' + line.trim().substring(2) + '</li>');
+        } else {
+            if(inList) { out.push('</ul>'); inList = false; }
+            out.push(line);
+        }
+    }
+    if(inList) out.push('</ul>');
+    
+    // Remplace les sauts de ligne classiques
+    return out.join('<br>').replace(/<br><ul/g, '<ul').replace(/<\/ul><br>/g, '</ul>');
+}
+
+window.insertMD = function(id, type) {
+    const el = document.getElementById(id);
+    if(!el) return;
+    
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const text = el.value;
+    const selected = text.substring(start, end);
+    
+    let before = text.substring(0, start);
+    let after = text.substring(end, text.length);
+    let newVal = "";
+    
+    if (type === 'bold') {
+        newVal = before + '**' + (selected || 'Texte') + '**' + after;
+    } else if (type === 'italic') {
+        newVal = before + '*' + (selected || 'Texte') + '*' + after;
+    } else if (type === 'list') {
+        let listText = selected ? selected.split('\n').map(l => '- ' + l).join('\n') : '- ';
+        const isStartOfLine = start === 0 || text.charAt(start - 1) === '\n';
+        if(!isStartOfLine && !selected) listText = '\n- ';
+        newVal = before + listText + after;
+    }
+    
+    el.value = newVal;
+    el.dispatchEvent(new Event('input')); // Force la mise à jour visuelle
+    el.focus();
+}
+
+window.initToolbars = function() {
+    document.querySelectorAll('textarea').forEach(ta => {
+        // Empêche de mettre deux barres d'outils sur le même champ
+        if(ta.previousElementSibling && ta.previousElementSibling.classList.contains('md-toolbar')) return;
+        
+        const tb = document.createElement('div');
+        tb.className = 'md-toolbar';
+        tb.innerHTML = `
+            <button type="button" onclick="insertMD('${ta.id}', 'bold')" title="Mettre en gras">B</button>
+            <button type="button" onclick="insertMD('${ta.id}', 'italic')" title="Mettre en italique">I</button>
+            <button type="button" onclick="insertMD('${ta.id}', 'list')" title="Liste à puces">• Liste</button>
+        `;
+        ta.parentNode.insertBefore(tb, ta);
+    });
+}
 
 // --- FONCTIONS DE MISE À JOUR DOM ---
 
@@ -47,12 +123,12 @@ window.upDate = function(id, val) {
     }
 }
 
-// Fonction de disparition intelligente
+// MISE A JOUR BLOCK AVEC LE MARKDOWN (Formatage Riche)
 window.upBlock = function(textId, wrapId, val) {
     const el = document.getElementById(textId);
     const wrap = document.getElementById(wrapId);
     
-    if(el) el.innerText = val || '';
+    if(el) el.innerHTML = formatMD(val) || '';
     
     if(wrap) {
         if(val && val.trim() !== '') {
@@ -63,59 +139,49 @@ window.upBlock = function(textId, wrapId, val) {
     }
 }
 
-// Assemblage et formatage automatique du Prénom et Nom
+// Assemblage Prénom et Nom
 window.upNom = function() {
     let prenom = document.getElementById('in-prenom').value.trim();
     let nom = document.getElementById('in-nom-famille').value.trim();
     
-    // Format Prénom : Première lettre Majuscule, le reste minuscule
-    if(prenom.length > 0) {
-        prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase();
-    }
+    if(prenom.length > 0) prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase();
+    if(nom.length > 0) nom = nom.toUpperCase();
     
-    // Format Nom : TOUT EN MAJUSCULE
-    if(nom.length > 0) {
-        nom = nom.toUpperCase();
-    }
-    
-    // Assemblage final
     let nomComplet = [];
     if(prenom) nomComplet.push(prenom);
     if(nom) nomComplet.push(nom);
     
     const texteFinal = nomComplet.length > 0 ? nomComplet.join(' ') : '...';
     
-    // Envoi sur le document de droite
     document.getElementById('d-nom').innerText = texteFinal;
     document.getElementById('d-nom-titre').innerText = texteFinal;
 }
 
-// Ligne PRATICIEN du haut (Assemble le nom, le grade et l'hôpital)
+// Ligne PRATICIEN du haut (CORRIGÉ)
 window.upDoc = function() {
     const elDoc = document.getElementById('in-doc');
     const elGrade = document.getElementById('in-grade');
-    if(!elDoc || !elGrade) return;
-
-    const docVal = elDoc.value.trim();
-    const gradeVal = elGrade.value.trim();
     const wrapDoc = document.getElementById('wrap-doc');
     const dDoc = document.getElementById('d-doc');
     
-    if (docVal === '' && gradeVal === '') {
+    let docVal = elDoc ? elDoc.value.trim() : '';
+    let gradeVal = elGrade ? elGrade.value.trim() : '';
+    
+    if (docVal === '') {
         if(wrapDoc) wrapDoc.style.display = 'none';
         if(dDoc) dDoc.innerText = '';
     } else {
         if(wrapDoc) wrapDoc.style.display = 'block';
-        let parts = [];
-        if(docVal !== '') parts.push(docVal);
-        if(gradeVal !== '') parts.push(`${gradeVal} de l'Ocean Medical Center`);
-        else if(docVal !== '') parts.push(`de l'Ocean Medical Center`); 
-        
-        if(dDoc) dDoc.innerText = parts.join(' - ');
+        let complet = docVal;
+        if(gradeVal !== '') {
+            complet += ` - ${gradeVal}`;
+        }
+        complet += ` de l'Ocean Medical Center`;
+        if(dDoc) dDoc.innerText = complet;
     }
 }
 
-// Ligne SIGNATAIRE du bas
+// Ligne SIGNATAIRE du bas (CORRIGÉ)
 window.upSig = function(val) {
     const text = val ? val.trim() : '';
     const dSig = document.getElementById('d-sig');
@@ -126,14 +192,17 @@ window.upSig = function(val) {
     }
 }
 
-// Gestion complète du bloc Suivi & Conclusion
+// Gestion bloc Suivi & Conclusion (Formaté)
 window.upMedSuivi = function() {
     const concl = document.getElementById('in-med-conclusion').value.trim();
     const repos = document.getElementById('in-med-repos').value.trim();
     const prix = document.getElementById('in-med-prix').value.trim();
     
-    document.getElementById('d-med-conclusion').innerText = concl;
-    document.getElementById('d-med-conclusion').style.display = concl ? 'block' : 'none';
+    const elConcl = document.getElementById('d-med-conclusion');
+    if(elConcl) {
+        elConcl.innerHTML = formatMD(concl);
+        elConcl.style.display = concl ? 'block' : 'none';
+    }
 
     document.getElementById('d-med-repos').innerText = repos;
     document.getElementById('wrap-med-repos').style.display = repos ? 'block' : 'none';
@@ -144,7 +213,6 @@ window.upMedSuivi = function() {
     document.getElementById('wrap-med-suivi').style.display = (concl || repos || prix) ? 'block' : 'none';
 }
 
-// --- GESTION DE LA RÉFÉRENCE ET QR CODE ---
 window.genererRef = function() {
     try {
         const dateInput = document.getElementById('in-date-prel').value;
@@ -164,7 +232,6 @@ window.genererRef = function() {
         const elRef = document.getElementById('d-ref');
         if(elRef) elRef.innerText = ref;
         
-        // CORRECTION ICI : On cherche le texte formaté 'd-nom' au lieu de l'input manquant 'in-nom'
         const elNom = document.getElementById('d-nom');
         const nom = (elNom && elNom.innerText !== '...') ? elNom.innerText : "Inconnu";
 
@@ -215,12 +282,11 @@ window.switchReport = function(type) {
     genererRef();
 }
 
-// --- SECTIONS DYNAMIQUES (AJOUT & SUPPRESSION) ---
+// --- SECTIONS DYNAMIQUES ---
 window.ajouterSectionCustom = function() {
     customCount++;
     const id = customCount;
 
-    // 1. UI Gauche
     const containerIn = document.getElementById('custom-inputs-container');
     const htmlIn = `
         <div id="custom-block-${id}" class="form-group" style="background: #0f172a; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
@@ -233,7 +299,6 @@ window.ajouterSectionCustom = function() {
     `;
     containerIn.insertAdjacentHTML('beforeend', htmlIn);
 
-    // 2. UI Droite (Le rendu)
     const containerOut = document.getElementById('render-custom');
     const htmlOut = `
         <div id="wrap-c${id}" style="display: none; margin-top: 25px;">
@@ -242,6 +307,9 @@ window.ajouterSectionCustom = function() {
         </div>
     `;
     containerOut.insertAdjacentHTML('beforeend', htmlOut);
+    
+    // Injecte la barre d'outils sur le nouveau champ textarea créé !
+    initToolbars();
 }
 
 window.supprimerSectionCustom = function(id) {
@@ -258,13 +326,14 @@ window.upCustom = function(id) {
     const wrap = document.getElementById(`wrap-c${id}`);
     
     document.getElementById(`d-c${id}-titre`).innerText = titre || `SECTION SUPPLÉMENTAIRE`;
-    document.getElementById(`d-c${id}-text`).innerText = texte;
+    // Utilise formatMD pour les sections personnalisées
+    document.getElementById(`d-c${id}-text`).innerHTML = formatMD(texte); 
     
     wrap.style.display = (texte !== '') ? 'block' : 'none';
 }
 
 // ==========================================
-// FONCTIONS DE GÉNÉRATION (IMG + DISCORD)
+// ENVOIS (IMG + DISCORD)
 // ==========================================
 
 window.genererImageRapport = async function() {
@@ -304,14 +373,15 @@ window.envoyerRapportDiscord = async function() {
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
     
-    // CORRECTION ICI : On cherche le texte formaté au lieu de l'input manquant
     const elNom = document.getElementById('d-nom');
     const nom = (elNom && elNom.innerText !== '...') ? elNom.innerText : "Inconnu";
     
     const titreDoc = document.getElementById('d-titre-doc').innerText;
     const ref = document.getElementById('d-ref').innerText;
     
-    const praticien = document.getElementById('in-sig').value || document.getElementById('in-doc').value || "Non Renseigné";
+    const elSig = document.getElementById('in-sig');
+    const elDoc = document.getElementById('in-doc');
+    const praticien = (elSig && elSig.value) ? elSig.value : ((elDoc && elDoc.value) ? elDoc.value : "Non Renseigné");
 
     window.scrollTo(0,0);
     btn.disabled = true;
@@ -348,7 +418,7 @@ window.envoyerRapportDiscord = async function() {
 
     } catch (e) {
         console.error("Erreur d'envoi Discord:", e);
-        alert("❌ Erreur d'envoi. Vérifiez la console.");
+        alert("❌ Erreur d'envoi.");
         btn.innerText = "RÉESSAYER";
         btn.disabled = false;
     }
