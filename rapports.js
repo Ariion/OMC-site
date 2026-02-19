@@ -5,82 +5,35 @@
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG"; 
 
-let currentReportType = 'med'; // Par défaut
+let currentReportType = 'med'; 
+let customCount = 0; // Compteur pour les sections supplémentaires
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialise la date et heure au chargement
-    const today = new Date();
-    if(document.getElementById('in-date-prel')) document.getElementById('in-date-prel').valueAsDate = today;
-    
-    const h = String(today.getHours()).padStart(2, '0');
-    const m = String(today.getMinutes()).padStart(2, '0');
-    if(document.getElementById('in-heure-prel')) document.getElementById('in-heure-prel').value = `${h}:${m}`;
+    try {
+        const today = new Date();
+        const elDate = document.getElementById('in-date-prel');
+        const elHeure = document.getElementById('in-heure-prel');
+        
+        if(elDate) elDate.valueAsDate = today;
+        
+        const h = String(today.getHours()).padStart(2, '0');
+        const m = String(today.getMinutes()).padStart(2, '0');
+        if(elHeure) elHeure.value = `${h}:${m}`;
 
-    upDate('d-date', today.toISOString().split('T')[0]);
-    up('d-heure', `${h}:${m}`);
-    genererRef();
-    
-    // Force Mode Médical au chargement
-    switchReport('med');
+        upDate('d-date', today.toISOString().split('T')[0]);
+        up('d-heure', `${h}:${m}`);
+        
+        switchReport('med'); // Force le mode médical et génère la REF
+    } catch(e) {
+        console.error("Erreur Initialisation", e);
+    }
 });
 
 // --- FONCTIONS DE MISE À JOUR DOM ---
 
-// Fonction basique (pour l'identité)
 window.up = function(id, val) {
     const el = document.getElementById(id);
     if(el) el.innerText = val || '...';
-}
-
-// Fonction pour les blocs : Cache le bloc si le texte est vide
-window.upBlock = function(textId, wrapId, val, isFlex = false) {
-    const el = document.getElementById(textId);
-    const wrap = document.getElementById(wrapId);
-    if(el) el.innerText = val || '';
-    
-    if(wrap) {
-        if(val && val.trim() !== '') {
-            wrap.style.display = isFlex ? 'block' : 'block'; // Adaptable si besoin
-            if(wrapId === 'd-info-auto') wrap.style.display = 'block'; 
-        } else {
-            wrap.style.display = 'none';
-        }
-    }
-}
-
-// Fonction spécifique pour le Praticien
-window.upDoc = function(val) {
-    document.getElementById('d-doc').innerText = val || '';
-    document.getElementById('d-sig').innerText = val || '';
-    document.getElementById('wrap-doc').style.display = (val && val.trim() !== '') ? 'block' : 'none';
-}
-
-// Fonction spécifique pour la partie Suivi/Facture (Médical)
-window.upMedSuivi = function() {
-    const repos = document.getElementById('in-med-repos').value.trim();
-    const prix = document.getElementById('in-med-prix').value.trim();
-    
-    document.getElementById('d-med-repos').innerText = repos;
-    document.getElementById('wrap-med-repos').style.display = repos ? 'block' : 'none';
-    
-    document.getElementById('d-med-prix').innerText = prix;
-    document.getElementById('wrap-med-prix').style.display = prix ? 'block' : 'none';
-    
-    // Si l'un des deux existe, on affiche le bloc global
-    document.getElementById('wrap-med-suivi').style.display = (repos || prix) ? 'block' : 'none';
-}
-
-// Fonction pour les 2 blocs Personnalisés optionnels
-window.upCustom = function(index) {
-    const titre = document.getElementById(`in-c${index}-titre`).value.trim();
-    const texte = document.getElementById(`in-c${index}-text`).value.trim();
-    const wrap = document.getElementById(`wrap-c${index}`);
-    
-    document.getElementById(`d-c${index}-titre`).innerText = titre || `SECTION PERSONNALISÉE ${index}`;
-    document.getElementById(`d-c${index}-text`).innerText = texte;
-    
-    // Le bloc ne s'affiche QUE si du texte est entré
-    wrap.style.display = (texte !== '') ? 'block' : 'none';
 }
 
 window.upDate = function(id, val) {
@@ -94,28 +47,85 @@ window.upDate = function(id, val) {
     }
 }
 
-window.genererRef = function() {
-    const date = document.getElementById('in-date-prel').value;
-    const heure = document.getElementById('in-heure-prel').value;
-    let ref = "#...";
+// Fonction de disparition intelligente (Si vide = caché)
+window.upBlock = function(textId, wrapId, val) {
+    const el = document.getElementById(textId);
+    const wrap = document.getElementById(wrapId);
     
-    if(date && heure) {
-        let d = date.replace(/\D/g, '').substring(6, 8) + date.replace(/\D/g, '').substring(4, 6);
-        let h = heure.replace(/\D/g, '');
-        ref = "#" + d + h;
-    }
-    document.getElementById('d-ref').innerText = ref;
+    if(el) el.innerText = val || '';
     
-    const nom = document.getElementById('in-nom').value || "Anonyme";
-    const refTexte = document.getElementById('d-ref').innerText;
-    const qrImg = document.getElementById('qr-ref');
-    if (qrImg) {
-        const data = encodeURIComponent(`OMC-${currentReportType.toUpperCase()}|${nom}|${refTexte}`);
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
+    if(wrap) {
+        if(val && val.trim() !== '') {
+            wrap.style.display = 'block';
+        } else {
+            wrap.style.display = 'none';
+        }
     }
 }
 
-// --- GESTION DES ONGLETS (Médical / Psy / Autopsie) ---
+window.upDoc = function(val) {
+    const dDoc = document.getElementById('d-doc');
+    const dSig = document.getElementById('d-sig');
+    const wrapDoc = document.getElementById('wrap-doc');
+    
+    const text = val ? val.trim() : '';
+    
+    if(dDoc) dDoc.innerText = text;
+    if(dSig) {
+        dSig.innerText = text;
+        dSig.style.display = (text !== '') ? 'inline-block' : 'none'; // Cache la ligne noire si vide
+    }
+    if(wrapDoc) {
+        wrapDoc.style.display = (text !== '') ? 'block' : 'none';
+    }
+}
+
+window.upMedSuivi = function() {
+    const repos = document.getElementById('in-med-repos').value.trim();
+    const prix = document.getElementById('in-med-prix').value.trim();
+    
+    document.getElementById('d-med-repos').innerText = repos;
+    document.getElementById('wrap-med-repos').style.display = repos ? 'block' : 'none';
+    
+    document.getElementById('d-med-prix').innerText = prix;
+    document.getElementById('wrap-med-prix').style.display = prix ? 'block' : 'none';
+    
+    document.getElementById('wrap-med-suivi').style.display = (repos || prix) ? 'block' : 'none';
+}
+
+// --- GESTION DE LA RÉFÉRENCE ET QR CODE ---
+window.genererRef = function() {
+    try {
+        const dateInput = document.getElementById('in-date-prel').value;
+        const heureInput = document.getElementById('in-heure-prel').value;
+        let ref = "#...";
+        
+        if(dateInput && heureInput) {
+            // Formate la date YYYY-MM-DD en DDMM
+            const cleanDate = dateInput.replace(/\D/g, '');
+            if(cleanDate.length >= 8) {
+                const dd = cleanDate.substring(6, 8);
+                const mm = cleanDate.substring(4, 6);
+                const h = heureInput.replace(/\D/g, '');
+                ref = "#" + dd + mm + h;
+            }
+        }
+        
+        const elRef = document.getElementById('d-ref');
+        if(elRef) elRef.innerText = ref;
+        
+        const nom = document.getElementById('in-nom').value || "Inconnu";
+        const qrImg = document.getElementById('qr-ref');
+        if (qrImg) {
+            const data = encodeURIComponent(`OMC-${currentReportType.toUpperCase()}|${nom}|${ref}`);
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
+        }
+    } catch(e) {
+        console.error("Erreur QR Code", e);
+    }
+}
+
+// --- ONGLETS ---
 window.switchReport = function(type) {
     currentReportType = type;
     
@@ -131,9 +141,6 @@ window.switchReport = function(type) {
     const titreDoc = document.getElementById('d-titre-doc');
     const labelDoc = document.getElementById('label-doc');
     
-    // Cache ou affiche l'heure du décès selon l'onglet
-    const valAutoHeure = document.getElementById('in-auto-heure').value.trim();
-
     if(type === 'med') {
         titreDoc.innerText = "DOSSIER MÉDICAL";
         labelDoc.innerText = "Praticien intervenant";
@@ -145,17 +152,56 @@ window.switchReport = function(type) {
     } else if (type === 'auto') {
         titreDoc.innerText = "RAPPORT D'AUTOPSIE";
         labelDoc.innerText = "Médecin Légiste (Coroner)";
-        if(valAutoHeure) document.getElementById('d-info-auto').style.display = 'block';
+        const heure = document.getElementById('in-auto-heure').value;
+        if(heure) document.getElementById('d-info-auto').style.display = 'block';
     }
+    
     genererRef();
 }
 
+// --- BOUTON DYNAMIQUE "AJOUTER UNE SECTION" ---
+window.ajouterSectionCustom = function() {
+    customCount++;
+    const id = customCount;
+
+    // 1. Ajouter l'UI pour écrire à gauche (Design de ton image)
+    const containerIn = document.getElementById('custom-inputs-container');
+    const htmlIn = `
+        <div class="form-group" style="background: #0f172a; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+            <input type="text" id="in-c${id}-titre" placeholder="Titre du bloc (ex: PRESCRIPTION)..." oninput="upCustom(${id})" style="margin-bottom: 5px; font-weight: bold; color: #38bdf8; border: none; background: transparent; border-bottom: 1px solid #334155; border-radius: 0; padding-left: 0; outline: none; width: 100%;">
+            <textarea id="in-c${id}-text" rows="2" placeholder="Contenu du bloc..." oninput="upCustom(${id})" style="border: none; background: #111b2d; color: white; width: 100%; resize: vertical; padding: 8px; border-radius: 4px; outline: none; box-sizing: border-box;"></textarea>
+        </div>
+    `;
+    containerIn.insertAdjacentHTML('beforeend', htmlIn);
+
+    // 2. Ajouter l'UI de rendu sur le papier
+    const containerOut = document.getElementById('render-custom');
+    const htmlOut = `
+        <div id="wrap-c${id}" style="display: none; margin-top: 25px;">
+            <h4 id="d-c${id}-titre" class="doc-h4"></h4>
+            <p id="d-c${id}-text" class="doc-p"></p>
+        </div>
+    `;
+    containerOut.insertAdjacentHTML('beforeend', htmlOut);
+}
+
+// Met à jour la section dynamique
+window.upCustom = function(id) {
+    const titre = document.getElementById(`in-c${id}-titre`).value.trim();
+    const texte = document.getElementById(`in-c${id}-text`).value.trim();
+    const wrap = document.getElementById(`wrap-c${id}`);
+    
+    document.getElementById(`d-c${id}-titre`).innerText = titre || `SECTION SUPPLÉMENTAIRE`;
+    document.getElementById(`d-c${id}-text`).innerText = texte;
+    
+    // S'affiche uniquement si du texte est entré
+    wrap.style.display = (texte !== '') ? 'block' : 'none';
+}
 
 // ==========================================
-// FONCTIONS DE GÉNÉRATION ET D'ENVOI (IMG + DISCORD)
+// FONCTIONS DE GÉNÉRATION (IMG + DISCORD)
 // ==========================================
 
-// 1. GÉNÉRER L'IMAGE (Bouton Blanc)
 window.genererImageRapport = async function() {
     const doc = document.getElementById('document');
     const btn = event.target;
@@ -170,32 +216,25 @@ window.genererImageRapport = async function() {
         
         const formData = new FormData();
         formData.append("image", imageData);
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG}`, { method: "POST", body: formData });
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
         const result = await response.json();
         
         if (result.success) {
             document.getElementById('direct-link').value = result.data.url;
             document.getElementById('preview-img-result').src = result.data.url;
             document.getElementById('image-popup').style.display = 'flex';
-            
-            const nomPatient = document.getElementById('in-nom').value;
-            const titreDoc = document.getElementById('d-titre-doc').innerText;
-            if(nomPatient && window.ajouterEvenementPatient) {
-                window.ajouterEvenementPatient(nomPatient, "Rapports Officiels", titreDoc, result.data.url);
-            }
         } else {
             throw new Error("Erreur ImgBB");
         }
     } catch (e) {
         console.error(e);
-        alert("❌ Erreur lors de la génération de l'image.");
+        alert("❌ Erreur de génération");
     } finally {
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
 }
 
-// 2. ENVOYER SUR L'INTRANET (Bouton Bleu Discord)
 window.envoyerRapportDiscord = async function() {
     const btn = document.getElementById('discord-btn');
     const doc = document.getElementById('document');
@@ -218,7 +257,7 @@ window.envoyerRapportDiscord = async function() {
             
             formData.append("payload_json", JSON.stringify({
                 username: "Intranet OMC",
-                content: `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titreDoc}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Praticien :** ${praticien}\n━━━━━━━━━━━━━━━━━━━━`,
+                content: `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titreDoc}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Praticien :** ${praticien}\n━━━━━━━━━━━━━━━━━━━━`
             }));
             
             formData.append("file", blob, `rapport_${ref.replace('#','')}.jpg`);
@@ -228,10 +267,6 @@ window.envoyerRapportDiscord = async function() {
             if(response.ok) {
                 alert("✅ Rapport envoyé avec succès sur l'intranet !");
                 btn.innerText = "✅ ENVOYÉ !";
-                
-                if(nom !== "Inconnu" && window.ajouterEvenementPatient) {
-                    window.ajouterEvenementPatient(nom, "Rapports Officiels", `${titreDoc} (Envoyé sur Intranet)`);
-                }
             } else {
                 throw new Error("Erreur Discord");
             }
@@ -245,7 +280,7 @@ window.envoyerRapportDiscord = async function() {
 
     } catch (e) {
         console.error(e);
-        alert("❌ Erreur lors de l'envoi Discord.");
+        alert("❌ Erreur d'envoi");
         btn.innerText = "RÉESSAYER";
         btn.disabled = false;
     }
