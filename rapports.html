@@ -29,10 +29,13 @@
             </div>
 
             <div class="form-group" style="background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 15px;">
-                <label style="color: #38bdf8; font-weight: bold; margin-bottom: 10px;">IDENTITÉ DU PATIENT / DÉFUNT</label>
+                <label style="color: #38bdf8; font-weight: bold; margin-bottom: 10px; display: block;">INFORMATIONS GÉNÉRALES</label>
                 
-                <label>Nom & Prénom</label>
-                <input type="text" id="in-nom" oninput="up('d-nom', this.value); up('d-nom-titre', this.value); genererRef();" placeholder="Ex: Edmon DEBUCHE" style="margin-bottom: 10px;">
+                <label>Sujet du rapport</label>
+                <input type="text" id="in-sujet" oninput="up('d-sujet', this.value)" placeholder="Ex: Constat Lésionnel suite Fusillade" style="margin-bottom: 10px;">
+
+                <label>Nom & Prénom du Patient / Défunt</label>
+                <input type="text" id="in-nom" oninput="up('d-nom', this.value); genererRef();" placeholder="Ex: Edmon DEBUCHE" style="margin-bottom: 10px;">
                 
                 <div style="display: flex; gap: 10px;">
                     <div style="flex: 1;">
@@ -58,9 +61,15 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label id="label-doc">Praticien intervenant</label>
-                <input type="text" id="in-doc" placeholder="Ex: Dr. Louis BRUNELLE" oninput="upDoc(this.value);">
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label id="label-doc">Praticien intervenant</label>
+                    <input type="text" id="in-doc" placeholder="Ex: Alejandro SANCHEZ" oninput="upDoc();">
+                </div>
+                <div style="flex: 1;">
+                    <label>Grade du praticien</label>
+                    <input type="text" id="in-grade" placeholder="Ex: Aide-soignant" oninput="upDoc();">
+                </div>
             </div>
 
             <div id="fields-med" class="dynamic-fields">
@@ -76,14 +85,19 @@
                     <label>Protocole de Soins</label>
                     <textarea id="in-med-soins" rows="2" oninput="upBlock('d-med-soins', 'wrap-med-soins', this.value)" placeholder="Plâtre posé, stabilisation..."></textarea>
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex: 2;">
-                        <label>Temps de récupération</label>
-                        <input type="text" id="in-med-repos" oninput="upMedSuivi()" placeholder="Ex: 24h">
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Facturation ($)</label>
-                        <input type="text" id="in-med-prix" oninput="upMedSuivi()" placeholder="850">
+                
+                <div class="form-group" style="border-top: 1px solid #334155; padding-top: 15px; margin-top: 10px;">
+                    <label style="color: #a78bfa; font-weight: bold; margin-bottom: 5px; display: block;">SUIVI & CONCLUSION</label>
+                    <textarea id="in-med-conclusion" rows="2" oninput="upMedSuivi()" placeholder="Pronostic favorable. Le patient devra..." style="margin-bottom: 10px;"></textarea>
+                    <div style="display: flex; gap: 10px;">
+                        <div class="form-group" style="flex: 2; margin-bottom: 0;">
+                            <label>Temps de récupération</label>
+                            <input type="text" id="in-med-repos" oninput="upMedSuivi()" placeholder="Ex: 24h sans effort">
+                        </div>
+                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                            <label>Facturation ($)</label>
+                            <input type="text" id="in-med-prix" oninput="upMedSuivi()" placeholder="850">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -133,7 +147,12 @@
                 <div id="custom-inputs-container" style="margin-top: 15px;"></div>
             </div>
 
-            <div class="actions-group" style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="form-group" style="margin-top: 25px; border-top: 2px solid #334155; padding-top: 15px;">
+                <label style="color: #cbd5e1;">Signataire (Bas de page)</label>
+                <input type="text" id="in-sig" placeholder="Ex: Dr. Louis BRUNELLE" oninput="upSig(this.value);">
+            </div>
+
+            <div class="actions-group" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
                 <button type="button" onclick="genererImageRapport()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
                 <button id="discord-btn" type="button" onclick="envoyerRapportDiscord()" class="btn-discord">📨 ENVOYER SUR L'INTRANET</button>
             </div>
@@ -160,7 +179,7 @@
                 <div class="patient-card" style="grid-template-columns: 1fr;">
                     <div style="display: flex; justify-content: space-between;">
                         <div>
-                            Sujet : <strong id="d-nom-titre" style="font-size: 18px;">...</strong><br>
+                            Sujet : <strong id="d-sujet" style="font-size: 18px;">...</strong><br>
                             Nom/Prénom : <strong id="d-nom">...</strong><br>
                             Date de Naissance : <span id="d-ddn">...</span><br>
                             Sexe : <span id="d-sexe">Homme</span>
@@ -194,8 +213,12 @@
 
                     <div id="wrap-med-suivi" style="display: none;">
                         <h4 class="doc-h4">SUIVI & CONCLUSION</h4>
-                        <p class="doc-p" id="wrap-med-repos" style="display: none;"><strong>Temps de récupération :</strong> <span id="d-med-repos"></span></p>
-                        <p class="doc-p" id="wrap-med-prix" style="display: none;"><strong>Facturation :</strong> <span id="d-med-prix"></span> $</p>
+                        <p id="d-med-conclusion" class="doc-p" style="display: none;"></p>
+                        
+                        <div style="margin-top: 10px;">
+                            <p class="doc-p" id="wrap-med-repos" style="display: none; margin: 2px 0;"><strong>Temps de récupération :</strong> <span id="d-med-repos"></span></p>
+                            <p class="doc-p" id="wrap-med-prix" style="display: none; margin: 2px 0;"><strong>Facturation :</strong> <span id="d-med-prix"></span> $</p>
+                        </div>
                     </div>
                 </div>
 
