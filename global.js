@@ -2,6 +2,15 @@
    GLOBAL.JS - AVEC FIREBASE CONNECTÉ
    ============================================================ */
 
+// --- INJECTION AUTOMATIQUE DU FAVICON (Logo OMC) SUR TOUTES LES PAGES ---
+(function() {
+    const favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.type = 'image/png';
+    favicon.href = 'assets/logo_omc.png';
+    document.head.appendChild(favicon);
+})();
+
 // 1. IMPORTATION DE FIREBASE (Version Web)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
