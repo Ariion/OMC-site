@@ -86,16 +86,20 @@ function upDate(targetId, val) {
 
 // --- INIT & AUTOCOMPLETE AVEC PATCH ---
 window.onload = function() {
-    // 1. Date du jour auto
+    // 1. Date du jour auto (seulement si on n'est pas en mode édition)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isEdit = urlParams.get('mode') === 'edit';
+
     if(document.getElementById('d-date')) {
         const today = new Date();
         document.getElementById('d-date').innerText = today.toLocaleDateString('fr-FR');
-        const dateInput = document.querySelector('input[oninput*="d-date"]');
-        if(dateInput) dateInput.valueAsDate = today;
+        if(!isEdit) { // On ne change pas la date si on modifie un vieux rapport
+            const dateInput = document.querySelector('input[oninput*="d-date"]');
+            if(dateInput) dateInput.valueAsDate = today;
+        }
     }
     
     genererReference();
-    toggleMotifs(); 
 
     // 2. SYSTÈME DE PATIENT CENTRALISÉ
     setupPatientAutocomplete({
@@ -106,44 +110,48 @@ window.onload = function() {
         }
     });
 
-    // 3. PATCH : Pré-remplissage depuis URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const patientFromUrl = urlParams.get('patient');
-    if (patientFromUrl) {
-        const inputNom = document.getElementById('patientName');
-        if (inputNom) {
-            inputNom.value = decodeURIComponent(patientFromUrl);
-            inputNom.dispatchEvent(new Event('input'));
+    // 3. MODE ÉDITION (RESTAURATION COMPLÈTE)
+    if (isEdit) {
+        const data = JSON.parse(localStorage.getItem('edit_snapshot'));
+        if (data) {
+            console.log("Restaurations des données du rapport...", data);
+            Object.keys(data).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.type === 'checkbox' || el.type === 'radio') {
+                        el.checked = data[id];
+                    } else {
+                        el.value = data[id];
+                    }
+                }
+            });
+            
+            // On force la mise à jour visuelle du document
             setTimeout(() => {
-                const firstItem = document.querySelector('.autocomplete-item');
-                if (firstItem) firstItem.click();
-            }, 800);
+                toggleMotifs(); // Gère l'affichage des groupes (Inapte/Réserve)
+                updateCertif(); 
+                if (typeof upNom === 'function') upNom();
+            }, 100);
+
+            localStorage.removeItem('edit_snapshot');
+        }
+    } 
+    // 4. MODE PRÉ-REMPLISSAGE SIMPLE (Depuis le dossier, mais nouveau rapport)
+    else {
+        const patientFromUrl = urlParams.get('patient');
+        if (patientFromUrl) {
+            const inputNom = document.getElementById('patientName');
+            if (inputNom) {
+                inputNom.value = decodeURIComponent(patientFromUrl);
+                inputNom.dispatchEvent(new Event('input'));
+                setTimeout(() => {
+                    const firstItem = document.querySelector('.autocomplete-item');
+                    if (firstItem) firstItem.click();
+                }, 800);
+            }
         }
     }
-    if (urlParams.get('mode') === 'edit') {
-    const data = JSON.parse(localStorage.getItem('edit_snapshot'));
-    if (data) {
-        // On remplit automatiquement chaque case par son ID
-        Object.keys(data).forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                if (el.type === 'checkbox' || el.type === 'radio') {
-                    el.checked = data[id];
-                } else {
-                    el.value = data[id];
-                }
-            }
-        });
-        // On force la mise à jour visuelle du rapport (le dessin à droite)
-        if (typeof updateCertif === 'function') updateCertif();
-        if (typeof upNom === 'function') upNom();
-        
-        // On vide la boîte aux lettres
-        localStorage.removeItem('edit_snapshot');
-    }
-}
 };
-
 // --- FONCTIONS DE GÉNÉRATION AVEC ARCHIVAGE ---
 
 async function genererImage() {
