@@ -77,43 +77,39 @@ window.uploadImageFirebase = async function(blob, nomPatient, typeDoc) {
 window.archiverDocument = async function(config) {
     const { captureId, nomPatientId, typeDoc, pageSource, onSuccess } = config;
 
-    const elNom = document.getElementById(nomPatientId);
-    let nomPatient = "Anonyme";
-    if (elNom) {
-        const val = elNom.tagName === 'INPUT' ? elNom.value : elNom.innerText;
-        if (val && val !== "..." && val.trim() !== "") nomPatient = val.trim();
-    }
-
-    const captureEl = document.getElementById(captureId);
-    if (!captureEl) return null;
-
-    try {
-        // 1. Capture ultra-rapide (on baisse un peu l'échelle pour la vitesse)
-        const canvas = await html2canvas(captureEl, { scale: 1.2, useCORS: true, backgroundColor: "#ffffff" });
-        const localDataUrl = canvas.toDataURL('image/jpeg', 0.6); // Compression plus forte pour la rapidité
-        const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.6));
-
-        // 2. ON NE BLOQUE PLUS : On lance l'upload Firebase sans "await"
-        // Le site continue sa route pendant que l'image s'envoie
-        window.uploadImageFirebase(blob, nomPatient, typeDoc).then(url => {
-            if (url) console.log("☁️ Firebase synchronisé en arrière-plan");
-        });
-
-        // 3. Archivage immédiat dans l'historique (avec l'image locale pour l'instant)
-        if (window.ajouterEvenementPatient) {
-            await window.ajouterEvenementPatient(nomPatient, typeDoc, typeDoc, localDataUrl, pageSource);
+    // 1. Aspire toutes les données du formulaire (Inputs, Textareas, Selects, Checkboxes)
+    const formData = {};
+    const inputs = document.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+        if (input.id) {
+            formData[input.id] = (input.type === 'checkbox' || input.type === 'radio') 
+                ? input.checked 
+                : input.value;
         }
+    });
 
-        // 4. Succès immédiat pour débloquer Discord/Popup
-        if (onSuccess) onSuccess(localDataUrl, blob);
-        return localDataUrl;
+    // 2. Capture de l'image (comme avant)
+    const elNom = document.getElementById(nomPatientId);
+    let nomPatient = elNom?.value || elNom?.innerText || "Anonyme";
+    const captureEl = document.getElementById(captureId);
+    const canvas = await html2canvas(captureEl, { scale: 1.5, useCORS: true });
+    const localDataUrl = canvas.toDataURL('image/jpeg', 0.7);
 
-    } catch(e) {
-        console.error("Erreur archivage rapide:", e);
-        return null;
+    // 3. On sauvegarde tout dans l'historique (Image + sac à dos de données)
+    if (window.ajouterEvenementPatient) {
+        await window.ajouterEvenementPatient(
+            nomPatient, 
+            typeDoc, 
+            typeDoc, 
+            localDataUrl, 
+            pageSource, 
+            formData // <-- On ajoute le sac à dos ici
+        );
     }
-};
 
+    if (onSuccess) onSuccess(localDataUrl);
+    return localDataUrl;
+};
 /* ============================================================
     HISTORIQUE ET BASE DE DONNÉES
    ============================================================ */
