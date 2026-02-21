@@ -75,9 +75,8 @@ window.uploadImageFirebase = async function(blob, nomPatient, typeDoc) {
    ============================================================ */
 
 window.archiverDocument = async function(config) {
-    const { captureId, nomPatientId, typeDoc, pageSource, detailsId, onSuccess } = config;
+    const { captureId, nomPatientId, typeDoc, pageSource, onSuccess } = config;
 
-    // 1. Récupération Nom
     const elNom = document.getElementById(nomPatientId);
     let nomPatient = "Anonyme";
     if (elNom) {
@@ -85,33 +84,34 @@ window.archiverDocument = async function(config) {
         if (val && val !== "..." && val.trim() !== "") nomPatient = val.trim();
     }
 
-    // 2. Capture HTML
     const captureEl = document.getElementById(captureId);
     if (!captureEl) return null;
 
-    let blob, localDataUrl;
     try {
-        const canvas = await html2canvas(captureEl, { scale: 1.5, useCORS: true, backgroundColor: "#ffffff" });
-        localDataUrl = canvas.toDataURL('image/png');
-        blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+        // 1. Capture ultra-rapide (on baisse un peu l'échelle pour la vitesse)
+        const canvas = await html2canvas(captureEl, { scale: 1.2, useCORS: true, backgroundColor: "#ffffff" });
+        const localDataUrl = canvas.toDataURL('image/jpeg', 0.6); // Compression plus forte pour la rapidité
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.6));
+
+        // 2. ON NE BLOQUE PLUS : On lance l'upload Firebase sans "await"
+        // Le site continue sa route pendant que l'image s'envoie
+        window.uploadImageFirebase(blob, nomPatient, typeDoc).then(url => {
+            if (url) console.log("☁️ Firebase synchronisé en arrière-plan");
+        });
+
+        // 3. Archivage immédiat dans l'historique (avec l'image locale pour l'instant)
+        if (window.ajouterEvenementPatient) {
+            await window.ajouterEvenementPatient(nomPatient, typeDoc, typeDoc, localDataUrl, pageSource);
+        }
+
+        // 4. Succès immédiat pour débloquer Discord/Popup
+        if (onSuccess) onSuccess(localDataUrl, blob);
+        return localDataUrl;
+
     } catch(e) {
-        console.error("Erreur capture", e);
+        console.error("Erreur archivage rapide:", e);
         return null;
     }
-
-    // 3. Tentative d'upload (n'attend pas indéfiniment)
-    let urlFinal = await window.uploadImageFirebase(blob, nomPatient, typeDoc);
-    
-    // Si l'upload échoue, on utilise l'image locale (Base64) pour que l'historique fonctionne quand même
-    const imageAEnregistrer = urlFinal || localDataUrl;
-
-    // 4. Enregistrement Historique
-    if (window.ajouterEvenementPatient) {
-        await window.ajouterEvenementPatient(nomPatient, typeDoc, typeDoc, imageAEnregistrer, pageSource);
-    }
-
-    if (onSuccess) onSuccess(imageAEnregistrer, blob);
-    return imageAEnregistrer;
 };
 
 /* ============================================================
