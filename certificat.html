@@ -134,16 +134,20 @@
     </div>
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
+    <div id="image-popup" class="popup-overlay" style="display:none;">
     <div class="popup-content">
-        <h3>📄 Document Généré</h3>
+        <h3 style="color:white; margin-bottom:15px;">PRÉVISUALISATION DU CERTIFICAT</h3>
         <img id="preview-img-result" src="" alt="Aperçu">
         
-        <input type="hidden" id="direct-link">
-
-        <div class="popup-actions">
-            <button onclick="copyLink()" class="btn-popup">🔗 Copier le Lien (URL)</button>
-            <button onclick="copierImageDirecte()" class="btn-popup btn-blue">🖼️ Copier l'Image</button>
-            <button onclick="closePopup()" class="btn-popup btn-red">✖ Fermer</button>
+        <div class="popup-actions" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+            <input type="text" id="direct-link" readonly onclick="this.select()" style="width: 100%; padding: 10px; border-radius: 4px; border: none; text-align: center;">
+            
+            <div style="display: flex; gap: 10px;">
+                <button onclick="copyLink()" style="flex: 1; background: #64ffda; color: #0a1324; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">COPIER LE LIEN</button>
+                <button onclick="copierImageDirecte()" style="flex: 1; background: #3b82f6; color: white; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">COPIER L'IMAGE</button>
+            </div>
+            
+            <button onclick="closePopup()" style="width: 100%; background: #64748b; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">FERMER</button>
         </div>
     </div>
 </div>
