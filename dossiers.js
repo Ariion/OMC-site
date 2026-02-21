@@ -178,10 +178,18 @@ window.voirDocument = function(hData) {
     }
 }
 
-window.ouvrirPourModifier = function(pageSource, nomPatient) {
-    if (!pageSource) return alert("Page source inconnue.");
-    window.open(`${pageSource}?patient=${encodeURIComponent(nomPatient)}`, '_blank');
-}
+window.ouvrirPourModifier = function(hData) {
+    const h = typeof hData === 'string' ? JSON.parse(hData) : hData;
+    if (!h.pageSource) return alert("Erreur : Source inconnue");
+
+    // On met les données du formulaire dans une "boîte aux lettres" temporaire
+    if (h.formData) {
+        localStorage.setItem('edit_snapshot', JSON.stringify(h.formData));
+    }
+
+    // On ouvre la page
+    window.open(`${h.pageSource}?mode=edit&patient=${encodeURIComponent(h.nomPatient)}`, '_blank');
+};
 
 window.filtrerPatients = function() {
     const term = document.getElementById('search-input').value.toLowerCase();
