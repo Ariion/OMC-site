@@ -160,7 +160,6 @@ async function genererImage() {
     btn.disabled = true;
 
     try {
-        // Utilisation du moteur universel dans global.js
         await window.archiverDocument({
             captureId: 'document',
             nomPatientId: 'patientName',
@@ -168,17 +167,35 @@ async function genererImage() {
             pageSource: 'certificat.html',
             onSuccess: function(imageUrl) {
                 lastImageUrl = imageUrl;
-                document.getElementById('direct-link').value = imageUrl;
+                
+                // On met à jour la popup
                 document.getElementById('preview-img-result').src = imageUrl;
+                document.getElementById('direct-link').value = imageUrl;
+                
+                // On affiche la popup
                 document.getElementById('image-popup').style.display = 'flex';
             }
         });
     } catch (e) {
         console.error(e);
-        alert("Erreur lors de l'archivage/génération.");
+        alert("Erreur lors de l'archivage.");
     } finally {
-        btn.innerText = "🖼️ GÉNÉRER L'IMAGE (lien)";
+        btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
+    }
+}
+
+// Nouvelle fonction pour copier l'IMAGE directement (pas juste le lien)
+async function copierImageDirecte() {
+    try {
+        const response = await fetch(lastImageUrl);
+        const blob = await response.blob();
+        await navigator.clipboard.write([
+            new ClipboardItem({ [blob.type]: blob })
+        ]);
+        alert("✅ Image copiée dans le presse-papiers !");
+    } catch (err) {
+        alert("❌ Erreur lors de la copie de l'image.");
     }
 }
 
