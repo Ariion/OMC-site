@@ -161,7 +161,7 @@ async function envoyerDiscord() {
     btn.innerText = "ARCHIVAGE & CAPTURE...";
 
     try {
-        // 1. Archive dans le dossier patient d'abord
+        // 1. Archivage local (rapide)
         const firebaseUrl = await window.archiverDocument({
             captureId: 'document',
             nomPatientId: 'patientName',
@@ -169,30 +169,36 @@ async function envoyerDiscord() {
             pageSource: 'certificat.html'
         });
 
-        // 2. Capture pour Discord
+        // 2. Capture de l'image
         const canvas = await html2canvas(doc, { scale: 2, useCORS: true });
-        
         const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
-        const formData = new FormData();
+        
         const nom = document.getElementById('d-nom').innerText || "Inconnu";
         const typeDoc = document.getElementById('d-titre-doc').innerText || "Certificat";
 
+        const formData = new FormData();
         formData.append("payload_json", JSON.stringify({
-            thread_name: `📝 ${typeDoc} - ${nom}`,
-            content: `📜 **Nouveau Rapport Médical**\n👤 Patient : ${nom}\n📋 Type : ${typeDoc}${firebaseUrl ? `\n🔗 Archive : ${firebaseUrl}` : ''}`
+            username: "Intranet OMC",
+            // AJOUT CRUCIAL POUR LES SALONS FORUM :
+            thread_name: `📝 ${typeDoc} - ${nom}`, 
+            content: `📜 **Nouveau Rapport Médical**\n👤 Patient : ${nom}\n📋 Type : ${typeDoc}`
         }));
 
         formData.append("file", blob, "certificat.png");
         
+        // Envoi avec attente de confirmation
         const response = await fetch(url + "?wait=true", { method: 'POST', body: formData });
         
         if(response.ok) {
             alert("✅ Certificat envoyé et archivé !");
             btn.innerText = "ENVOYÉ";
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Erreur Discord");
         }
     } catch (e) {
         console.error(e);
-        alert("Erreur lors de l'envoi.");
+        alert("❌ Erreur d'envoi : " + e.message);
         btn.innerText = "RÉESSAYER";
     } finally {
         btn.disabled = false;
