@@ -187,18 +187,20 @@ async function genererImage() {
 
 // Nouvelle fonction pour copier l'IMAGE directement (pas juste le lien)
 async function copierImageDirecte() {
+    const imgElement = document.getElementById('preview-img-result');
+    if (!imgElement.src) return;
+
     try {
-        const response = await fetch(lastImageUrl);
+        const response = await fetch(imgElement.src);
         const blob = await response.blob();
-        await navigator.clipboard.write([
-            new ClipboardItem({ [blob.type]: blob })
-        ]);
-        alert("✅ Image copiée dans le presse-papiers !");
+        const item = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([item]);
+        alert("✅ Image copiée ! Tu peux faire CTRL+V sur Discord.");
     } catch (err) {
-        alert("❌ Erreur lors de la copie de l'image.");
+        console.error("Erreur de copie d'image:", err);
+        alert("❌ Impossible de copier l'image directement. Utilise le lien.");
     }
 }
-
 async function envoyerDiscord() {
     const url = "https://discord.com/api/webhooks/1421827797965471855/aBgwIgdIRP3TO0Qp_culr5GJHVLDRnwtKnxjv7N62ThG8L_bRQ1gwsqV_aYXhu4eCHa2";
     const btn = document.getElementById('discord-btn');
@@ -256,7 +258,7 @@ function copyLink() {
     const copyText = document.getElementById("direct-link");
     copyText.select();
     document.execCommand("copy");
-    alert("Lien copié !");
+    alert("✅ Lien copié !");
 }
 
 function closePopup() {
