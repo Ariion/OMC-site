@@ -211,29 +211,34 @@ window.supprimerLigneHist = async function(patientId, index) {
 // Ouvre la modale avec toutes les infos du document
 window.voirDocument = function(h) {
     if (typeof h === 'string') h = JSON.parse(h);
+    
+    // On essaie d'ouvrir la modale interne
     const modal = document.getElementById('modal-document');
-    if (!modal) return;
-
-    document.getElementById('doc-viewer-img').src = h.url || '';
-    document.getElementById('doc-viewer-url').value = h.url || '';
-    document.getElementById('doc-viewer-type').innerText = h.type || '—';
-    document.getElementById('doc-viewer-date').innerText = h.date
-        ? new Date(h.date).toLocaleDateString('fr-FR') + ' à ' + new Date(h.date).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})
-        : '—';
-    document.getElementById('doc-viewer-details').innerText = h.details || '—';
-
-    // Bouton Modifier
-    const btnMod = document.getElementById('doc-viewer-modifier');
-    if (btnMod) {
-        if (h.pageSource) {
-            btnMod.style.display = 'block';
-            // On stocke dans un attribut data pour l'action onclick
-            btnMod.setAttribute('data-page', h.pageSource);
-            btnMod.setAttribute('data-nom', document.getElementById('doc-viewer-type').closest('[data-nom]')?.dataset.nom || '');
-        } else {
-            btnMod.style.display = 'none';
+    const img = document.getElementById('doc-viewer-img');
+    
+    if (modal && img) {
+        img.src = h.url || '';
+        document.getElementById('doc-viewer-type').innerText = h.type || '—';
+        document.getElementById('doc-viewer-date').innerText = h.date
+            ? new Date(h.date).toLocaleDateString('fr-FR') + ' à ' + new Date(h.date).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})
+            : '—';
+        
+        // Bouton Modifier
+        const btnMod = document.getElementById('doc-viewer-modifier');
+        if (btnMod) {
+            btnMod.style.display = h.pageSource ? 'block' : 'none';
+            btnMod.onclick = () => window.ouvrirPourModifier(h.pageSource, document.getElementById('edit-nom').value);
         }
+
+        modal.style.display = 'flex';
+        modal.style.zIndex = "10000"; // On force le passage devant tout
+    } else {
+        // SI LA MODALE N'EXISTE PAS : On ouvre l'image dans un nouvel onglet
+        // C'est la sécurité absolue pour que tu puisses voir le rapport quoi qu'il arrive
+        if (h.url) window.open(h.url, '_blank');
+        else alert("Aucune image disponible pour ce document.");
     }
+}
 
     // Bouton Discord
     const btnDis = document.getElementById('doc-viewer-discord');
