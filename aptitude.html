@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+direction<!DOCTYPE html>
 <html lang="fr">
 <head>
 
@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="index.css">
     <style>
-        /* On bloque le défilement du site pour laisser le Google Sheet gérer le sien */
+
         html, body {
             height: 100vh;
             margin: 0;
@@ -35,7 +35,6 @@
             flex-shrink: 0;
         }
 
-        /* Cadre Blanc : On utilise flex: 1 pour qu'il s'étire au maximum */
         .sheet-container {
             flex: 1;
             background: #ffffff;
@@ -43,11 +42,10 @@
             border: 4px solid #64ffda;
             box-shadow: 0 10px 40px rgba(0,0,0,0.6);
             overflow: hidden;
-            position: relative; /* Important pour l'iframe en absolute */
+            position: relative; 
             margin-bottom: 10px;
         }
 
-        /* L'IFRAME : On la force à coller aux 4 coins du cadre blanc */
         iframe {
             position: absolute;
             top: 0;

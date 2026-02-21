@@ -29,10 +29,10 @@
 /* --- ZONE DE DROITE (Fond gris clair comme deces) --- */
 .preview-area {
     flex-grow: 1;
-    background-color: #d1d5db; /* Le gris léger de deces.html */
+    background-color: #d1d5db; 
 display: flex;
-    justify-content: center; /* Centre horizontalement */
-    align-items: center;     /* Centre verticalement */
+    justify-content: center; 
+    align-items: center;     
     height: 100vh;
     overflow-y: auto;
 }
@@ -41,8 +41,8 @@ display: flex;
 #document {
     width: 800px !important;
     min-width: 800px !important;
-    height: auto !important;      /* Laisse la hauteur s'adapter au contenu */
-    min-height: 0 !important;     /* Supprime toute contrainte de hauteur */
+    height: auto !important;      
+    min-height: 0 !important;     
     background: white !important;
     padding: 40px !important;
     color: #111 !important;
@@ -81,7 +81,7 @@ display: flex;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-top: 40px; /* Espace avant le footer */
+    margin-top: 40px; 
 }.cert-signature { border-top: 1px solid #cbd5e1; min-width: 250px; padding-top: 10px; font-weight: bold; font-style: italic; text-align: left;}
 .round-stamp { border: 2px solid #0a1324; border-radius: 15px; padding: 10px; text-align: center; font-size: 10px; font-weight: bold; color: #0a1324; width: 120px; }
 .qr-code { width: 100px; height: 100px; margin-bottom: 5px; display: block; margin: 0 auto;}
@@ -90,7 +90,7 @@ display: flex;
     font-size: 10px;
     color: #94a3b8;
     margin-top: 30px;
-    margin-bottom: 0 !important; /* Supprime le blanc inutile en bas de l'image */
+    margin-bottom: 0 !important; 
     padding-top: 15px;
     border-top: 1px dotted #e2e8f0;
     text-align: justify;
