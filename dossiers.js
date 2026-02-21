@@ -164,32 +164,45 @@ window.fermerTout = function() {
    VISUALISEUR & NAVIGATION
    ============================================================ */
 
+// --- Ouvre le document et prépare le bouton Modifier dans la popup ---
 window.voirDocument = function(hData) {
+    // Correction du bug de parsing : on vérifie si c'est déjà un objet ou du texte
     const h = typeof hData === 'string' ? JSON.parse(hData.replace(/&quot;/g, '"')) : hData;
+    
     const modal = document.getElementById('modal-document');
     const img = document.getElementById('doc-viewer-img');
     
     if (modal && img) {
         img.src = h.url || '';
         document.getElementById('doc-viewer-type').innerText = h.type || 'Document';
+        
+        // --- CONFIGURATION DU BOUTON MODIFIER DANS LA POPUP ---
+        const btnMod = document.getElementById('doc-viewer-modifier-popup'); 
+        if (btnMod) {
+            if (h.pageSource) {
+                btnMod.style.display = 'block';
+                btnMod.onclick = () => window.ouvrirPourModifier(h);
+            } else {
+                btnMod.style.display = 'none';
+            }
+        }
         modal.style.display = 'flex';
-    } else if (h.url) {
-        window.open(h.url, '_blank');
     }
 }
 
-window.ouvrirPourModifier = function(hData) {
-    const h = typeof hData === 'string' ? JSON.parse(hData) : hData;
-    if (!h.pageSource) return alert("Erreur : Source inconnue");
+// --- Fonction qui restaure les données ---
+window.ouvrirPourModifier = function(h) {
+    if (!h.pageSource) return alert("Source inconnue");
 
-    // On met les données du formulaire dans une "boîte aux lettres" temporaire
+    // On stocke les données du formulaire dans la "boîte aux lettres" locale
     if (h.formData) {
         localStorage.setItem('edit_snapshot', JSON.stringify(h.formData));
     }
 
-    // On ouvre la page
-    window.open(`${h.pageSource}?mode=edit&patient=${encodeURIComponent(h.nomPatient)}`, '_blank');
-};
+    // On ouvre le lien avec le nom du patient
+    const nomPatient = document.getElementById('edit-nom')?.value || h.nomPatient || '';
+    window.open(`${h.pageSource}?mode=edit&patient=${encodeURIComponent(nomPatient)}`, '_blank');
+}
 
 window.filtrerPatients = function() {
     const term = document.getElementById('search-input').value.toLowerCase();
