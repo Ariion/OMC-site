@@ -127,23 +127,90 @@
         </main>
     </div>
 
-    <div id="modal-document" class="popup-overlay" style="display: none; z-index: 3000;">
-    <div class="popup-content" style="text-align: center; width: 600px; max-width: 90%; background: #0f172a; border: 1px solid #64ffda;">
-        <h3 style="color: #64ffda; margin-bottom: 15px;">DOCUMENT ARCHIVÉ</h3>
+    <!-- 
+=============================================================
+  MODALE ENRICHIE — À REMPLACER dans dossiers.html
+  Remplace le bloc id="modal-document" existant
+=============================================================
+-->
+
+<div id="modal-document" class="popup-overlay" style="display:none; z-index:3000;">
+    <div class="popup-content" style="text-align:center; width:650px; max-width:95%; background:#0f172a; border:1px solid #64ffda; border-radius:8px; padding:20px;">
         
-        <div style="background: #000; padding: 5px; border-radius: 4px; margin-bottom: 15px;">
-            <img id="doc-viewer-img" src="" style="max-width: 100%; max-height: 60vh; display: block; margin: 0 auto;">
+        <!-- EN-TÊTE -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="color:#64ffda; margin:0; font-size:14px; letter-spacing:1px;">📄 DOCUMENT ARCHIVÉ</h3>
+            <button onclick="fermerVisualiseur()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:18px;line-height:1;">✕</button>
         </div>
 
-        <div class="form-group">
-            <label>LIEN DU DOCUMENT (POUR IMPRIMANTE JEU)</label>
-            <div style="display: flex; gap: 5px;">
-                <input type="text" id="doc-viewer-url" readonly style="background: #1e293b; color: #64ffda; border: 1px solid #334155; width: 100%;">
-                <button onclick="copierLienDoc()" class="btn-action btn-save" style="width: auto;">COPIER</button>
+        <!-- INFOS DU DOCUMENT -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; text-align:left;">
+            <div style="background:#1e293b; padding:8px 12px; border-radius:4px;">
+                <small style="color:#64ffda; font-size:9px; text-transform:uppercase; display:block; margin-bottom:2px;">Type de document</small>
+                <span id="doc-viewer-type" style="color:white; font-weight:bold; font-size:12px;">—</span>
+            </div>
+            <div style="background:#1e293b; padding:8px 12px; border-radius:4px;">
+                <small style="color:#64ffda; font-size:9px; text-transform:uppercase; display:block; margin-bottom:2px;">Date de création</small>
+                <span id="doc-viewer-date" style="color:white; font-size:12px;">—</span>
+            </div>
+            <div style="background:#1e293b; padding:8px 12px; border-radius:4px; grid-column:1/-1;">
+                <small style="color:#64ffda; font-size:9px; text-transform:uppercase; display:block; margin-bottom:2px;">Détails</small>
+                <span id="doc-viewer-details" style="color:#94a3b8; font-size:11px; font-style:italic;">—</span>
             </div>
         </div>
 
-        <button onclick="fermerVisualiseur()" class="btn-action btn-cancel" style="width: 100%; margin-top: 10px;">FERMER</button>
+        <!-- APERÇU DE L'IMAGE -->
+        <div style="background:#000; padding:5px; border-radius:4px; margin-bottom:12px; min-height:80px; display:flex; align-items:center; justify-content:center;">
+            <img id="doc-viewer-img" src="" alt="Document" 
+                 style="max-width:100%; max-height:50vh; display:block; margin:0 auto; border-radius:2px;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+            <span style="display:none; color:#475569; font-size:11px;">⚠️ Aperçu non disponible</span>
+        </div>
+
+        <!-- URL DU DOCUMENT -->
+        <div style="margin-bottom:12px; text-align:left;">
+            <label style="color:#94a3b8; font-size:9px; text-transform:uppercase; display:block; margin-bottom:4px;">
+                🔗 URL PERMANENTE (Pour imprimante en jeu, Discord, etc.)
+            </label>
+            <div style="display:flex; gap:6px;">
+                <input type="text" id="doc-viewer-url" readonly 
+                       style="background:#1e293b; color:#64ffda; border:1px solid #334155; border-radius:4px; padding:8px 10px; width:100%; font-size:11px; font-family:monospace;">
+                <button onclick="copierLienDoc()" 
+                        style="background:#64ffda; color:#0f172a; border:none; border-radius:4px; padding:8px 14px; cursor:pointer; font-weight:bold; font-size:11px; white-space:nowrap; flex-shrink:0;">
+                    📋 COPIER
+                </button>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px;">
+            
+            <!-- Renvoyer Discord -->
+            <button id="doc-viewer-discord" onclick="renvoyerDiscordDepuisModal()"
+                    style="background:#5865F2; color:white; border:none; border-radius:4px; padding:10px 8px; cursor:pointer; font-size:11px; font-weight:bold;">
+                📤 RENVOYER<br><small style="font-weight:normal; font-size:9px;">sur Discord</small>
+            </button>
+
+            <!-- Modifier le rapport -->
+            <button id="doc-viewer-modifier" onclick="modifierDepuisModal()"
+                    style="background:#f59e0b; color:#000; border:none; border-radius:4px; padding:10px 8px; cursor:pointer; font-size:11px; font-weight:bold; display:none;">
+                ✏️ MODIFIER<br><small style="font-weight:normal; font-size:9px;">le rapport</small>
+            </button>
+
+            <!-- Ouvrir dans un onglet -->
+            <button onclick="window.open(document.getElementById('doc-viewer-url').value, '_blank')"
+                    style="background:#1e293b; color:#94a3b8; border:1px solid #334155; border-radius:4px; padding:10px 8px; cursor:pointer; font-size:11px;">
+                🔗 OUVRIR<br><small style="font-size:9px;">dans onglet</small>
+            </button>
+
+        </div>
+
+        <!-- FERMER -->
+        <button onclick="fermerVisualiseur()" 
+                style="background:#1e293b; color:#94a3b8; border:1px solid #334155; border-radius:4px; padding:8px; cursor:pointer; width:100%; font-size:11px; margin-top:4px;">
+            FERMER
+        </button>
+
     </div>
 </div>
 
