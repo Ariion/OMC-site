@@ -156,35 +156,45 @@ window.onload = function() {
 
 async function genererImage() {
     const btn = event.currentTarget;
-    btn.innerText = "ARCHIVAGE...";
+    const popup = document.getElementById('image-popup');
+    const imgResult = document.getElementById('preview-img-result');
+
+    btn.innerText = "⏳ GÉNÉRATION...";
     btn.disabled = true;
 
     try {
-        await window.archiverDocument({
+        // L'archivage se fait en arrière-plan
+        const imageUrl = await window.archiverDocument({
             captureId: 'document',
             nomPatientId: 'patientName',
             typeDoc: 'Certificat Médical',
             pageSource: 'certificat.html',
-            onSuccess: function(imageUrl) {
-                lastImageUrl = imageUrl;
-                
-                // On met à jour la popup
-                document.getElementById('preview-img-result').src = imageUrl;
-                document.getElementById('direct-link').value = imageUrl;
-                
-                // On affiche la popup
-                document.getElementById('image-popup').style.display = 'flex';
+            onSuccess: function(url) {
+                // On prépare l'image AVANT d'afficher la popup
+                if (url) {
+                    imgResult.src = url;
+                    document.getElementById('direct-link').value = url;
+                    lastImageUrl = url;
+                    
+                    // On affiche la popup SEULEMENT ici
+                    popup.style.display = 'flex';
+                }
             }
         });
+
+        if (!imageUrl) {
+            throw new Error("L'image n'a pas pu être générée.");
+        }
+
     } catch (e) {
         console.error(e);
-        alert("Erreur lors de l'archivage.");
+        alert("❌ Erreur : Impossible de générer l'aperçu. Vérifiez le nom du patient.");
+        popup.style.display = 'none'; // Sécurité : on cache si erreur
     } finally {
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
 }
-
 // Nouvelle fonction pour copier l'IMAGE directement (pas juste le lien)
 async function copierImageDirecte() {
     const imgElement = document.getElementById('preview-img-result');
