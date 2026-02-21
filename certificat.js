@@ -160,37 +160,56 @@ async function genererImage() {
     const imgResult = document.getElementById('preview-img-result');
     const inputLink = document.getElementById('direct-link');
 
-    btn.innerText = "⏳ PATIENTEZ...";
+    btn.innerText = "⏳ HÉBERGEMENT IBB...";
     btn.disabled = true;
 
     try {
-        // 1. On lance la capture via le global.js
-        const imageUrl = await window.archiverDocument({
-            captureId: 'document',
-            nomPatientId: 'patientName',
-            typeDoc: 'Certificat Médical',
-            pageSource: 'certificat.html'
-        });
+        // 1. Capture de l'image en Blob
+        const captureEl = document.getElementById('document');
+        const canvas = await html2canvas(captureEl, { scale: 1.5, useCORS: true });
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
 
-        if (imageUrl) {
-            // 2. IMPORTANT : On charge l'image dans l'élément AVANT d'afficher la popup
-            imgResult.onload = function() {
-                // SEULEMENT quand l'image est chargée par le navigateur, on montre la popup
-                inputLink.value = imageUrl;
-                popup.style.display = 'flex';
-                btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
-                btn.disabled = false;
-            };
+        // 2. Envoi vers ImgBB pour avoir le lien court (ton API KEY est utilisée ici)
+        const formData = new FormData();
+        formData.append("image", blob);
+        
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: "POST",
+            body: formData
+        });
+        const json = await response.json();
+        const shortUrl = json.data.url; // Voilà ton lien https://i.ibb.co/...
+
+        if (shortUrl) {
+            // 3. Archivage dans le dossier patient (Firebase) avec le lien court
+            const nomPatient = document.getElementById('patientName').value || "Anonyme";
             
-            imgResult.src = imageUrl;
-            lastImageUrl = imageUrl; // Pour la fonction copier
-        } else {
-            throw new Error("Échec de génération URL");
+            // On récupère les données pour le bouton modifier
+            const dataFields = {};
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                if(el.id) dataFields[el.id] = (el.type === 'checkbox') ? el.checked : el.value;
+            });
+
+            await window.ajouterEvenementPatient(
+                nomPatient, 
+                'Certificat Médical', 
+                'Certificat Médical', 
+                shortUrl, 
+                'certificat.html', 
+                dataFields
+            );
+
+            // 4. Affichage Popup
+            imgResult.src = shortUrl;
+            inputLink.value = shortUrl;
+            lastImageUrl = shortUrl;
+            popup.style.display = 'flex';
         }
 
     } catch (e) {
-        console.error("Erreur Popup:", e);
-        alert("❌ Erreur d'affichage. Vérifie que le nom du patient est rempli.");
+        console.error(e);
+        alert("❌ Erreur ImgBB : Vérifie ta connexion ou ta clé API.");
+    } finally {
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
