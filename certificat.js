@@ -158,39 +158,39 @@ async function genererImage() {
     const btn = event.currentTarget;
     const popup = document.getElementById('image-popup');
     const imgResult = document.getElementById('preview-img-result');
+    const inputLink = document.getElementById('direct-link');
 
-    btn.innerText = "⏳ GÉNÉRATION...";
+    btn.innerText = "⏳ PATIENTEZ...";
     btn.disabled = true;
 
     try {
-        // L'archivage se fait en arrière-plan
+        // 1. On lance la capture via le global.js
         const imageUrl = await window.archiverDocument({
             captureId: 'document',
             nomPatientId: 'patientName',
             typeDoc: 'Certificat Médical',
-            pageSource: 'certificat.html',
-            onSuccess: function(url) {
-                // On prépare l'image AVANT d'afficher la popup
-                if (url) {
-                    imgResult.src = url;
-                    document.getElementById('direct-link').value = url;
-                    lastImageUrl = url;
-                    
-                    // On affiche la popup SEULEMENT ici
-                    popup.style.display = 'flex';
-                }
-            }
+            pageSource: 'certificat.html'
         });
 
-        if (!imageUrl) {
-            throw new Error("L'image n'a pas pu être générée.");
+        if (imageUrl) {
+            // 2. IMPORTANT : On charge l'image dans l'élément AVANT d'afficher la popup
+            imgResult.onload = function() {
+                // SEULEMENT quand l'image est chargée par le navigateur, on montre la popup
+                inputLink.value = imageUrl;
+                popup.style.display = 'flex';
+                btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
+                btn.disabled = false;
+            };
+            
+            imgResult.src = imageUrl;
+            lastImageUrl = imageUrl; // Pour la fonction copier
+        } else {
+            throw new Error("Échec de génération URL");
         }
 
     } catch (e) {
-        console.error(e);
-        alert("❌ Erreur : Impossible de générer l'aperçu. Vérifiez le nom du patient.");
-        popup.style.display = 'none'; // Sécurité : on cache si erreur
-    } finally {
+        console.error("Erreur Popup:", e);
+        alert("❌ Erreur d'affichage. Vérifie que le nom du patient est rempli.");
         btn.innerText = "🖼️ GÉNÉRER L'IMAGE";
         btn.disabled = false;
     }
