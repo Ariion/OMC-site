@@ -134,16 +134,19 @@
     </div>
 
     <div id="image-popup" class="popup-overlay" style="display:none;">
-        <div class="popup-content">
-            <h3>Image Générée</h3>
-            <input type="text" id="direct-link" readonly onclick="this.select()">
-            <div class="popup-buttons" style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                <button onclick="copyLink()" class="btn-copy">Copier le lien</button>
-                <button onclick="closePopup()" class="btn-close">Fermer</button>
-            </div>
-            <img id="preview-img-result" src="" style="max-width: 100%; margin-top: 15px; border-radius: 5px; border: 1px solid #333;">
+    <div class="popup-content">
+        <h3>📄 Document Généré</h3>
+        <img id="preview-img-result" src="" alt="Aperçu">
+        
+        <input type="hidden" id="direct-link">
+
+        <div class="popup-actions">
+            <button onclick="copyLink()" class="btn-popup">🔗 Copier le Lien (URL)</button>
+            <button onclick="copierImageDirecte()" class="btn-popup btn-blue">🖼️ Copier l'Image</button>
+            <button onclick="closePopup()" class="btn-popup btn-red">✖ Fermer</button>
         </div>
     </div>
+</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="certificat.js"></script>
