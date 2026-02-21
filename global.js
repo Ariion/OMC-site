@@ -121,21 +121,53 @@ window.archiverDocument = async function(config) {
     HISTORIQUE ET BASE DE DONNÉES
    ============================================================ */
 
-window.ajouterEvenementPatient = async function(nomPatient, typeEvent, details, urlImage = null, pageSource = null) {
-    const patient = patientsCache.find(p => p.nom.trim().toLowerCase() === nomPatient.trim().toLowerCase());
-    if (patient) {
-        let historique = patient.historique || [];
-        historique.unshift({
-            date: new Date().toISOString(),
-            type: typeEvent,
-            details: details,
-            url: urlImage,
-            pageSource: pageSource
-        });
-        const ref = doc(db, COLLECTION_NAME, patient.id);
+window.ajouterEvenementPatient = async function(nomPatient, typeEvent, details, urlImage = null, pageSource = null, formData = null) {
+    // 1. On cherche si le patient existe
+    let patient = patientsCache.find(p => p.nom.trim().toLowerCase() === nomPatient.trim().toLowerCase());
+
+    // 2. SI LE PATIENT N'EXISTE PAS : ON LE CRÉE
+    if (!patient) {
+        console.log("🆕 Nouveau patient détecté, création automatique du dossier...");
+        const nouveauDossier = {
+            nom: nomPatient,
+            naissance: formData?.patientBirth || "", // On essaie de récupérer la DDN si elle est dans le formulaire
+            groupe: formData?.patientBlood || "",
+            job: formData?.patientJob || "Civil",
+            notes: "Dossier créé automatiquement via " + typeEvent,
+            historique: [],
+            dateCreation: new Date().toISOString()
+        };
+        
+        // On sauvegarde le nouveau patient
+        await window.savePatientToDB(nouveauDossier);
+        
+        // On attend un tout petit peu que Firebase se mette à jour et on le récupère
+        // (Ou on utilise directement l'objet qu'on vient de créer)
+        patient = nouveauDossier;
+    }
+
+    // 3. ON RAJOUTE L'ÉVÉNEMENT À L'HISTORIQUE
+    let historique = patient.historique || [];
+    historique.unshift({
+        date: new Date().toISOString(),
+        type: typeEvent,
+        details: details,
+        url: urlImage,
+        pageSource: pageSource,
+        formData: formData // Le fameux sac à dos pour le bouton "Modifier"
+    });
+
+    // 4. MISE À JOUR DANS FIREBASE
+    // On cherche l'ID (soit celui existant, soit on laisse savePatientToDB gérer)
+    const patientRef = patientsCache.find(p => p.nom.trim().toLowerCase() === nomPatient.trim().toLowerCase());
+    if (patientRef) {
+        const ref = doc(db, COLLECTION_NAME, patientRef.id);
         try {
             await updateDoc(ref, { historique: historique });
-        } catch(e) { console.error("Erreur historique", e); }
+            console.log("✅ Document archivé avec succès !");
+        } catch(e) {
+            console.error("Erreur mise à jour historique", e);
+        }
     }
 };
 
