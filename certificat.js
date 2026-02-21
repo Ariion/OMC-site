@@ -120,6 +120,28 @@ window.onload = function() {
             }, 800);
         }
     }
+    if (urlParams.get('mode') === 'edit') {
+    const data = JSON.parse(localStorage.getItem('edit_snapshot'));
+    if (data) {
+        // On remplit automatiquement chaque case par son ID
+        Object.keys(data).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    el.checked = data[id];
+                } else {
+                    el.value = data[id];
+                }
+            }
+        });
+        // On force la mise à jour visuelle du rapport (le dessin à droite)
+        if (typeof updateCertif === 'function') updateCertif();
+        if (typeof upNom === 'function') upNom();
+        
+        // On vide la boîte aux lettres
+        localStorage.removeItem('edit_snapshot');
+    }
+}
 };
 
 // --- FONCTIONS DE GÉNÉRATION AVEC ARCHIVAGE ---
