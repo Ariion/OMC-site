@@ -224,3 +224,55 @@ window.setupPatientAutocomplete = function(config) {
 // UTILITAIRES DE MISE À JOUR
 window.up = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val || "..."; };
 window.upDate = (id, val) => { if (!val) return; const [y, m, d] = val.split('-'); const el = document.getElementById(id); if (el) el.innerText = `${d}/${m}/${y}`; };
+
+
+
+
+
+
+
+// Variable globale pour éviter les doublons durant la session sur la page
+window.omc_last_archive = { url: null, done: false };
+
+window.omc_moteur_generation = async function(config) {
+    const { captureId, nomPatientId, typeDoc, pageSource, imgBBKey } = config;
+
+    // 1. Si déjà fait, on renvoie l'URL mémorisée
+    if (window.omc_last_archive.done) {
+        return { url: window.omc_last_archive.url, dejaFait: true };
+    }
+
+    try {
+        // 2. Capture de l'élément
+        const captureEl = document.getElementById(captureId);
+        const canvas = await html2canvas(captureEl, { scale: 1.5, useCORS: true });
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
+
+        // 3. Envoi ImgBB (Lien court RP)
+        const formDataBB = new FormData();
+        formDataBB.append("image", blob);
+        const resBB = await fetch(`https://api.imgbb.com/1/upload?key=${imgBBKey}`, { method: "POST", body: formDataBB });
+        const jsonBB = await resBB.json();
+        const shortUrl = jsonBB.data.url;
+
+        // 4. Aspiration des données (Sac à dos pour modification)
+        const formSnapshot = {};
+        document.querySelectorAll('input, textarea, select').forEach(el => {
+            if(el.id) formSnapshot[el.id] = (el.type === 'checkbox' || el.type === 'radio') ? el.checked : el.value;
+        });
+
+        // 5. Archivage Firebase (Dossier Patient)
+        const nomPatient = document.getElementById(nomPatientId).value || "Anonyme";
+        if (window.ajouterEvenementPatient) {
+            await window.ajouterEvenementPatient(nomPatient, typeDoc, typeDoc, shortUrl, pageSource, formSnapshot);
+        }
+
+        // 6. Verrouillage
+        window.omc_last_archive = { url: shortUrl, done: true };
+        return { url: shortUrl, dejaFait: false };
+
+    } catch (e) {
+        console.error("Erreur Moteur OMC:", e);
+        return null;
+    }
+};
