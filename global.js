@@ -77,38 +77,45 @@ window.uploadImageFirebase = async function(blob, nomPatient, typeDoc) {
 window.archiverDocument = async function(config) {
     const { captureId, nomPatientId, typeDoc, pageSource, onSuccess } = config;
 
-    // 1. Aspire toutes les données du formulaire (Inputs, Textareas, Selects, Checkboxes)
+    // --- ASPIRATION DE TOUTES LES DONNÉES DU FORMULAIRE ---
     const formData = {};
+    // On récupère TOUS les champs de saisie de la page
     const inputs = document.querySelectorAll('input, textarea, select');
     inputs.forEach(input => {
         if (input.id) {
+            // Sauvegarde de la valeur ou de l'état coché
             formData[input.id] = (input.type === 'checkbox' || input.type === 'radio') 
                 ? input.checked 
                 : input.value;
         }
     });
 
-    // 2. Capture de l'image (comme avant)
     const elNom = document.getElementById(nomPatientId);
     let nomPatient = elNom?.value || elNom?.innerText || "Anonyme";
     const captureEl = document.getElementById(captureId);
-    const canvas = await html2canvas(captureEl, { scale: 1.5, useCORS: true });
-    const localDataUrl = canvas.toDataURL('image/jpeg', 0.7);
 
-    // 3. On sauvegarde tout dans l'historique (Image + sac à dos de données)
-    if (window.ajouterEvenementPatient) {
-        await window.ajouterEvenementPatient(
-            nomPatient, 
-            typeDoc, 
-            typeDoc, 
-            localDataUrl, 
-            pageSource, 
-            formData // <-- On ajoute le sac à dos ici
-        );
+    try {
+        const canvas = await html2canvas(captureEl, { scale: 1.5, useCORS: true });
+        const localDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+        // Sauvegarde dans Firebase avec le "sac à dos" de données (formData)
+        if (window.ajouterEvenementPatient) {
+            await window.ajouterEvenementPatient(
+                nomPatient, 
+                typeDoc, 
+                typeDoc, 
+                localDataUrl, 
+                pageSource, 
+                formData // On envoie l'objet complet ici
+            );
+        }
+
+        if (onSuccess) onSuccess(localDataUrl);
+        return localDataUrl;
+    } catch(e) {
+        console.error("Erreur capture", e);
+        return null;
     }
-
-    if (onSuccess) onSuccess(localDataUrl);
-    return localDataUrl;
 };
 /* ============================================================
     HISTORIQUE ET BASE DE DONNÉES
