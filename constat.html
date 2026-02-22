@@ -97,11 +97,10 @@
             </div>
 
             <div class="actions-group">
-    <button type="button" class="btn-image" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; genererImage()">
+    <button type="button" class="btn-image" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; genererImage(this, 'capture-zone')">
         🖼️ GÉNÉRER L'IMAGE
     </button>
-
-    <button id="discord-btn" class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; envoyerDiscord()">
+    <button id="discord-btn" class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; envoyerDiscord(this)">
         ENVOYER SUR DISCORD
     </button>
 </div>
@@ -198,9 +197,20 @@
             </div>
         </div>
     </div>
-
+<script>
+const OMC_CONFIG = {
+    webhook:      'https://discord.com/api/webhooks/1421780761731928194/ZFSpiLTHfytIGT02QBf5SBOIEDzWMaf_PMHtDB9sd-GmF5chHnQqQic-9YpLnYHJIRPo',
+    captureId:    'capture-zone',
+    nomPatientId: 'patientName',
+    typeDoc:      'Constat Lésionnel',
+    pageSource:   'constat.html',
+    getThreadName: () => `🩺 Constat - ${document.getElementById('patientName')?.value || 'Inconnu'} (${window.sessionRef || ''})`,
+    getContent:    () => `🚑 **Nouveau Constat Lésionnel** : ${document.getElementById('patientName')?.value || 'Inconnu'}`
+};
+</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="constat.js"></script>
     <script type="module" src="global.js"></script>
+    <script type="module" src="generation.js"></script>
 </body>
 </html>

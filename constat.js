@@ -1,4 +1,3 @@
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
 
 const LESIONS = [
     {key:'fracture', label:'Fracture / Entorse', color:'#ef4444', icon:'🦴'},
@@ -392,42 +391,3 @@ function toggleDebug() {
         }
     }
 }
-
-async function genererImage() {
-    const btn = event.currentTarget;
-    btn.innerText = "CHARGEMENT...";
-    try {
-        const canvas = await html2canvas(document.getElementById('capture-zone'), { scale: 2, useCORS: true });
-        const imgData = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-        const formData = new FormData(); formData.append("image", imgData);
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-        const json = await res.json();
-        if (json.success) {
-            document.getElementById('preview-img-result').src = json.data.url;
-            document.getElementById('direct-link').value = json.data.url;
-            document.getElementById('image-popup').style.display = 'flex';
-        }
-    } catch (e) { alert("Erreur ImgBB"); }
-    btn.innerText = "GÉNÉRER L'IMAGE";
-}
-
-async function envoyerDiscord() {
-    const url = "https://discord.com/api/webhooks/1421780761731928194/ZFSpiLTHfytIGT02QBf5SBOIEDzWMaf_PMHtDB9sd-GmF5chHnQqQic-9YpLnYHJIRPo";
-    try {
-        const canvas = await html2canvas(document.getElementById('capture-zone'), { scale: 2, useCORS: true });
-        canvas.toBlob(async (blob) => {
-            const formData = new FormData();
-            const nom = document.getElementById('patientName').value || "Inconnu";
-            formData.append("payload_json", JSON.stringify({
-                thread_name: `Imagerie - ${nom} - (${window.sessionRef})`,
-                content: `🚑 **Nouveau Constat Lésionnel** : ${nom}`
-            }));
-            formData.append("file", blob, `constat_${nom}.png`);
-            await fetch(url + "?wait=true", { method: 'POST', body: formData });
-            alert("✅ Constat envoyé !");
-        }, 'image/png');
-    } catch (e) { alert("Erreur Discord"); }
-}
-
-function copyLink() { navigator.clipboard.writeText(document.getElementById("direct-link").value); alert("Copié !"); }
-function closePopup() { document.getElementById('image-popup').style.display = 'none'; }
