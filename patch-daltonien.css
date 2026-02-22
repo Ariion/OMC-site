@@ -3,7 +3,7 @@
    Remplace toutes les teintes vertes (#64ffda, #00d2ff cyan-vert)
    par du bleu électrique (#38bdf8) lisible par tous.
 
-   À IMPORTER EN DERNIER dans chaque page HTML :
+   À IMPORTER EN DERNIER dans chaque page HTML tout en haut de la section <head> :
    <link rel="stylesheet" href="patch-daltonien.css">
    ============================================================ */
 
@@ -114,7 +114,6 @@ input:focus, textarea:focus {
 }
 
 /* ---- DIAGNOSTICS & CALCULATRICE (nouveaux fichiers) ---- */
-/* Ces fichiers utilisent déjà --cyan: #64ffda, on écrase */
 :root {
     --cyan: #38bdf8;
     --cyan2: #0ea5e9;

@@ -10,121 +10,42 @@
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
         :root {
-            --bg: #0a192f;
-            --bg2: #0d2137;
-            --accent: #38bdf8;
-            --orange: #f97316;
-            --text: #ccd6f6;
-            --text-dim: #8892b0;
-            --border: #1e3a5f;
-            --card: #0d2137;
+            --bg-page:   #0f172a;   /* fond page sombre */
+            --bg-topbar: #0a192f;
+            --bg-table:  #1e293b;   /* fond tableau : plus clair = plus lisible */
+            --bg-row:    #ffffff;   /* lignes blanches */
+            --bg-row-alt:#f8fafc;   /* lignes alternées très légèrement grises */
+            --bg-head:   #1e293b;   /* thead sombre */
+            --accent:    #38bdf8;
+            --orange:    #f97316;
+            --text-row:  #0f172a;   /* texte des lignes : NOIR sur fond blanc */
+            --text-dim:  #64748b;
+            --border:    #e2e8f0;   /* bordures claires sur fond blanc */
+            --border-dark: #334155;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg-page); color: #f1f5f9; overflow-x: hidden; }
 
-        html, body {
-            height: 100%;
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            overflow-x: hidden;
-        }
-
-        /* ============================================
-           TOPBAR FIXE
-           ============================================ */
+        /* ---- TOPBAR ---- */
         .topbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 200;
-            background: #0a192f;
-            border-bottom: 2px solid var(--border);
-            padding: 0 20px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            height: 56px;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            background: var(--bg-topbar); border-bottom: 2px solid #1e3a5f;
+            padding: 0 20px; display: flex; align-items: center; gap: 14px; height: 54px;
         }
-
-        .back-btn {
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            transition: opacity 0.2s;
-        }
-        .back-btn:hover { opacity: 0.6; }
-
-        .sep { width: 1px; height: 22px; background: var(--border); flex-shrink: 0; }
-
-        .topbar-title {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.05rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: white;
-            text-transform: uppercase;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
+        .back-btn { color: var(--accent); text-decoration: none; font-size: 0.78rem; font-weight: 700; white-space: nowrap; flex-shrink: 0; transition: opacity .2s; }
+        .back-btn:hover { opacity: .6; }
+        .sep { width: 1px; height: 20px; background: #1e3a5f; flex-shrink: 0; }
+        .topbar-title { font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 2px; color: white; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
         .topbar-title span { color: var(--accent); }
-
-        .search-wrap {
-            position: relative;
-            flex-shrink: 0;
-            width: 200px;
-        }
-        .search-icon {
-            position: absolute;
-            left: 9px; top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            pointer-events: none;
-        }
-        .search-input {
-            width: 100%;
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: white;
-            padding: 6px 10px 6px 30px;
-            font-size: 0.8rem;
-            font-family: 'Inter', sans-serif;
-            outline: none;
-            transition: border-color 0.2s;
-        }
+        .search-wrap { position: relative; flex-shrink: 0; width: 200px; }
+        .search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: .8rem; color: #64748b; pointer-events: none; }
+        .search-input { width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: white; padding: 6px 10px 6px 30px; font-size: .8rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color .2s; }
         .search-input:focus { border-color: var(--accent); }
-        .search-input::placeholder { color: var(--text-dim); }
-
-        .filters {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            flex: 1;
-            min-width: 0;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
+        .search-input::placeholder { color: #64748b; }
+        .filters { display: flex; align-items: center; gap: 5px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
         .filters::-webkit-scrollbar { display: none; }
-
-        .f-btn {
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1.5px solid var(--border);
-            background: transparent;
-            color: var(--text-dim);
-            font-size: 0.73rem;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-            transition: all 0.15s;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
+        .f-btn { padding: 4px 12px; border-radius: 20px; border: 1.5px solid #334155; background: transparent; color: #94a3b8; font-size: .73rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
         .f-btn:hover { border-color: var(--accent); color: var(--accent); }
         .f-btn.all.active   { border-color: var(--accent); color: var(--accent); background: rgba(56,189,248,.08); }
         .f-btn.head.active  { border-color: #60a5fa; color: #60a5fa; background: rgba(96,165,250,.08); }
@@ -132,110 +53,76 @@
         .f-btn.arms.active  { border-color: var(--orange); color: var(--orange); background: rgba(249,115,22,.08); }
         .f-btn.legs.active  { border-color: #c084fc; color: #c084fc; background: rgba(192,132,252,.08); }
         .f-btn.burns.active { border-color: #f87171; color: #f87171; background: rgba(248,113,113,.08); }
-
-        .result-count { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; flex-shrink: 0; }
+        .result-count { font-size: .75rem; color: #64748b; white-space: nowrap; flex-shrink: 0; }
         .result-count strong { color: var(--accent); }
+        .calc-link { color: var(--orange); text-decoration: none; font-size: .75rem; font-weight: 700; white-space: nowrap; flex-shrink: 0; transition: opacity .2s; }
+        .calc-link:hover { opacity: .7; }
 
-        .calc-link {
-            color: var(--orange);
-            text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 700;
-            white-space: nowrap;
-            flex-shrink: 0;
-            transition: opacity 0.2s;
-        }
-        .calc-link:hover { opacity: 0.7; }
-
-        /* ============================================
-           MAIN
-           ============================================ */
+        /* ---- MAIN ---- */
         .main {
-            margin-top: 56px;
-            padding: 16px 20px 50px;
-            width: 100%;
+            margin-top: 54px;
+            padding: 20px 48px 50px;   /* marges latérales */
+            max-width: 1200px;          /* pas trop large */
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        /* Section header */
-        .sec-hd {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 24px 0 8px;
-        }
-        .sdot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-        .slabel {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-        .sline { flex: 1; height: 1px; opacity: 0.2; }
-        .scnt { font-size: 0.7rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; }
+        /* ---- SECTION HEADER ---- */
+        .sec-hd { display: flex; align-items: center; gap: 10px; margin: 28px 0 0; }
+        .sdot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .slabel { font-family: 'Rajdhani', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+        .sline { flex: 1; height: 1px; opacity: .25; }
+        .scnt { font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
 
-        .s-head  .sdot, .s-head  .sline { background: #60a5fa; }
-        .s-head  .slabel { color: #60a5fa; }
-        .s-head  .scnt { background: rgba(96,165,250,.1); color: #60a5fa; }
+        .s-head  .sdot,.s-head  .sline{background:#60a5fa}  .s-head  .slabel{color:#60a5fa} .s-head  .scnt{background:rgba(96,165,250,.12);color:#60a5fa}
+        .s-torso .sdot,.s-torso .sline{background:#34d399}  .s-torso .slabel{color:#34d399} .s-torso .scnt{background:rgba(52,211,153,.12);color:#34d399}
+        .s-arms  .sdot,.s-arms  .sline{background:var(--orange)} .s-arms  .slabel{color:var(--orange)} .s-arms  .scnt{background:rgba(249,115,22,.12);color:var(--orange)}
+        .s-legs  .sdot,.s-legs  .sline{background:#c084fc}  .s-legs  .slabel{color:#c084fc} .s-legs  .scnt{background:rgba(192,132,252,.12);color:#c084fc}
+        .s-burns .sdot,.s-burns .sline{background:#f87171}  .s-burns .slabel{color:#f87171} .s-burns .scnt{background:rgba(248,113,113,.12);color:#f87171}
 
-        .s-torso .sdot, .s-torso .sline { background: #34d399; }
-        .s-torso .slabel { color: #34d399; }
-        .s-torso .scnt { background: rgba(52,211,153,.1); color: #34d399; }
+        /* ---- TABLE wrapper ---- */
+        .twrap { border-radius: 8px; overflow: hidden; border: 1px solid #334155; margin-top: 8px; }
 
-        .s-arms  .sdot, .s-arms  .sline { background: var(--orange); }
-        .s-arms  .slabel { color: var(--orange); }
-        .s-arms  .scnt { background: rgba(249,115,22,.1); color: var(--orange); }
+        /* ---- TABLE — fond blanc pour les lignes ---- */
+        table { width: 100%; border-collapse: collapse; font-size: 0.83rem; table-layout: fixed; }
 
-        .s-legs  .sdot, .s-legs  .sline { background: #c084fc; }
-        .s-legs  .slabel { color: #c084fc; }
-        .s-legs  .scnt { background: rgba(192,132,252,.1); color: #c084fc; }
-
-        .s-burns .sdot, .s-burns .sline { background: #f87171; }
-        .s-burns .slabel { color: #f87171; }
-        .s-burns .scnt { background: rgba(248,113,113,.1); color: #f87171; }
-
-        /* Table */
-        .twrap { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
-
-        table { width: 100%; border-collapse: collapse; font-size: 0.81rem; table-layout: fixed; }
-
+        /* THEAD sombre avec texte clair */
         thead th {
-            background: var(--bg2);
-            padding: 9px 12px;
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 10px 14px;
             text-align: center;
             font-family: 'Rajdhani', sans-serif;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            border-bottom: 2px solid var(--border);
-            white-space: nowrap;
+            font-size: .74rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+            border-bottom: 2px solid #334155; white-space: nowrap;
         }
-        thead th:first-child { text-align: left; width: 17%; }
+        thead th:first-child { text-align: left; width: 18%; }
         thead th:nth-child(2), thead th:nth-child(3) { width: 9%; }
         thead th:nth-child(4), thead th:nth-child(5), thead th:nth-child(6) { width: 7%; }
         thead th:last-child { text-align: left; }
 
-        tbody tr { border-bottom: 1px solid rgba(30,58,95,.4); transition: background 0.12s; }
+        /* TBODY fond blanc = lisible */
+        tbody tr { background: #ffffff; border-bottom: 1px solid #e2e8f0; transition: background .1s; }
+        tbody tr:nth-child(even) { background: #f8fafc; }
         tbody tr:last-child { border-bottom: none; }
-        tbody tr:hover { background: rgba(56,189,248,.03); }
+        tbody tr:hover { background: #eff6ff; }
         tbody tr.hidden { display: none; }
 
-        td { padding: 9px 12px; color: var(--text); text-align: center; vertical-align: middle; }
-        td:first-child { text-align: left; font-weight: 500; color: white; }
-        td.tr { text-align: left; color: var(--text-dim); font-size: 0.78rem; font-style: italic; }
+        td { padding: 10px 14px; color: #1e293b; text-align: center; vertical-align: middle; }
+        td:first-child { text-align: left; font-weight: 600; color: #0f172a; }
+        td.tr { text-align: left; color: #475569; font-size: .79rem; }
 
-        .b { display: inline-block; background: rgba(56,189,248,.08); border: 1px solid rgba(56,189,248,.2); color: var(--accent); border-radius: 4px; padding: 2px 7px; font-weight: 600; font-size: 0.74rem; white-space: nowrap; }
-        .b.lg { background: rgba(249,115,22,.08); border-color: rgba(249,115,22,.2); color: var(--orange); }
-        .b.dash { background: transparent; border-color: transparent; color: var(--text-dim); }
+        /* Badges temps */
+        .b { display: inline-block; background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; border-radius: 4px; padding: 2px 8px; font-weight: 700; font-size: .74rem; white-space: nowrap; }
+        .b.lg { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
+        .b.dash { background: transparent; border-color: transparent; color: #94a3b8; }
 
-        .cy { color: var(--accent); }
-        .cn { color: var(--border); }
+        /* Coches */
+        .cy { color: #0284c7; font-size: 1rem; font-weight: 700; }
+        .cn { color: #cbd5e1; font-size: 1rem; }
 
         .sec-block.hidden { display: none; }
-
-        .empty { text-align: center; padding: 60px 20px; color: var(--text-dim); }
+        .empty { text-align: center; padding: 60px; color: #64748b; }
         .empty .ico { font-size: 2rem; margin-bottom: 8px; }
     </style>
 </head>
@@ -314,13 +201,13 @@
                 <tr data-d="luxation de l'épaule"><td>Luxation de l'épaule</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Remise en place de l'articulation + Attelle "Dujarier" + Antalgiques</td></tr>
                 <tr data-d="luxation du coude"><td>Luxation du coude</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Remise en place de l'articulation + Attelle "Dujarier" + Antalgiques</td></tr>
                 <tr data-d="luxation omoplate"><td>Luxation omoplate</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Remise en place de l'articulation + Attelle "Dujarier" + Antalgiques</td></tr>
-                <tr data-d="fracture de l'omoplate"><td>Fracture de l'omoplate</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque pour refixer l'os + Antalgiques + Attelle "Dujarier"</td></tr>
-                <tr data-d="fracture de la clavicule"><td>Fracture de la clavicule</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque pour refixer l'os + Antalgiques + Attelle "Dujarier"</td></tr>
-                <tr data-d="fracture avant-bras radius cubitus"><td>Fracture de l'avant-bras (Radius/Cubitus)</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
+                <tr data-d="fracture de l'omoplate"><td>Fracture de l'omoplate</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque + Antalgiques + Attelle "Dujarier"</td></tr>
+                <tr data-d="fracture de la clavicule"><td>Fracture de la clavicule</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque + Antalgiques + Attelle "Dujarier"</td></tr>
+                <tr data-d="fracture avant-bras radius cubitus"><td>Fracture avant-bras (Radius/Cubitus)</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
                 <tr data-d="fracture du bras humérus"><td>Fracture du bras (humérus)</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
                 <tr data-d="fracture des doigts de la main"><td>Fracture des doigts de la main</td><td><span class="b dash">/</span></td><td><span class="b dash">/</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Attelle grenouille + Antalgiques</td></tr>
                 <tr data-d="fracture du poignet"><td>Fracture du poignet</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
-                <tr data-d="section partielle doigts main"><td>Section partielle des doigts de la main</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Acte chirurgical : remise en place des doigts + suture + antiseptie + Attelle grenouille</td></tr>
+                <tr data-d="section partielle doigts main"><td>Section partielle des doigts de la main</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Acte chirurgical : remise en place + suture + antiseptie + Attelle grenouille</td></tr>
                 <tr data-d="plaie suturable bras"><td>Plaie suturable +3cm</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Suture + Antisepsie + bandage + antalgiques</td></tr>
             </tbody>
         </table></div>
@@ -332,10 +219,10 @@
         <div class="twrap"><table>
             <thead><tr><th>Diagnostic</th><th>Repos chambre</th><th>Récupération</th><th>🚗 Conduire</th><th>🏋️ Porter</th><th>🏃 Activité</th><th>Traitements</th></tr></thead>
             <tbody>
-                <tr data-d="rupture ligaments croisés"><td>Rupture des ligaments croisés</td><td><span class="b">10 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Suture des ligaments + Attelle de "Zimmer" + Antalgiques</td></tr>
-                <tr data-d="rupture ligaments latéraux"><td>Rupture des ligaments latéraux</td><td><span class="b">10 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Acte chirurgical : Suture des ligaments + Attelle de "Zimmer" + Antalgiques</td></tr>
-                <tr data-d="luxation du genou"><td>Luxation du genou</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Remise en place de l'articulation + Attelle de "Zimmer" + Antalgiques</td></tr>
-                <tr data-d="fracture du genou"><td>Fracture du genou</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque pour refixer l'os + Attelle de "Zimmer" + Antalgiques</td></tr>
+                <tr data-d="rupture ligaments croisés"><td>Rupture des ligaments croisés</td><td><span class="b">10 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Suture des ligaments + Attelle "Zimmer" + Antalgiques</td></tr>
+                <tr data-d="rupture ligaments latéraux"><td>Rupture des ligaments latéraux</td><td><span class="b">10 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Acte chirurgical : Suture des ligaments + Attelle "Zimmer" + Antalgiques</td></tr>
+                <tr data-d="luxation du genou"><td>Luxation du genou</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Remise en place de l'articulation + Attelle "Zimmer" + Antalgiques</td></tr>
+                <tr data-d="fracture du genou"><td>Fracture du genou</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque + Attelle "Zimmer" + Antalgiques</td></tr>
                 <tr data-d="fracture du fémur"><td>Fracture du fémur</td><td><span class="b">30 min</span></td><td><span class="b lg">4H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Mise en place d'un fixateur externe + Antalgiques</td></tr>
                 <tr data-d="fracture du bassin"><td>Fracture du bassin</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque + Antalgique + ceinture pelvienne</td></tr>
                 <tr data-d="fracture col du fémur"><td>Fracture du col du fémur</td><td><span class="b">10 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une prothèse de hanche + Antalgique</td></tr>
@@ -344,7 +231,7 @@
                 <tr data-d="fracture cheville"><td>Fracture cheville</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
                 <tr data-d="rupture tendon achille"><td>Rupture du tendon d'Achille</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Acte chirurgical : Suture du tendon + Antalgiques</td></tr>
                 <tr data-d="fracture du coccyx"><td>Fracture du coccyx</td><td><span class="b">30 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td class="tr">Acte chirurgical : Pose d'une plaque pour refixer l'os + Antalgiques</td></tr>
-                <tr data-d="section partielle doigts pied"><td>Section partielle des doigts du pied</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : remise en place des doigts + suture + antiseptie + Attelle grenouille</td></tr>
+                <tr data-d="section partielle doigts pied"><td>Section partielle des doigts du pied</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : remise en place + suture + antiseptie + Attelle grenouille</td></tr>
                 <tr data-d="fracture doigts de pied"><td>Fracture des doigts de pieds</td><td><span class="b dash">/</span></td><td><span class="b dash">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Antalgiques</td></tr>
                 <tr data-d="plaie suturable jambe"><td>Plaie suturable +3cm</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Suture + Antisepsie + bandage + antalgiques</td></tr>
                 <tr data-d="torsion testiculaire"><td>Torsion testiculaire</td><td><span class="b">15 min</span></td><td><span class="b">1H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Remettre la testicule à l'endroit</td></tr>
@@ -371,20 +258,17 @@
     </div>
 
     <div id="emptyState" class="empty" style="display:none;"><div class="ico">🔍</div><p>Aucun résultat trouvé</p></div>
-
 </div>
 
 <script>
     let af = 'all';
     document.getElementById('searchInput').addEventListener('input', function(){ run(this.value.trim().toLowerCase()); });
-
     function setFilter(f, btn) {
         af = f;
         document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         run(document.getElementById('searchInput').value.trim().toLowerCase());
     }
-
     function run(q) {
         const secs = ['head','torso','arms','legs','burns'];
         let tot = 0;

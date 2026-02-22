@@ -15,7 +15,6 @@
             --accent: #38bdf8;
             --orange: #f97316;
             --purple: #c084fc;
-            --green: #34d399;
             --text: #ccd6f6;
             --text-dim: #8892b0;
             --border: #1e3a5f;
@@ -32,308 +31,126 @@
             overflow-x: hidden;
         }
 
-        /* ============================================
-           TOPBAR
-           ============================================ */
+        /* ---- TOPBAR ---- */
         .topbar {
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 200;
             background: #0a192f;
             border-bottom: 2px solid var(--border);
-            padding: 0 20px;
+            padding: 0 24px;
             display: flex;
             align-items: center;
             gap: 14px;
-            height: 56px;
+            height: 54px;
         }
-
-        .back-btn {
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            transition: opacity 0.2s;
-        }
-        .back-btn:hover { opacity: 0.6; }
-
-        .sep { width: 1px; height: 22px; background: var(--border); flex-shrink: 0; }
-
-        .topbar-title {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.05rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: white;
-            text-transform: uppercase;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
+        .back-btn { color: var(--accent); text-decoration: none; font-size: 0.78rem; font-weight: 700; white-space: nowrap; flex-shrink: 0; transition: opacity .2s; }
+        .back-btn:hover { opacity: .6; }
+        .sep { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+        .topbar-title { font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 2px; color: white; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
         .topbar-title span { color: var(--accent); }
-
-        .topbar-right {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .diag-link {
-            color: #60a5fa;
-            text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 700;
-            white-space: nowrap;
-            transition: opacity 0.2s;
-        }
-        .diag-link:hover { opacity: 0.7; }
-
-        .total-pill {
-            background: rgba(56,189,248,.1);
-            border: 1px solid rgba(56,189,248,.3);
-            border-radius: 20px;
-            padding: 4px 14px;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--accent);
-            white-space: nowrap;
-        }
-
-        .btn-reset {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-dim);
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
+        .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+        .diag-link { color: #60a5fa; text-decoration: none; font-size: 0.75rem; font-weight: 700; white-space: nowrap; transition: opacity .2s; }
+        .diag-link:hover { opacity: .7; }
+        .total-pill { background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.3); border-radius: 20px; padding: 4px 16px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+        .btn-sm { padding: 5px 13px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; cursor: pointer; transition: all .15s; }
+        .btn-reset { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
         .btn-reset:hover { border-color: #f87171; color: #f87171; }
-
-        .btn-copy {
-            background: var(--accent);
-            border: none;
-            color: #0a192f;
-            padding: 5px 14px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            font-family: 'Rajdhani', sans-serif;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
+        .btn-copy { background: var(--accent); border: none; color: #0a192f; }
         .btn-copy:hover { background: #0ea5e9; }
 
-        /* ============================================
-           MAIN
-           ============================================ */
-        .main {
-            margin-top: 56px;
-            padding: 20px;
-            width: 100%;
-        }
-
-        /* Grille 4 colonnes */
-        .grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1.5fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        /* Colonne du milieu : 2 cartes empilées */
-        .col-mid { display: flex; flex-direction: column; gap: 16px; }
-
-        /* ---- CARD ---- */
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .card-hd {
-            padding: 11px 16px;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.88rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+        /* ---- PAGE WRAPPER — centré verticalement ---- */
+        .page {
+            min-height: 100vh;
+            padding-top: 54px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 8px;
+            justify-content: center;
         }
-        .card-hd.soins        { background: rgba(56,189,248,.07); color: var(--accent); border-bottom: 2px solid rgba(56,189,248,.2); }
-        .card-hd.imageries    { background: rgba(96,165,250,.07); color: #60a5fa;       border-bottom: 2px solid rgba(96,165,250,.2); }
-        .card-hd.transport    { background: rgba(192,132,252,.07); color: var(--purple); border-bottom: 2px solid rgba(192,132,252,.2); }
-        .card-hd.consultations{ background: rgba(249,115,22,.07); color: var(--orange); border-bottom: 2px solid rgba(249,115,22,.2); }
 
-        .card-sub {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
+        /* ---- CONTENU resserré avec marges ---- */
+        .inner {
+            width: 100%;
+            max-width: 1000px;   /* largeur max raisonnable */
+            padding: 32px 48px;  /* marges latérales généreuses */
         }
+
+        /* ---- GRILLE 2+1+1+1 ---- */
+        .grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr 0.8fr 1.4fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .col-mid { display: flex; flex-direction: column; gap: 14px; }
+
+        /* ---- CARD ---- */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        .card-hd {
+            padding: 10px 15px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .card-hd.soins         { background: rgba(56,189,248,.07);  color: var(--accent); border-bottom: 2px solid rgba(56,189,248,.2); }
+        .card-hd.imageries     { background: rgba(96,165,250,.07);  color: #60a5fa;       border-bottom: 2px solid rgba(96,165,250,.2); }
+        .card-hd.transport     { background: rgba(192,132,252,.07); color: var(--purple); border-bottom: 2px solid rgba(192,132,252,.2); }
+        .card-hd.consultations { background: rgba(249,115,22,.07);  color: var(--orange); border-bottom: 2px solid rgba(249,115,22,.2); }
+        .card-sub { font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 700; }
         .card-hd.soins .card-sub         { color: var(--accent); }
         .card-hd.imageries .card-sub     { color: #60a5fa; }
         .card-hd.transport .card-sub     { color: var(--purple); }
         .card-hd.consultations .card-sub { color: var(--orange); }
 
         /* ---- ITEM ---- */
-        .item {
-            display: flex;
-            align-items: center;
-            padding: 8px 16px;
-            gap: 10px;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.12s;
-            border-bottom: 1px solid rgba(30,58,95,.4);
-        }
+        .item { display: flex; align-items: center; padding: 8px 15px; gap: 10px; cursor: pointer; user-select: none; transition: background .12s; border-bottom: 1px solid rgba(30,58,95,.35); }
         .item:last-child { border-bottom: none; }
         .item:hover { background: rgba(255,255,255,.02); }
 
         .item input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 16px; height: 16px;
-            border: 1.5px solid var(--border);
-            border-radius: 3px;
-            background: var(--bg);
-            cursor: pointer;
-            flex-shrink: 0;
-            position: relative;
-            transition: all 0.12s;
+            appearance: none; -webkit-appearance: none;
+            width: 15px; height: 15px;
+            border: 1.5px solid var(--border); border-radius: 3px;
+            background: var(--bg); cursor: pointer; flex-shrink: 0; position: relative;
+            transition: all .12s;
         }
-        .item input[type="checkbox"]:checked {
-            background: var(--accent);
-            border-color: var(--accent);
-        }
-        .item input[type="checkbox"]:checked::after {
-            content: '✔';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 10px;
-            color: #0a192f;
-            font-weight: 900;
-        }
+        .item input:checked { background: var(--accent); border-color: var(--accent); }
+        .item input:checked::after { content:'✔'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:9px; color:#0a192f; font-weight:900; }
 
-        .item-lbl { flex: 1; font-size: 0.82rem; color: var(--text); }
-        .item-price {
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--text-dim);
-            white-space: nowrap;
-            transition: color 0.12s;
-        }
-
+        .item-lbl { flex: 1; font-size: 0.81rem; color: var(--text); line-height: 1.3; }
+        .item-price { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.88rem; color: var(--text-dim); white-space: nowrap; transition: color .12s; }
         .item:has(input:checked) .item-lbl   { color: white; }
         .item:has(input:checked) .item-price { color: var(--accent); }
 
-        /* ---- TOTAL BAND ---- */
+        /* ---- TOTAL ---- */
         .total-band {
             background: linear-gradient(135deg, #0a2540, #0d3460);
             border: 2px solid var(--accent);
             border-radius: 12px;
-            padding: 22px 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            box-shadow: 0 0 30px rgba(56,189,248,.08);
+            padding: 20px 28px;
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+            box-shadow: 0 0 24px rgba(56,189,248,.07);
         }
-
-        .total-label {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            letter-spacing: 3px;
-            color: white;
-            text-transform: uppercase;
-        }
-
-        .total-amount {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 2.6rem;
-            font-weight: 700;
-            color: var(--accent);
-            text-shadow: 0 0 16px rgba(56,189,248,.35);
-            letter-spacing: 2px;
-        }
+        .total-label { font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 3px; color: white; text-transform: uppercase; }
+        .total-amount { font-family: 'Rajdhani', sans-serif; font-size: 2.4rem; font-weight: 700; color: var(--accent); text-shadow: 0 0 14px rgba(56,189,248,.3); }
 
         /* ---- RÉSUMÉ ---- */
-        .summary {
-            margin-top: 14px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            display: none;
-        }
+        .summary { margin-top: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: none; }
         .summary.show { display: block; }
-        .summary-hd {
-            padding: 10px 16px;
-            background: rgba(56,189,248,.05);
-            border-bottom: 1px solid var(--border);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--accent);
-            text-transform: uppercase;
-        }
-        .summary-items {
-            padding: 10px 16px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .stag {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(56,189,248,.07);
-            border: 1px solid rgba(56,189,248,.18);
-            border-radius: 5px;
-            padding: 3px 9px;
-            font-size: 0.78rem;
-            color: var(--text);
-        }
+        .summary-hd { padding: 9px 15px; background: rgba(56,189,248,.05); border-bottom: 1px solid var(--border); font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; }
+        .summary-items { padding: 10px 15px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .stag { display: inline-flex; align-items: center; gap: 5px; background: rgba(56,189,248,.07); border: 1px solid rgba(56,189,248,.18); border-radius: 5px; padding: 3px 9px; font-size: 0.77rem; color: var(--text); }
         .stag strong { color: var(--accent); font-family: 'Rajdhani', sans-serif; }
 
         /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 24px; right: 24px;
-            background: var(--accent);
-            color: #0a192f;
-            font-weight: 700;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            padding: 10px 20px;
-            border-radius: 7px;
-            transform: translateY(60px);
-            opacity: 0;
-            transition: all 0.25s;
-            z-index: 999;
-        }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #0a192f; font-weight: 700; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; letter-spacing: 1px; padding: 10px 20px; border-radius: 7px; transform: translateY(60px); opacity: 0; transition: all .25s; z-index: 999; }
         .toast.show { transform: translateY(0); opacity: 1; }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 900px) {
             .grid { grid-template-columns: 1fr 1fr; }
+            .inner { padding: 20px 16px; }
         }
-        @media (max-width: 700px) {
+        @media (max-width: 600px) {
             .grid { grid-template-columns: 1fr; }
             .total-band { flex-direction: column; text-align: center; }
         }
@@ -341,7 +158,6 @@
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
     <a href="index.html" class="back-btn">← RETOUR</a>
     <div class="sep"></div>
@@ -350,71 +166,71 @@
         <a href="diagnostics.html" class="diag-link">📋 Diagnostics →</a>
         <div class="sep"></div>
         <div class="total-pill">Total : <span id="totalPill">0$</span></div>
-        <button class="btn-reset" onclick="resetAll()">↺ Réinitialiser</button>
-        <button class="btn-copy" onclick="copyTotal()">📋 Copier</button>
+        <button class="btn-sm btn-reset" onclick="resetAll()">↺ Réinitialiser</button>
+        <button class="btn-sm btn-copy" onclick="copyTotal()">📋 Copier</button>
     </div>
 </div>
 
-<!-- MAIN -->
-<div class="main">
-    <div class="grid">
+<div class="page">
+    <div class="inner">
+        <div class="grid">
 
-        <!-- SOINS -->
-        <div class="card">
-            <div class="card-hd soins">🏥 Soins<span class="card-sub" id="s-soins">0$</span></div>
-            <label class="item"><input type="checkbox" data-price="270" data-cat="soins" onchange="update()"><span class="item-lbl">Réanimation</span><span class="item-price">270$</span></label>
-            <label class="item"><input type="checkbox" data-price="250" data-cat="soins" onchange="update()"><span class="item-lbl">Soins</span><span class="item-price">250$</span></label>
-            <label class="item"><input type="checkbox" data-price="1070" data-cat="soins" onchange="update()"><span class="item-lbl">Chirurgie générale</span><span class="item-price">1070$</span></label>
-            <label class="item"><input type="checkbox" data-price="170" data-cat="soins" onchange="update()"><span class="item-lbl">Points de sutures</span><span class="item-price">170$</span></label>
-            <label class="item"><input type="checkbox" data-price="320" data-cat="soins" onchange="update()"><span class="item-lbl">Dispositif médical simple (attelle)</span><span class="item-price">320$</span></label>
-            <label class="item"><input type="checkbox" data-price="370" data-cat="soins" onchange="update()"><span class="item-lbl">Dispositif médical lourd (ex : plâtre)</span><span class="item-price">370$</span></label>
-            <label class="item"><input type="checkbox" data-price="2170" data-cat="soins" onchange="update()"><span class="item-lbl">Prothèses</span><span class="item-price">2170$</span></label>
-        </div>
-
-        <!-- IMAGERIES + TRANSPORT -->
-        <div class="col-mid">
+            <!-- SOINS -->
             <div class="card">
-                <div class="card-hd imageries">🔬 Imageries<span class="card-sub" id="s-imageries">0$</span></div>
-                <label class="item"><input type="checkbox" data-price="160" data-cat="imageries" onchange="update()"><span class="item-lbl">Radiographie Membre</span><span class="item-price">160$</span></label>
-                <label class="item"><input type="checkbox" data-price="140" data-cat="imageries" onchange="update()"><span class="item-lbl">Scanner</span><span class="item-price">140$</span></label>
-                <label class="item"><input type="checkbox" data-price="370" data-cat="imageries" onchange="update()"><span class="item-lbl">IRM</span><span class="item-price">370$</span></label>
-                <label class="item"><input type="checkbox" data-price="240" data-cat="imageries" onchange="update()"><span class="item-lbl">Échographie</span><span class="item-price">240$</span></label>
+                <div class="card-hd soins">🏥 Soins<span class="card-sub" id="s-soins">0$</span></div>
+                <label class="item"><input type="checkbox" data-price="270"  data-cat="soins" onchange="update()"><span class="item-lbl">Réanimation</span><span class="item-price">270$</span></label>
+                <label class="item"><input type="checkbox" data-price="250"  data-cat="soins" onchange="update()"><span class="item-lbl">Soins</span><span class="item-price">250$</span></label>
+                <label class="item"><input type="checkbox" data-price="1070" data-cat="soins" onchange="update()"><span class="item-lbl">Chirurgie générale</span><span class="item-price">1070$</span></label>
+                <label class="item"><input type="checkbox" data-price="170"  data-cat="soins" onchange="update()"><span class="item-lbl">Points de sutures</span><span class="item-price">170$</span></label>
+                <label class="item"><input type="checkbox" data-price="320"  data-cat="soins" onchange="update()"><span class="item-lbl">Dispositif médical simple (attelle)</span><span class="item-price">320$</span></label>
+                <label class="item"><input type="checkbox" data-price="370"  data-cat="soins" onchange="update()"><span class="item-lbl">Dispositif médical lourd (plâtre)</span><span class="item-price">370$</span></label>
+                <label class="item"><input type="checkbox" data-price="2170" data-cat="soins" onchange="update()"><span class="item-lbl">Prothèses</span><span class="item-price">2170$</span></label>
             </div>
+
+            <!-- IMAGERIES + TRANSPORT -->
+            <div class="col-mid">
+                <div class="card">
+                    <div class="card-hd imageries">🔬 Imageries<span class="card-sub" id="s-imageries">0$</span></div>
+                    <label class="item"><input type="checkbox" data-price="160" data-cat="imageries" onchange="update()"><span class="item-lbl">Radiographie Membre</span><span class="item-price">160$</span></label>
+                    <label class="item"><input type="checkbox" data-price="140" data-cat="imageries" onchange="update()"><span class="item-lbl">Scanner</span><span class="item-price">140$</span></label>
+                    <label class="item"><input type="checkbox" data-price="370" data-cat="imageries" onchange="update()"><span class="item-lbl">IRM</span><span class="item-price">370$</span></label>
+                    <label class="item"><input type="checkbox" data-price="240" data-cat="imageries" onchange="update()"><span class="item-lbl">Échographie</span><span class="item-price">240$</span></label>
+                </div>
+                <div class="card">
+                    <div class="card-hd transport">🚑 Transport<span class="card-sub" id="s-transport">0$</span></div>
+                    <label class="item"><input type="checkbox" data-price="70"  data-cat="transport" onchange="update()"><span class="item-lbl">Ambulance</span><span class="item-price">70$</span></label>
+                    <label class="item"><input type="checkbox" data-price="970" data-cat="transport" onchange="update()"><span class="item-lbl">Intervention hélicoptère</span><span class="item-price">970$</span></label>
+                </div>
+            </div>
+
+            <!-- CONSULTATIONS -->
             <div class="card">
-                <div class="card-hd transport">🚑 Transport<span class="card-sub" id="s-transport">0$</span></div>
-                <label class="item"><input type="checkbox" data-price="70" data-cat="transport" onchange="update()"><span class="item-lbl">Transport ambulance</span><span class="item-price">70$</span></label>
-                <label class="item"><input type="checkbox" data-price="970" data-cat="transport" onchange="update()"><span class="item-lbl">Intervention hélicoptère</span><span class="item-price">970$</span></label>
+                <div class="card-hd consultations">📋 Consultations<span class="card-sub" id="s-consultations">0$</span></div>
+                <label class="item"><input type="checkbox" data-price="450"  data-cat="consultations" onchange="update()"><span class="item-lbl">Aptitude travail (VMT)</span><span class="item-price">450$</span></label>
+                <label class="item"><input type="checkbox" data-price="3000" data-cat="consultations" onchange="update()"><span class="item-lbl">Aptitude PPA</span><span class="item-price">3000$</span></label>
+                <label class="item"><input type="checkbox" data-price="280"  data-cat="consultations" onchange="update()"><span class="item-lbl">Psychologue</span><span class="item-price">280$</span></label>
+                <label class="item"><input type="checkbox" data-price="220"  data-cat="consultations" onchange="update()"><span class="item-lbl">Kiné</span><span class="item-price">220$</span></label>
+                <label class="item"><input type="checkbox" data-price="180"  data-cat="consultations" onchange="update()"><span class="item-lbl">Médecine générale</span><span class="item-price">180$</span></label>
+                <label class="item"><input type="checkbox" data-price="180"  data-cat="consultations" onchange="update()"><span class="item-lbl">Gynécologie</span><span class="item-price">180$</span></label>
+                <label class="item"><input type="checkbox" data-price="120"  data-cat="consultations" onchange="update()"><span class="item-lbl">Laboratoire</span><span class="item-price">120$</span></label>
+            </div>
+
+        </div>
+
+        <!-- TOTAL -->
+        <div class="total-band">
+            <div class="total-label">Total pour facture</div>
+            <div class="total-amount" id="totalAmount">0$</div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn-sm btn-reset" onclick="resetAll()">↺ Réinitialiser</button>
+                <button class="btn-sm btn-copy" onclick="copyTotal()">📋 Copier le total</button>
             </div>
         </div>
 
-        <!-- CONSULTATIONS -->
-        <div class="card">
-            <div class="card-hd consultations">📋 Consultations<span class="card-sub" id="s-consultations">0$</span></div>
-            <label class="item"><input type="checkbox" data-price="450" data-cat="consultations" onchange="update()"><span class="item-lbl">Certificat d'aptitude travail (VMT)</span><span class="item-price">450$</span></label>
-            <label class="item"><input type="checkbox" data-price="3000" data-cat="consultations" onchange="update()"><span class="item-lbl">Certificat d'aptitude PPA</span><span class="item-price">3000$</span></label>
-            <label class="item"><input type="checkbox" data-price="280" data-cat="consultations" onchange="update()"><span class="item-lbl">Psychologue</span><span class="item-price">280$</span></label>
-            <label class="item"><input type="checkbox" data-price="220" data-cat="consultations" onchange="update()"><span class="item-lbl">Kiné</span><span class="item-price">220$</span></label>
-            <label class="item"><input type="checkbox" data-price="180" data-cat="consultations" onchange="update()"><span class="item-lbl">Médecine générale</span><span class="item-price">180$</span></label>
-            <label class="item"><input type="checkbox" data-price="180" data-cat="consultations" onchange="update()"><span class="item-lbl">Gynécologie</span><span class="item-price">180$</span></label>
-            <label class="item"><input type="checkbox" data-price="120" data-cat="consultations" onchange="update()"><span class="item-lbl">Laboratoire</span><span class="item-price">120$</span></label>
+        <div class="summary" id="summary">
+            <div class="summary-hd">📄 Récapitulatif</div>
+            <div class="summary-items" id="summaryItems"></div>
         </div>
-
-    </div>
-
-    <!-- TOTAL -->
-    <div class="total-band">
-        <div class="total-label">Total pour facture</div>
-        <div class="total-amount" id="totalAmount">0$</div>
-        <div style="display:flex;gap:10px;align-items:center;">
-            <button class="btn-reset" onclick="resetAll()">↺ Réinitialiser</button>
-            <button class="btn-copy" onclick="copyTotal()">📋 Copier le total</button>
-        </div>
-    </div>
-
-    <!-- RÉSUMÉ -->
-    <div class="summary" id="summary">
-        <div class="summary-hd">📄 Récapitulatif</div>
-        <div class="summary-items" id="summaryItems"></div>
     </div>
 </div>
 
@@ -423,39 +239,26 @@
 <script>
     function update() {
         const cats = ['soins','imageries','transport','consultations'];
-        let grand = 0;
-        const sel = [];
-
+        let grand = 0; const sel = [];
         cats.forEach(cat => {
             let sub = 0;
             document.querySelectorAll(`input[data-cat="${cat}"]:checked`).forEach(cb => {
-                const p = parseInt(cb.dataset.price);
-                sub += p; grand += p;
+                const p = parseInt(cb.dataset.price); sub += p; grand += p;
                 sel.push({ l: cb.closest('.item').querySelector('.item-lbl').textContent, p });
             });
             document.getElementById('s-' + cat).textContent = sub + '$';
         });
-
         document.getElementById('totalAmount').textContent = grand + '$';
         document.getElementById('totalPill').textContent = grand + '$';
-
-        const sumEl = document.getElementById('summary');
-        const items = document.getElementById('summaryItems');
-        if (sel.length === 0) { sumEl.classList.remove('show'); return; }
-        sumEl.classList.add('show');
-        items.innerHTML = sel.map(s => `<div class="stag">${s.l} — <strong>${s.p}$</strong></div>`).join('');
+        const s = document.getElementById('summary');
+        if (!sel.length) { s.classList.remove('show'); return; }
+        s.classList.add('show');
+        document.getElementById('summaryItems').innerHTML = sel.map(x => `<div class="stag">${x.l} — <strong>${x.p}$</strong></div>`).join('');
     }
-
-    function resetAll() {
-        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-        update();
-    }
-
+    function resetAll() { document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); update(); }
     function copyTotal() {
         navigator.clipboard.writeText(document.getElementById('totalAmount').textContent).then(() => {
-            const t = document.getElementById('toast');
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2200);
+            const t = document.getElementById('toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200);
         });
     }
 </script>
