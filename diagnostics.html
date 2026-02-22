@@ -3,293 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMC - Diagnostics & Soins</title>
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="patch-daltonien.css">
+    <title>OMC — Diagnostics & Soins</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg-page:   #0f172a;   /* fond page sombre */
-            --bg-topbar: #0a192f;
-            --bg-table:  #1e293b;   /* fond tableau : plus clair = plus lisible */
-            --bg-row:    #ffffff;   /* lignes blanches */
-            --bg-row-alt:#f8fafc;   /* lignes alternées très légèrement grises */
-            --bg-head:   #1e293b;   /* thead sombre */
-            --accent:    #38bdf8;
-            --orange:    #f97316;
-            --text-row:  #0f172a;   /* texte des lignes : NOIR sur fond blanc */
-            --text-dim:  #64748b;
-            --border:    #e2e8f0;   /* bordures claires sur fond blanc */
-            --border-dark: #334155;
+            --bg:    #0f172a;
+            --nav:   #0a192f;
+            --acc:   #38bdf8;
+            --org:   #f97316;
+            --dimtx: #64748b;
+            --bord:  #1e3a5f;
+            /* tableau fond blanc */
+            --tw: #ffffff; --ta: #f8fafc; --th: #eff6ff;
+            --td: #0f172a; --ts: #475569;
+            --bl: #e2e8f0;          /* border ligne */
+            --bs: #334155;          /* border section (sombre) */
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg-page); color: #f1f5f9; overflow-x: hidden; }
+        html, body {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg); color: #f1f5f9;
+        }
+        body { overflow-y: auto; overflow-x: hidden; }
 
-        /* ---- TOPBAR ---- */
+        /* ─── TOPBAR ─── */
         .topbar {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-            background: var(--bg-topbar); border-bottom: 2px solid #1e3a5f;
-            padding: 0 20px; display: flex; align-items: center; gap: 14px; height: 54px;
+            position: sticky; top: 0; z-index: 50;
+            background: var(--nav); border-bottom: 2px solid var(--bord);
+            height: 52px; padding: 0 20px;
+            display: flex; align-items: center; gap: 12px;
         }
-        .back-btn { color: var(--accent); text-decoration: none; font-size: 0.78rem; font-weight: 700; white-space: nowrap; flex-shrink: 0; transition: opacity .2s; }
-        .back-btn:hover { opacity: .6; }
-        .sep { width: 1px; height: 20px; background: #1e3a5f; flex-shrink: 0; }
-        .topbar-title { font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 2px; color: white; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
-        .topbar-title span { color: var(--accent); }
-        .search-wrap { position: relative; flex-shrink: 0; width: 200px; }
-        .search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: .8rem; color: #64748b; pointer-events: none; }
-        .search-input { width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: white; padding: 6px 10px 6px 30px; font-size: .8rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color .2s; }
-        .search-input:focus { border-color: var(--accent); }
-        .search-input::placeholder { color: #64748b; }
+        .back  { color: var(--acc); text-decoration: none; font-size: .78rem; font-weight: 700; white-space: nowrap; transition: opacity .2s; }
+        .back:hover { opacity: .6; }
+        .vs    { width: 1px; height: 20px; background: var(--bord); flex-shrink: 0; }
+        .ttl   { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; white-space: nowrap; flex-shrink: 0; }
+        .ttl em { color: var(--acc); font-style: normal; }
+        .sw    { position: relative; width: 200px; flex-shrink: 0; }
+        .si    { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: .8rem; color: var(--dimtx); pointer-events: none; }
+        .sinp  { width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #fff; padding: 6px 10px 6px 30px; font-size: .8rem; font-family: 'Inter', sans-serif; outline: none; }
+        .sinp:focus { border-color: var(--acc); }
+        .sinp::placeholder { color: var(--dimtx); }
         .filters { display: flex; align-items: center; gap: 5px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
         .filters::-webkit-scrollbar { display: none; }
-        .f-btn { padding: 4px 12px; border-radius: 20px; border: 1.5px solid #334155; background: transparent; color: #94a3b8; font-size: .73rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
-        .f-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .f-btn.all.active   { border-color: var(--accent); color: var(--accent); background: rgba(56,189,248,.08); }
-        .f-btn.head.active  { border-color: #60a5fa; color: #60a5fa; background: rgba(96,165,250,.08); }
-        .f-btn.torso.active { border-color: #34d399; color: #34d399; background: rgba(52,211,153,.08); }
-        .f-btn.arms.active  { border-color: var(--orange); color: var(--orange); background: rgba(249,115,22,.08); }
-        .f-btn.legs.active  { border-color: #c084fc; color: #c084fc; background: rgba(192,132,252,.08); }
-        .f-btn.burns.active { border-color: #f87171; color: #f87171; background: rgba(248,113,113,.08); }
-        .result-count { font-size: .75rem; color: #64748b; white-space: nowrap; flex-shrink: 0; }
-        .result-count strong { color: var(--accent); }
-        .calc-link { color: var(--orange); text-decoration: none; font-size: .75rem; font-weight: 700; white-space: nowrap; flex-shrink: 0; transition: opacity .2s; }
-        .calc-link:hover { opacity: .7; }
+        .fb    { padding: 4px 12px; border-radius: 20px; border: 1.5px solid #334155; background: transparent; color: #94a3b8; font-size: .72rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
+        .fb:hover { border-color: var(--acc); color: var(--acc); }
+        .fb.all.on   { border-color: var(--acc); color: var(--acc); background: rgba(56,189,248,.08); }
+        .fb.head.on  { border-color: #60a5fa; color: #60a5fa; background: rgba(96,165,250,.08); }
+        .fb.torso.on { border-color: #34d399; color: #34d399; background: rgba(52,211,153,.08); }
+        .fb.arms.on  { border-color: var(--org); color: var(--org); background: rgba(249,115,22,.08); }
+        .fb.legs.on  { border-color: #c084fc; color: #c084fc; background: rgba(192,132,252,.08); }
+        .fb.burns.on { border-color: #f87171; color: #f87171; background: rgba(248,113,113,.08); }
+        .rc    { font-size: .75rem; color: var(--dimtx); white-space: nowrap; flex-shrink: 0; }
+        .rc b  { color: var(--acc); }
+        .cl    { color: var(--org); text-decoration: none; font-size: .75rem; font-weight: 700; white-space: nowrap; flex-shrink: 0; transition: opacity .2s; }
+        .cl:hover { opacity: .7; }
 
-        /* ---- MAIN ---- */
-        .main {
-            margin-top: 54px;
-            padding: 20px 48px 50px;   /* marges latérales */
-            max-width: 1200px;          /* pas trop large */
-            margin-left: auto;
-            margin-right: auto;
+        /* ─── MAIN ─── */
+        .main { max-width: 1140px; margin: 0 auto; padding: 28px 36px 70px; }
+
+        /* ─── LÉGENDE ─── */
+        .legend {
+            display: flex; justify-content: flex-end; gap: 16px;
+            margin-bottom: 10px; flex-wrap: wrap;
+            font-size: .73rem; color: var(--dimtx);
         }
+        .lg-item { display: flex; align-items: center; gap: 5px; }
+        .lbadge  { display: inline-block; border-radius: 4px; padding: 2px 7px; font-weight: 700; font-size: .68rem; }
+        .lb-r { background: #dbeafe; border: 1px solid #93c5fd; color: #1d4ed8; }
+        .lb-t { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; }
+        .lb-l { background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; }
 
-        /* ---- SECTION HEADER ---- */
-        .sec-hd { display: flex; align-items: center; gap: 10px; margin: 28px 0 0; }
-        .sdot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-        .slabel { font-family: 'Rajdhani', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
-        .sline { flex: 1; height: 1px; opacity: .25; }
-        .scnt { font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+        /* ─── SECTION HEADER ─── */
+        .sh  { display: flex; align-items: center; gap: 10px; margin: 32px 0 10px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .lbl { font-family: 'Rajdhani', sans-serif; font-size: .9rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+        .ln  { flex: 1; height: 1px; opacity: .2; }
+        .cnt { font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
 
-        .s-head  .sdot,.s-head  .sline{background:#60a5fa}  .s-head  .slabel{color:#60a5fa} .s-head  .scnt{background:rgba(96,165,250,.12);color:#60a5fa}
-        .s-torso .sdot,.s-torso .sline{background:#34d399}  .s-torso .slabel{color:#34d399} .s-torso .scnt{background:rgba(52,211,153,.12);color:#34d399}
-        .s-arms  .sdot,.s-arms  .sline{background:var(--orange)} .s-arms  .slabel{color:var(--orange)} .s-arms  .scnt{background:rgba(249,115,22,.12);color:var(--orange)}
-        .s-legs  .sdot,.s-legs  .sline{background:#c084fc}  .s-legs  .slabel{color:#c084fc} .s-legs  .scnt{background:rgba(192,132,252,.12);color:#c084fc}
-        .s-burns .sdot,.s-burns .sline{background:#f87171}  .s-burns .slabel{color:#f87171} .s-burns .scnt{background:rgba(248,113,113,.12);color:#f87171}
+        .s-head  .dot,.s-head  .ln { background:#60a5fa } .s-head  .lbl { color:#60a5fa } .s-head  .cnt { background:rgba(96,165,250,.12);  color:#60a5fa }
+        .s-torso .dot,.s-torso .ln { background:#34d399 } .s-torso .lbl { color:#34d399 } .s-torso .cnt { background:rgba(52,211,153,.12);  color:#34d399 }
+        .s-arms  .dot,.s-arms  .ln { background:var(--org) } .s-arms  .lbl { color:var(--org) } .s-arms  .cnt { background:rgba(249,115,22,.12); color:var(--org) }
+        .s-legs  .dot,.s-legs  .ln { background:#c084fc } .s-legs  .lbl { color:#c084fc } .s-legs  .cnt { background:rgba(192,132,252,.12);  color:#c084fc }
+        .s-burns .dot,.s-burns .ln { background:#f87171 } .s-burns .lbl { color:#f87171 } .s-burns .cnt { background:rgba(248,113,113,.12); color:#f87171 }
 
-        /* ---- TABLE wrapper ---- */
-        .twrap { border-radius: 8px; overflow: hidden; border: 1px solid #334155; margin-top: 8px; }
+        /* ─── TABLE ─── */
+        .tw  { border-radius: 8px; overflow: hidden; border: 1px solid var(--bs); }
+        table { width: 100%; border-collapse: collapse; font-size: .83rem; }
 
-        /* ---- TABLE — fond blanc pour les lignes ---- */
-        table { width: 100%; border-collapse: collapse; font-size: 0.83rem; table-layout: fixed; }
+        /* colgroup widths */
+        col.c0 { width: 17%; }
+        col.c1 { width: 11%; }  /* repos */
+        col.c2 { width: 11%; }  /* récup */
+        col.c3, col.c4, col.c5 { width: 6%; }
+        col.c6 { width: auto; }
 
-        /* THEAD sombre avec texte clair */
         thead th {
-            background: #1e293b;
-            color: #94a3b8;
-            padding: 10px 14px;
-            text-align: center;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: .74rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+            background: #1e293b; color: #94a3b8;
+            padding: 10px 12px; text-align: center;
+            font-family: 'Rajdhani', sans-serif; font-size: .7rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
             border-bottom: 2px solid #334155; white-space: nowrap;
         }
-        thead th:first-child { text-align: left; width: 18%; }
-        thead th:nth-child(2), thead th:nth-child(3) { width: 9%; }
-        thead th:nth-child(4), thead th:nth-child(5), thead th:nth-child(6) { width: 7%; }
-        thead th:last-child { text-align: left; }
+        thead th:first-child { text-align: left; }
+        thead th:last-child  { text-align: left; }
 
-        /* TBODY fond blanc = lisible */
-        tbody tr { background: #ffffff; border-bottom: 1px solid #e2e8f0; transition: background .1s; }
-        tbody tr:nth-child(even) { background: #f8fafc; }
+        /* séparateur fort entre repos et récup */
+        thead th.sep-r { border-right: 3px solid #475569; }
+        td.sep-r        { border-right: 3px solid #e2e8f0; }
+
+        /* colonnes repos = fond bleuté doux pour bien les distinguer */
+        thead th.col-r  { background: #1a3050; color: #93c5fd; border-bottom: 2px solid #2d4a70; }
+        td.col-r        { background: rgba(219,234,254,.08); }
+
+        tbody tr { background: var(--tw); border-bottom: 1px solid var(--bl); transition: background .1s; }
+        tbody tr:nth-child(even) { background: var(--ta); }
+        tbody tr:hover { background: var(--th); }
         tbody tr:last-child { border-bottom: none; }
-        tbody tr:hover { background: #eff6ff; }
         tbody tr.hidden { display: none; }
 
-        td { padding: 10px 14px; color: #1e293b; text-align: center; vertical-align: middle; }
-        td:first-child { text-align: left; font-weight: 600; color: #0f172a; }
-        td.tr { text-align: left; color: #475569; font-size: .79rem; }
+        td { padding: 11px 12px; color: var(--td); text-align: center; vertical-align: middle; }
+        td:first-child { text-align: left; font-weight: 600; }
+        td.trait { text-align: left; color: var(--ts); font-size: .78rem; }
 
-        /* Badges temps */
-        .b { display: inline-block; background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; border-radius: 4px; padding: 2px 8px; font-weight: 700; font-size: .74rem; white-space: nowrap; }
-        .b.lg { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
-        .b.dash { background: transparent; border-color: transparent; color: #94a3b8; }
+        /* ─── BADGES ─── */
+        .b  { display: inline-block; border-radius: 5px; padding: 3px 9px; font-weight: 700; font-size: .74rem; white-space: nowrap; min-width: 48px; text-align: center; }
+        .br { background: #dbeafe; border: 1px solid #93c5fd; color: #1d4ed8; }   /* repos : bleu */
+        .bt { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; }   /* récup : jaune */
+        .bl { background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; }   /* long  : orange */
+        .bd { background: transparent; border: none; color: #94a3b8; font-weight: 400; font-size: .85rem; }
 
-        /* Coches */
         .cy { color: #0284c7; font-size: 1rem; font-weight: 700; }
-        .cn { color: #cbd5e1; font-size: 1rem; }
+        .cn { color: #cbd5e1; font-size: .95rem; }
 
-        .sec-block.hidden { display: none; }
-        .empty { text-align: center; padding: 60px; color: #64748b; }
+        .sb.hidden { display: none; }
+        .empty { text-align: center; padding: 60px; color: var(--dimtx); }
         .empty .ico { font-size: 2rem; margin-bottom: 8px; }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 768px) {
+            .main { padding: 16px 12px 50px; }
+            table { font-size: .74rem; }
+            td, thead th { padding: 8px 8px; }
+            .ttl { display: none; }
+            .tw { overflow-x: auto; display: block; }
+        }
     </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
-    <a href="index.html" class="back-btn">← RETOUR</a>
-    <div class="sep"></div>
-    <div class="topbar-title"><span>OMC</span> — DIAGNOSTICS &amp; SOINS</div>
-    <div class="sep"></div>
-    <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" id="searchInput" placeholder="Rechercher…" autocomplete="off">
+    <a href="index.html" class="back">← RETOUR</a>
+    <div class="vs"></div>
+    <div class="ttl"><em>OMC</em> — DIAGNOSTICS &amp; SOINS</div>
+    <div class="vs"></div>
+    <div class="sw">
+        <span class="si">🔍</span>
+        <input type="text" class="sinp" id="q" placeholder="Rechercher…" autocomplete="off" oninput="run()">
     </div>
     <div class="filters">
-        <button class="f-btn all active" onclick="setFilter('all',this)">Tout</button>
-        <button class="f-btn head"       onclick="setFilter('head',this)">🧠 Tête</button>
-        <button class="f-btn torso"      onclick="setFilter('torso',this)">🫁 Thorax / Abdomen</button>
-        <button class="f-btn arms"       onclick="setFilter('arms',this)">💪 Épaules / Bras</button>
-        <button class="f-btn legs"       onclick="setFilter('legs',this)">🦵 Bassin / Jambes</button>
-        <button class="f-btn burns"      onclick="setFilter('burns',this)">🔥 Brûlures &amp; Autres</button>
+        <button class="fb all on"   onclick="sf('all',this)">Tout</button>
+        <button class="fb head"     onclick="sf('head',this)">🧠 Tête</button>
+        <button class="fb torso"    onclick="sf('torso',this)">🫁 Thorax / Abdomen</button>
+        <button class="fb arms"     onclick="sf('arms',this)">💪 Épaules / Bras</button>
+        <button class="fb legs"     onclick="sf('legs',this)">🦵 Bassin / Jambes</button>
+        <button class="fb burns"    onclick="sf('burns',this)">🔥 Brûlures &amp; Autres</button>
     </div>
-    <div class="result-count" id="rc"></div>
-    <a href="calculatrice.html" class="calc-link">💰 Calculatrice →</a>
+    <div class="rc" id="rc"></div>
+    <a href="calculatrice.html" class="cl">💰 Calculatrice →</a>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
+    <!-- Légende couleurs -->
+    <div class="legend">
+        <div class="lg-item"><span class="lbadge lb-r">1H</span> Repos en chambre</div>
+        <div class="lg-item"><span class="lbadge lb-t">2H</span> Récupération</div>
+        <div class="lg-item"><span class="lbadge lb-l">18H</span> Récupération longue</div>
+    </div>
+
+    <!-- Macro pour répéter le thead proprement -->
+
     <!-- TÊTE -->
-    <div class="sec-block" data-section="head">
-        <div class="sec-hd s-head"><div class="sdot"></div><div class="slabel">Tête</div><div class="sline"></div><div class="scnt" id="c-head"></div></div>
-        <div class="twrap"><table>
-            <thead><tr><th>Diagnostic</th><th>Repos chambre</th><th>Récupération</th><th>🚗 Conduire</th><th>🏋️ Porter</th><th>🏃 Activité</th><th>Traitements</th></tr></thead>
+    <div class="sb" data-s="head">
+        <div class="sh s-head"><div class="dot"></div><div class="lbl">Tête</div><div class="ln"></div><div class="cnt" id="c-head"></div></div>
+        <div class="tw"><table>
+            <colgroup><col class="c0"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"></colgroup>
+            <thead><tr>
+                <th>Diagnostic</th>
+                <th class="col-r sep-r">🛏 Repos chambre</th>
+                <th>⏱ Récupération</th>
+                <th>🚗</th><th>🏋</th><th>🏃</th>
+                <th>Traitements</th>
+            </tr></thead>
             <tbody>
-                <tr data-d="hémorragie intracrânienne"><td>Hémorragie intracrânienne</td><td><span class="b">1H</span></td><td><span class="b lg">24H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte neurochirurgical (ablation de l'hématome intracérébral)</td></tr>
-                <tr data-d="avc"><td>AVC</td><td><span class="b">1H</span></td><td><span class="b lg">12H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Médicament anticoagulants</td></tr>
-                <tr data-d="commotion cérébrale"><td>Commotion cérébrale</td><td><span class="b">10 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Repos complet + médicaments antalgiques</td></tr>
-                <tr data-d="méningite"><td>Méningite</td><td><span class="b">15 min</span></td><td><span class="b">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Antalgiques + antibiotiques</td></tr>
-                <tr data-d="fracture du crâne"><td>Fracture du crâne</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical, fixer l'os cassé avec une plaque</td></tr>
-                <tr data-d="fracture de la mâchoire"><td>Fracture de la mâchoire</td><td><span class="b">10 min</span></td><td><span class="b dash">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Remise en place de la mâchoire + antalgiques</td></tr>
-                <tr data-d="lacération oculaire"><td>Lacération oculaire</td><td><span class="b">10 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Prescription de médicaments antalgiques + couvrir l'œil</td></tr>
-                <tr data-d="plaie suturable tête"><td>Plaie suturable +3cm</td><td><span class="b dash">/</span></td><td><span class="b dash">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Suture + Antisepsie + bandage + antalgiques</td></tr>
-                <tr data-d="fracture du nez"><td>Fracture du nez</td><td><span class="b dash">/</span></td><td><span class="b dash">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Remise en place du nez + Antalgiques</td></tr>
-                <tr data-d="perforation du tympan"><td>Perforation du tympan</td><td><span class="b">10 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Antibiotiques auriculaires (gouttes) + Antalgiques</td></tr>
+<tr data-d="hémorragie intracrânienne"><td>Hémorragie intracrânienne</td><td class="col-r sep-r"><span class="b br">1H</span></td><td><span class="b bl">24H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Acte neurochirurgical (ablation de l'hématome intracérébral)</td></tr>
+<tr data-d="avc"><td>AVC</td><td class="col-r sep-r"><span class="b br">1H</span></td><td><span class="b bl">12H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Médicament anticoagulants</td></tr>
+<tr data-d="commotion cérébrale"><td>Commotion cérébrale</td><td class="col-r sep-r"><span class="b br">10 min</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Repos complet + médicaments antalgiques</td></tr>
+<tr data-d="méningite"><td>Méningite</td><td class="col-r sep-r"><span class="b br">15 min</span></td><td><span class="b bt">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Antalgiques + antibiotiques</td></tr>
+<tr data-d="fracture du crâne"><td>Fracture du crâne</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bt">2H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Acte chirurgical, fixer l'os cassé avec une plaque</td></tr>
+<tr data-d="fracture de la mâchoire"><td>Fracture de la mâchoire</td><td class="col-r sep-r"><span class="b br">10 min</span></td><td><span class="b bd">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Remise en place de la mâchoire + antalgiques</td></tr>
+<tr data-d="lacération oculaire"><td>Lacération oculaire</td><td class="col-r sep-r"><span class="b br">10 min</span></td><td><span class="b bt">2H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Prescription médicaments antalgiques + couvrir l'œil</td></tr>
+<tr data-d="plaie suturable tête"><td>Plaie suturable +3cm</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bd">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Suture + Antisepsie + bandage + antalgiques</td></tr>
+<tr data-d="fracture du nez"><td>Fracture du nez</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bd">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Remise en place du nez + Antalgiques</td></tr>
+<tr data-d="perforation du tympan"><td>Perforation du tympan</td><td class="col-r sep-r"><span class="b br">10 min</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Antibiotiques auriculaires (gouttes) + Antalgiques</td></tr>
             </tbody>
         </table></div>
     </div>
 
     <!-- THORAX -->
-    <div class="sec-block" data-section="torso">
-        <div class="sec-hd s-torso"><div class="sdot"></div><div class="slabel">Cou, Thorax, Abdomen, Dos</div><div class="sline"></div><div class="scnt" id="c-torso"></div></div>
-        <div class="twrap"><table>
-            <thead><tr><th>Diagnostic</th><th>Repos chambre</th><th>Récupération</th><th>🚗 Conduire</th><th>🏋️ Porter</th><th>🏃 Activité</th><th>Traitements</th></tr></thead>
+    <div class="sb" data-s="torso">
+        <div class="sh s-torso"><div class="dot"></div><div class="lbl">Cou, Thorax, Abdomen, Dos</div><div class="ln"></div><div class="cnt" id="c-torso"></div></div>
+        <div class="tw"><table>
+            <colgroup><col class="c0"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"></colgroup>
+            <thead><tr><th>Diagnostic</th><th class="col-r sep-r">🛏 Repos chambre</th><th>⏱ Récupération</th><th>🚗</th><th>🏋</th><th>🏃</th><th>Traitements</th></tr></thead>
             <tbody>
-                <tr data-d="fracture cervicale"><td>Fracture cervicale</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical réparation de la vertèbre (ciment médical) + Attelle type corset + Antalgiques</td></tr>
-                <tr data-d="fracture vertèbres dos"><td>Fracture vertèbres (dos)</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical réparation de la vertèbre (ciment médical) + Attelle type corset + Antalgiques</td></tr>
-                <tr data-d="fracture de côte"><td>Fracture de côte</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Prescription de médicaments antalgiques</td></tr>
-                <tr data-d="infarctus"><td>Infarctus</td><td><span class="b">1H</span></td><td><span class="b lg">18H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Électrocardiogramme + traitements anti-agrégant</td></tr>
-                <tr data-d="perforation poumon pneumothorax"><td>Perforation du poumon (Pneumothorax)</td><td><span class="b">30 min</span></td><td><span class="b lg">18H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgicale (Suture du poumon) + repos complet + Antalgiques + Oxygène</td></tr>
-                <tr data-d="perforation de la rate"><td>Perforation de la rate</td><td><span class="b">30 min</span></td><td><span class="b lg">18H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Ablation de la rate</td></tr>
-                <tr data-d="perforation d'un rein"><td>Perforation d'un rein</td><td><span class="b">30 min</span></td><td><span class="b lg">18H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Repos complet + sonde urinaire</td></tr>
-                <tr data-d="perforation abdomen foie estomac intestin"><td>Perforation Abdomen (Foie, Estomac, Intestin)</td><td><span class="b">30 min</span></td><td><span class="b lg">18H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Repos complet + sonde naso-gastrique + Poche de stomie</td></tr>
-                <tr data-d="plaie suturable thorax"><td>Plaie suturable +3cm</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Suture + Antisepsie + bandage + antalgiques</td></tr>
+<tr data-d="fracture cervicale"><td>Fracture cervicale</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bt">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Acte chirurgical réparation vertèbre (ciment médical) + Attelle type corset + Antalgiques</td></tr>
+<tr data-d="fracture vertèbres dos"><td>Fracture vertèbres (dos)</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bt">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Acte chirurgical réparation vertèbre (ciment médical) + Attelle type corset + Antalgiques</td></tr>
+<tr data-d="fracture de côte"><td>Fracture de côte</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Prescription de médicaments antalgiques</td></tr>
+<tr data-d="infarctus"><td>Infarctus</td><td class="col-r sep-r"><span class="b br">1H</span></td><td><span class="b bl">18H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Électrocardiogramme + traitements anti-agrégant</td></tr>
+<tr data-d="perforation poumon pneumothorax"><td>Perforation du poumon (Pneumothorax)</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bl">18H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Suture du poumon + repos complet + Antalgiques + Oxygène</td></tr>
+<tr data-d="perforation de la rate"><td>Perforation de la rate</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bl">18H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Ablation de la rate</td></tr>
+<tr data-d="perforation d'un rein"><td>Perforation d'un rein</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bl">18H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Repos complet + sonde urinaire</td></tr>
+<tr data-d="perforation abdomen foie estomac intestin"><td>Perforation Abdomen (Foie, Estomac, Intestin)</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bl">18H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Repos complet + sonde naso-gastrique + Poche de stomie</td></tr>
+<tr data-d="plaie suturable thorax"><td>Plaie suturable +3cm</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Suture + Antisepsie + bandage + antalgiques</td></tr>
             </tbody>
         </table></div>
     </div>
 
     <!-- BRAS -->
-    <div class="sec-block" data-section="arms">
-        <div class="sec-hd s-arms"><div class="sdot"></div><div class="slabel">Épaules, Bras et Mains</div><div class="sline"></div><div class="scnt" id="c-arms"></div></div>
-        <div class="twrap"><table>
-            <thead><tr><th>Diagnostic</th><th>Repos chambre</th><th>Récupération</th><th>🚗 Conduire</th><th>🏋️ Porter</th><th>🏃 Activité</th><th>Traitements</th></tr></thead>
+    <div class="sb" data-s="arms">
+        <div class="sh s-arms"><div class="dot"></div><div class="lbl">Épaules, Bras et Mains</div><div class="ln"></div><div class="cnt" id="c-arms"></div></div>
+        <div class="tw"><table>
+            <colgroup><col class="c0"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"></colgroup>
+            <thead><tr><th>Diagnostic</th><th class="col-r sep-r">🛏 Repos chambre</th><th>⏱ Récupération</th><th>🚗</th><th>🏋</th><th>🏃</th><th>Traitements</th></tr></thead>
             <tbody>
-                <tr data-d="luxation de l'épaule"><td>Luxation de l'épaule</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Remise en place de l'articulation + Attelle "Dujarier" + Antalgiques</td></tr>
-                <tr data-d="luxation du coude"><td>Luxation du coude</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Remise en place de l'articulation + Attelle "Dujarier" + Antalgiques</td></tr>
-                <tr data-d="luxation omoplate"><td>Luxation omoplate</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Remise en place de l'articulation + Attelle "Dujarier" + Antalgiques</td></tr>
-                <tr data-d="fracture de l'omoplate"><td>Fracture de l'omoplate</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque + Antalgiques + Attelle "Dujarier"</td></tr>
-                <tr data-d="fracture de la clavicule"><td>Fracture de la clavicule</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque + Antalgiques + Attelle "Dujarier"</td></tr>
-                <tr data-d="fracture avant-bras radius cubitus"><td>Fracture avant-bras (Radius/Cubitus)</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
-                <tr data-d="fracture du bras humérus"><td>Fracture du bras (humérus)</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
-                <tr data-d="fracture des doigts de la main"><td>Fracture des doigts de la main</td><td><span class="b dash">/</span></td><td><span class="b dash">/</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Attelle grenouille + Antalgiques</td></tr>
-                <tr data-d="fracture du poignet"><td>Fracture du poignet</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
-                <tr data-d="section partielle doigts main"><td>Section partielle des doigts de la main</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Acte chirurgical : remise en place + suture + antiseptie + Attelle grenouille</td></tr>
-                <tr data-d="plaie suturable bras"><td>Plaie suturable +3cm</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Suture + Antisepsie + bandage + antalgiques</td></tr>
+<tr data-d="luxation de l'épaule"><td>Luxation de l'épaule</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Remise en place + Attelle "Dujarier" + Antalgiques</td></tr>
+<tr data-d="luxation du coude"><td>Luxation du coude</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Remise en place + Attelle "Dujarier" + Antalgiques</td></tr>
+<tr data-d="luxation omoplate"><td>Luxation omoplate</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Remise en place + Attelle "Dujarier" + Antalgiques</td></tr>
+<tr data-d="fracture de l'omoplate"><td>Fracture de l'omoplate</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Pose d'une plaque + Antalgiques + Attelle "Dujarier"</td></tr>
+<tr data-d="fracture de la clavicule"><td>Fracture de la clavicule</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Pose d'une plaque + Antalgiques + Attelle "Dujarier"</td></tr>
+<tr data-d="fracture avant-bras radius cubitus"><td>Fracture avant-bras (Radius/Cubitus)</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Plâtre + Antalgiques</td></tr>
+<tr data-d="fracture du bras humérus"><td>Fracture du bras (humérus)</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Plâtre + Antalgiques</td></tr>
+<tr data-d="fracture des doigts de la main"><td>Fracture des doigts de la main</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bd">/</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Attelle grenouille + Antalgiques</td></tr>
+<tr data-d="fracture du poignet"><td>Fracture du poignet</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Plâtre + Antalgiques</td></tr>
+<tr data-d="section partielle doigts main"><td>Section partielle des doigts de la main</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bt">2H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Remise en place + suture + antisepsie + Attelle grenouille</td></tr>
+<tr data-d="plaie suturable bras"><td>Plaie suturable +3cm</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Suture + Antisepsie + bandage + antalgiques</td></tr>
             </tbody>
         </table></div>
     </div>
 
     <!-- JAMBES -->
-    <div class="sec-block" data-section="legs">
-        <div class="sec-hd s-legs"><div class="sdot"></div><div class="slabel">Bassin, Jambes et Pieds</div><div class="sline"></div><div class="scnt" id="c-legs"></div></div>
-        <div class="twrap"><table>
-            <thead><tr><th>Diagnostic</th><th>Repos chambre</th><th>Récupération</th><th>🚗 Conduire</th><th>🏋️ Porter</th><th>🏃 Activité</th><th>Traitements</th></tr></thead>
+    <div class="sb" data-s="legs">
+        <div class="sh s-legs"><div class="dot"></div><div class="lbl">Bassin, Jambes et Pieds</div><div class="ln"></div><div class="cnt" id="c-legs"></div></div>
+        <div class="tw"><table>
+            <colgroup><col class="c0"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"></colgroup>
+            <thead><tr><th>Diagnostic</th><th class="col-r sep-r">🛏 Repos chambre</th><th>⏱ Récupération</th><th>🚗</th><th>🏋</th><th>🏃</th><th>Traitements</th></tr></thead>
             <tbody>
-                <tr data-d="rupture ligaments croisés"><td>Rupture des ligaments croisés</td><td><span class="b">10 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Suture des ligaments + Attelle "Zimmer" + Antalgiques</td></tr>
-                <tr data-d="rupture ligaments latéraux"><td>Rupture des ligaments latéraux</td><td><span class="b">10 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Acte chirurgical : Suture des ligaments + Attelle "Zimmer" + Antalgiques</td></tr>
-                <tr data-d="luxation du genou"><td>Luxation du genou</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Remise en place de l'articulation + Attelle "Zimmer" + Antalgiques</td></tr>
-                <tr data-d="fracture du genou"><td>Fracture du genou</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque + Attelle "Zimmer" + Antalgiques</td></tr>
-                <tr data-d="fracture du fémur"><td>Fracture du fémur</td><td><span class="b">30 min</span></td><td><span class="b lg">4H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Mise en place d'un fixateur externe + Antalgiques</td></tr>
-                <tr data-d="fracture du bassin"><td>Fracture du bassin</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une plaque + Antalgique + ceinture pelvienne</td></tr>
-                <tr data-d="fracture col du fémur"><td>Fracture du col du fémur</td><td><span class="b">10 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Pose d'une prothèse de hanche + Antalgique</td></tr>
-                <tr data-d="fracture tibia"><td>Fracture tibia</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
-                <tr data-d="fracture péroné"><td>Fracture péroné</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
-                <tr data-d="fracture cheville"><td>Fracture cheville</td><td><span class="b dash">/</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Plâtre + Antalgiques</td></tr>
-                <tr data-d="rupture tendon achille"><td>Rupture du tendon d'Achille</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Acte chirurgical : Suture du tendon + Antalgiques</td></tr>
-                <tr data-d="fracture du coccyx"><td>Fracture du coccyx</td><td><span class="b">30 min</span></td><td><span class="b">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td class="tr">Acte chirurgical : Pose d'une plaque pour refixer l'os + Antalgiques</td></tr>
-                <tr data-d="section partielle doigts pied"><td>Section partielle des doigts du pied</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : remise en place + suture + antiseptie + Attelle grenouille</td></tr>
-                <tr data-d="fracture doigts de pied"><td>Fracture des doigts de pieds</td><td><span class="b dash">/</span></td><td><span class="b dash">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Antalgiques</td></tr>
-                <tr data-d="plaie suturable jambe"><td>Plaie suturable +3cm</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Suture + Antisepsie + bandage + antalgiques</td></tr>
-                <tr data-d="torsion testiculaire"><td>Torsion testiculaire</td><td><span class="b">15 min</span></td><td><span class="b">1H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Acte chirurgical : Remettre la testicule à l'endroit</td></tr>
+<tr data-d="rupture ligaments croisés"><td>Rupture des ligaments croisés</td><td class="col-r sep-r"><span class="b br">10 min</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Suture des ligaments + Attelle "Zimmer" + Antalgiques</td></tr>
+<tr data-d="rupture ligaments latéraux"><td>Rupture des ligaments latéraux</td><td class="col-r sep-r"><span class="b br">10 min</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Suture des ligaments + Attelle "Zimmer" + Antalgiques</td></tr>
+<tr data-d="luxation du genou"><td>Luxation du genou</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Remise en place + Attelle "Zimmer" + Antalgiques</td></tr>
+<tr data-d="fracture du genou"><td>Fracture du genou</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Pose d'une plaque + Attelle "Zimmer" + Antalgiques</td></tr>
+<tr data-d="fracture du fémur"><td>Fracture du fémur</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bl">4H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Mise en place d'un fixateur externe + Antalgiques</td></tr>
+<tr data-d="fracture du bassin"><td>Fracture du bassin</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bt">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Pose d'une plaque + Antalgique + ceinture pelvienne</td></tr>
+<tr data-d="fracture col du fémur"><td>Fracture du col du fémur</td><td class="col-r sep-r"><span class="b br">10 min</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Pose d'une prothèse de hanche + Antalgique</td></tr>
+<tr data-d="fracture tibia"><td>Fracture tibia</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Plâtre + Antalgiques</td></tr>
+<tr data-d="fracture péroné"><td>Fracture péroné</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Plâtre + Antalgiques</td></tr>
+<tr data-d="fracture cheville"><td>Fracture cheville</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Plâtre + Antalgiques</td></tr>
+<tr data-d="rupture tendon achille"><td>Rupture du tendon d'Achille</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">30 min</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Suture du tendon + Antalgiques</td></tr>
+<tr data-d="fracture du coccyx"><td>Fracture du coccyx</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bt">1H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td class="trait">Pose d'une plaque pour refixer l'os + Antalgiques</td></tr>
+<tr data-d="section partielle doigts pied"><td>Section partielle des doigts du pied</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bt">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Remise en place + suture + antisepsie + Attelle grenouille</td></tr>
+<tr data-d="fracture doigts de pied"><td>Fracture des doigts de pieds</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bd">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Antalgiques</td></tr>
+<tr data-d="plaie suturable jambe"><td>Plaie suturable +3cm</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Suture + Antisepsie + bandage + antalgiques</td></tr>
+<tr data-d="torsion testiculaire"><td>Torsion testiculaire</td><td class="col-r sep-r"><span class="b br">15 min</span></td><td><span class="b bt">1H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Acte chirurgical : remettre la testicule à l'endroit</td></tr>
             </tbody>
         </table></div>
     </div>
 
     <!-- BRÛLURES -->
-    <div class="sec-block" data-section="burns">
-        <div class="sec-hd s-burns"><div class="sdot"></div><div class="slabel">Brûlures, Intoxications &amp; Autres</div><div class="sline"></div><div class="scnt" id="c-burns"></div></div>
-        <div class="twrap"><table>
-            <thead><tr><th>Diagnostic</th><th>Repos chambre</th><th>Récupération</th><th>🚗 Conduire</th><th>🏋️ Porter</th><th>🏃 Activité</th><th>Traitements</th></tr></thead>
+    <div class="sb" data-s="burns">
+        <div class="sh s-burns"><div class="dot"></div><div class="lbl">Brûlures, Intoxications &amp; Autres</div><div class="ln"></div><div class="cnt" id="c-burns"></div></div>
+        <div class="tw"><table>
+            <colgroup><col class="c0"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"></colgroup>
+            <thead><tr><th>Diagnostic</th><th class="col-r sep-r">🛏 Repos chambre</th><th>⏱ Récupération</th><th>🚗</th><th>🏋</th><th>🏃</th><th>Traitements</th></tr></thead>
             <tbody>
-                <tr data-d="brûlures 2ème degré"><td>Brûlures au 2ème Degré</td><td><span class="b">15 min</span></td><td><span class="b">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Pansement "tulegras" + anti-inflammatoires + Antalgiques</td></tr>
-                <tr data-d="brûlures 3ème degré"><td>Brûlures au 3ème Degré</td><td><span class="b">30 min</span></td><td><span class="b">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="tr">Greffe de peau + Pansement Tulegras + Antalgiques</td></tr>
-                <tr data-d="overdose"><td>Overdose</td><td><span class="b">30 min</span></td><td><span class="b lg">3H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Seringue de "Naloxone"</td></tr>
-                <tr data-d="intoxication stupéfiant"><td>Intoxication par stupéfiant</td><td><span class="b">15 min</span></td><td><span class="b">1H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Perfusion d'hydratation (NACL)</td></tr>
-                <tr data-d="intoxication alcool"><td>Intoxication par alcool</td><td><span class="b">15 min</span></td><td><span class="b">1H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="tr">Perfusion d'hydratation (NACL)</td></tr>
-                <tr data-d="crise d'asthme"><td>Crise d'asthme</td><td><span class="b">15 min</span></td><td><span class="b">1H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Oxygène + bronchodilatateur</td></tr>
-                <tr data-d="hypothermie sévère"><td>Hypothermie sévère</td><td><span class="b">20 min</span></td><td><span class="b dash">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Réchauffage</td></tr>
-                <tr data-d="noyade"><td>Noyade</td><td><span class="b dash">/</span></td><td><span class="b">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="tr">Réchauffage + Oxygène</td></tr>
+<tr data-d="brûlures 2ème degré"><td>Brûlures 2ème Degré</td><td class="col-r sep-r"><span class="b br">15 min</span></td><td><span class="b bt">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Pansement "tulegras" + anti-inflammatoires + Antalgiques</td></tr>
+<tr data-d="brûlures 3ème degré"><td>Brûlures 3ème Degré</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bt">2H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Greffe de peau + Pansement Tulegras + Antalgiques</td></tr>
+<tr data-d="overdose"><td>Overdose</td><td class="col-r sep-r"><span class="b br">30 min</span></td><td><span class="b bl">3H</span></td><td><span class="cy">✔</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Seringue de "Naloxone"</td></tr>
+<tr data-d="intoxication stupéfiant"><td>Intoxication par stupéfiant</td><td class="col-r sep-r"><span class="b br">15 min</span></td><td><span class="b bt">1H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Perfusion d'hydratation (NACL)</td></tr>
+<tr data-d="intoxication alcool"><td>Intoxication par alcool</td><td class="col-r sep-r"><span class="b br">15 min</span></td><td><span class="b bt">1H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td class="trait">Perfusion d'hydratation (NACL)</td></tr>
+<tr data-d="crise d'asthme"><td>Crise d'asthme</td><td class="col-r sep-r"><span class="b br">15 min</span></td><td><span class="b bt">1H</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Oxygène + bronchodilatateur</td></tr>
+<tr data-d="hypothermie sévère"><td>Hypothermie sévère</td><td class="col-r sep-r"><span class="b br">20 min</span></td><td><span class="b bd">/</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Réchauffage</td></tr>
+<tr data-d="noyade"><td>Noyade</td><td class="col-r sep-r"><span class="b bd">/</span></td><td><span class="b bt">30 min</span></td><td><span class="cn">✗</span></td><td><span class="cn">✗</span></td><td><span class="cy">✔</span></td><td class="trait">Réchauffage + Oxygène</td></tr>
             </tbody>
         </table></div>
     </div>
 
-    <div id="emptyState" class="empty" style="display:none;"><div class="ico">🔍</div><p>Aucun résultat trouvé</p></div>
-</div>
+    <div id="empty" class="empty" style="display:none;"><div class="ico">🔍</div><p>Aucun résultat</p></div>
+
+</div><!-- /main -->
 
 <script>
-    let af = 'all';
-    document.getElementById('searchInput').addEventListener('input', function(){ run(this.value.trim().toLowerCase()); });
-    function setFilter(f, btn) {
-        af = f;
-        document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        run(document.getElementById('searchInput').value.trim().toLowerCase());
-    }
-    function run(q) {
-        const secs = ['head','torso','arms','legs','burns'];
-        let tot = 0;
-        secs.forEach(s => {
-            const block = document.querySelector(`.sec-block[data-section="${s}"]`);
-            if (af !== 'all' && af !== s) { block.classList.add('hidden'); return; }
-            block.classList.remove('hidden');
-            let vis = 0;
-            block.querySelectorAll('tbody tr').forEach(r => {
-                const m = !q || (r.dataset.d||'').includes(q) || (r.querySelector('.tr')?.textContent.toLowerCase()||'').includes(q);
-                r.classList.toggle('hidden', !m);
-                if (m) { vis++; tot++; }
-            });
-            const c = document.getElementById('c-' + s);
-            if (c) c.textContent = vis;
-            if (vis === 0 && q) block.classList.add('hidden');
+let af = 'all';
+function sf(f, btn) {
+    af = f;
+    document.querySelectorAll('.fb').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    run();
+}
+function run() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const secs = ['head','torso','arms','legs','burns']; let tot = 0;
+    secs.forEach(s => {
+        const bl = document.querySelector(`.sb[data-s="${s}"]`);
+        if (af !== 'all' && af !== s) { bl.classList.add('hidden'); return; }
+        bl.classList.remove('hidden');
+        let vis = 0;
+        bl.querySelectorAll('tbody tr').forEach(r => {
+            const m = !q || (r.dataset.d||'').includes(q) || (r.querySelector('.trait')?.textContent.toLowerCase()||'').includes(q);
+            r.classList.toggle('hidden', !m);
+            if (m) { vis++; tot++; }
         });
-        document.getElementById('rc').innerHTML = (q || af !== 'all') ? `<strong>${tot}</strong> résultat${tot>1?'s':''}` : '';
-        document.getElementById('emptyState').style.display = tot === 0 ? 'block' : 'none';
-    }
-    run('');
+        document.getElementById('c-' + s).textContent = vis;
+        if (!vis && q) bl.classList.add('hidden');
+    });
+    document.getElementById('rc').innerHTML = (q || af !== 'all') ? `<b>${tot}</b> résultat${tot>1?'s':''}` : '';
+    document.getElementById('empty').style.display = tot === 0 ? 'block' : 'none';
+}
+run();
 </script>
 </body>
 </html>
