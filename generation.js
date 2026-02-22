@@ -143,7 +143,8 @@ window.genererImage = async function(btn, captureId) {
    (lit window.OMC_CONFIG automatiquement)
 ---------------------------------------------------------- */
 window.envoyerDiscord = async function(btn) {
-    var cfg = window.OMC_CONFIG;
+    var cfg = window.OMC_CONFIG || window['OMC_CONFIG'] || (typeof OMC_CONFIG !== 'undefined' ? OMC_CONFIG : null);
+
     if (!cfg || !cfg.webhook) {
         alert('❌ Configuration Discord manquante.\nDéclare OMC_CONFIG.webhook sur cette page.');
         return;
