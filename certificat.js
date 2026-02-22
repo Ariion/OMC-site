@@ -1,5 +1,4 @@
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282"; 
-let lastImageUrl = ""; 
+
 
 // Gère l'affichage des listes de motifs selon la conclusion cochée
 function toggleMotifs() {

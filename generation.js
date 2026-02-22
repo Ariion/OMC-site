@@ -6,7 +6,7 @@
    USAGE DANS LES HTML :
 
    1. Déclarer la config de la page dans un <script> :
-      const OMC_CONFIG = {
+      var OMC_CONFIG = {          // ⚠️ VAR obligatoire (pas const) pour être sur window
         webhook:      'https://discord.com/api/webhooks/...',
         captureId:    'document',          // défaut: 'document'
         nomPatientId: 'patientName',       // défaut: 'patientName'
@@ -22,7 +22,7 @@
       <button onclick="envoyerDiscord(this)">DISCORD</button>
    ============================================================ */
 
-const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
+var IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
 
 /* ----------------------------------------------------------
    UTILITAIRES INTERNES
@@ -113,7 +113,7 @@ window.genererImage = async function(btn, captureId) {
     if (btn) { btn.disabled = true; btn.innerText = '⏳ CAPTURE...'; }
 
     try {
-        var cfg = window.OMC_CONFIG || {};
+        var cfg = window.OMC_CONFIG || (typeof OMC_CONFIG !== 'undefined' ? OMC_CONFIG : null) || {};
         var id  = captureId || cfg.captureId || 'document';
         var el  = _getCaptureEl(id);
 
@@ -143,8 +143,7 @@ window.genererImage = async function(btn, captureId) {
    (lit window.OMC_CONFIG automatiquement)
 ---------------------------------------------------------- */
 window.envoyerDiscord = async function(btn) {
-    var cfg = window.OMC_CONFIG || window['OMC_CONFIG'] || (typeof OMC_CONFIG !== 'undefined' ? OMC_CONFIG : null);
-
+    var cfg = window.OMC_CONFIG || (typeof OMC_CONFIG !== 'undefined' ? OMC_CONFIG : null);
     if (!cfg || !cfg.webhook) {
         alert('❌ Configuration Discord manquante.\nDéclare OMC_CONFIG.webhook sur cette page.');
         return;
