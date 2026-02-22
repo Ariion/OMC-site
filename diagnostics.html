@@ -105,7 +105,7 @@
             background: #1e293b; color: #94a3b8;
             padding: 10px 12px; text-align: center;
             font-family: 'Rajdhani', sans-serif; font-size: .7rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-            border-bottom: 2px solid #334155; white-space: nowrap;
+            border-bottom: 2px solid #334155; /*white-space: nowrap;*/
         }
         thead th:first-child { text-align: left; }
         thead th:last-child  { text-align: left; }
@@ -191,13 +191,8 @@
         <div class="sh s-head"><div class="dot"></div><div class="lbl">Tête</div><div class="ln"></div><div class="cnt" id="c-head"></div></div>
         <div class="tw"><table>
             <colgroup><col class="c0"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"></colgroup>
-            <thead><tr>
-                <th>Diagnostic</th>
-                <th class="col-r sep-r">🛏 Repos chambre</th>
-                <th>⏱ Récupération</th>
-                <th>🚗</th><th>🏋</th><th>🏃</th>
-                <th>Traitements</th>
-            </tr></thead>
+                <thead><tr><th>Diagnostic</th><th class="col-r sep-r">🛏 Repos chambre</th><th>⏱ Récupération</th><th>🚗 Restriction voiture</th><th>🏋Restriction pour porter</th><th>🏃Restriction sport</th><th>Traitements</th></tr></thead>
+
             <tbody>
 <tr data-d="hémorragie intracrânienne"><td>Hémorragie intracrânienne</td><td class="col-r sep-r"><span class="b br">1H</span></td><td><span class="b bl">24H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Acte neurochirurgical (ablation de l'hématome intracérébral)</td></tr>
 <tr data-d="avc"><td>AVC</td><td class="col-r sep-r"><span class="b br">1H</span></td><td><span class="b bl">12H</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td><span class="cy">✔</span></td><td class="trait">Médicament anticoagulants</td></tr>
