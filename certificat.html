@@ -82,8 +82,10 @@
                 <input type="text" id="f-medecin" placeholder="Nom et Prénom" oninput="updateCertif()">
             </div>
 
-            <button class="btn-image" onclick="genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
-            <button id="discord-btn" class="btn-discord" onclick="envoyerDiscord()">ENVOYER SUR DISCORD</button>
+            <div class="actions-group" style="margin-top: 20px;">
+    <button class="btn-image" onclick="genererImage(this)">🖼️ GÉNÉRER L'IMAGE</button>
+    <button id="discord-btn" class="btn-discord" onclick="envoyerDiscord(this)">ENVOYER SUR DISCORD</button>
+</div>
         </aside>
 
         <main class="preview-area">
@@ -151,7 +153,8 @@
 </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script>
+       <script src="certificat.js"></script>
+   <script>
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1421827797965471855/aBgwIgdIRP3TO0Qp_culr5GJHVLDRnwtKnxjv7N62ThG8L_bRQ1gwsqV_aYXhu4eCHa2',
     captureId:    'document',
@@ -163,13 +166,8 @@ var OMC_CONFIG = {
 };
 </script>
 
-<!-- Boutons certificat.html -->
-<div class="actions-group" style="margin-top: 20px;">
-    <button class="btn-image" onclick="genererImage(this)">🖼️ GÉNÉRER L'IMAGE</button>
-    <button id="discord-btn" class="btn-discord" onclick="envoyerDiscord(this)">ENVOYER SUR DISCORD</button>
-</div>
+
 <script src="generation.js"></script>
-    <script src="certificat.js"></script>
     <script type="module" src="global.js"></script>
 </body>
 </html>
