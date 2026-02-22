@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMC - Tableau des Diagnostics</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="patch-daltonien.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --bg: #0a192f;
+            --bg2: #112240;
+            --cyan: #64ffda;
+            --cyan2: #00d2ff;
+            --orange: #f97316;
+            --text: #ccd6f6;
+            --text-dim: #8892b0;
+            --border: #1e3a5f;
+            --card: #0d2137;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ---- HEADER ---- */
+        .header {
+            background: linear-gradient(180deg, #0a192f 0%, #0d2137 100%);
+            border-bottom: 2px solid var(--border);
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            color: var(--cyan);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+        }
+        .back-btn:hover { opacity: 0.7; }
+
+        .header-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .header-title span { color: var(--cyan); }
+
+        /* ---- BARRE DE RECHERCHE ---- */
+        .search-bar {
+            padding: 20px 30px;
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-input-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+            max-width: 400px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            padding: 10px 12px 10px 38px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .search-input:focus { border-color: var(--cyan); }
+        .search-input::placeholder { color: var(--text-dim); }
+
+        .filter-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.78rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            background: rgba(100, 255, 218, 0.05);
+        }
+
+        .filter-btn.head.active { border-color: #60a5fa; color: #60a5fa; background: rgba(96, 165, 250, 0.05); }
+        .filter-btn.torso.active { border-color: #34d399; color: #34d399; background: rgba(52, 211, 153, 0.05); }
+        .filter-btn.arms.active { border-color: var(--orange); color: var(--orange); background: rgba(249, 115, 22, 0.05); }
+        .filter-btn.legs.active { border-color: #c084fc; color: #c084fc; background: rgba(192, 132, 252, 0.05); }
+        .filter-btn.burns.active { border-color: #f87171; color: #f87171; background: rgba(248, 113, 113, 0.05); }
+
+        /* ---- RÉSULTAT RECHERCHE ---- */
+        .result-count {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+        .result-count strong { color: var(--cyan); }
+
+        /* ---- CONTENU ---- */
+        .content {
+            padding: 24px 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* ---- SECTION ---- */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 28px 0 12px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            opacity: 0.3;
+        }
+
+        .section-count {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            opacity: 0.8;
+        }
+
+        /* ---- TABLE ---- */
+        .table-wrap {
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        thead th {
+            background: var(--bg2);
+            padding: 11px 14px;
+            text-align: center;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.78rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        thead th:first-child { text-align: left; min-width: 180px; }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(30, 58, 95, 0.5);
+            transition: background 0.15s;
+        }
+
+        tbody tr:last-child { border-bottom: none; }
+
+        tbody tr:hover { background: rgba(100, 255, 218, 0.03); }
+
+        tbody tr.hidden { display: none; }
+
+        td {
+            padding: 10px 14px;
+            color: var(--text);
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: white;
+        }
+
+        td.traitement {
+            text-align: left;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            font-style: italic;
+            max-width: 400px;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: rgba(100, 255, 218, 0.08);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            color: var(--cyan);
+            border-radius: 5px;
+            padding: 2px 8px;
+            font-weight: 600;
+            font-size: 0.78rem;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .time-badge.long {
+            background: rgba(249, 115, 22, 0.08);
+            border-color: rgba(249, 115, 22, 0.2);
+            color: var(--orange);
+        }
+
+        .time-badge.dash {
+            background: transparent;
+            border-color: transparent;
+            color: var(--text-dim);
+        }
+
+        .check-icon { font-size: 1rem; }
+        .check-yes { color: var(--cyan); }
+        .check-no { color: var(--border); opacity: 0.5; }
+
+        /* couleurs sections */
+        .s-head { background: var(--card); }
+        .s-head .section-dot, .s-head .section-line { background: #60a5fa; }
+        .s-head .section-title { color: #60a5fa; }
+        .s-head .section-count { background: rgba(96,165,250,0.1); color: #60a5fa; }
+
+        .s-torso { background: var(--card); }
+        .s-torso .section-dot, .s-torso .section-line { background: #34d399; }
+        .s-torso .section-title { color: #34d399; }
+        .s-torso .section-count { background: rgba(52,211,153,0.1); color: #34d399; }
+
+        .s-arms { background: var(--card); }
+        .s-arms .section-dot, .s-arms .section-line { background: var(--orange); }
+        .s-arms .section-title { color: var(--orange); }
+        .s-arms .section-count { background: rgba(249,115,22,0.1); color: var(--orange); }
+
+        .s-legs { background: var(--card); }
+        .s-legs .section-dot, .s-legs .section-line { background: #c084fc; }
+        .s-legs .section-title { color: #c084fc; }
+        .s-legs .section-count { background: rgba(192,132,252,0.1); color: #c084fc; }
+
+        .s-burns { background: var(--card); }
+        .s-burns .section-dot, .s-burns .section-line { background: #f87171; }
+        .s-burns .section-title { color: #f87171; }
+        .s-burns .section-count { background: rgba(248,113,113,0.1); color: #f87171; }
+
+        /* empty state */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-dim);
+        }
+        .empty-state .emoji { font-size: 2.5rem; margin-bottom: 12px; }
+        .empty-state p { font-size: 0.95rem; }
+
+        /* highlight search */
+        mark {
+            background: rgba(100, 255, 218, 0.25);
+            color: var(--cyan);
+            border-radius: 2px;
+            padding: 0 1px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header { padding: 14px 16px; }
+            .search-bar { padding: 14px 16px; }
+            .content { padding: 16px; }
+            table { font-size: 0.75rem; }
+            td, thead th { padding: 8px 10px; }
+            .header-title { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <a href="index.html" class="back-btn">← RETOUR</a>
+        <div class="header-title"><span>OMC</span> — Diagnostics & Soins</div>
+    </div>
+    <a href="calculatrice.html" class="back-btn" style="color: var(--orange)">💰 Calculatrice →</a>
+</div>
+
+<div class="search-bar">
+    <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Rechercher un diagnostic..." autocomplete="off">
+    </div>
+    <div class="filter-btns">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">Tout</button>
+        <button class="filter-btn head" data-filter="head" onclick="setFilter('head', this)">🧠 Tête</button>
+        <button class="filter-btn torso" data-filter="torso" onclick="setFilter('torso', this)">🫁 Thorax / Abdomen</button>
+        <button class="filter-btn arms" data-filter="arms" onclick="setFilter('arms', this)">💪 Épaules / Bras</button>
+        <button class="filter-btn legs" data-filter="legs" onclick="setFilter('legs', this)">🦵 Bassin / Jambes</button>
+        <button class="filter-btn burns" data-filter="burns" onclick="setFilter('burns', this)">🔥 Brûlures & Autres</button>
+    </div>
+    <div class="result-count" id="resultCount"></div>
+</div>
+
+<div class="content" id="mainContent">
+
+    <!-- === TÊTE === -->
+    <div class="section-block" data-section="head">
+        <div class="section-header s-head">
+            <div class="section-dot"></div>
+            <div class="section-title">Tête</div>
+            <div class="section-line"></div>
+            <div class="section-count" id="count-head"></div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Diagnostic</th>
+                        <th>Repos chambre</th>
+                        <th>Récupération</th>
+                        <th>🚗 Conduire</th>
+                        <th>🏋️ Porter</th>
+                        <th>🏃 Activité physique</th>
+                        <th>Traitements</th>
+                    </tr>
+                </thead>
+                <tbody id="head-tbody">
+                    <tr data-diag="Hémorragie intracrânienne" data-section="head">
+                        <td>Hémorragie intracrânienne</td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="time-badge long">24H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte neurochirurgical (ablation de l'hématome intracérébral)</td>
+                    </tr>
+                    <tr data-diag="AVC" data-section="head">
+                        <td>AVC</td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="time-badge long">12H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Médicament anticoagulants</td>
+                    </tr>
+                    <tr data-diag="Commotion cérébrale" data-section="head">
+                        <td>Commotion cérébrale</td>
+                        <td><span class="time-badge">10 min</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Repos complet + médicaments antalgiques</td>
+                    </tr>
+                    <tr data-diag="Méningite" data-section="head">
+                        <td>Méningite</td>
+                        <td><span class="time-badge">15 min</span></td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Antalgiques + antibiotiques</td>
+                    </tr>
+                    <tr data-diag="Fracture du crâne" data-section="head">
+                        <td>Fracture du crâne</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge">2H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical, fixer l'os cassé avec une plaque</td>
+                    </tr>
+                    <tr data-diag="Fracture de la mâchoire" data-section="head">
+                        <td>Fracture de la mâchoire</td>
+                        <td><span class="time-badge">10 min</span></td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Remise en place de la mâchoire + antalgiques</td>
+                    </tr>
+                    <tr data-diag="Lacération oculaire" data-section="head">
+                        <td>Lacération oculaire</td>
+                        <td><span class="time-badge">10 min</span></td>
+                        <td><span class="time-badge">2H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Prescription de médicaments antalgiques + couvrir l'œil</td>
+                    </tr>
+                    <tr data-diag="Plaie suturable +3cm Tête" data-section="head">
+                        <td>Plaie suturable +3cm</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Suture + Antisepsie + bandage + antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture du nez" data-section="head">
+                        <td>Fracture du nez</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Remise en place du nez + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Perforation du tympan" data-section="head">
+                        <td>Perforation du tympan</td>
+                        <td><span class="time-badge">10 min</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Antibiotiques auriculaires (gouttes) + Antalgiques</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- === COU / THORAX / ABDOMEN / DOS === -->
+    <div class="section-block" data-section="torso">
+        <div class="section-header s-torso">
+            <div class="section-dot"></div>
+            <div class="section-title">Cou, Thorax, Abdomen, Dos</div>
+            <div class="section-line"></div>
+            <div class="section-count" id="count-torso"></div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Diagnostic</th>
+                        <th>Repos chambre</th>
+                        <th>Récupération</th>
+                        <th>🚗 Conduire</th>
+                        <th>🏋️ Porter</th>
+                        <th>🏃 Activité physique</th>
+                        <th>Traitements</th>
+                    </tr>
+                </thead>
+                <tbody id="torso-tbody">
+                    <tr data-diag="Fracture cervicale" data-section="torso">
+                        <td>Fracture cervicale</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge">2H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical réparation de la vertèbre (ciment médical) + Attelle type corset + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture vertèbres dos" data-section="torso">
+                        <td>Fracture vertèbres (dos)</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge">2H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical réparation de la vertèbre (ciment médical) + Attelle type corset + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture de côte" data-section="torso">
+                        <td>Fracture de côte</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Prescription de médicaments antalgiques</td>
+                    </tr>
+                    <tr data-diag="Infarctus" data-section="torso">
+                        <td>Infarctus</td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="time-badge long">18H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Électrocardiogramme + traitements anti-agrégant</td>
+                    </tr>
+                    <tr data-diag="Perforation du poumon Pneumothorax" data-section="torso">
+                        <td>Perforation du poumon (Pneumothorax)</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge long">18H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgicale (Suture du poumon) + repos complet + Antalgiques + Oxygène</td>
+                    </tr>
+                    <tr data-diag="Perforation de la rate" data-section="torso">
+                        <td>Perforation de la rate</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge long">18H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Ablation de la rate</td>
+                    </tr>
+                    <tr data-diag="Perforation d'un rein" data-section="torso">
+                        <td>Perforation d'un rein</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge long">18H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Repos complet + sonde urinaire</td>
+                    </tr>
+                    <tr data-diag="Perforation Abdomen Foie Estomac Intestin" data-section="torso">
+                        <td>Perforation Abdomen (Foie, Estomac, Intestin)</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge long">18H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Repos complet + sonde naso-gastrique + Poche de stomie</td>
+                    </tr>
+                    <tr data-diag="Plaie suturable +3cm Thorax" data-section="torso">
+                        <td>Plaie suturable +3cm</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Suture + Antisepsie + bandage + antalgiques</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- === ÉPAULES / BRAS / MAINS === -->
+    <div class="section-block" data-section="arms">
+        <div class="section-header s-arms">
+            <div class="section-dot"></div>
+            <div class="section-title">Épaules, Bras et Mains</div>
+            <div class="section-line"></div>
+            <div class="section-count" id="count-arms"></div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Diagnostic</th>
+                        <th>Repos chambre</th>
+                        <th>Récupération</th>
+                        <th>🚗 Conduire</th>
+                        <th>🏋️ Porter</th>
+                        <th>🏃 Activité physique</th>
+                        <th>Traitements</th>
+                    </tr>
+                </thead>
+                <tbody id="arms-tbody">
+                    <tr data-diag="Luxation de l'épaule" data-section="arms">
+                        <td>Luxation de l'épaule</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Remise en place de l'articulation + Attelle "Dujarier" + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Luxation du coude" data-section="arms">
+                        <td>Luxation du coude</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Remise en place de l'articulation + Attelle "Dujarier" + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Luxation omoplate" data-section="arms">
+                        <td>Luxation omoplate</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Remise en place de l'articulation + Attelle "Dujarier" + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture de l'omoplate" data-section="arms">
+                        <td>Fracture de l'omoplate</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical : Pose d'une plaque pour refixer l'os + Antalgiques + Attelle "Dujarier"</td>
+                    </tr>
+                    <tr data-diag="Fracture de la clavicule" data-section="arms">
+                        <td>Fracture de la clavicule</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical : Pose d'une plaque pour refixer l'os + Antalgiques + Attelle "Dujarier"</td>
+                    </tr>
+                    <tr data-diag="Fracture de l'avant-bras Radius Cubitus" data-section="arms">
+                        <td>Fracture de l'avant-bras (Radius/Cubitus)</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Plâtre + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture du bras humérus" data-section="arms">
+                        <td>Fracture du bras (humérus)</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Plâtre + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture des doigts de la main" data-section="arms">
+                        <td>Fracture des doigts de la main</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Attelle grenouille + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture du poignet" data-section="arms">
+                        <td>Fracture du poignet</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Plâtre + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Section partielle des doigts de la main" data-section="arms">
+                        <td>Section partielle des doigts de la main</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge">2H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Acte chirurgical : remise en place des doigts + suture + antiseptie + Attelle grenouille</td>
+                    </tr>
+                    <tr data-diag="Plaie suturable +3cm Bras" data-section="arms">
+                        <td>Plaie suturable +3cm</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Suture + Antisepsie + bandage + antalgiques</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- === BASSIN / JAMBES / PIEDS === -->
+    <div class="section-block" data-section="legs">
+        <div class="section-header s-legs">
+            <div class="section-dot"></div>
+            <div class="section-title">Bassin, Jambes et Pieds</div>
+            <div class="section-line"></div>
+            <div class="section-count" id="count-legs"></div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Diagnostic</th>
+                        <th>Repos chambre</th>
+                        <th>Récupération</th>
+                        <th>🚗 Conduire</th>
+                        <th>🏋️ Porter</th>
+                        <th>🏃 Activité physique</th>
+                        <th>Traitements</th>
+                    </tr>
+                </thead>
+                <tbody id="legs-tbody">
+                    <tr data-diag="Rupture des ligaments croisés" data-section="legs">
+                        <td>Rupture des ligaments croisés</td>
+                        <td><span class="time-badge">10 min</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical : Suture des ligaments + Attelle de "Zimmer" + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Rupture des ligaments latéraux" data-section="legs">
+                        <td>Rupture des ligaments latéraux</td>
+                        <td><span class="time-badge">10 min</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Acte chirurgical : Suture des ligaments + Attelle de "Zimmer" + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Luxation du genou" data-section="legs">
+                        <td>Luxation du genou</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Remise en place de l'articulation + Attelle de "Zimmer" + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture du genou" data-section="legs">
+                        <td>Fracture du genou</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical : Pose d'une plaque pour refixer l'os + Attelle de "Zimmer" + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture du fémur" data-section="legs">
+                        <td>Fracture du fémur</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge long">4H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical : Mise en place d'un fixateur externe + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture du bassin" data-section="legs">
+                        <td>Fracture du bassin</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge">2H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical : Pose d'une plaque pour refixer l'os + Antalgique + ceinture pelvienne</td>
+                    </tr>
+                    <tr data-diag="Fracture du col du fémur" data-section="legs">
+                        <td>Fracture du col du fémur</td>
+                        <td><span class="time-badge">10 min</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical : Pose d'une prothèse de hanche + Antalgique</td>
+                    </tr>
+                    <tr data-diag="Fracture tibia" data-section="legs">
+                        <td>Fracture tibia</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Plâtre + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture péroné" data-section="legs">
+                        <td>Fracture péroné</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Plâtre + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture cheville" data-section="legs">
+                        <td>Fracture cheville</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Plâtre + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Rupture du tendon d'Achille" data-section="legs">
+                        <td>Rupture du tendon d'Achille</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Acte chirurgical : Suture du tendon + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Fracture du coccyx" data-section="legs">
+                        <td>Fracture du coccyx</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Acte chirurgical : Pose d'une plaque pour refixer l'os + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Section partielle des doigts du pied" data-section="legs">
+                        <td>Section partielle des doigts du pied</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge">2H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical : remise en place des doigts + suture + antiseptie + Attelle grenouille</td>
+                    </tr>
+                    <tr data-diag="Fracture des doigts de pied" data-section="legs">
+                        <td>Fracture des doigts de pieds</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Plaie suturable +3cm Jambe" data-section="legs">
+                        <td>Plaie suturable +3cm</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Suture + Antisepsie + bandage + antalgiques</td>
+                    </tr>
+                    <tr data-diag="Torsion testiculaire" data-section="legs">
+                        <td>Torsion testiculaire</td>
+                        <td><span class="time-badge">15 min</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Acte chirurgical : Remettre la testicule à l'endroit</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- === BRÛLURES & AUTRES === -->
+    <div class="section-block" data-section="burns">
+        <div class="section-header s-burns">
+            <div class="section-dot"></div>
+            <div class="section-title">Brûlures, Intoxications & Autres</div>
+            <div class="section-line"></div>
+            <div class="section-count" id="count-burns"></div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Diagnostic</th>
+                        <th>Repos chambre</th>
+                        <th>Récupération</th>
+                        <th>🚗 Conduire</th>
+                        <th>🏋️ Porter</th>
+                        <th>🏃 Activité physique</th>
+                        <th>Traitements</th>
+                    </tr>
+                </thead>
+                <tbody id="burns-tbody">
+                    <tr data-diag="Brûlures au 2ème Degré" data-section="burns">
+                        <td>Brûlures au 2ème Degré</td>
+                        <td><span class="time-badge">15 min</span></td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Pansement "tulegras" + anti-inflammatoires + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Brûlures au 3ème Degré" data-section="burns">
+                        <td>Brûlures au 3ème Degré</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge">2H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Greffe de peau + Pansement Tulegras + Antalgiques</td>
+                    </tr>
+                    <tr data-diag="Overdose" data-section="burns">
+                        <td>Overdose</td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="time-badge">3H</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Seringue de "Naloxone"</td>
+                    </tr>
+                    <tr data-diag="Intoxication par stupéfiant" data-section="burns">
+                        <td>Intoxication par stupéfiant</td>
+                        <td><span class="time-badge">15 min</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Perfusion d'hydratation (NACL)</td>
+                    </tr>
+                    <tr data-diag="Intoxication par alcool" data-section="burns">
+                        <td>Intoxication par alcool</td>
+                        <td><span class="time-badge">15 min</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td class="traitement">Perfusion d'hydratation (NACL)</td>
+                    </tr>
+                    <tr data-diag="Crise d'asthme" data-section="burns">
+                        <td>Crise d'asthme</td>
+                        <td><span class="time-badge">15 min</span></td>
+                        <td><span class="time-badge">1H</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Oxygène + bronchodilatateur</td>
+                    </tr>
+                    <tr data-diag="Hypothermie sévère" data-section="burns">
+                        <td>Hypothermie sévère</td>
+                        <td><span class="time-badge">20 min</span></td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Réchauffage</td>
+                    </tr>
+                    <tr data-diag="Noyade" data-section="burns">
+                        <td>Noyade</td>
+                        <td><span class="time-badge dash">/</span></td>
+                        <td><span class="time-badge">30 min</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-no">✗</span></td>
+                        <td><span class="check-icon check-yes">✔</span></td>
+                        <td class="traitement">Réchauffage + Oxygène</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="emptyState" class="empty-state" style="display:none;">
+        <div class="emoji">🔍</div>
+        <p>Aucun diagnostic trouvé pour "<span id="searchTerm"></span>"</p>
+    </div>
+
+</div>
+
+<script>
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    const sections = ['head', 'torso', 'arms', 'legs', 'burns'];
+
+    function updateCounts() {
+        sections.forEach(s => {
+            const tbody = document.getElementById(s + '-tbody');
+            if (!tbody) return;
+            const visible = tbody.querySelectorAll('tr:not(.hidden)').length;
+            const total = tbody.querySelectorAll('tr').length;
+            const el = document.getElementById('count-' + s);
+            if (el) el.textContent = searchQuery ? `${visible}/${total}` : `${total}`;
+        });
+    }
+
+    function updateResultCount() {
+        let total = 0;
+        document.querySelectorAll('tbody tr:not(.hidden)').forEach(() => total++);
+        const el = document.getElementById('resultCount');
+        if (searchQuery || currentFilter !== 'all') {
+            el.innerHTML = `<strong>${total}</strong> résultat${total > 1 ? 's' : ''}`;
+        } else {
+            el.innerHTML = '';
+        }
+    }
+
+    function applyFilters() {
+        const q = searchQuery.toLowerCase();
+
+        sections.forEach(section => {
+            const block = document.querySelector(`.section-block[data-section="${section}"]`);
+            const tbody = document.getElementById(section + '-tbody');
+            if (!block || !tbody) return;
+
+            // Filtre de section
+            const sectionMatch = currentFilter === 'all' || currentFilter === section;
+            if (!sectionMatch) {
+                block.style.display = 'none';
+                return;
+            }
+            block.style.display = '';
+
+            // Filtre de recherche dans les lignes
+            let hasVisible = false;
+            tbody.querySelectorAll('tr').forEach(row => {
+                const diag = (row.dataset.diag || '').toLowerCase();
+                const traitement = row.querySelector('.traitement')?.textContent.toLowerCase() || '';
+                const match = !q || diag.includes(q) || traitement.includes(q);
+                row.classList.toggle('hidden', !match);
+                if (match) hasVisible = true;
+            });
+
+            block.style.display = hasVisible ? '' : 'none';
+        });
+
+        // Empty state
+        const anyVisible = document.querySelectorAll('.section-block:not([style*="none"])').length > 0;
+        document.getElementById('emptyState').style.display = anyVisible ? 'none' : 'block';
+        document.getElementById('searchTerm').textContent = searchQuery;
+
+        updateCounts();
+        updateResultCount();
+    }
+
+    function setFilter(filter, btn) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        searchQuery = this.value.trim();
+        applyFilters();
+    });
+
+    // Init counts
+    applyFilters();
+</script>
+
+</body>
+</html>
