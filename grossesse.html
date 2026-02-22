@@ -115,9 +115,10 @@
             </div>
 
             <div class="actions-group">
-                <button class="btn-image" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; genererImage()">🖼️ GÉNÉRER L'IMAGE</button>
-                <button class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; envoyerDiscord()">Envoyer sur Discord</button>
-            </div>
+    <button class="btn-image" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; genererImage(this, 'capture-zone')">🖼️ GÉNÉRER L'IMAGE</button>
+    <button class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; envoyerDiscord(this)">Envoyer sur Discord</button>
+</div>
+
         </aside>
 
         <main class="preview-area">
@@ -254,8 +255,18 @@
             </div>
         </div>
     </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+var OMC_CONFIG = {
+    webhook:      'https://discord.com/api/webhooks/1470764297930936464/9IaG5scbmjGXkCpq3wvXaxGDAasyAJExRw9j853V0W99wl__MXI7SS3e0GNQcdeS0RGk',
+    captureId:    'capture-zone',
+    nomPatientId: 'patientName',
+    typeDoc:      'Dossier Obstétrique',
+    pageSource:   'grossesse.html',
+    getThreadName: () => `🤰 Obstétrique - ${document.getElementById('patientName')?.value || 'Inconnu'}`,
+    getContent:    () => `🤰 **Nouveau Dossier Obstétrique** : ${document.getElementById('patientName')?.value || 'Inconnu'}`
+};
+</script>
     <script src="grossesse.js"></script>
     <script type="module" src="global.js"></script>
 </body>

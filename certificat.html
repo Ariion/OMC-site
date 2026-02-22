@@ -151,6 +151,24 @@
 </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+var OMC_CONFIG = {
+    webhook:      'https://discord.com/api/webhooks/1421827797965471855/aBgwIgdIRP3TO0Qp_culr5GJHVLDRnwtKnxjv7N62ThG8L_bRQ1gwsqV_aYXhu4eCHa2',
+    captureId:    'document',
+    nomPatientId: 'patientName',
+    typeDoc:      'Certificat Médical',
+    pageSource:   'certificat.html',
+    getThreadName: () => `📝 ${document.getElementById('d-titre-doc')?.innerText || 'Certificat'} - ${document.getElementById('d-nom')?.innerText || 'Inconnu'}`,
+    getContent:    () => `📜 **Nouveau Rapport Médical**\n👤 Patient : ${document.getElementById('d-nom')?.innerText || 'Inconnu'}\n📋 Type : ${document.getElementById('d-titre-doc')?.innerText || 'Certificat'}`
+};
+</script>
+
+<!-- Boutons certificat.html -->
+<div class="actions-group" style="margin-top: 20px;">
+    <button class="btn-image" onclick="genererImage(this)">🖼️ GÉNÉRER L'IMAGE</button>
+    <button id="discord-btn" class="btn-discord" onclick="envoyerDiscord(this)">ENVOYER SUR DISCORD</button>
+</div>
+<script src="generation.js"></script>
     <script src="certificat.js"></script>
     <script type="module" src="global.js"></script>
 </body>
