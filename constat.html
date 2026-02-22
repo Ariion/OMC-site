@@ -208,8 +208,8 @@ var OMC_CONFIG = {
     nomPatientId: 'patientName',
     typeDoc:      'Constat Lésionnel',
     pageSource:   'constat.html',
-    getThreadName: () => `🩺 Constat - ${document.getElementById('patientName')?.value || 'Inconnu'} (${window.sessionRef || ''})`,
-    getContent:    () => `🚑 **Nouveau Constat Lésionnel** : ${document.getElementById('patientName')?.value || 'Inconnu'}`
+    getThreadName: () => `Imagerie - ${document.getElementById('patientName')?.value || 'Inconnu'} - (${window.sessionRef || ''})`,
+    getContent:    () => `🚑 Nouveau Constat Lésionnel : ${document.getElementById('patientName')?.value || 'Inconnu'}`
 };
 </script>
     <script src="generation.js"></script>

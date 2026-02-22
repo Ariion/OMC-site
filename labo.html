@@ -129,9 +129,9 @@
             </div>
 
             <div class="actions-group">
-                <button type="button" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; genererImage()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
-                <button id="discord-btn" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; envoyerDiscord()" class="btn-discord">ENVOYER SUR DISCORD</button>
-            </div>
+    <button type="button" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; genererImage(this)" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
+    <button id="discord-btn" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; envoyerDiscord(this)" class="btn-discord">ENVOYER SUR DISCORD</button>
+</div>
         </aside>
 
         <main class="preview-area" style="align-items: flex-start;">
@@ -206,7 +206,19 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script type="module" src="global.js"></script>
+<script>
+var OMC_CONFIG = {
+    webhook:      'https://discord.com/api/webhooks/1468219484245332171/OwqxaLPAJznP0W5gxsmNEhuPIJHWukIEX6OZDXpElPWOz0Bbjjc3I9ahKsJ73dCUaQln',
+    captureId:    'document',
+    nomPatientId: 'patientName',
+    typeDoc:      'Laboratoire',
+    pageSource:   'labo.html',
+    getThreadName: () => `🔬 LABO - ${document.getElementById('d-nom')?.innerText || 'Inconnu'} (${new Date().toLocaleDateString('fr-FR')})`,
+    getContent:    () => `🧪 **Nouveau Bilan Biologique**\n👤 Patient : ${document.getElementById('d-nom')?.innerText || 'Inconnu'}`
+};
+</script>
+<script src="generation.js"></script>
+    <script type="module" src="global.js"></script>
 <script type="module" src="labo.js"></script>
 </body>
 </html>
