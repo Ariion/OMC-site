@@ -81,7 +81,7 @@
                     <div class="autocomplete-wrapper">
                         <input type="text"
                                id="patientPrenom"
-                               placeholder="Louis"
+                               placeholder=""
                                autocomplete="off"
                                oninput="onPrenomInput(this.value)">
                         <div class="autocomplete-list" id="ac-list"></div>
@@ -91,7 +91,7 @@
                     <label>NOM</label>
                     <input type="text"
                            id="patientNom"
-                           placeholder="BRUNELLE"
+                           placeholder=""
                            autocomplete="off"
                            oninput="onNomInput(this.value)">
                 </div>
@@ -229,10 +229,6 @@
     //  GESTION PRÉNOM / NOM — formatage + autocomplete + sync
     // ══════════════════════════════════════════════════════════
 
-    /**
-     * Formate un prénom : première lettre majuscule, reste minuscule
-     * "LOUIS" → "Louis" / "louis" → "Louis"
-     */
     function formatPrenom(str) {
         if (!str) return '';
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -240,7 +236,6 @@
 
     /**
      * Formate un nom : tout en majuscules
-     * "brunelle" → "BRUNELLE"
      */
     function formatNom(str) {
         if (!str) return '';
@@ -248,7 +243,6 @@
     }
 
     /**
-     * Construit le nom complet affiché dans le document : "Louis BRUNELLE"
      * et synchronise le champ caché patientName (utilisé par generation.js)
      */
     function buildFullName() {
@@ -358,7 +352,7 @@
     var OMC_CONFIG = {
         webhook:      'https://discord.com/api/webhooks/1421827797965471855/aBgwIgdIRP3TO0Qp_culr5GJHVLDRnwtKnxjv7N62ThG8L_bRQ1gwsqV_aYXhu4eCHa2',
         captureId:    'document',
-        nomPatientId: 'patientName',   // pointe vers le champ caché qui contient "Louis BRUNELLE"
+        nomPatientId: 'patientName',  
         typeDoc:      'Certificat Médical',
         pageSource:   'certificat.html',
         getThreadName: () => `📝 ${document.getElementById('d-titre-doc')?.innerText || 'Certificat'} - ${document.getElementById('d-nom')?.innerText || 'Inconnu'}`,
