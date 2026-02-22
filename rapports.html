@@ -170,8 +170,8 @@
             </div>
 
             <div class="actions-group" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                <button type="button" onclick="genererImageRapport()" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
-                <button id="discord-btn" type="button" onclick="envoyerRapportDiscord()" class="btn-discord">📨 ENVOYER SUR L'INTRANET</button>
+                <button type="button" onclick="genererImage(this)" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
+                <button id="discord-btn" type="button" onclick="envoyerDiscord(this)" class="btn-discord">📨 ENVOYER SUR L'INTRANET</button>
             </div>
         </aside>
 
@@ -312,7 +312,31 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script type="module" src="global.js"></script>
+    <script>
+var OMC_CONFIG = {
+    webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
+    captureId:    'document',
+    nomPatientId: 'in-prenom',   // champ prénom (le nom complet est dans d-nom)
+    typeDoc:      'Rapport Officiel',
+    pageSource:   'rapports.html',
+    getThreadName: () => {
+        const titre = document.getElementById('d-titre-doc')?.innerText || 'Rapport';
+        const nom   = document.getElementById('d-nom')?.innerText || 'Inconnu';
+        const ref   = document.getElementById('d-ref')?.innerText || '';
+        return `📄 ${titre} - ${nom}`;
+    },
+    getContent: () => {
+        const nom       = document.getElementById('d-nom')?.innerText || 'Inconnu';
+        const titre     = document.getElementById('d-titre-doc')?.innerText || 'Rapport';
+        const ref       = document.getElementById('d-ref')?.innerText || '...';
+        const praticien = document.getElementById('in-sig')?.value || document.getElementById('in-doc')?.value || 'Non renseigné';
+        return `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titre}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Signataire :** ${praticien}\n━━━━━━━━━━━━━━━━━━━━`;
+    }
+};
+</script>
     <script src="rapports.js"></script>
+        <script src="generation.js"></script>
+    <script type="module" src="global.js"></script>
+    
 </body>
 </html>
