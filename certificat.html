@@ -81,7 +81,7 @@
                     <div class="autocomplete-wrapper">
                         <input type="text"
                                id="patientPrenom"
-                               placeholder=""
+                               placeholder=" "
                                autocomplete="off"
                                oninput="onPrenomInput(this.value)">
                         <div class="autocomplete-list" id="ac-list"></div>
@@ -91,7 +91,7 @@
                     <label>NOM</label>
                     <input type="text"
                            id="patientNom"
-                           placeholder=""
+                           placeholder="  "
                            autocomplete="off"
                            oninput="onNomInput(this.value)">
                 </div>
@@ -226,125 +226,143 @@
 
     <script>
     // ══════════════════════════════════════════════════════════
-    //  GESTION PRÉNOM / NOM — formatage + autocomplete + sync
+    //  FORMATAGE
     // ══════════════════════════════════════════════════════════
-
     function formatPrenom(str) {
         if (!str) return '';
+        str = str.trim();
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
-
-    /**
-     * Formate un nom : tout en majuscules
-     */
     function formatNom(str) {
         if (!str) return '';
-        return str.toUpperCase();
+        return str.trim().toUpperCase();
     }
 
-    /**
-     * et synchronise le champ caché patientName (utilisé par generation.js)
-     */
+    // Reconstruit "    ", synchro champ caché + affichage doc
     function buildFullName() {
-        const prenom = formatPrenom(document.getElementById('patientPrenom').value.trim());
-        const nom    = formatNom(document.getElementById('patientNom').value.trim());
-
-        const full = [prenom, nom].filter(Boolean).join(' ');
-
-        // Champ caché pour compatibilité generation.js / global.js
-        document.getElementById('patientName').value = full;
-
-        // Affichage dans le document
-        document.getElementById('d-nom').innerText = full || '...';
-
+        const prenom = formatPrenom(document.getElementById('patientPrenom').value);
+        const nom    = formatNom(document.getElementById('patientNom').value);
+        const full   = [prenom, nom].filter(Boolean).join(' ');
+        document.getElementById('patientName').value = full; // champ caché — pour generation.js
+        document.getElementById('d-nom').innerText   = full || '...';
         return full;
     }
 
-    /** Appelé à chaque frappe dans le champ Prénom */
-    function onPrenomInput(val) {
-        buildFullName();
-        searchPatients(val, document.getElementById('patientNom').value.trim());
-        updateCertif();
-    }
+    // Appelé à chaque frappe
+    function onPrenomInput() { buildFullName(); updateCertif(); }
+    function onNomInput()    { buildFullName(); updateCertif(); }
 
-    /** Appelé à chaque frappe dans le champ NOM */
-    function onNomInput(val) {
-        buildFullName();
-        searchPatients(document.getElementById('patientPrenom').value.trim(), val);
-        updateCertif();
-    }
+    // ══════════════════════════════════════════════════════════
+    //  HOOK GLOBAL.JS — on remplace setupPatientAutocomplete
+    //  pour qu'il branche l'autocomplete sur #patientPrenom
+    //  au lieu de #patientName, et splitte le résultat.
+    // ══════════════════════════════════════════════════════════
 
-    // ── AUTOCOMPLETE ──────────────────────────────────────────
+    // On surcharge setupPatientAutocomplete avant que global.js l'appelle dans onload.
+    // global.js appelle : setupPatientAutocomplete({ nameId:'patientName', birthId:'patientBirth', callback:fn })
+    // On intercepte ici AVANT que global.js soit chargé (ce script tourne avant).
+    // Mais global.js est un module ES6 donc il s'exécute après — on peut définir la surcharge maintenant.
 
-    /**
-     * Cherche dans la base patients (via setupPatientAutocomplete de global.js)
-     * On reconstruit manuellement la liste pour contrôler l'affichage
-     */
-    function searchPatients(prenom, nom) {
-        const list = document.getElementById('ac-list');
-        const query = (prenom + ' ' + nom).trim().toLowerCase();
+    window._omcPatientAutocompleteConfig = null; // sera rempli par global.js via le onSnapshot
 
-        if (!query || query.length < 2) {
+    // On redéfinit setupPatientAutocomplete ici.
+    // global.js le redéfinira sur window, MAIS comme global.js est type="module"
+    // il s'exécute en dernier — donc on laisse global.js créer sa version,
+    // puis on la remplace à la fin du chargement via window.addEventListener('load').
+
+    window.addEventListener('load', function() {
+        // À ce stade global.js a fini de s'exécuter et patientsCache est alimenté.
+        // On branche l'autocomplete sur #patientPrenom en utilisant directement patientsCache.
+
+        const inputPrenom = document.getElementById('patientPrenom');
+        const inputNom    = document.getElementById('patientNom');
+        const list        = document.getElementById('ac-list');
+        if (!inputPrenom || !list) return;
+
+        inputPrenom.addEventListener('input', function() {
+            const val = this.value.trim().toLowerCase();
+            list.innerHTML = '';
             list.style.display = 'none';
-            return;
-        }
+            if (val.length < 2) return;
 
-        // Récupère les patients depuis Firestore via la fonction globale si dispo
-        if (typeof window._omcPatients === 'undefined') {
-            list.style.display = 'none';
-            return;
-        }
+            // patientsCache est exposé par global.js via window.getPatientsDB()
+            const patients = window.getPatientsDB ? window.getPatientsDB() : [];
 
-        const results = window._omcPatients.filter(p => {
-            const full = (p.prenom + ' ' + p.nom).toLowerCase();
-            return full.includes(query) || p.nom.toLowerCase().includes(nom.toLowerCase()) || p.prenom.toLowerCase().includes(prenom.toLowerCase());
-        }).slice(0, 6);
+            // On cherche sur le nom complet (p.nom contient "    " ou "    " selon comment tu sauvegardes)
+            const matches = patients.filter(p => {
+                const haystack = (p.nom || '').toLowerCase();
+                return haystack.includes(val);
+            }).slice(0, 8);
 
-        if (!results.length) {
-            list.style.display = 'none';
-            return;
-        }
+            if (!matches.length) return;
 
-        list.innerHTML = results.map(p => {
-            const displayPrenom = formatPrenom(p.prenom || '');
-            const displayNom    = formatNom(p.nom || '');
-            const birth = p.dateNaissance
-                ? new Date(p.dateNaissance).toLocaleDateString('fr-FR')
-                : '';
-            return `<div class="autocomplete-item" onclick="selectPatient(${JSON.stringify(p).replace(/"/g, '&quot;')})">
-                <div>
-                    <strong>${displayPrenom} ${displayNom}</strong>
-                    ${birth ? `<small>Né(e) le ${birth}</small>` : ''}
-                </div>
-            </div>`;
-        }).join('');
+            list.style.display = 'block';
+            matches.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                // Affichage : nom tel qu'il est en base
+                item.innerHTML = `<strong>${p.nom}</strong>${p.naissance ? `<br><small style="color:#94a3b8">Né(e) le ${formatDateFR(p.naissance)}</small>` : ''}`;
 
-        list.style.display = 'block';
-    }
+                item.onclick = function() {
+                    // p.nom contient le nom complet tel que sauvegardé ("    ")
+                    // On splitte : dernier mot = NOM, le reste = prénom
+                    const parts  = (p.nom || '').trim().split(/\s+/);
+                    let prenom, nom;
 
-    /** Sélectionne un patient depuis le dropdown */
-    function selectPatient(p) {
-        document.getElementById('patientPrenom').value = formatPrenom(p.prenom || '');
-        document.getElementById('patientNom').value    = formatNom(p.nom || '');
+                    if (parts.length >= 2) {
+                        // Convention : dernier segment = NOM famille (majuscules)
+                        // Si le dernier mot est tout en majuscules → c'est le NOM
+                        const last = parts[parts.length - 1];
+                        if (last === last.toUpperCase() && last.length > 1) {
+                            nom    = last;
+                            prenom = parts.slice(0, -1).join(' ');
+                        } else {
+                            // Sinon on suppose prénom = premier mot, NOM = le reste
+                            prenom = parts[0];
+                            nom    = parts.slice(1).join(' ');
+                        }
+                    } else {
+                        prenom = '';
+                        nom    = parts[0] || '';
+                    }
 
-        if (p.dateNaissance) {
-            const birthInput = document.getElementById('patientBirth');
-            birthInput.value = p.dateNaissance; // format YYYY-MM-DD attendu
-            upDate('d-naiss', p.dateNaissance);
-        }
+                    inputPrenom.value = formatPrenom(prenom);
+                    inputNom.value    = formatNom(nom);
 
-        document.getElementById('ac-list').style.display = 'none';
-        buildFullName();
-        updateCertif();
-    }
+                    // Remplir la date de naissance
+                    if (p.naissance) {
+                        const birthEl = document.getElementById('patientBirth');
+                        if (birthEl) {
+                            birthEl.value = p.naissance;
+                            if (typeof upDate === 'function') upDate('d-naiss', p.naissance);
+                        }
+                    }
 
-    // Ferme le dropdown si on clique ailleurs
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.autocomplete-wrapper')) {
-            const list = document.getElementById('ac-list');
-            if (list) list.style.display = 'none';
-        }
+                    list.style.display = 'none';
+                    buildFullName();
+                    updateCertif();
+                };
+                list.appendChild(item);
+            });
+        });
+
+        // Ferme si clic dehors
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.autocomplete-wrapper')) {
+                list.style.display = 'none';
+            }
+        });
     });
+
+    function formatDateFR(val) {
+        if (!val) return '';
+        // Accepte YYYY-MM-DD ou DD/MM/YYYY
+        if (val.includes('-')) {
+            const [y, m, d] = val.split('-');
+            return `${d}/${m}/${y}`;
+        }
+        return val;
+    }
 
     // ══════════════════════════════════════════════════════════
     //  CONFIG DISCORD / GÉNÉRATION
@@ -352,7 +370,7 @@
     var OMC_CONFIG = {
         webhook:      'https://discord.com/api/webhooks/1421827797965471855/aBgwIgdIRP3TO0Qp_culr5GJHVLDRnwtKnxjv7N62ThG8L_bRQ1gwsqV_aYXhu4eCHa2',
         captureId:    'document',
-        nomPatientId: 'patientName',  
+        nomPatientId: 'patientName',   // champ caché = "    " — utilisé par generation.js
         typeDoc:      'Certificat Médical',
         pageSource:   'certificat.html',
         getThreadName: () => `📝 ${document.getElementById('d-titre-doc')?.innerText || 'Certificat'} - ${document.getElementById('d-nom')?.innerText || 'Inconnu'}`,
