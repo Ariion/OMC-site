@@ -71,14 +71,13 @@
             </div>
 
             <div class="actions-group">
-                <button type="button" class="btn-image" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; genererImage()">
-                    🖼️ GÉNÉRER L'IMAGE
-                </button>
-            
-                <button id="discord-btn" class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; envoyerDiscord()">
-                    ENVOYER SUR DISCORD
-                </button>
-            </div>
+    <button type="button" class="btn-image" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; genererImage(this)">
+        🖼️ GÉNÉRER L'IMAGE
+    </button>
+    <button id="discord-btn" class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; envoyerDiscord(this)">
+        ENVOYER SUR DISCORD
+    </button>
+</div>
         </aside>
 
         <main class="preview-area">
@@ -125,6 +124,18 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+   <script>
+var OMC_CONFIG = {
+    webhook:      'https://discord.com/api/webhooks/1468221753372446720/g_ItYTLYSb3xDeyRjFrVEsHuIPhwibYEEZoHzfktlzRCCqlqvmG2W3Xv7HNtCLv_hc0K',
+    captureId:    'document',
+    nomPatientId: 'patientName',
+    typeDoc:      'Acte de Décès',
+    pageSource:   'deces.html',
+    getThreadName: () => `🕯️ DÉCÈS - ${document.getElementById('d-nom')?.innerText || 'Inconnu'} (${new Date().toLocaleDateString('fr-FR')})`,
+    getContent:    () => `📄 **Nouvel Acte de Décès enregistré**\n👤 Défunt : ${document.getElementById('d-nom')?.innerText || 'Inconnu'}`
+};
+</script>
+<script src="generation.js"></script>
     <script src="deces.js"></script>
     <script type="module" src="global.js"></script>
 </body>

@@ -97,14 +97,14 @@
             </div>
 
             <div class="actions-group">
-    <button type="button" class="btn-image" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; genererImage()">
+    <button type="button" class="btn-image" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; genererImage(this)">
         🖼️ GÉNÉRER L'ORDONNANCE
     </button>
-
-    <button id="discord-btn" class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){console.log(e)}; envoyerDiscord()">
+    <button id="discord-btn" class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; envoyerDiscord(this)">
         ENVOYER SUR DISCORD
     </button>
 </div>
+
         </aside>
 
         <main class="preview-area" style="align-items: flex-start; justify-content: center;">
@@ -165,6 +165,18 @@
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+var OMC_CONFIG = {
+    webhook:      'https://discord.com/api/webhooks/1424039813593698456/ew_fnKRv1gLQooCf64qMKWP1IOxth2iOpHYsRE9UaJMKWd-aUfcTc69amPI7ye4ppWxA',
+    captureId:    'document',
+    nomPatientId: 'patientName',
+    typeDoc:      'Ordonnance',
+    pageSource:   'ordonnance.html',
+    getThreadName: () => `💊 Ordo - ${document.getElementById('patientName')?.value || 'Inconnu'} (${new Date().toLocaleDateString('fr-FR')})`,
+    getContent:    () => `💊 **Nouvelle Ordonnance médicale**\n👤 Patient : ${document.getElementById('patientName')?.value || 'Inconnu'}`
+};
+</script>
+<script src="generation.js"></script>
     <script src="ordonnance.js"></script>
     <script type="module" src="global.js"></script>
 </body>
