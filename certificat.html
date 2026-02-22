@@ -8,19 +8,61 @@
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="certificat.css">
     <link rel="stylesheet" href="patch-daltonien.css">
+
+    <style>
+        /* ── Champs prénom / nom côte à côte ── */
+        .name-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .name-row .form-group {
+            margin-bottom: 0;
+        }
+
+        /* ── Autocomplete dropdown (si global.css n'a pas les styles) ── */
+        .autocomplete-wrapper { position: relative; width: 100%; }
+        .autocomplete-list {
+            position: absolute;
+            top: 100%; left: 0; right: 0;
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 9999;
+            box-shadow: 0 8px 20px rgba(0,0,0,.5);
+        }
+        .autocomplete-item {
+            padding: 9px 14px;
+            border-bottom: 1px solid #334155;
+            cursor: pointer;
+            color: #e2e8f0;
+            font-size: 12px;
+            transition: background .15s;
+            display: flex;
+            justify-content: space-between;
+        }
+        .autocomplete-item:last-child { border-bottom: none; }
+        .autocomplete-item:hover { background: #3b82f6; color: white; }
+        .autocomplete-item strong { display: block; font-size: 13px; }
+        .autocomplete-item small { color: #94a3b8; font-size: 11px; }
+        .autocomplete-item:hover small { color: #e0f2fe; }
+    </style>
 </head>
 <body class="labo-body">
     <div class="interface-container">
         
         <aside class="sidebar">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
-    <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
-    
-    <button onclick="toggleTheme()" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
+                <button onclick="toggleTheme()" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
                     <span>🌓</span>
                     <span id="theme-text">Passer mode sombre</span>
                 </button>
-</div>
+            </div>
+
             <h1 class="sidebar-title">CERTIFICAT MÉDICAL</h1>
 
             <div class="form-group">
@@ -32,16 +74,45 @@
                 </select>
             </div>
 
-            <div class="form-group">
-                <label>Patient</label>
-                <input type="text" id="patientName" oninput="updateCertif()">
+            <!-- ══ PRÉNOM + NOM CÔTE À CÔTE ══ -->
+            <div class="name-row">
+                <div class="form-group">
+                    <label>Prénom</label>
+                    <div class="autocomplete-wrapper">
+                        <input type="text"
+                               id="patientPrenom"
+                               placeholder="Louis"
+                               autocomplete="off"
+                               oninput="onPrenomInput(this.value)">
+                        <div class="autocomplete-list" id="ac-list"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>NOM</label>
+                    <input type="text"
+                           id="patientNom"
+                           placeholder="BRUNELLE"
+                           autocomplete="off"
+                           oninput="onNomInput(this.value)">
+                </div>
             </div>
+
+            <!-- Champ caché pour la compatibilité avec global.js / generation.js -->
+            <input type="hidden" id="patientName">
+
             <div class="form-group">
                 <label>Date de naissance</label>
                 <input type="date" id="patientBirth" oninput="upDate('d-naiss', this.value)">
             </div>
-            <div class="form-group"><label>Date d'établissement</label><input type="date" oninput="upDate('d-date', this.value)"></div>
-            <div class="form-group" id="side-entreprise-block"><label>Entreprise</label><input type="text" id="f-entreprise" oninput="updateCertif()"></div>
+            <div class="form-group">
+                <label>Date d'établissement</label>
+                <input type="date" oninput="upDate('d-date', this.value)">
+            </div>
+
+            <div class="form-group" id="side-entreprise-block">
+                <label>Entreprise</label>
+                <input type="text" id="f-entreprise" oninput="updateCertif()">
+            </div>
 
             <div class="form-group" id="side-concl-block">
                 <label>Conclusion médicale</label>
@@ -84,9 +155,9 @@
             </div>
 
             <div class="actions-group" style="margin-top: 20px;">
-    <button class="btn-image" onclick="genererImage(this)">🖼️ GÉNÉRER L'IMAGE</button>
-    <button id="discord-btn" class="btn-discord" onclick="envoyerDiscord(this)">ENVOYER SUR DISCORD</button>
-</div>
+                <button class="btn-image" onclick="genererImage(this)">🖼️ GÉNÉRER L'IMAGE</button>
+                <button id="discord-btn" class="btn-discord" onclick="envoyerDiscord(this)">ENVOYER SUR DISCORD</button>
+            </div>
         </aside>
 
         <main class="preview-area">
@@ -118,57 +189,184 @@
                 </div>
 
                 <div class="cert-footer">
-    <div class="cert-signature" style="text-align: left; border-top: 1px solid #cbd5e1; min-width: 250px;">
-        Établi par :<br><br>
-        <span id="d-sig" style="font-weight: bold; font-style: italic;">DOCTEUR</span>
-    </div>
-
-    <div class="round-stamp">
-        <img id="qr-ref" class="qr-code" src="" alt="QR">
-        <span style="display: block; font-size: 10px; font-weight: bold;">OMC MEDICAL CENTER</span>
-    </div>
-</div>
+                    <div class="cert-signature" style="text-align: left; border-top: 1px solid #cbd5e1; min-width: 250px;">
+                        Établi par :<br><br>
+                        <span id="d-sig" style="font-weight: bold; font-style: italic;">DOCTEUR</span>
+                    </div>
+                    <div class="round-stamp">
+                        <img id="qr-ref" class="qr-code" src="" alt="QR">
+                        <span style="display: block; font-size: 10px; font-weight: bold;">OMC MEDICAL CENTER</span>
+                    </div>
+                </div>
 
                 <p class="legal-text">
-                    Ce document est établi sur la base des éléments fournis par le patient et de l’examen clinique réalisé à la date indiquée. Toute reproduction ou usage détourné est strictement interdite.
+                    Ce document est établi sur la base des éléments fournis par le patient et de l'examen clinique réalisé à la date indiquée. Toute reproduction ou usage détourné est strictement interdite.
                 </p>
             </div>
         </main>
     </div>
 
+    <!-- POPUP IMAGE -->
     <div id="image-popup" class="popup-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; align-items:center; justify-content:center;">
-    <div class="popup-content" style="background:#1a2332; padding:20px; border-radius:8px; max-width:90%; border:1px solid #3b82f6;">
-        <h3 style="color:white; margin-top:0;">PRÉVISUALISATION</h3>
-        
-        <div style="max-height:60vh; overflow:auto; margin-bottom:15px;">
-            <img id="preview-img-result" src="" style="max-width:100%; border:1px solid #444;">
-        </div>
-
-        <input type="text" id="direct-link" readonly style="width:100%; margin-bottom:10px; padding:5px; background:#0a1324; color:white; border:1px solid #334155;">
-
-        <div style="display:flex; gap:10px;">
-            <button onclick="copyLink()" style="flex:1; padding:10px; background:#64ffda; cursor:pointer; font-weight:bold;">COPIER LIEN</button>
-            <button onclick="closePopup()" style="flex:1; padding:10px; background:#64748b; color:white; cursor:pointer;">FERMER</button>
+        <div class="popup-content" style="background:#1a2332; padding:20px; border-radius:8px; max-width:90%; border:1px solid #3b82f6;">
+            <h3 style="color:white; margin-top:0;">PRÉVISUALISATION</h3>
+            <div style="max-height:60vh; overflow:auto; margin-bottom:15px;">
+                <img id="preview-img-result" src="" style="max-width:100%; border:1px solid #444;">
+            </div>
+            <input type="text" id="direct-link" readonly style="width:100%; margin-bottom:10px; padding:5px; background:#0a1324; color:white; border:1px solid #334155;">
+            <div style="display:flex; gap:10px;">
+                <button onclick="copyLink()" style="flex:1; padding:10px; background:#64ffda; cursor:pointer; font-weight:bold;">COPIER LIEN</button>
+                <button onclick="closePopup()" style="flex:1; padding:10px; background:#64748b; color:white; cursor:pointer;">FERMER</button>
+            </div>
         </div>
     </div>
-</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-       <script src="certificat.js"></script>
-   <script>
-var OMC_CONFIG = {
-    webhook:      'https://discord.com/api/webhooks/1421827797965471855/aBgwIgdIRP3TO0Qp_culr5GJHVLDRnwtKnxjv7N62ThG8L_bRQ1gwsqV_aYXhu4eCHa2',
-    captureId:    'document',
-    nomPatientId: 'patientName',
-    typeDoc:      'Certificat Médical',
-    pageSource:   'certificat.html',
-    getThreadName: () => `📝 ${document.getElementById('d-titre-doc')?.innerText || 'Certificat'} - ${document.getElementById('d-nom')?.innerText || 'Inconnu'}`,
-    getContent:    () => `📜 **Nouveau Rapport Médical**\n👤 Patient : ${document.getElementById('d-nom')?.innerText || 'Inconnu'}\n📋 Type : ${document.getElementById('d-titre-doc')?.innerText || 'Certificat'}`
-};
-</script>
+    <script src="certificat.js"></script>
 
+    <script>
+    // ══════════════════════════════════════════════════════════
+    //  GESTION PRÉNOM / NOM — formatage + autocomplete + sync
+    // ══════════════════════════════════════════════════════════
 
-<script src="generation.js"></script>
+    /**
+     * Formate un prénom : première lettre majuscule, reste minuscule
+     * "LOUIS" → "Louis" / "louis" → "Louis"
+     */
+    function formatPrenom(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
+
+    /**
+     * Formate un nom : tout en majuscules
+     * "brunelle" → "BRUNELLE"
+     */
+    function formatNom(str) {
+        if (!str) return '';
+        return str.toUpperCase();
+    }
+
+    /**
+     * Construit le nom complet affiché dans le document : "Louis BRUNELLE"
+     * et synchronise le champ caché patientName (utilisé par generation.js)
+     */
+    function buildFullName() {
+        const prenom = formatPrenom(document.getElementById('patientPrenom').value.trim());
+        const nom    = formatNom(document.getElementById('patientNom').value.trim());
+
+        const full = [prenom, nom].filter(Boolean).join(' ');
+
+        // Champ caché pour compatibilité generation.js / global.js
+        document.getElementById('patientName').value = full;
+
+        // Affichage dans le document
+        document.getElementById('d-nom').innerText = full || '...';
+
+        return full;
+    }
+
+    /** Appelé à chaque frappe dans le champ Prénom */
+    function onPrenomInput(val) {
+        buildFullName();
+        searchPatients(val, document.getElementById('patientNom').value.trim());
+        updateCertif();
+    }
+
+    /** Appelé à chaque frappe dans le champ NOM */
+    function onNomInput(val) {
+        buildFullName();
+        searchPatients(document.getElementById('patientPrenom').value.trim(), val);
+        updateCertif();
+    }
+
+    // ── AUTOCOMPLETE ──────────────────────────────────────────
+
+    /**
+     * Cherche dans la base patients (via setupPatientAutocomplete de global.js)
+     * On reconstruit manuellement la liste pour contrôler l'affichage
+     */
+    function searchPatients(prenom, nom) {
+        const list = document.getElementById('ac-list');
+        const query = (prenom + ' ' + nom).trim().toLowerCase();
+
+        if (!query || query.length < 2) {
+            list.style.display = 'none';
+            return;
+        }
+
+        // Récupère les patients depuis Firestore via la fonction globale si dispo
+        if (typeof window._omcPatients === 'undefined') {
+            list.style.display = 'none';
+            return;
+        }
+
+        const results = window._omcPatients.filter(p => {
+            const full = (p.prenom + ' ' + p.nom).toLowerCase();
+            return full.includes(query) || p.nom.toLowerCase().includes(nom.toLowerCase()) || p.prenom.toLowerCase().includes(prenom.toLowerCase());
+        }).slice(0, 6);
+
+        if (!results.length) {
+            list.style.display = 'none';
+            return;
+        }
+
+        list.innerHTML = results.map(p => {
+            const displayPrenom = formatPrenom(p.prenom || '');
+            const displayNom    = formatNom(p.nom || '');
+            const birth = p.dateNaissance
+                ? new Date(p.dateNaissance).toLocaleDateString('fr-FR')
+                : '';
+            return `<div class="autocomplete-item" onclick="selectPatient(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+                <div>
+                    <strong>${displayPrenom} ${displayNom}</strong>
+                    ${birth ? `<small>Né(e) le ${birth}</small>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+
+        list.style.display = 'block';
+    }
+
+    /** Sélectionne un patient depuis le dropdown */
+    function selectPatient(p) {
+        document.getElementById('patientPrenom').value = formatPrenom(p.prenom || '');
+        document.getElementById('patientNom').value    = formatNom(p.nom || '');
+
+        if (p.dateNaissance) {
+            const birthInput = document.getElementById('patientBirth');
+            birthInput.value = p.dateNaissance; // format YYYY-MM-DD attendu
+            upDate('d-naiss', p.dateNaissance);
+        }
+
+        document.getElementById('ac-list').style.display = 'none';
+        buildFullName();
+        updateCertif();
+    }
+
+    // Ferme le dropdown si on clique ailleurs
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.autocomplete-wrapper')) {
+            const list = document.getElementById('ac-list');
+            if (list) list.style.display = 'none';
+        }
+    });
+
+    // ══════════════════════════════════════════════════════════
+    //  CONFIG DISCORD / GÉNÉRATION
+    // ══════════════════════════════════════════════════════════
+    var OMC_CONFIG = {
+        webhook:      'https://discord.com/api/webhooks/1421827797965471855/aBgwIgdIRP3TO0Qp_culr5GJHVLDRnwtKnxjv7N62ThG8L_bRQ1gwsqV_aYXhu4eCHa2',
+        captureId:    'document',
+        nomPatientId: 'patientName',   // pointe vers le champ caché qui contient "Louis BRUNELLE"
+        typeDoc:      'Certificat Médical',
+        pageSource:   'certificat.html',
+        getThreadName: () => `📝 ${document.getElementById('d-titre-doc')?.innerText || 'Certificat'} - ${document.getElementById('d-nom')?.innerText || 'Inconnu'}`,
+        getContent:    () => `📜 **Nouveau Rapport Médical**\n👤 Patient : ${document.getElementById('d-nom')?.innerText || 'Inconnu'}\n📋 Type : ${document.getElementById('d-titre-doc')?.innerText || 'Certificat'}`
+    };
+    </script>
+
+    <script src="generation.js"></script>
     <script type="module" src="global.js"></script>
 </body>
 </html>
