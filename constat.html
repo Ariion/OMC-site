@@ -24,10 +24,33 @@
             <h1 class="sidebar-title">CONSTAT LÉSIONNEL</h1>
 
             <div class="form-group-row">
-                <div class="form-group">
-                    <label>NOM DU PATIENT</label>
-                    <input id="patientName" type="text" placeholder="Ex: Garret Freeman" oninput="updateReport()">
-                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+    <div class="form-group" style="margin-bottom: 0;">
+        <label>Prénom</label>
+        <div style="position: relative;">
+            <input type="text" id="patientPrenom" placeholder=" " autocomplete="off"
+                   oninput="buildFullNameConstat()">
+            <div id="ac-list-constat" style="position:absolute; top:100%; left:0; right:0; background:#1e293b; border:1px solid #475569; border-radius:0 0 6px 6px; max-height:200px; overflow-y:auto; z-index:9999; display:none; box-shadow:0 8px 20px rgba(0,0,0,.5);"></div>
+        </div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+    <div class="form-group" style="margin-bottom: 0;">
+        <label>Prénom</label>
+        <div style="position: relative;">
+            <input type="text" id="patientPrenom" placeholder=" " autocomplete="off"
+                   oninput="buildFullNameGrossesse(); updateReport()">
+            <div id="ac-list-grossesse" style="position:absolute; top:100%; left:0; right:0; background:#1e293b; border:1px solid #475569; border-radius:0 0 6px 6px; max-height:200px; overflow-y:auto; z-index:9999; display:none; box-shadow:0 8px 20px rgba(0,0,0,.5);"></div>
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 0;">
+        <label>NOM</label>
+        <input type="text" id="patientNom" placeholder=" " autocomplete="off"
+               oninput="buildFullNameGrossesse(); updateReport()">
+    </div>
+</div>
+<input type="hidden" id="patientName">
+</div>
+<input type="hidden" id="patientName">
                 <div class="form-group">
                     <label>DATE DE NAISSANCE</label>
                     <input id="patientBirth" type="date" oninput="updateReport()">
@@ -212,6 +235,119 @@ var OMC_CONFIG = {
     getThreadName: () => `Imagerie - ${document.getElementById('patientName')?.value || 'Inconnu'} - (${window.sessionRef || ''})`,
     getContent:    () => `🚑 Nouveau Constat Lésionnel : ${document.getElementById('patientName')?.value || 'Inconnu'}`
 };
+</script>
+<script>
+function formatPrenom(str) { if (!str) return ''; return str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase(); }
+function formatNom(str) { if (!str) return ''; return str.trim().toUpperCase(); }
+
+function buildFullNameConstat() {
+    const prenom = formatPrenom(document.getElementById('patientPrenom').value);
+    const nom    = formatNom(document.getElementById('patientNom').value);
+    const full   = [prenom, nom].filter(Boolean).join(' ');
+    document.getElementById('patientName').value = full;
+    // Met à jour le champ d'affichage dans le doc (adapte l'ID si besoin)
+    const el = document.getElementById('d-nom');
+    if (el) el.innerText = full || '...';
+}
+
+window.addEventListener('load', function() {
+    const inputPrenom = document.getElementById('patientPrenom');
+    const inputNom    = document.getElementById('patientNom');
+    const list        = document.getElementById('ac-list-constat');
+    if (!inputPrenom || !list) return;
+
+    inputPrenom.addEventListener('input', function() {
+        const val = this.value.trim().toLowerCase();
+        list.innerHTML = ''; list.style.display = 'none';
+        if (val.length < 2) return;
+        const patients = window.getPatientsDB ? window.getPatientsDB() : [];
+        const matches = patients.filter(p => (p.nom||'').toLowerCase().includes(val)).slice(0, 8);
+        if (!matches.length) return;
+        list.style.display = 'block';
+        matches.forEach(p => {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:9px 14px; border-bottom:1px solid #334155; cursor:pointer; color:#e2e8f0; font-size:12px;';
+            item.innerHTML = `<strong>${p.nom}</strong>${p.naissance ? `<br><small style="color:#94a3b8">Né(e) le ${p.naissance.split('-').reverse().join('/')}</small>` : ''}`;
+            item.onmouseover = () => item.style.background = '#3b82f6';
+            item.onmouseout  = () => item.style.background = '';
+            item.onclick = function() {
+                const parts = (p.nom||'').trim().split(/\s+/);
+                const last  = parts[parts.length - 1];
+                const isNom = last === last.toUpperCase() && last.length > 1;
+                inputPrenom.value = formatPrenom(isNom ? parts.slice(0,-1).join(' ') : parts[0]);
+                inputNom.value    = formatNom(isNom ? last : parts.slice(1).join(' '));
+                if (p.naissance) {
+                    const b = document.getElementById('patientBirth');
+                    if (b) { b.value = p.naissance; if(typeof upDate==='function') upDate('d-naiss', p.naissance); }
+                }
+                list.style.display = 'none';
+                buildFullNameConstat();
+            };
+            list.appendChild(item);
+        });
+    });
+    document.addEventListener('click', e => {
+        if (!e.target.closest('#patientPrenom') && !e.target.closest('#ac-list-constat'))
+            list.style.display = 'none';
+    });
+});
+</script>
+<script>
+function formatPrenom(str) { if (!str) return ''; return str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase(); }
+function formatNom(str) { if (!str) return ''; return str.trim().toUpperCase(); }
+
+function buildFullNameGrossesse() {
+    const prenom = formatPrenom(document.getElementById('patientPrenom').value);
+    const nom    = formatNom(document.getElementById('patientNom').value);
+    const full   = [prenom, nom].filter(Boolean).join(' ');
+    document.getElementById('patientName').value = full;
+    // Met à jour l'affichage dans le document (adapte si ton ID est différent)
+    const el = document.getElementById('display-patient');
+    if (el) el.innerText = full || '...';
+}
+
+window.addEventListener('load', function() {
+    const inputPrenom = document.getElementById('patientPrenom');
+    const inputNom    = document.getElementById('patientNom');
+    const list        = document.getElementById('ac-list-grossesse');
+    if (!inputPrenom || !list) return;
+
+    inputPrenom.addEventListener('input', function() {
+        const val = this.value.trim().toLowerCase();
+        list.innerHTML = ''; list.style.display = 'none';
+        if (val.length < 2) return;
+        const patients = window.getPatientsDB ? window.getPatientsDB() : [];
+        const matches = patients.filter(p => (p.nom||'').toLowerCase().includes(val)).slice(0, 8);
+        if (!matches.length) return;
+        list.style.display = 'block';
+        matches.forEach(p => {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:9px 14px; border-bottom:1px solid #334155; cursor:pointer; color:#e2e8f0; font-size:12px;';
+            item.innerHTML = `<strong>${p.nom}</strong>${p.naissance ? `<br><small style="color:#94a3b8">Né(e) le ${p.naissance.split('-').reverse().join('/')}</small>` : ''}`;
+            item.onmouseover = () => item.style.background = '#3b82f6';
+            item.onmouseout  = () => item.style.background = '';
+            item.onclick = function() {
+                const parts = (p.nom||'').trim().split(/\s+/);
+                const last  = parts[parts.length - 1];
+                const isNom = last === last.toUpperCase() && last.length > 1;
+                inputPrenom.value = formatPrenom(isNom ? parts.slice(0,-1).join(' ') : parts[0]);
+                inputNom.value    = formatNom(isNom ? last : parts.slice(1).join(' '));
+                if (p.naissance) {
+                    const b = document.getElementById('patientBirth');
+                    if (b) { b.value = p.naissance; if(typeof updateReport==='function') updateReport(); }
+                }
+                list.style.display = 'none';
+                buildFullNameGrossesse();
+                if (typeof updateReport === 'function') updateReport();
+            };
+            list.appendChild(item);
+        });
+    });
+    document.addEventListener('click', e => {
+        if (!e.target.closest('#patientPrenom') && !e.target.closest('#ac-list-grossesse'))
+            list.style.display = 'none';
+    });
+});
 </script>
     <script src="generation.js"></script>
     <script type="module" src="global.js"></script>
