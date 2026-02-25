@@ -48,10 +48,10 @@
                 <label id="label-nom">Prénom & Nom du Patient</label>
                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                     <div style="flex: 1;">
-                        <input type="text" id="in-prenom" placeholder="Prénom (ex: Carter)" oninput="upNom(); genererRef();">
+                        <input type="text" id="in-prenom" placeholder="Prénom (ex: Carter)" autocomplete="off" oninput="upNom(); genererRef();">
                     </div>
                     <div style="flex: 1;">
-                        <input type="text" id="in-nom-famille" placeholder="Nom (ex: JAYDEN)" oninput="upNom(); genererRef();">
+                        <input type="text" id="in-nom-famille" placeholder="NOM (ex: JAYDEN)" autocomplete="off" oninput="upNom(); genererRef(); document.getElementById('in-nom-famille').value = document.getElementById('in-nom-famille').value.toUpperCase();">
                     </div>
                 </div>
                 

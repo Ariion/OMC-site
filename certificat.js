@@ -31,7 +31,8 @@ function updateCertif() {
     // Titre du document selon le type
     const titres = {
         "Aptitude professionnelle": "CERTIFICAT D'APTITUDE PROFESSIONNELLE",
-        "Port d'arme (PPA)":        "CERTIFICAT DE CAPACITÉ À PASSER L'EXAMEN DU PPA",
+        "PPA Civil":         "CERTIFICAT DE CAPACITÉ À PASSER L'EXAMEN DU PPA — CIVIL",
+        "PPA Professionnel": "CERTIFICAT DE CAPACITÉ À PASSER L'EXAMEN DU PPA — PROFESSIONNEL",
         "Divers":                   "CERTIFICAT — DIVERS"
     };
     document.getElementById('d-titre-doc').innerText = titres[type] || "CERTIFICAT MÉDICAL";

@@ -23,10 +23,22 @@
             <h1 class="sidebar-title">PRESCRIPTION</h1>
             
             <div class="sidebar-section">
-                <div class="form-group">
-                    <label>Patient(e)</label>
-                    <input type="text" id="patientName" oninput="up('d-nom', this.value)" placeholder="Nom Prénom">
-                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+    <div class="form-group" style="margin-bottom: 0;">
+        <label>Prénom</label>
+        <div style="position: relative;">
+            <input type="text" id="patientPrenom" placeholder=" " autocomplete="off"
+                   oninput="buildFullNameOrdo()">
+            <div id="ac-list-ordo" style="position:absolute; top:100%; left:0; right:0; background:#1e293b; border:1px solid #475569; border-radius:0 0 6px 6px; max-height:200px; overflow-y:auto; z-index:9999; display:none; box-shadow:0 8px 20px rgba(0,0,0,.5);"></div>
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 0;">
+        <label>NOM</label>
+        <input type="text" id="patientNom" placeholder=" " autocomplete="off"
+               oninput="buildFullNameOrdo()">
+    </div>
+</div>
+<input type="hidden" id="patientName">
                 <div class="form-group">
                     <label>Date de Naissance</label>
                     <input type="date" id="patientBirth" oninput="upDate('d-ddn', this.value)">
@@ -176,6 +188,56 @@ var OMC_CONFIG = {
     getThreadName: () => `💊 Ordo - ${document.getElementById('patientName')?.value || 'Inconnu'} (${new Date().toLocaleDateString('fr-FR')})`,
     getContent:    () => `💊 **Nouvelle Ordonnance médicale**\n👤 Patient : ${document.getElementById('patientName')?.value || 'Inconnu'}`
 };
+</script>
+<script>
+function formatPrenom(str) { if (!str) return ''; return str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase(); }
+function formatNom(str) { if (!str) return ''; return str.trim().toUpperCase(); }
+function buildFullNameOrdo() {
+    const prenom = formatPrenom(document.getElementById('patientPrenom').value);
+    const nom    = formatNom(document.getElementById('patientNom').value);
+    const full   = [prenom, nom].filter(Boolean).join(' ');
+    document.getElementById('patientName').value = full;
+    document.getElementById('d-nom').innerText = full || '...';
+}
+
+window.addEventListener('load', function() {
+    const inputPrenom = document.getElementById('patientPrenom');
+    const inputNom    = document.getElementById('patientNom');
+    const list        = document.getElementById('ac-list-ordo');
+    if (!inputPrenom || !list) return;
+
+    inputPrenom.addEventListener('input', function() {
+        const val = this.value.trim().toLowerCase();
+        list.innerHTML = ''; list.style.display = 'none';
+        if (val.length < 2) return;
+        const patients = window.getPatientsDB ? window.getPatientsDB() : [];
+        const matches = patients.filter(p => (p.nom||'').toLowerCase().includes(val)).slice(0, 8);
+        if (!matches.length) return;
+        list.style.display = 'block';
+        matches.forEach(p => {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:9px 14px; border-bottom:1px solid #334155; cursor:pointer; color:#e2e8f0; font-size:12px;';
+            item.innerHTML = `<strong>${p.nom}</strong>${p.naissance ? `<br><small style="color:#94a3b8">Né(e) le ${p.naissance.split('-').reverse().join('/')}</small>` : ''}`;
+            item.onmouseover = () => item.style.background = '#3b82f6';
+            item.onmouseout  = () => item.style.background = '';
+            item.onclick = function() {
+                const parts = (p.nom||'').trim().split(/\s+/);
+                const last  = parts[parts.length - 1];
+                const isNom = last === last.toUpperCase() && last.length > 1;
+                inputPrenom.value = formatPrenom(isNom ? parts.slice(0,-1).join(' ') : parts[0]);
+                inputNom.value    = formatNom(isNom ? last : parts.slice(1).join(' '));
+                if (p.naissance) {
+                    const b = document.getElementById('patientBirth');
+                    if (b) { b.value = p.naissance; if(typeof upDate==='function') upDate('d-ddn', p.naissance); }
+                }
+                list.style.display = 'none';
+                buildFullNameOrdo();
+            };
+            list.appendChild(item);
+        });
+    });
+    document.addEventListener('click', e => { if (!e.target.closest('[id="patientPrenom"]') && !e.target.closest('#ac-list-ordo')) list.style.display = 'none'; });
+});
 </script>
 <script src="generation.js"></script>
     <script src="ordonnance.js"></script>
