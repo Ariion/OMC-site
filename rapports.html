@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
     <style>
-        /* CSS POUR LA BARRE D'OUTILS TEXTE (Gras, Italique, Liste) */
         .md-toolbar { display: flex; gap: 5px; margin-bottom: 3px; }
         .md-toolbar button { 
             background: #1e293b; color: #94a3b8; border: 1px solid #334155; 
@@ -9,6 +8,74 @@
             transition: 0.2s; font-weight: bold; 
         }
         .md-toolbar button:hover { background: #38bdf8; color: #0f172a; }
+
+        /* Bouton "En jeu" vert */
+        .btn-jeu { 
+            background: #16a34a !important; color: white !important;
+            border: none !important; text-transform: uppercase;
+            font-size: 11px; padding: 12px !important; font-weight: bold;
+            width: 100%; border-radius: 4px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-jeu:hover { filter: brightness(1.1); }
+        .btn-jeu:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Zone d'aperçu — deux documents côte à côte */
+        .preview-area {
+            flex-grow: 1;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 30px;
+            padding: 30px 20px;
+            overflow: auto;
+        }
+
+        .doc-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+        .doc-label {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 10px; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; padding: 5px 14px; border-radius: 20px;
+            margin-bottom: 10px; white-space: nowrap;
+        }
+        .doc-label.jeu     { background: #dcfce7; color: #15803d; }
+        .doc-label.complet { background: #dbeafe; color: #1d4ed8; }
+
+        /* ── Document partagé : largeur A4 fixe ── */
+        .omc-doc {
+            width: 794px !important;
+            min-width: 794px !important;
+            height: auto !important;
+            background: white !important;
+            color: #000 !important;
+            padding: 48px 52px !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,.15);
+            position: relative;
+            box-sizing: border-box !important;
+            overflow: visible !important;
+            margin-bottom: 40px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        /* ── Résumé en jeu : grille de blocs ── */
+        .resume-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .resume-box {
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            border-radius: 6px; padding: 12px 14px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .resume-box.full    { grid-column: span 2; }
+        .resume-box.danger  { background: #fff1f2; border-color: #fca5a5; }
+        .resume-box label   {
+            display: block; font-size: 9px; font-weight: 800; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;
+        }
+        .resume-box .rval   { font-size: 14px; font-weight: 700; color: #0f172a; line-height: 1.4; }
+        .resume-box.danger .rval { color: #b91c1c; }
     </style>
 <head>
     <meta charset="UTF-8">
@@ -43,26 +110,26 @@
                 <label style="color: #38bdf8; font-weight: bold; margin-bottom: 10px; display: block;">INFORMATIONS GÉNÉRALES</label>
                 
                 <label>Sujet du rapport</label>
-                <input type="text" id="in-sujet" oninput="up('d-sujet', this.value)" placeholder="..." style="margin-bottom: 10px;">
+                <input type="text" id="in-sujet" oninput="upSujetBoth(this.value)" placeholder="..." style="margin-bottom: 10px;">
 
                 <label id="label-nom">Prénom & Nom du Patient</label>
                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                     <div style="flex: 1;">
-                        <input type="text" id="in-prenom" placeholder="Prénom (ex: Carter)" autocomplete="off" oninput="upNom(); genererRef();">
+                        <input type="text" id="in-prenom" placeholder="Prénom" autocomplete="off" oninput="upNom(); genererRef();">
                     </div>
                     <div style="flex: 1;">
-                        <input type="text" id="in-nom-famille" placeholder="NOM (ex: JAYDEN)" autocomplete="off" oninput="upNom(); genererRef(); document.getElementById('in-nom-famille').value = document.getElementById('in-nom-famille').value.toUpperCase();">
+                        <input type="text" id="in-nom-famille" placeholder="NOM" autocomplete="off" oninput="upNom(); genererRef(); this.value=this.value.toUpperCase();">
                     </div>
                 </div>
                 
                 <div style="display: flex; gap: 10px;">
                     <div style="flex: 1;">
                         <label>Date de Naissance</label>
-                        <input type="date" id="in-ddn" oninput="upDate('d-ddn', this.value)">
+                        <input type="date" id="in-ddn" oninput="upDate('d-ddn', this.value); upDate('d-ddn-jeu', this.value);">
                     </div>
                     <div style="flex: 1;">
                         <label>Sexe</label>
-                        <select id="in-sexe" onchange="up('d-sexe', this.options[this.selectedIndex].text)" style="width: 100%; background: #111b2d; color: white; border: 1px solid #334155; padding: 8px; border-radius: 4px; font-size: 11px;">
+                        <select id="in-sexe" onchange="upSexeBoth(this.options[this.selectedIndex].text)">
                             <option value="H">Homme</option>
                             <option value="F">Femme</option>
                             <option value="A">Autre</option>
@@ -74,8 +141,8 @@
             <div class="form-group">
                 <label>Date & Heure de l'intervention</label>
                 <div style="display: flex; gap: 5px;">
-                    <input type="date" id="in-date-prel" oninput="upDate('d-date', this.value); genererRef();" style="flex: 2;">
-                    <input type="time" id="in-heure-prel" oninput="up('d-heure', this.value); genererRef();" style="flex: 1;">
+                    <input type="date" id="in-date-prel" oninput="upDate('d-date', this.value); upDate('d-date-jeu', this.value); genererRef();" style="flex: 2;">
+                    <input type="time" id="in-heure-prel" oninput="up('d-heure', this.value); up('d-heure-jeu', this.value); genererRef();" style="flex: 1;">
                 </div>
             </div>
 
@@ -90,6 +157,7 @@
                 </div>
             </div>
 
+            <!-- CHAMPS MÉDICAL -->
             <div id="fields-med" class="dynamic-fields">
                 <div class="form-group">
                     <label>Circonstances / Déclarations</label>
@@ -103,7 +171,6 @@
                     <label>Protocole de Soins</label>
                     <textarea id="in-med-soins" rows="2" oninput="upBlock('d-med-soins', 'wrap-med-soins', this.value)" placeholder="Soins apportés..."></textarea>
                 </div>
-                
                 <div class="form-group" style="border-top: 1px solid #334155; padding-top: 15px; margin-top: 10px;">
                     <label style="color: #a78bfa; font-weight: bold; margin-bottom: 5px; display: block;">SUIVI & CONCLUSION</label>
                     <textarea id="in-med-conclusion" rows="2" oninput="upMedSuivi()" placeholder="Pronostic favorable..." style="margin-bottom: 10px;"></textarea>
@@ -120,46 +187,33 @@
                 </div>
             </div>
 
+            <!-- CHAMPS PSYCHOLOGIE -->
             <div id="fields-psy" class="dynamic-fields" style="display: none;">
-                <div class="form-group">
-                    <label>Contexte / Motif</label>
-                    <textarea id="in-psy-circ" rows="2" oninput="upBlock('d-psy-circ', 'wrap-psy-circ', this.value)" placeholder="..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Observations Cliniques</label>
-                    <textarea id="in-psy-obs" rows="3" oninput="upBlock('d-psy-obs', 'wrap-psy-obs', this.value)" placeholder="..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Analyse & Diagnostic</label>
-                    <textarea id="in-psy-diag" rows="3" oninput="upBlock('d-psy-diag', 'wrap-psy-diag', this.value)" placeholder="..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Conclusion & Recommandations</label>
-                    <textarea id="in-psy-reco" rows="2" oninput="upBlock('d-psy-reco', 'wrap-psy-reco', this.value)" placeholder="..."></textarea>
-                </div>
+                <div class="form-group"><label>Contexte / Motif</label>
+                    <textarea id="in-psy-circ" rows="2" oninput="upBlock('d-psy-circ', 'wrap-psy-circ', this.value)"></textarea></div>
+                <div class="form-group"><label>Observations Cliniques</label>
+                    <textarea id="in-psy-obs" rows="3" oninput="upBlock('d-psy-obs', 'wrap-psy-obs', this.value)"></textarea></div>
+                <div class="form-group"><label>Analyse & Diagnostic</label>
+                    <textarea id="in-psy-diag" rows="3" oninput="upBlock('d-psy-diag', 'wrap-psy-diag', this.value)"></textarea></div>
+                <div class="form-group"><label>Conclusion & Recommandations</label>
+                    <textarea id="in-psy-reco" rows="2" oninput="upBlock('d-psy-reco', 'wrap-psy-reco', this.value)"></textarea></div>
             </div>
 
+            <!-- CHAMPS AUTOPSIE -->
             <div id="fields-auto" class="dynamic-fields" style="display: none;">
-                <div class="form-group">
-                    <label>Heure estimée du décès</label>
-                    <input type="time" id="in-auto-heure" oninput="upBlock('d-auto-heure', 'd-info-auto', this.value)">
-                </div>
-                <div class="form-group">
-                    <label>Examen Externe</label>
-                    <textarea id="in-auto-ext" rows="3" oninput="upBlock('d-auto-ext', 'wrap-auto-ext', this.value)" placeholder="..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Examen Interne</label>
-                    <textarea id="in-auto-int" rows="3" oninput="upBlock('d-auto-int', 'wrap-auto-int', this.value)" placeholder="..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Conclusion Médico-légale</label>
-                    <textarea id="in-auto-cause" rows="2" oninput="upBlock('d-auto-cause', 'wrap-auto-cause', this.value)" placeholder="..."></textarea>
-                </div>
+                <div class="form-group"><label>Heure estimée du décès</label>
+                    <input type="time" id="in-auto-heure" oninput="upAutoHeure(this.value)"></div>
+                <div class="form-group"><label>Examen Externe</label>
+                    <textarea id="in-auto-ext" rows="3" oninput="upBlock('d-auto-ext', 'wrap-auto-ext', this.value)"></textarea></div>
+                <div class="form-group"><label>Examen Interne</label>
+                    <textarea id="in-auto-int" rows="3" oninput="upBlock('d-auto-int', 'wrap-auto-int', this.value)"></textarea></div>
+                <div class="form-group"><label>Conclusion Médico-légale</label>
+                    <textarea id="in-auto-cause" rows="2" oninput="upBlock('d-auto-cause', 'wrap-auto-cause', this.value)"></textarea></div>
             </div>
 
+            <!-- SECTIONS CUSTOM -->
             <div style="margin-top: 20px; border-top: 2px solid #334155; padding-top: 15px;">
-                <button type="button" onclick="ajouterSectionCustom()" style="background: transparent; color: #f472b6; border: 1px dashed #f472b6; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; transition: 0.2s;">
+                <button type="button" onclick="ajouterSectionCustom()" style="background: transparent; color: #f472b6; border: 1px dashed #f472b6; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px;">
                     ➕ AJOUTER UNE SECTION SUPPLÉMENTAIRE
                 </button>
                 <div id="custom-inputs-container" style="margin-top: 15px;"></div>
@@ -170,136 +224,191 @@
                 <input type="text" id="in-sig" placeholder="..." oninput="upSig(this.value);">
             </div>
 
-            <div class="actions-group" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                <button type="button" onclick="genererImage(this)" class="btn-image">🖼️ GÉNÉRER L'IMAGE</button>
-                <button id="discord-btn" type="button" onclick="envoyerDiscord(this)" class="btn-discord">📨 ENVOYER SUR L'INTRANET</button>
+            <!-- BOUTONS -->
+            <div class="actions-group" style="margin-top: 20px; display: flex; flex-direction: column; gap: 8px;">
+                <!-- Vert = résumé A4 lisible → usage en jeu -->
+                <button type="button" class="btn-jeu" onclick="genererImage(this, 'document-jeu')">
+                    🎮 IMAGE EN JEU (RÉSUMÉ)
+                </button>
+                <!-- Discord = rapport complet intégral -->
+                <button id="discord-btn" type="button" class="btn-discord" onclick="envoyerDiscord(this)">
+                    📨 ENVOYER SUR L'INTRANET (COMPLET)
+                </button>
             </div>
         </aside>
 
-        <main class="preview-area" style="align-items: flex-start;">
-            <div id="document">
-                <div class="header-lab" style="display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #0a192f; padding-bottom: 20px; margin-bottom: 25px;">
-                    <img src="assets/logo_omc.png" alt="Logo OMC" style="height: 60px; object-fit: contain;">
-                    <div style="flex-grow: 1;">
-                        <div style="background: #0a192f; color: white; display: inline-block; padding: 2px 10px; border-radius: 4px; font-weight: 800; font-size: 11px; letter-spacing: 1px; margin-bottom: 5px;">
-                            OCEAN MEDICAL CENTER
-                        </div>
-                        <h1 id="d-titre-doc" style="margin: 0; font-size: 24px; font-weight: 900; color: #0a192f; text-transform: uppercase; letter-spacing: -1px;">
-                            DOSSIER MÉDICAL
-                        </h1>
-                    </div>
-                    <div style="text-align: right; font-size: 10px; color: #94a3b8; font-weight: bold;">
-                        RÉF : <span id="d-ref">#...</span><br>
-                        <span id="d-date">...</span> - <span id="d-heure">--:--</span>
-                    </div>
-                </div>
+        <!-- ══════════════ ZONE APERÇU ══════════════ -->
+        <main class="preview-area">
 
-                <div class="patient-card" style="grid-template-columns: 1fr;">
-                    <div style="display: flex; justify-content: space-between;">
+            <!-- ── COL 1 : RÉSUMÉ EN JEU ── -->
+            <div class="doc-col">
+                <div class="doc-label jeu">🎮 Version en jeu — résumé A4</div>
+                <div id="document-jeu" class="omc-doc">
+
+                    <!-- En-tête identique au complet -->
+                    <div style="display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #0a192f; padding-bottom: 18px; margin-bottom: 20px;">
+                        <img src="assets/logo_omc.png" alt="Logo OMC" style="height: 60px; object-fit: contain;">
+                        <div style="flex-grow: 1;">
+                            <div style="background: #0a192f; color: white; display: inline-block; padding: 2px 10px; border-radius: 4px; font-weight: 800; font-size: 10px; letter-spacing: 1px; margin-bottom: 5px;">OCEAN MEDICAL CENTER</div>
+                            <h1 id="d-titre-jeu" style="margin: 0; font-size: 22px; font-weight: 900; color: #0a192f; text-transform: uppercase;">DOSSIER MÉDICAL</h1>
+                        </div>
+                        <div style="text-align: right; font-size: 10px; color: #94a3b8; font-weight: bold;">
+                            RÉF : <span id="d-ref-jeu">#...</span><br>
+                            <span id="d-date-jeu">...</span> — <span id="d-heure-jeu">--:--</span>
+                        </div>
+                    </div>
+
+                    <!-- Grille résumé -->
+                    <div class="resume-grid">
+                        <div class="resume-box">
+                            <label>Patient / Sujet</label>
+                            <div class="rval" id="d-nom-jeu">...</div>
+                        </div>
+                        <div class="resume-box">
+                            <label>Naissance — Sexe</label>
+                            <div class="rval"><span id="d-ddn-jeu">...</span> — <span id="d-sexe-jeu">Homme</span></div>
+                        </div>
+
+                        <div class="resume-box full" id="jeu-sujet-box" style="display:none;">
+                            <label>Sujet</label>
+                            <div class="rval" id="d-sujet-jeu">...</div>
+                        </div>
+
+                        <!-- Heure décès (autopsie) -->
+                        <div class="resume-box full danger" id="jeu-heure-box" style="display:none;">
+                            <label>⚠ Heure du décès estimée</label>
+                            <div class="rval" id="d-auto-heure-jeu">...</div>
+                        </div>
+
+                        <!-- Conclusion (dernier champ rempli selon type) -->
+                        <div class="resume-box full" id="jeu-concl-box" style="display:none;">
+                            <label id="jeu-concl-label">Conclusion</label>
+                            <div class="rval" id="d-jeu-concl" style="font-size:13px; font-weight:400; line-height:1.6;"></div>
+                        </div>
+
+                        <!-- Récup + prix (médical seulement) -->
+                        <div class="resume-box" id="jeu-repos-box" style="display:none;">
+                            <label>Récupération</label>
+                            <div class="rval" id="d-jeu-repos">...</div>
+                        </div>
+                        <div class="resume-box" id="jeu-prix-box" style="display:none;">
+                            <label>Facturation</label>
+                            <div class="rval" id="d-jeu-prix">...</div>
+                        </div>
+                    </div>
+
+                    <!-- Praticien -->
+                    <div id="wrap-doc-jeu" style="margin-top: 18px; display: none; font-family: 'Segoe UI', sans-serif; font-size: 13px; color: #0a1324; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+                        <strong>Praticien :</strong> <span id="d-doc-jeu">...</span>
+                    </div>
+
+                    <!-- Footer résumé -->
+                    <div style="margin-top: 28px; display: flex; justify-content: space-between; align-items: flex-end;">
                         <div>
-                            Sujet : <strong id="d-sujet" style="font-size: 18px;">...</strong><br>
-                            Nom/Prénom : <strong id="d-nom">...</strong><br>
-                            Date de Naissance : <span id="d-ddn">...</span><br>
-                            Sexe : <span id="d-sexe">Homme</span>
+                            <span style="font-size: 11px; font-weight: bold; font-family: 'Segoe UI', sans-serif;">Établi par :</span><br><br>
+                            <span id="d-sig-jeu" class="signature-line" style="display: none;"></span>
                         </div>
-                        <div id="d-info-auto" style="text-align: right; display: none;">
-                            <strong style="color: #b91c1c;">Heure du décès estimée :</strong><br>
-                            <span id="d-auto-heure"></span>
+                        <div style="text-align: center;">
+                            <img id="qr-ref-jeu" src="" alt="QR" style="width: 75px; height: 75px; border: 1px solid #0a192f; border-radius: 6px; padding: 2px; background: white;">
+                            <div style="font-size: 9px; font-weight: 900; color: #0a192f; margin-top: 4px;">OMC CERTIFIED</div>
                         </div>
                     </div>
+
+                    <p style="margin-top: 16px; font-size: 9px; color: #64748b; border-top: 1px dotted #e2e8f0; padding-top: 8px; font-style: italic; margin-bottom: 0; font-family: 'Segoe UI', sans-serif;">
+                        Résumé officiel Ocean Medical Center. Document complet disponible sur l'intranet OMC. Destiné aux autorités (DOJ/LSPD/BCSO).
+                    </p>
                 </div>
+            </div>
 
-                <div id="wrap-doc" style="margin-top: 25px; display: none;">
-                    <strong style="font-size: 14px; color: #0a1324;">PRATICIEN EN CHARGE :</strong> <span id="d-doc"></span>
-                </div>
+            <!-- ── COL 2 : DOCUMENT COMPLET (archive Discord) ── -->
+            <div class="doc-col">
+                <div class="doc-label complet">📨 Version complète — archive Discord</div>
+                <div id="document" class="omc-doc">
 
-                <div id="render-med" class="render-section">
-                    <div id="wrap-med-circ" style="display: none;">
-                        <h4 class="doc-h4">CIRCONSTANCES DE L'INTERVENTION</h4>
-                        <p id="d-med-circ" class="doc-p"></p>
-                    </div>
-                    
-                    <div id="wrap-med-bilan" style="display: none;">
-                        <h4 class="doc-h4">BILAN CLINIQUE ET IMAGERIE</h4>
-                        <p id="d-med-bilan" class="doc-p"></p>
-                    </div>
-                    
-                    <div id="wrap-med-soins" style="display: none;">
-                        <h4 class="doc-h4">PROTOCOLE DE SOINS APPLIQUÉ</h4>
-                        <p id="d-med-soins" class="doc-p"></p>
-                    </div>
-
-                    <div id="wrap-med-suivi" style="display: none;">
-                        <h4 class="doc-h4">SUIVI & CONCLUSION</h4>
-                        <p id="d-med-conclusion" class="doc-p" style="display: none;"></p>
-                        
-                        <div style="margin-top: 10px;">
-                            <p class="doc-p" id="wrap-med-repos" style="display: none; margin: 2px 0;"><strong>Temps de récupération :</strong> <span id="d-med-repos"></span></p>
-                            <p class="doc-p" id="wrap-med-prix" style="display: none; margin: 2px 0;"><strong>Facturation :</strong> <span id="d-med-prix"></span> $</p>
+                    <div class="header-lab" style="display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #0a192f; padding-bottom: 20px; margin-bottom: 25px;">
+                        <img src="assets/logo_omc.png" alt="Logo OMC" style="height: 60px; object-fit: contain;">
+                        <div style="flex-grow: 1;">
+                            <div style="background: #0a192f; color: white; display: inline-block; padding: 2px 10px; border-radius: 4px; font-weight: 800; font-size: 11px; letter-spacing: 1px; margin-bottom: 5px;">OCEAN MEDICAL CENTER</div>
+                            <h1 id="d-titre-doc" style="margin: 0; font-size: 24px; font-weight: 900; color: #0a192f; text-transform: uppercase; letter-spacing: -1px;">DOSSIER MÉDICAL</h1>
+                        </div>
+                        <div style="text-align: right; font-size: 10px; color: #94a3b8; font-weight: bold;">
+                            RÉF : <span id="d-ref">#...</span><br>
+                            <span id="d-date">...</span> - <span id="d-heure">--:--</span>
                         </div>
                     </div>
+
+                    <div class="patient-card" style="grid-template-columns: 1fr;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                Sujet : <strong id="d-sujet" style="font-size: 18px;">...</strong><br>
+                                Nom/Prénom : <strong id="d-nom">...</strong><br>
+                                Date de Naissance : <span id="d-ddn">...</span><br>
+                                Sexe : <span id="d-sexe">Homme</span>
+                            </div>
+                            <div id="d-info-auto" style="text-align: right; display: none;">
+                                <strong style="color: #b91c1c;">Heure du décès estimée :</strong><br>
+                                <span id="d-auto-heure"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="wrap-doc" style="margin-top: 25px; display: none;">
+                        <strong style="font-size: 14px; color: #0a1324;">PRATICIEN EN CHARGE :</strong> <span id="d-doc"></span>
+                    </div>
+
+                    <!-- SECTIONS MÉDICAL -->
+                    <div id="render-med" class="render-section">
+                        <div id="wrap-med-circ" style="display: none;"><h4 class="doc-h4">CIRCONSTANCES DE L'INTERVENTION</h4><p id="d-med-circ" class="doc-p"></p></div>
+                        <div id="wrap-med-bilan" style="display: none;"><h4 class="doc-h4">BILAN CLINIQUE ET IMAGERIE</h4><p id="d-med-bilan" class="doc-p"></p></div>
+                        <div id="wrap-med-soins" style="display: none;"><h4 class="doc-h4">PROTOCOLE DE SOINS APPLIQUÉ</h4><p id="d-med-soins" class="doc-p"></p></div>
+                        <div id="wrap-med-suivi" style="display: none;">
+                            <h4 class="doc-h4">SUIVI & CONCLUSION</h4>
+                            <p id="d-med-conclusion" class="doc-p" style="display: none;"></p>
+                            <div style="margin-top: 10px;">
+                                <p class="doc-p" id="wrap-med-repos" style="display: none; margin: 2px 0;"><strong>Temps de récupération :</strong> <span id="d-med-repos"></span></p>
+                                <p class="doc-p" id="wrap-med-prix" style="display: none; margin: 2px 0;"><strong>Facturation :</strong> <span id="d-med-prix"></span> $</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTIONS PSYCHOLOGIE -->
+                    <div id="render-psy" class="render-section" style="display: none;">
+                        <div id="wrap-psy-circ" style="display: none;"><h4 class="doc-h4">CONTEXTE & MOTIF</h4><p id="d-psy-circ" class="doc-p"></p></div>
+                        <div id="wrap-psy-obs"  style="display: none;"><h4 class="doc-h4">OBSERVATIONS CLINIQUES</h4><p id="d-psy-obs" class="doc-p"></p></div>
+                        <div id="wrap-psy-diag" style="display: none;"><h4 class="doc-h4">ANALYSE & DIAGNOSTIC</h4><p id="d-psy-diag" class="doc-p"></p></div>
+                        <div id="wrap-psy-reco" style="display: none;"><h4 class="doc-h4">CONCLUSION & RECOMMANDATIONS</h4><p id="d-psy-reco" class="doc-p"></p></div>
+                    </div>
+
+                    <!-- SECTIONS AUTOPSIE -->
+                    <div id="render-auto" class="render-section" style="display: none;">
+                        <div id="wrap-auto-ext"   style="display: none;"><h4 class="doc-h4">EXAMEN EXTERNE</h4><p id="d-auto-ext" class="doc-p"></p></div>
+                        <div id="wrap-auto-int"   style="display: none;"><h4 class="doc-h4">EXAMEN INTERNE</h4><p id="d-auto-int" class="doc-p"></p></div>
+                        <div id="wrap-auto-cause" style="display: none;"><h4 class="doc-h4">CONCLUSION MÉDICO-LÉGALE</h4><p id="d-auto-cause" class="doc-p" style="font-weight: bold;"></p></div>
+                    </div>
+
+                    <div id="render-custom"></div>
+
+                    <div class="cert-footer" style="margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 5px;">
+                        <div class="cert-signature" style="text-align: left;">
+                            <span style="font-size: 12px; font-weight: bold;">Établi par :</span><br><br>
+                            <span id="d-sig" class="signature-line" style="display: none;"></span>
+                        </div>
+                        <div class="qr-container" style="text-align: center;">
+                            <img id="qr-ref" src="" alt="QR" style="width: 85px; height: 85px; border: 1px solid #0a192f; border-radius: 8px; padding: 2px; background: white;">
+                            <div style="font-size: 10px; font-weight: 900; color: #0a192f; margin-top: 5px; text-transform: uppercase;">OMC CERTIFIED</div>
+                        </div>
+                    </div>
+
+                    <p class="legal-text" style="margin-top: 20px; font-size: 10px; color: #000; border-top: 1px solid #eee; padding-top: 10px; font-style: italic; margin-bottom: 0;">
+                        Ce document est un acte officiel de l'Ocean Medical Center. Destiné aux autorités compétentes (DOJ/LSPD/BCSO). Toute falsification est passible de poursuites pénales.
+                    </p>
                 </div>
+            </div>
 
-                <div id="render-psy" class="render-section" style="display: none;">
-                    <div id="wrap-psy-circ" style="display: none;">
-                        <h4 class="doc-h4">CONTEXTE & MOTIF</h4>
-                        <p id="d-psy-circ" class="doc-p"></p>
-                    </div>
-                    
-                    <div id="wrap-psy-obs" style="display: none;">
-                        <h4 class="doc-h4">OBSERVATIONS CLINIQUES</h4>
-                        <p id="d-psy-obs" class="doc-p"></p>
-                    </div>
-                    
-                    <div id="wrap-psy-diag" style="display: none;">
-                        <h4 class="doc-h4">ANALYSE & DIAGNOSTIC</h4>
-                        <p id="d-psy-diag" class="doc-p"></p>
-                    </div>
-
-                    <div id="wrap-psy-reco" style="display: none;">
-                        <h4 class="doc-h4">CONCLUSION & RECOMMANDATIONS</h4>
-                        <p id="d-psy-reco" class="doc-p"></p>
-                    </div>
-                </div>
-
-                <div id="render-auto" class="render-section" style="display: none;">
-                    <div id="wrap-auto-ext" style="display: none;">
-                        <h4 class="doc-h4">EXAMEN EXTERNE</h4>
-                        <p id="d-auto-ext" class="doc-p"></p>
-                    </div>
-                    
-                    <div id="wrap-auto-int" style="display: none;">
-                        <h4 class="doc-h4">EXAMEN INTERNE</h4>
-                        <p id="d-auto-int" class="doc-p"></p>
-                    </div>
-                    
-                    <div id="wrap-auto-cause" style="display: none;">
-                        <h4 class="doc-h4">CONCLUSION MÉDICO-LÉGALE</h4>
-                        <p id="d-auto-cause" class="doc-p" style="font-weight: bold;"></p>
-                    </div>
-                </div>
-
-                <div id="render-custom"></div>
-
-                <div class="cert-footer" style="margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 5px;">
-                    <div class="cert-signature" style="text-align: left;">
-                        <span style="font-size: 12px; font-weight: bold;">Établi par :</span><br><br>
-                        <span id="d-sig" class="signature-line" style="display: none;"></span>
-                    </div>
-
-                    <div class="qr-container" style="text-align: center;">
-                        <img id="qr-ref" src="" alt="QR" style="width: 85px; height: 85px; border: 1px solid #0a192f; border-radius: 8px; padding: 2px; background: white;">
-                        <div style="font-size: 10px; font-weight: 900; color: #0a192f; margin-top: 5px; text-transform: uppercase;">OMC CERTIFIED</div>
-                    </div>
-                </div>
-
-                <p class="legal-text" style="margin-top: 20px; font-size: 10px; color: #000; border-top: 1px solid #eee; padding-top: 10px; font-style: italic; margin-bottom: 0;">
-                    Ce document est un acte officiel de l'Ocean Medical Center. Destiné aux autorités compétentes (DOJ/LSPD/BCSO). Toute falsification est passible de poursuites pénales.
-                </p>
-            </div> 
         </main>
     </div>
 
+    <!-- POPUP -->
     <div id="image-popup" class="popup-overlay" style="display:none;">
         <div class="popup-content">
             <h3>Rapport Officiel Généré</h3>
@@ -316,28 +425,26 @@
     <script>
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
-    captureId:    'document',
-    nomPatientId: 'in-prenom',   // champ prénom (le nom complet est dans d-nom)
+    captureId:    'document',      // Discord → document complet
+    nomPatientId: 'in-prenom',
     typeDoc:      'Rapport Officiel',
     pageSource:   'rapports.html',
     getThreadName: () => {
         const titre = document.getElementById('d-titre-doc')?.innerText || 'Rapport';
         const nom   = document.getElementById('d-nom')?.innerText || 'Inconnu';
-        const ref   = document.getElementById('d-ref')?.innerText || '';
-        return `📄 ${titre} - ${nom}`;
+        return `📄 ${titre} — ${nom}`;
     },
     getContent: () => {
-        const nom       = document.getElementById('d-nom')?.innerText || 'Inconnu';
-        const titre     = document.getElementById('d-titre-doc')?.innerText || 'Rapport';
-        const ref       = document.getElementById('d-ref')?.innerText || '...';
-        const praticien = document.getElementById('in-sig')?.value || document.getElementById('in-doc')?.value || 'Non renseigné';
-        return `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titre}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Signataire :** ${praticien}\n━━━━━━━━━━━━━━━━━━━━`;
+        const nom   = document.getElementById('d-nom')?.innerText || 'Inconnu';
+        const titre = document.getElementById('d-titre-doc')?.innerText || 'Rapport';
+        const ref   = document.getElementById('d-ref')?.innerText || '...';
+        const sig   = document.getElementById('in-sig')?.value || 'Non renseigné';
+        return `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titre}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Signataire :** ${sig}\n━━━━━━━━━━━━━━━━━━━━`;
     }
 };
-</script>
+    </script>
     <script src="rapports.js"></script>
-        <script src="generation.js"></script>
+    <script src="generation.js"></script>
     <script type="module" src="global.js"></script>
-    
 </body>
 </html>

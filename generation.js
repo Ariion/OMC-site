@@ -1,32 +1,11 @@
 /* ============================================================
-   GENERATION.JS — MOTEUR UNIVERSEL OMC v3.0
-   Centralise : Capture html2canvas, Upload ImgBB, Popup,
-                Envoi Discord, Archivage Firebase
-   ============================================================
-   USAGE DANS LES HTML :
-
-   1. Déclarer la config de la page dans un <script> :
-      var OMC_CONFIG = {          // ⚠️ VAR obligatoire (pas const) pour être sur window
-        webhook:      'https://discord.com/api/webhooks/...',
-        captureId:    'document',          // défaut: 'document'
-        nomPatientId: 'patientName',       // défaut: 'patientName'
-        typeDoc:      'Certificat Médical',
-        pageSource:   'certificat.html',
-        getThreadName: () => `📝 Certificat - ${document.getElementById('d-nom')?.innerText}`,
-        getContent:    () => `📜 **Nouveau Certificat**\n👤 ${document.getElementById('d-nom')?.innerText}`
-      };
-
-   2. Boutons :
-      <button onclick="genererImage(this)">🖼️ GÉNÉRER</button>
-      <button onclick="genererImage(this, 'capture-zone')">🖼️ GÉNÉRER</button>
-      <button onclick="envoyerDiscord(this)">DISCORD</button>
+   GENERATION.JS — MOTEUR UNIVERSEL OMC v3.1
+   Patch : scale 3 + width 794 (A4) + hauteur totale capturée
+   Logique deux docs : genererImage → #document-jeu si présent
+                       envoyerDiscord → #document (complet)
    ============================================================ */
 
 var IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
-
-/* ----------------------------------------------------------
-   UTILITAIRES INTERNES
----------------------------------------------------------- */
 
 function _getCaptureEl(captureId) {
     const id = captureId || 'document';
@@ -43,26 +22,24 @@ function _getNomPatient(nomPatientId) {
 }
 
 async function _captureToBlob(el, quality) {
-    quality = quality || 0.85;
+    quality = quality || 0.92;
 
-    // Fix crop automatique si le contenu déborde (ex: grossesse, rapports longs)
-    const isScrollable = el.scrollHeight > (el.clientHeight + 10);
-    const captureHeight = isScrollable ? el.scrollHeight + 60 : undefined;
+    // Hauteur totale — jamais tronquée
+    const fullHeight = Math.max(el.scrollHeight, el.offsetHeight, el.clientHeight);
 
-    const opts = {
-        scale: 2,
-        useCORS: true,
+    const canvas = await html2canvas(el, {
+        scale:           3,       // ×3 → net et zoomable en jeu
+        useCORS:         true,
         backgroundColor: '#ffffff',
-        scrollX: 0,
-        scrollY: 0
-    };
+        scrollX:         0,
+        scrollY:         -window.scrollY,
+        width:           794,     // A4 fixe (96 dpi)
+        windowWidth:     794,     // force le rendu A4
+        height:          fullHeight,
+        windowHeight:    fullHeight,
+        logging:         false
+    });
 
-    if (captureHeight) {
-        opts.height = captureHeight;
-        opts.windowHeight = captureHeight;
-    }
-
-    const canvas = await html2canvas(el, opts);
     return new Promise(function(resolve) {
         canvas.toBlob(resolve, 'image/jpeg', quality);
     });
@@ -71,12 +48,9 @@ async function _captureToBlob(el, quality) {
 async function _uploadImgBB(blob) {
     const fd = new FormData();
     fd.append('image', blob);
-    const res  = await fetch('https://api.imgbb.com/1/upload?key=' + IMGBB_API_KEY, {
-        method: 'POST',
-        body: fd
-    });
+    const res  = await fetch('https://api.imgbb.com/1/upload?key=' + IMGBB_API_KEY, { method: 'POST', body: fd });
     const json = await res.json();
-    if (!json.success) throw new Error('ImgBB : ' + (json.error && json.error.message ? json.error.message : 'Erreur inconnue'));
+    if (!json.success) throw new Error('ImgBB : ' + (json.error?.message || 'Erreur inconnue'));
     return json.data.url;
 }
 
@@ -84,106 +58,95 @@ function _showPopup(url) {
     const img   = document.getElementById('preview-img-result');
     const input = document.getElementById('direct-link');
     const popup = document.getElementById('image-popup');
-    if (img)   img.src   = url;
+    if (img)   img.src     = url;
     if (input) input.value = url;
     if (popup) popup.style.display = 'flex';
 }
 
 function _archiver(nomPatient, typeDoc, url, pageSource) {
-    // Aspiration complète du formulaire pour le bouton "Modifier" dans les dossiers
     var snapshot = {};
     document.querySelectorAll('input, textarea, select').forEach(function(el) {
-        if (el.id) {
-            snapshot[el.id] = (el.type === 'checkbox' || el.type === 'radio') ? el.checked : el.value;
-        }
+        if (el.id) snapshot[el.id] = (el.type === 'checkbox' || el.type === 'radio') ? el.checked : el.value;
     });
     if (window.ajouterEvenementPatient) {
         window.ajouterEvenementPatient(nomPatient, typeDoc, typeDoc, url, pageSource, snapshot)
-            .catch(function(e) { console.warn('Archivage Firebase (non bloquant) :', e); });
+            .catch(e => console.warn('Archivage Firebase :', e));
     }
 }
 
 /* ----------------------------------------------------------
-   FONCTION PRINCIPALE : GÉNÉRER L'IMAGE + POPUP
-   @param btn       — le bouton cliqué (this)
-   @param captureId — id de l'élément à capturer (optionnel, défaut: 'document')
+   GÉNÉRER IMAGE EN JEU
+   → capture #document-jeu si présent, sinon #document
 ---------------------------------------------------------- */
 window.genererImage = async function(btn, captureId) {
-    var originalText = btn ? btn.innerText : '';
+    const originalText = btn ? btn.innerText : '';
     if (btn) { btn.disabled = true; btn.innerText = '⏳ CAPTURE...'; }
 
     try {
-        var cfg = window.OMC_CONFIG || (typeof OMC_CONFIG !== 'undefined' ? OMC_CONFIG : null) || {};
-        var id  = captureId || cfg.captureId || 'document';
-        var el  = _getCaptureEl(id);
+        const cfg = window.OMC_CONFIG || {};
+        // Si #document-jeu existe sur cette page → résumé en jeu
+        // Sinon fallback sur #document (comportement universel, toutes les autres pages)
+        const id  = captureId
+                 || (document.getElementById('document-jeu') ? 'document-jeu' : null)
+                 || cfg.captureId
+                 || 'document';
+        const el  = _getCaptureEl(id);
 
-        var blob = await _captureToBlob(el);
+        const blob = await _captureToBlob(el, 0.92);
         if (btn) btn.innerText = '⏳ HÉBERGEMENT IBB...';
 
-        var url = await _uploadImgBB(blob);
+        const url = await _uploadImgBB(blob);
         _showPopup(url);
 
-        // Archivage silencieux si config disponible
         if (cfg.typeDoc) {
-            var nom = _getNomPatient(cfg.nomPatientId);
-            _archiver(nom, cfg.typeDoc, url, cfg.pageSource);
+            _archiver(_getNomPatient(cfg.nomPatientId), cfg.typeDoc, url, cfg.pageSource);
         }
 
     } catch (e) {
         console.error('genererImage :', e);
-        alert('❌ Erreur lors de la génération : ' + e.message);
+        alert('❌ Erreur : ' + e.message);
     } finally {
         if (btn) { btn.disabled = false; btn.innerText = originalText || '🖼️ GÉNÉRER L\'IMAGE'; }
     }
 };
 
 /* ----------------------------------------------------------
-   FONCTION PRINCIPALE : ENVOYER SUR DISCORD
-   @param btn — le bouton cliqué (this)
-   (lit window.OMC_CONFIG automatiquement)
+   ENVOYER SUR DISCORD — rapport complet
+   → capture #document (complet), ignore #document-jeu
 ---------------------------------------------------------- */
 window.envoyerDiscord = async function(btn) {
-    var cfg = window.OMC_CONFIG || (typeof OMC_CONFIG !== 'undefined' ? OMC_CONFIG : null);
-    if (!cfg || !cfg.webhook) {
-        alert('❌ Configuration Discord manquante.\nDéclare OMC_CONFIG.webhook sur cette page.');
-        return;
-    }
+    const cfg = window.OMC_CONFIG || {};
+    if (!cfg.webhook) { alert('❌ webhook Discord manquant.'); return; }
 
-    var originalText = btn ? btn.innerText : '';
+    const originalText = btn ? btn.innerText : '';
     if (btn) { btn.disabled = true; btn.innerText = '⏳ CAPTURE...'; }
 
     try {
-        var id   = cfg.captureId || 'document';
-        var el   = _getCaptureEl(id);
-        var blob = await _captureToBlob(el, 0.9);
+        // Discord reçoit TOUJOURS le document complet
+        const id   = cfg.captureId || 'document';
+        const el   = _getCaptureEl(id);
+        const blob = await _captureToBlob(el, 0.95);
 
         if (btn) btn.innerText = '⏳ ENVOI DISCORD...';
 
-        var nom        = _getNomPatient(cfg.nomPatientId);
-        var threadName = cfg.getThreadName ? cfg.getThreadName() : ('OMC — ' + (cfg.typeDoc || 'Document') + ' — ' + nom);
-        var content    = cfg.getContent    ? cfg.getContent()    : ('📄 **' + (cfg.typeDoc || 'Document') + '** — ' + nom);
-        var filename   = (cfg.pageSource || 'document').replace('.html', '') + '_' + nom + '.png';
+        const nom        = _getNomPatient(cfg.nomPatientId);
+        const threadName = cfg.getThreadName ? cfg.getThreadName() : `OMC — ${cfg.typeDoc || 'Document'} — ${nom}`;
+        const content    = cfg.getContent    ? cfg.getContent()    : `📄 **${cfg.typeDoc || 'Document'}** — ${nom}`;
+        const filename   = (cfg.pageSource || 'document').replace('.html', '') + '_' + nom + '.jpg';
 
-        var fd = new FormData();
-        fd.append('payload_json', JSON.stringify({
-            username: 'Intranet OMC',
-            thread_name: threadName,
-            content: content
-        }));
+        const fd = new FormData();
+        fd.append('payload_json', JSON.stringify({ username: 'Intranet OMC', thread_name: threadName, content }));
         fd.append('file', blob, filename);
 
-        var res = await fetch(cfg.webhook + '?wait=true', { method: 'POST', body: fd });
+        const res = await fetch(cfg.webhook + '?wait=true', { method: 'POST', body: fd });
 
         if (res.ok) {
             _archiver(nom, cfg.typeDoc || 'Document', null, cfg.pageSource);
             if (btn) btn.innerText = '✅ ENVOYÉ !';
-            setTimeout(function() {
-                if (btn) { btn.innerText = originalText; btn.disabled = false; }
-            }, 3000);
+            setTimeout(() => { if (btn) { btn.innerText = originalText; btn.disabled = false; } }, 3000);
         } else {
-            var err = {};
-            try { err = await res.json(); } catch(e) {}
-            throw new Error(err.message || ('HTTP ' + res.status));
+            let err = {}; try { err = await res.json(); } catch(e2) {}
+            throw new Error(err.message || 'HTTP ' + res.status);
         }
 
     } catch (e) {
@@ -193,24 +156,16 @@ window.envoyerDiscord = async function(btn) {
     }
 };
 
-/* ----------------------------------------------------------
-   UTILITAIRES POPUP — partagés par toutes les pages
----------------------------------------------------------- */
 window.copyLink = function() {
-    var el = document.getElementById('direct-link');
+    const el = document.getElementById('direct-link');
     if (!el) return;
     el.select();
-    try {
-        navigator.clipboard.writeText(el.value).then(function() {
-            alert('✅ Lien copié !');
-        });
-    } catch (e) {
-        document.execCommand('copy');
-        alert('✅ Lien copié !');
-    }
+    navigator.clipboard.writeText(el.value)
+        .then(() => alert('✅ Lien copié !'))
+        .catch(() => { document.execCommand('copy'); alert('✅ Lien copié !'); });
 };
 
 window.closePopup = function() {
-    var popup = document.getElementById('image-popup');
+    const popup = document.getElementById('image-popup');
     if (popup) popup.style.display = 'none';
 };
