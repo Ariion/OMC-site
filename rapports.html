@@ -553,15 +553,15 @@ Consignes strictes :
     status.textContent = 'Rédaction en cours…';
     status.className = 'go';
 
-  try {
-        const OPENROUTER_KEY = window.GEMINI_API_KEY.trim(); // .trim() enlève les espaces invisibles
+try {
+        const OPENROUTER_KEY = window.GEMINI_API_KEY.trim(); 
         
         const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + OPENROUTER_KEY, // Syntaxe classique
-                'HTTP-Referer': 'https://omc-intranet.fr', // Mettre une URL (même fictive)
+                'Authorization': 'Bearer ' + OPENROUTER_KEY,
+                'HTTP-Referer': 'https://omc-intranet.fr', 
                 'X-Title': 'OMC_Intranet'
             },
             body: JSON.stringify({
@@ -573,7 +573,6 @@ Consignes strictes :
 
         if (!res.ok) {
             const errDetails = await res.json();
-            // Cela affichera l'erreur précise d'OpenRouter dans ton interface
             throw new Error(`Erreur ${res.status}: ${errDetails.error?.message || 'Inconnue'}`);
         }
 
@@ -591,14 +590,19 @@ Consignes strictes :
         console.error('Erreur IA :', e);
         status.textContent = '✗ ' + e.message;
         status.className = 'err';
+    } finally {
+        // Indispensable pour redonner l'accès au bouton après l'appel
+        btn.classList.remove('loading-state');
+        btn.disabled = false;
     }
+}
 
 /* Synchronise le textarea → document imprimable */
 function syncResumeDoc(texte) {
     const section = document.getElementById('doc-resume-section');
-    const el      = document.getElementById('doc-resume-text');
-    if (el)      el.textContent          = texte || '';
-    if (section) section.style.display   = (texte && texte.trim()) ? 'block' : 'none';
+    const el = document.getElementById('doc-resume-text');
+    if (el) el.textContent = texte || '';
+    if (section) section.style.display = (texte && texte.trim()) ? 'block' : 'none';
 }
 </script>
 
