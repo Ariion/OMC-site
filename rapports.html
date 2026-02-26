@@ -181,7 +181,6 @@
 <body class="rapports-body">
 <div class="interface-container">
 
-    <!-- ══════════════ SIDEBAR FORMULAIRE ══════════════ -->
     <aside class="sidebar">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:-10px;margin-bottom:25px;gap:10px;">
             <a href="index.html" class="back-link" style="margin-bottom:0;white-space:nowrap;">← RETOUR PORTAIL</a>
@@ -198,7 +197,6 @@
             <button type="button" id="btn-auto" class="mode-btn"        onclick="switchReport('auto')">💀 AUTOPSIE</button>
         </div>
 
-        <!-- INFOS GÉNÉRALES -->
         <div class="form-group" style="background:#0f172a;padding:10px;border-radius:6px;border:1px solid #334155;margin-bottom:15px;">
             <label style="color:#38bdf8;font-weight:bold;margin-bottom:10px;display:block;">INFORMATIONS GÉNÉRALES</label>
             <label>Sujet du rapport</label>
@@ -228,10 +226,9 @@
 
         <div class="form-group" style="display:flex;gap:10px;">
             <div style="flex:1;"><label id="label-doc">Praticien intervenant</label><input type="text" id="in-doc"   placeholder="..." oninput="upDoc();"></div>
-            <div style="flex:1;"><label>Grade</label>                                <input type="text" id="in-grade" placeholder="..." oninput="upDoc();"></div>
+            <div style="flex:1;"><label>Grade</label>                               <input type="text" id="in-grade" placeholder="..." oninput="upDoc();"></div>
         </div>
 
-        <!-- CHAMPS MÉDICAL -->
         <div id="fields-med" class="dynamic-fields">
             <div class="form-group"><label>Circonstances / Déclarations</label>
                 <textarea id="in-med-circ" rows="3" oninput="upBlock('d-med-circ','wrap-med-circ',this.value)" placeholder="Intervention sur..."></textarea></div>
@@ -249,7 +246,6 @@
             </div>
         </div>
 
-        <!-- CHAMPS PSYCHOLOGIE -->
         <div id="fields-psy" class="dynamic-fields" style="display:none;">
             <div class="form-group"><label>Contexte / Motif</label><textarea id="in-psy-circ" rows="2" oninput="upBlock('d-psy-circ','wrap-psy-circ',this.value)"></textarea></div>
             <div class="form-group"><label>Observations Cliniques</label><textarea id="in-psy-obs" rows="3" oninput="upBlock('d-psy-obs','wrap-psy-obs',this.value)"></textarea></div>
@@ -257,7 +253,6 @@
             <div class="form-group"><label>Conclusion & Recommandations</label><textarea id="in-psy-reco" rows="2" oninput="upBlock('d-psy-reco','wrap-psy-reco',this.value)"></textarea></div>
         </div>
 
-        <!-- CHAMPS AUTOPSIE -->
         <div id="fields-auto" class="dynamic-fields" style="display:none;">
             <div class="form-group"><label>Heure estimée du décès</label><input type="time" id="in-auto-heure" oninput="upAutoHeure(this.value)"></div>
             <div class="form-group"><label>Examen Externe</label><textarea id="in-auto-ext" rows="3" oninput="upBlock('d-auto-ext','wrap-auto-ext',this.value)"></textarea></div>
@@ -265,7 +260,6 @@
             <div class="form-group"><label>Conclusion Médico-légale</label><textarea id="in-auto-cause" rows="2" oninput="upBlock('d-auto-cause','wrap-auto-cause',this.value)"></textarea></div>
         </div>
 
-        <!-- SECTIONS CUSTOM -->
         <div style="margin-top:20px;border-top:2px solid #334155;padding-top:15px;">
             <button type="button" onclick="ajouterSectionCustom()" style="background:transparent;color:#f472b6;border:1px dashed #f472b6;padding:10px;width:100%;border-radius:6px;cursor:pointer;font-weight:bold;font-size:11px;">
                 ➕ AJOUTER UNE SECTION SUPPLÉMENTAIRE
@@ -285,7 +279,6 @@
         </div>
     </aside>
 
-    <!-- ══════════════ PANNEAU RÉSUMÉ IA ══════════════ -->
     <div id="panneau-resume">
         <div class="panel-header">
             <div class="panel-title">Résumé IA</div>
@@ -312,11 +305,9 @@
         </button>
     </div>
 
-    <!-- ══════════════ ZONE APERÇU ══════════════ -->
     <main class="preview-area">
         <div id="document-imprime">
 
-            <!-- En-tête -->
             <div style="display:flex;align-items:center;gap:20px;border-bottom:2px solid #0a192f;padding-bottom:18px;margin-bottom:22px;">
                 <img src="assets/logo_omc.png" alt="OMC" style="height:60px;object-fit:contain;">
                 <div style="flex-grow:1;">
@@ -329,7 +320,6 @@
                 </div>
             </div>
 
-            <!-- Carte patient -->
             <div class="patient-card">
                 <div style="display:flex;justify-content:space-between;">
                     <div>
@@ -345,20 +335,15 @@
                 </div>
             </div>
 
-            <!-- Praticien -->
             <div id="wrap-doc" style="margin-top:16px;display:none;font-family:'Segoe UI',sans-serif;font-size:13px;color:#0a1324;">
                 <strong>PRATICIEN EN CHARGE :</strong> <span id="d-doc"></span>
             </div>
 
-            <!-- ══ RÉSUMÉ IA ══ -->
             <div id="doc-resume-section">
                 <h4 class="doc-h4">RÉSUMÉ MÉDICAL</h4>
                 <p id="doc-resume-text"></p>
             </div>
 
-            <!-- ══ SECTIONS COMPLÈTES DU RAPPORT ══ -->
-
-            <!-- MÉDICAL -->
             <div id="render-med" class="render-section">
                 <div id="wrap-med-circ" style="display:none;">
                     <h4 class="doc-h4">CIRCONSTANCES DE L'INTERVENTION</h4>
@@ -380,7 +365,6 @@
                 </div>
             </div>
 
-            <!-- PSYCHOLOGIE -->
             <div id="render-psy" class="render-section" style="display:none;">
                 <div id="wrap-psy-circ" style="display:none;"><h4 class="doc-h4">CONTEXTE &amp; MOTIF</h4><p id="d-psy-circ" class="doc-p"></p></div>
                 <div id="wrap-psy-obs"  style="display:none;"><h4 class="doc-h4">OBSERVATIONS CLINIQUES</h4><p id="d-psy-obs" class="doc-p"></p></div>
@@ -388,17 +372,14 @@
                 <div id="wrap-psy-reco" style="display:none;"><h4 class="doc-h4">CONCLUSION &amp; RECOMMANDATIONS</h4><p id="d-psy-reco" class="doc-p"></p></div>
             </div>
 
-            <!-- AUTOPSIE -->
             <div id="render-auto" class="render-section" style="display:none;">
                 <div id="wrap-auto-ext"   style="display:none;"><h4 class="doc-h4">EXAMEN EXTERNE</h4><p id="d-auto-ext" class="doc-p"></p></div>
                 <div id="wrap-auto-int"   style="display:none;"><h4 class="doc-h4">EXAMEN INTERNE</h4><p id="d-auto-int" class="doc-p"></p></div>
                 <div id="wrap-auto-cause" style="display:none;"><h4 class="doc-h4">CONCLUSION MÉDICO-LÉGALE</h4><p id="d-auto-cause" class="doc-p" style="font-weight:bold;"></p></div>
             </div>
 
-            <!-- SECTIONS CUSTOM -->
             <div id="render-custom"></div>
 
-            <!-- Footer -->
             <div style="margin-top:36px;display:flex;justify-content:space-between;align-items:flex-end;">
                 <div>
                     <span style="font-size:12px;font-weight:bold;font-family:'Segoe UI',sans-serif;">Établi par :</span><br><br>
@@ -417,7 +398,6 @@
     </main>
 </div>
 
-<!-- POPUP -->
 <div id="image-popup" class="popup-overlay" style="display:none;">
     <div class="popup-content">
         <h3>Document Généré</h3>
@@ -435,7 +415,6 @@
 /* ══════════════════════════════════════════════════
    CONFIG INTRANET / DISCORD
 ══════════════════════════════════════════════════ */
-// Clé API Gemini (gratuit — https://aistudio.google.com/app/apikey)
 window.GEMINI_API_KEY = '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';
 
 var OMC_CONFIG = {
@@ -449,17 +428,13 @@ var OMC_CONFIG = {
         const nom  = document.getElementById('d-nom')?.innerText  || 'Inconnu';
         const titre= document.getElementById('d-titre-doc')?.innerText || 'Rapport';
         const ref  = document.getElementById('d-ref')?.innerText  || '...';
-        const sig  = document.getElementById('in-sig')?.value     || 'Non renseigné';
+        const sig  = document.getElementById('in-sig')?.value      || 'Non renseigné';
         return `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titre}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Signataire :** ${sig}\n━━━━━━━━━━━━━━━━━━━━`;
     }
 };
 
 /* ══════════════════════════════════════════════════
-   RÉSUMÉ IA — génération via Claude API
-   Collecte tous les champs remplis → envoie à Claude
-   → résumé médical professionnel en français
-   → affiché dans le textarea (modifiable)
-   → synchronisé dans le document imprimable
+   RÉSUMÉ IA — génération via Llama 3 via OpenRouter
 ══════════════════════════════════════════════════ */
 async function genererResumeIA() {
     const btn    = document.getElementById('btn-generer-resume');
@@ -481,18 +456,18 @@ async function genererResumeIA() {
     let sections = {};
     if (type === 'med') {
         sections = {
-            'Circonstances':      document.getElementById('in-med-circ')?.value.trim(),
-            'Bilan clinique':     document.getElementById('in-med-bilan')?.value.trim(),
+            'Circonstances':       document.getElementById('in-med-circ')?.value.trim(),
+            'Bilan clinique':      document.getElementById('in-med-bilan')?.value.trim(),
             'Protocole de soins': document.getElementById('in-med-soins')?.value.trim(),
-            'Conclusion':         document.getElementById('in-med-conclusion')?.value.trim(),
+            'Conclusion':          document.getElementById('in-med-conclusion')?.value.trim(),
             'Temps de récupération': document.getElementById('in-med-repos')?.value.trim(),
-            'Facturation':        document.getElementById('in-med-prix')?.value.trim(),
+            'Facturation':         document.getElementById('in-med-prix')?.value.trim(),
         };
     } else if (type === 'psy') {
         sections = {
-            'Contexte':        document.getElementById('in-psy-circ')?.value.trim(),
-            'Observations':    document.getElementById('in-psy-obs')?.value.trim(),
-            'Diagnostic':      document.getElementById('in-psy-diag')?.value.trim(),
+            'Contexte':         document.getElementById('in-psy-circ')?.value.trim(),
+            'Observations':     document.getElementById('in-psy-obs')?.value.trim(),
+            'Diagnostic':       document.getElementById('in-psy-diag')?.value.trim(),
             'Recommandations': document.getElementById('in-psy-reco')?.value.trim(),
         };
     } else if (type === 'auto') {
@@ -530,22 +505,18 @@ async function genererResumeIA() {
     ].filter(Boolean).join('\n');
 
     const prompt = `Tu es médecin légiste à l'Ocean Medical Center. Rédige un résumé médical officiel en français, destiné à être remis aux autorités (DOJ/LSPD/BCSO) comme document imprimé.
-
-Type de rapport : ${typeLabel}
-
-Informations :
-${infos}
-
-Contenu du rapport :
-${secStr || '(À rédiger depuis les informations patient disponibles)'}
-
-Consignes strictes :
-— Prose médicale professionnelle, 2 à 5 paragraphes courts
-— Commence directement par le contenu clinique (pas de "Ce rapport concerne...")
-— Vocabulaire médical précis adapté au type de rapport
-— Ne répète pas nom/date (déjà dans l'en-tête du document)
-— Aucun markdown, aucun tiret, aucun astérisque
-— Entre 120 et 280 mots`;
+    Type de rapport : ${typeLabel}
+    Informations :
+    ${infos}
+    Contenu du rapport :
+    ${secStr || '(À rédiger depuis les informations patient disponibles)'}
+    Consignes strictes :
+    — Prose médicale professionnelle, 2 à 5 paragraphes courts
+    — Commence directement par le contenu clinique
+    — Vocabulaire médical précis
+    — Ne répète pas nom/date
+    — Aucun markdown, aucun astérisque
+    — Entre 120 et 280 mots`;
 
     // ── Appel API OpenRouter ──────────────────────────
     btn.classList.add('loading-state');
@@ -554,20 +525,17 @@ Consignes strictes :
     status.className = 'go';
 
     try {
-        const OPENROUTER_KEY = window.GEMINI_API_KEY.trim(); 
+        const KEY = window.GEMINI_API_KEY.trim();
         
         const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + OPENROUTER_KEY,
-                'HTTP-Referer': 'https://omc-intranet.fr', 
-                'X-Title': 'OMC_Intranet'
+                'Authorization': 'Bearer ' + KEY,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 model: "meta-llama/llama-3-8b-instruct:free", 
-                messages: [{ role: "user", content: prompt }],
-                temperature: 0.4
+                messages: [{ role: "user", content: prompt }]
             })
         });
 
@@ -582,8 +550,8 @@ Consignes strictes :
         if (!texte) throw new Error('Réponse vide');
 
         ta.value = texte;
-        syncResumeDoc(texte); // Appel de la fonction de synchro
-        status.textContent = '✓ Résumé généré — modifiable ci-dessus';
+        syncResumeDoc(texte);
+        status.textContent = '✓ Résumé généré !';
         status.className = 'ok';
 
     } catch(e) {
@@ -594,13 +562,13 @@ Consignes strictes :
         btn.classList.remove('loading-state');
         btn.disabled = false;
     }
-} // Fermeture de la fonction genererResumeIA
+} 
 
-/* CETTE FONCTION DOIT ÊTRE BIEN SÉPARÉE */
+/* Synchronise le textarea → document imprimable */
 function syncResumeDoc(texte) {
     const section = document.getElementById('doc-resume-section');
-    const el      = document.getElementById('doc-resume-text');
-    if (el)      el.textContent          = texte || '';
+    const el       = document.getElementById('doc-resume-text');
+    if (el)       el.textContent          = texte || '';
     if (section) section.style.display   = (texte && texte.trim()) ? 'block' : 'none';
 }
 </script>
