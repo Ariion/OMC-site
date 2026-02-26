@@ -415,8 +415,6 @@
 /* ══════════════════════════════════════════════════
    CONFIG INTRANET / DISCORD
 ══════════════════════════════════════════════════ */
-window.GEMINI_API_KEY = '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';
-
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
     captureId:    'document-imprime',
@@ -434,7 +432,7 @@ var OMC_CONFIG = {
 };
 
 /* ══════════════════════════════════════════════════
-   RÉSUMÉ IA — génération via Llama 3 via OpenRouter
+   GÉNÉRATEUR DE RÉSUMÉ (Moteur Logique - Sans Erreur)
 ══════════════════════════════════════════════════ */
 function genererResumeIA() {
     const btn = document.getElementById('btn-generer-resume');
@@ -449,183 +447,54 @@ function genererResumeIA() {
     const pronom = (sexe === 'Femme') ? "La patiente" : "Le patient";
     const accord = (sexe === 'Femme') ? "e" : "";
 
-    // Récupération des blocs médicaux
+    // Récupération des blocs de saisie
     const circ = document.getElementById('in-med-circ')?.value.trim();
     const bilan = document.getElementById('in-med-bilan')?.value.trim();
     const soins = document.getElementById('in-med-soins')?.value.trim();
     const concl = document.getElementById('in-med-conclusion')?.value.trim();
 
-    if (!circ && !bilan && !soins) {
+    // Vérification si au moins un champ est rempli
+    if (!circ && !bilan && !soins && !concl) {
         status.textContent = '⚠ Remplissez quelques champs avant de générer.';
         status.className = 'err';
         return;
     }
 
-    // --- CONSTRUCTION DU RÉSUMÉ LOGIQUE ---
+    // --- CONSTRUCTION DU TEXTE ---
     let texte = `SYNTHÈSE MÉDICALE : ${patient.toUpperCase()}\n\n`;
 
     if (circ) {
-        texte += `PRÉSENTATION : ${pronom} a été pris${accord} en charge suite à : ${circ}.\n\n`;
+        texte += `PRÉSENTATION : ${pronom} a été pris${accord} en charge dans le cadre suivant : ${circ}.\n\n`;
     }
 
     if (bilan) {
-        texte += `EXAMEN CLINIQUE : Les investigations ont mis en évidence : ${bilan}.\n\n`;
+        texte += `EXAMEN CLINIQUE : Les investigations et observations ont mis en évidence : ${bilan}.\n\n`;
     }
 
     if (soins) {
-        texte += `THÉRAPEUTIQUE : Le protocole appliqué a consisté en : ${soins}.\n\n`;
+        texte += `THÉRAPEUTIQUE : Le protocole de soins appliqué a consisté en : ${soins}.\n\n`;
     }
 
     if (concl) {
-        texte += `CONCLUSION : ${concl}.`;
+        texte += `CONCLUSION ET PRONOSTIC : ${concl}.`;
     } else {
-        texte += `CONCLUSION : État stable, surveillance recommandée.`;
+        texte += `CONCLUSION : État stable au moment de la rédaction, surveillance recommandée.`;
     }
 
-    // Affichage immédiat (Pas d'attente API !)
+    // Mise à jour immédiate
     ta.value = texte;
     syncResumeDoc(texte);
     
-    status.textContent = '✓ Résumé généré par moteur logique';
+    status.textContent = '✓ Résumé construit avec succès';
     status.className = 'ok';
 }
-    const btn    = document.getElementById('btn-generer-resume');
-    const status = document.getElementById('resume-status');
-    const ta     = document.getElementById('resume-textarea');
-
-    // ── Collecte des données ──────────────────────────
-    const type   = window.currentReportType || 'med';
-    const prenom = document.getElementById('in-prenom')?.value.trim()      || '';
-    const nom    = document.getElementById('in-nom-famille')?.value.trim() || '';
-    const sujet  = document.getElementById('in-sujet')?.value.trim()       || '';
-    const ddnRaw = document.getElementById('in-ddn')?.value                || '';
-    const sexe   = document.getElementById('in-sexe')?.value               || '';
-    const dateRaw= document.getElementById('in-date-prel')?.value          || '';
-    const heure  = document.getElementById('in-heure-prel')?.value         || '';
-    const praticien = document.getElementById('in-doc')?.value.trim()      || '';
-    const grade  = document.getElementById('in-grade')?.value.trim()       || '';
-
-    let sections = {};
-    if (type === 'med') {
-        sections = {
-            'Circonstances':       document.getElementById('in-med-circ')?.value.trim(),
-            'Bilan clinique':      document.getElementById('in-med-bilan')?.value.trim(),
-            'Protocole de soins': document.getElementById('in-med-soins')?.value.trim(),
-            'Conclusion':          document.getElementById('in-med-conclusion')?.value.trim(),
-            'Temps de récupération': document.getElementById('in-med-repos')?.value.trim(),
-            'Facturation':         document.getElementById('in-med-prix')?.value.trim(),
-        };
-    } else if (type === 'psy') {
-        sections = {
-            'Contexte':         document.getElementById('in-psy-circ')?.value.trim(),
-            'Observations':     document.getElementById('in-psy-obs')?.value.trim(),
-            'Diagnostic':       document.getElementById('in-psy-diag')?.value.trim(),
-            'Recommandations': document.getElementById('in-psy-reco')?.value.trim(),
-        };
-    } else if (type === 'auto') {
-        sections = {
-            'Heure du décès':    document.getElementById('in-auto-heure')?.value,
-            'Examen externe':    document.getElementById('in-auto-ext')?.value.trim(),
-            'Examen interne':    document.getElementById('in-auto-int')?.value.trim(),
-            'Conclusion légale': document.getElementById('in-auto-cause')?.value.trim(),
-        };
-    }
-
-    const secStr = Object.entries(sections)
-        .filter(([, v]) => v && v.length > 0)
-        .map(([k, v]) => `${k} :\n${v}`)
-        .join('\n\n');
-
-    if (!secStr && !prenom && !nom) {
-        status.textContent = '⚠ Remplissez d\'abord quelques champs';
-        status.className = 'err';
-        return;
-    }
-
-    // ── Construction du prompt ────────────────────────
-    const typeLabel = { med: 'médical', psy: 'psychologique', auto: "d'autopsie" }[type] || type;
-    const ddn  = ddnRaw  ? new Date(ddnRaw).toLocaleDateString('fr-FR')  : '';
-    const date = dateRaw ? new Date(dateRaw).toLocaleDateString('fr-FR') : '';
-
-    const infos = [
-        prenom && nom ? `Patient : ${prenom} ${nom}` : '',
-        ddn   ? `Date de naissance : ${ddn}` : '',
-        sexe  ? `Sexe : ${sexe}` : '',
-        sujet ? `Sujet : ${sujet}` : '',
-        date  ? `Date d'intervention : ${date}${heure ? ' à ' + heure : ''}` : '',
-        praticien ? `Praticien : ${praticien}${grade ? ', ' + grade : ''}` : '',
-    ].filter(Boolean).join('\n');
-
-    const prompt = `Tu es médecin légiste à l'Ocean Medical Center. Rédige un résumé médical officiel en français, destiné à être remis aux autorités (DOJ/LSPD/BCSO) comme document imprimé.
-    Type de rapport : ${typeLabel}
-    Informations :
-    ${infos}
-    Contenu du rapport :
-    ${secStr || '(À rédiger depuis les informations patient disponibles)'}
-    Consignes strictes :
-    — Prose médicale professionnelle, 2 à 5 paragraphes courts
-    — Commence directement par le contenu clinique
-    — Vocabulaire médical précis
-    — Ne répète pas nom/date
-    — Aucun markdown, aucun astérisque
-    — Entre 120 et 280 mots`;
-
-    // ── Appel API OpenRouter ──────────────────────────
-    btn.classList.add('loading-state');
-    btn.disabled = true;
-    status.textContent = 'Rédaction en cours…';
-    status.className = 'go';
-
-    try {
-        const KEY = window.GEMINI_API_KEY.trim();
-        
-        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + KEY,
-                // Ces en-têtes aident OpenRouter à valider la source
-                'HTTP-Referer': window.location.origin, 
-                'X-Title': 'OMC_Intranet'
-            },
-            body: JSON.stringify({
-                model: "mistralai/mistral-7b-instruct:free", 
-                messages: [{ role: "user", content: prompt }],
-                temperature: 0.4
-            })
-        });
-
-        if (!res.ok) {
-            const errDetails = await res.json();
-            throw new Error(`Erreur ${res.status}: ${errDetails.error?.message || 'Inconnue'}`);
-        }
-
-        const data = await res.json();
-        const texte = data.choices?.[0]?.message?.content?.trim();
-        
-        if (!texte) throw new Error('Réponse vide');
-
-        ta.value = texte;
-        syncResumeDoc(texte);
-        status.textContent = '✓ Résumé généré !';
-        status.className = 'ok';
-
-    } catch(e) {
-        console.error('Erreur IA :', e);
-        status.textContent = '✗ ' + e.message;
-        status.className = 'err';
-    } finally {
-        btn.classList.remove('loading-state');
-        btn.disabled = false;
-    }
-} 
 
 /* Synchronise le textarea → document imprimable */
 function syncResumeDoc(texte) {
     const section = document.getElementById('doc-resume-section');
-    const el       = document.getElementById('doc-resume-text');
-    if (el)       el.textContent          = texte || '';
-    if (section) section.style.display   = (texte && texte.trim()) ? 'block' : 'none';
+    const el = document.getElementById('doc-resume-text');
+    if (el) el.textContent = texte || '';
+    if (section) section.style.display = (texte && texte.trim()) ? 'block' : 'none';
 }
 </script>
 
