@@ -565,7 +565,8 @@ Consignes strictes :
                 'X-Title': 'OMC_Intranet'
             },
             body: JSON.stringify({
-                model: "google/gemini-2.0-flash:free", 
+                // C'est l'identifiant exact pour Gemini 2.0 sur OpenRouter
+                model: "google/gemini-2.0-flash-exp", 
                 messages: [{ role: "user", content: prompt }],
                 temperature: 0.4
             })
