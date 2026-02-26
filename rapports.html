@@ -356,6 +356,48 @@
                 <p id="doc-resume-text"></p>
             </div>
 
+            <!-- ══ SECTIONS COMPLÈTES DU RAPPORT ══ -->
+
+            <!-- MÉDICAL -->
+            <div id="render-med" class="render-section">
+                <div id="wrap-med-circ" style="display:none;">
+                    <h4 class="doc-h4">CIRCONSTANCES DE L'INTERVENTION</h4>
+                    <p id="d-med-circ" class="doc-p"></p>
+                </div>
+                <div id="wrap-med-bilan" style="display:none;">
+                    <h4 class="doc-h4">BILAN CLINIQUE ET IMAGERIE</h4>
+                    <p id="d-med-bilan" class="doc-p"></p>
+                </div>
+                <div id="wrap-med-soins" style="display:none;">
+                    <h4 class="doc-h4">PROTOCOLE DE SOINS APPLIQUÉ</h4>
+                    <p id="d-med-soins" class="doc-p"></p>
+                </div>
+                <div id="wrap-med-suivi" style="display:none;">
+                    <h4 class="doc-h4">SUIVI &amp; CONCLUSION</h4>
+                    <p id="d-med-conclusion" class="doc-p" style="display:none;"></p>
+                    <p id="wrap-med-repos" class="doc-p" style="display:none;margin:2px 0;"><strong>Temps de récupération :</strong> <span id="d-med-repos"></span></p>
+                    <p id="wrap-med-prix" class="doc-p" style="display:none;margin:2px 0;"><strong>Facturation :</strong> <span id="d-med-prix"></span> $</p>
+                </div>
+            </div>
+
+            <!-- PSYCHOLOGIE -->
+            <div id="render-psy" class="render-section" style="display:none;">
+                <div id="wrap-psy-circ" style="display:none;"><h4 class="doc-h4">CONTEXTE &amp; MOTIF</h4><p id="d-psy-circ" class="doc-p"></p></div>
+                <div id="wrap-psy-obs"  style="display:none;"><h4 class="doc-h4">OBSERVATIONS CLINIQUES</h4><p id="d-psy-obs" class="doc-p"></p></div>
+                <div id="wrap-psy-diag" style="display:none;"><h4 class="doc-h4">ANALYSE &amp; DIAGNOSTIC</h4><p id="d-psy-diag" class="doc-p"></p></div>
+                <div id="wrap-psy-reco" style="display:none;"><h4 class="doc-h4">CONCLUSION &amp; RECOMMANDATIONS</h4><p id="d-psy-reco" class="doc-p"></p></div>
+            </div>
+
+            <!-- AUTOPSIE -->
+            <div id="render-auto" class="render-section" style="display:none;">
+                <div id="wrap-auto-ext"   style="display:none;"><h4 class="doc-h4">EXAMEN EXTERNE</h4><p id="d-auto-ext" class="doc-p"></p></div>
+                <div id="wrap-auto-int"   style="display:none;"><h4 class="doc-h4">EXAMEN INTERNE</h4><p id="d-auto-int" class="doc-p"></p></div>
+                <div id="wrap-auto-cause" style="display:none;"><h4 class="doc-h4">CONCLUSION MÉDICO-LÉGALE</h4><p id="d-auto-cause" class="doc-p" style="font-weight:bold;"></p></div>
+            </div>
+
+            <!-- SECTIONS CUSTOM -->
+            <div id="render-custom"></div>
+
             <!-- Footer -->
             <div style="margin-top:36px;display:flex;justify-content:space-between;align-items:flex-end;">
                 <div>

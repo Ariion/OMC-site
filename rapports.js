@@ -206,9 +206,11 @@ window.switchReport = function(type) {
     document.querySelectorAll('.dynamic-fields').forEach(f => f.style.display = 'none');
     document.getElementById('fields-' + type).style.display = 'block';
 
-    // Le document imprimé n'a pas de sections render séparées —
-    // il affiche uniquement le résumé IA + infos patient.
-    // Mais on met à jour le titre et les labels.
+    // Masquer/afficher les sections selon le type
+    document.querySelectorAll('.render-section').forEach(s => s.style.display = 'none');
+    const renderSection = document.getElementById('render-' + type);
+    if (renderSection) renderSection.style.display = 'block';
+
     const titreDoc = document.getElementById('d-titre-doc');
     const labelDoc = document.getElementById('label-doc');
     const labelNom = document.getElementById('label-nom');
@@ -256,15 +258,32 @@ window.ajouterSectionCustom = function() {
             <textarea id="in-c${id}-text" rows="2" placeholder="Contenu..." oninput="upCustom(${id})" style="border:none;background:#111b2d;color:white;width:100%;resize:vertical;padding:8px;border-radius:4px;outline:none;box-sizing:border-box;"></textarea>
         </div>
     `);
+    // Créer le bloc dans le document
+    const renderCustom = document.getElementById('render-custom');
+    if (renderCustom) {
+        renderCustom.insertAdjacentHTML('beforeend', `
+            <div id="wrap-c${id}" style="display:none;margin-top:20px;">
+                <h4 id="d-c${id}-titre" class="doc-h4"></h4>
+                <p  id="d-c${id}-text"  class="doc-p"></p>
+            </div>
+        `);
+    }
+
     initToolbars();
 };
 
 window.supprimerSectionCustom = function(id) {
     document.getElementById(`custom-block-${id}`)?.remove();
+    document.getElementById(`wrap-c${id}`)?.remove();
 };
 
 window.upCustom = function(id) {
-    // Les sections custom ne s'affichent pas dans le document résumé —
-    // elles sont incluses dans la génération IA via le formulaire.
-    // (Le résumé IA les intégrera si elles sont remplies.)
+    const titre = document.getElementById(`in-c${id}-titre`)?.value.trim() || '';
+    const texte = document.getElementById(`in-c${id}-text`)?.value.trim()  || '';
+    const wrap  = document.getElementById(`wrap-c${id}`);
+    const dTitre = document.getElementById(`d-c${id}-titre`);
+    const dText  = document.getElementById(`d-c${id}-text`);
+    if (dTitre) dTitre.innerText  = titre || 'SECTION SUPPLÉMENTAIRE';
+    if (dText)  dText.innerHTML   = formatMD(texte);
+    if (wrap)   wrap.style.display = texte ? 'block' : 'none';
 };
