@@ -530,11 +530,14 @@ async function genererResumeIA() {
         const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
+                'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + KEY,
-                'Content-Type': 'application/json'
+                // Ces en-têtes aident OpenRouter à valider la source
+                'HTTP-Referer': window.location.origin, 
+                'X-Title': 'OMC_Intranet'
             },
             body: JSON.stringify({
-                model: "meta-llama/llama-3-8b-instruct:free", 
+                model: "openrouter/auto",
                 messages: [{ role: "user", content: prompt }]
             })
         });
