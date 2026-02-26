@@ -3,63 +3,38 @@
 <head> 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>OMC - Certificat Médical</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="certificat.css">
     <link rel="stylesheet" href="patch-daltonien.css">
-
     <style>
-        /* ── Champs prénom / nom côte à côte ── */
-        .name-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .name-row .form-group {
-            margin-bottom: 0;
-        }
-
-        /* ── Autocomplete dropdown (si global.css n'a pas les styles) ── */
-        .autocomplete-wrapper { position: relative; width: 100%; }
+        .name-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px; }
+        .name-row .form-group { margin-bottom:0; }
+        .autocomplete-wrapper { position:relative; width:100%; }
         .autocomplete-list {
-            position: absolute;
-            top: 100%; left: 0; right: 0;
-            background: #1e293b;
-            border: 1px solid #475569;
-            border-radius: 0 0 6px 6px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 9999;
-            box-shadow: 0 8px 20px rgba(0,0,0,.5);
+            position:absolute; top:100%; left:0; right:0;
+            background:#1e293b; border:1px solid #475569;
+            border-radius:0 0 6px 6px; max-height:200px;
+            overflow-y:auto; z-index:9999; box-shadow:0 8px 20px rgba(0,0,0,.5);
         }
         .autocomplete-item {
-            padding: 9px 14px;
-            border-bottom: 1px solid #334155;
-            cursor: pointer;
-            color: #e2e8f0;
-            font-size: 12px;
-            transition: background .15s;
-            display: flex;
-            justify-content: space-between;
+            padding:9px 14px; border-bottom:1px solid #334155;
+            cursor:pointer; color:#e2e8f0; font-size:12px; transition:background .15s;
         }
-        .autocomplete-item:last-child { border-bottom: none; }
-        .autocomplete-item:hover { background: #3b82f6; color: white; }
-        .autocomplete-item strong { display: block; font-size: 13px; }
-        .autocomplete-item small { color: #94a3b8; font-size: 11px; }
-        .autocomplete-item:hover small { color: #e0f2fe; }
+        .autocomplete-item:last-child { border-bottom:none; }
+        .autocomplete-item:hover { background:#3b82f6; color:white; }
+        .autocomplete-item strong { display:block; font-size:13px; }
+        .autocomplete-item small  { color:#94a3b8; font-size:11px; }
+        .autocomplete-item:hover small { color:#e0f2fe; }
     </style>
 </head>
 <body class="labo-body">
     <div class="interface-container">
-        
         <aside class="sidebar">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: -10px; margin-bottom: 25px; gap: 10px;">
-                <a href="index.html" class="back-link" style="margin-bottom: 0; white-space: nowrap;">← RETOUR PORTAIL</a>
-                <button onclick="toggleTheme()" style="background: #1e293b; border: 1px solid #334155; color: white; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-                    <span>🌓</span>
-                    <span id="theme-text">Passer mode sombre</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:-10px;margin-bottom:25px;gap:10px;">
+                <a href="index.html" class="back-link" style="margin-bottom:0;white-space:nowrap;">← RETOUR PORTAIL</a>
+                <button onclick="toggleTheme()" style="background:#1e293b;border:1px solid #334155;color:white;cursor:pointer;padding:4px 10px;border-radius:4px;font-size:11px;display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                    <span>🌓</span><span id="theme-text">Passer mode sombre</span>
                 </button>
             </div>
 
@@ -75,30 +50,20 @@
                 </select>
             </div>
 
-            <!-- ══ PRÉNOM + NOM CÔTE À CÔTE ══ -->
             <div class="name-row">
                 <div class="form-group">
                     <label>Prénom</label>
                     <div class="autocomplete-wrapper">
-                        <input type="text"
-                               id="patientPrenom"
-                               placeholder=" "
-                               autocomplete="off"
-                               oninput="onPrenomInput(this.value)">
+                        <input type="text" id="patientPrenom" placeholder=" " autocomplete="off" oninput="onPrenomInput(this.value)">
                         <div class="autocomplete-list" id="ac-list"></div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label>NOM</label>
-                    <input type="text"
-                           id="patientNom"
-                           placeholder="  "
-                           autocomplete="off"
-                           oninput="onNomInput(this.value)">
+                    <input type="text" id="patientNom" placeholder=" " autocomplete="off" oninput="onNomInput(this.value)">
                 </div>
             </div>
 
-            <!-- Champ caché pour la compatibilité avec global.js / generation.js -->
             <input type="hidden" id="patientName">
 
             <div class="form-group">
@@ -117,10 +82,10 @@
 
             <div class="form-group" id="side-concl-block">
                 <label>Conclusion médicale</label>
-                <div class="radio-nav-classic"> 
-                    <label><input type="radio" name="concl" value="Apte" checked onclick="toggleMotifs()"> Apte</label>
-                    <label><input type="radio" name="concl" value="Réserve" onclick="toggleMotifs()"> Réserve</label>
-                    <label><input type="radio" name="concl" value="Inapte" onclick="toggleMotifs()"> Inapte</label>
+                <div class="radio-nav-classic">
+                    <label><input type="radio" name="concl" value="Apte"    checked onclick="toggleMotifs()"> Apte</label>
+                    <label><input type="radio" name="concl" value="Réserve"         onclick="toggleMotifs()"> Réserve</label>
+                    <label><input type="radio" name="concl" value="Inapte"          onclick="toggleMotifs()"> Inapte</label>
                 </div>
             </div>
 
@@ -147,7 +112,20 @@
 
             <div class="form-group" id="side-divers-block" style="display:none;">
                 <label>Texte Libre</label>
-                <textarea id="f-divers" rows="6" oninput="updateCertif()" style="width:100%; background:#121c2f; border:1px solid #1e293b; color:white; padding:10px;"></textarea>
+                <textarea id="f-divers" rows="6" oninput="updateCertif()" style="width:100%;background:#121c2f;border:1px solid #1e293b;color:white;padding:10px;"></textarea>
+            </div>
+
+            <!-- ══ OBSERVATIONS COMPLÉMENTAIRES ══ -->
+            <div class="form-group" style="border-top:1px solid #334155;padding-top:14px;margin-top:5px;">
+                <label style="color:#f59e0b;font-weight:bold;display:block;margin-bottom:6px;">
+                    📝 OBSERVATIONS COMPLÉMENTAIRES
+                </label>
+                <textarea id="f-observations" rows="4" oninput="updateCertif()"
+                    placeholder="Ex : Apte sous conditions — port de lunettes obligatoire&#10;Suivi cardiologique recommandé dans les 3 mois&#10;Contre-indication temporaire au port d'arme&#10;Nécessite aménagement horaire..."
+                    style="width:100%;background:#121c2f;border:1px solid #334155;color:#fde68a;padding:10px;border-radius:4px;resize:vertical;font-size:12px;line-height:1.6;box-sizing:border-box;"></textarea>
+                <div style="font-size:10px;color:#475569;margin-top:4px;">
+                    Affiché sur le document si renseigné · PPA, aptitude sous conditions, notes médicales…
+                </div>
             </div>
 
             <div class="form-group">
@@ -155,7 +133,7 @@
                 <input type="text" id="f-medecin" placeholder="Nom et Prénom" oninput="updateCertif()">
             </div>
 
-            <div class="actions-group" style="margin-top: 20px;">
+            <div class="actions-group" style="margin-top:20px;">
                 <button class="btn-image" onclick="genererImage(this)">🖼️ GÉNÉRER L'IMAGE</button>
                 <button id="discord-btn" class="btn-discord" onclick="envoyerDiscord(this)">ENVOYER SUR DISCORD</button>
             </div>
@@ -164,7 +142,7 @@
         <main class="preview-area">
             <div id="document">
                 <div class="header-cert">
-                    <img src="assets/logo_omc.png" class="doc-logo" style="height: 60px;">
+                    <img src="assets/logo_omc.png" class="doc-logo" style="height:60px;">
                     <div>
                         <div class="cert-tag">OCEAN MEDICAL CENTER</div>
                         <h1 class="cert-main-title" id="d-titre-doc">CERTIFICAT MÉDICAL</h1>
@@ -175,28 +153,38 @@
                     <div class="cert-box"><label>Patient</label><div id="d-nom" class="cert-val">...</div></div>
                     <div class="cert-box"><label>Naissance</label><div id="d-naiss" class="cert-val">...</div></div>
                     <div class="cert-box"><label>Date d'établissement</label><div id="d-date" class="cert-val">...</div></div>
-                    <div class="cert-box"><label>Référence dossier</label><div id="d-ref" class="cert-val" style="color: #1e293b;">#REF</div></div>
-                    <div class="cert-box" style="grid-column: span 2;" id="doc-entreprise-block"><label>Entreprise</label><div id="d-entreprise" class="cert-val">...</div></div>
-                    
-                    <div class="cert-box" style="grid-column: span 2;" id="doc-concl-block">
-                        <label>Conclusion</label>
-                        <div id="d-concl" class="cert-val">...</div>
+                    <div class="cert-box"><label>Référence dossier</label><div id="d-ref" class="cert-val" style="color:#1e293b;">#REF</div></div>
+
+                    <div class="cert-box" style="grid-column:span 2;" id="doc-entreprise-block">
+                        <label>Entreprise</label><div id="d-entreprise" class="cert-val">...</div>
                     </div>
 
-                    <div class="cert-box" style="grid-column: span 2; display:none;" id="doc-divers-block">
+                    <div class="cert-box" style="grid-column:span 2;" id="doc-concl-block">
+                        <label>Conclusion</label><div id="d-concl" class="cert-val">...</div>
+                    </div>
+
+                    <div class="cert-box" style="grid-column:span 2;display:none;" id="doc-divers-block">
                         <label>Rapport / Texte Libre</label>
-                        <div id="d-divers-text" class="cert-val" style="white-space: pre-wrap; font-size: 14px;">...</div>
+                        <div id="d-divers-text" class="cert-val" style="white-space:pre-wrap;font-size:14px;">...</div>
+                    </div>
+
+                    <!-- ══ OBSERVATIONS COMPLÉMENTAIRES dans le document ══ -->
+                    <div class="cert-box" id="doc-observations-block"
+                         style="grid-column:span 2;display:none;border-left:3px solid #f59e0b;background:#fffbeb;">
+                        <label style="color:#b45309;font-weight:800;">📝 OBSERVATIONS COMPLÉMENTAIRES</label>
+                        <div id="d-observations-text" class="cert-val"
+                             style="white-space:pre-wrap;font-size:13px;line-height:1.7;color:#1e293b;margin-top:4px;"></div>
                     </div>
                 </div>
 
                 <div class="cert-footer">
-                    <div class="cert-signature" style="text-align: left; border-top: 1px solid #cbd5e1; min-width: 250px;">
+                    <div class="cert-signature" style="text-align:left;border-top:1px solid #cbd5e1;min-width:250px;">
                         Établi par :<br><br>
-                        <span id="d-sig" style="font-weight: bold; font-style: italic;">DOCTEUR</span>
+                        <span id="d-sig" style="font-weight:bold;font-style:italic;">DOCTEUR</span>
                     </div>
                     <div class="round-stamp">
                         <img id="qr-ref" class="qr-code" src="" alt="QR">
-                        <span style="display: block; font-size: 10px; font-weight: bold;">OMC MEDICAL CENTER</span>
+                        <span style="display:block;font-size:10px;font-weight:bold;">OMC MEDICAL CENTER</span>
                     </div>
                 </div>
 
@@ -207,175 +195,94 @@
         </main>
     </div>
 
-    <!-- POPUP IMAGE -->
-    <div id="image-popup" class="popup-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; align-items:center; justify-content:center;">
-        <div class="popup-content" style="background:#1a2332; padding:20px; border-radius:8px; max-width:90%; border:1px solid #3b82f6;">
-            <h3 style="color:white; margin-top:0;">PRÉVISUALISATION</h3>
-            <div style="max-height:60vh; overflow:auto; margin-bottom:15px;">
-                <img id="preview-img-result" src="" style="max-width:100%; border:1px solid #444;">
+    <div id="image-popup" class="popup-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;align-items:center;justify-content:center;">
+        <div class="popup-content" style="background:#1a2332;padding:20px;border-radius:8px;max-width:90%;border:1px solid #3b82f6;">
+            <h3 style="color:white;margin-top:0;">PRÉVISUALISATION</h3>
+            <div style="max-height:60vh;overflow:auto;margin-bottom:15px;">
+                <img id="preview-img-result" src="" style="max-width:100%;border:1px solid #444;">
             </div>
-            <input type="text" id="direct-link" readonly style="width:100%; margin-bottom:10px; padding:5px; background:#0a1324; color:white; border:1px solid #334155;">
-            <div style="display:flex; gap:10px;">
-                <button onclick="copyLink()" style="flex:1; padding:10px; background:#64ffda; cursor:pointer; font-weight:bold;">COPIER LIEN</button>
-                <button onclick="closePopup()" style="flex:1; padding:10px; background:#64748b; color:white; cursor:pointer;">FERMER</button>
+            <input type="text" id="direct-link" readonly style="width:100%;margin-bottom:10px;padding:5px;background:#0a1324;color:white;border:1px solid #334155;">
+            <div style="display:flex;gap:10px;">
+                <button onclick="copyLink()" style="flex:1;padding:10px;background:#64ffda;cursor:pointer;font-weight:bold;">COPIER LIEN</button>
+                <button onclick="closePopup()" style="flex:1;padding:10px;background:#64748b;color:white;cursor:pointer;">FERMER</button>
             </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="certificat.js"></script>
-
     <script>
-    // ══════════════════════════════════════════════════════════
-    //  FORMATAGE
-    // ══════════════════════════════════════════════════════════
     function formatPrenom(str) {
         if (!str) return '';
         str = str.trim();
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
-    function formatNom(str) {
-        if (!str) return '';
-        return str.trim().toUpperCase();
-    }
+    function formatNom(str) { return str ? str.trim().toUpperCase() : ''; }
 
-    // Reconstruit "    ", synchro champ caché + affichage doc
     function buildFullName() {
         const prenom = formatPrenom(document.getElementById('patientPrenom').value);
         const nom    = formatNom(document.getElementById('patientNom').value);
         const full   = [prenom, nom].filter(Boolean).join(' ');
-        document.getElementById('patientName').value = full; // champ caché — pour generation.js
+        document.getElementById('patientName').value = full;
         document.getElementById('d-nom').innerText   = full || '...';
         return full;
     }
-
-    // Appelé à chaque frappe
     function onPrenomInput() { buildFullName(); updateCertif(); }
     function onNomInput()    { buildFullName(); updateCertif(); }
 
-    // ══════════════════════════════════════════════════════════
-    //  HOOK GLOBAL.JS — on remplace setupPatientAutocomplete
-    //  pour qu'il branche l'autocomplete sur #patientPrenom
-    //  au lieu de #patientName, et splitte le résultat.
-    // ══════════════════════════════════════════════════════════
-
-    // On surcharge setupPatientAutocomplete avant que global.js l'appelle dans onload.
-    // global.js appelle : setupPatientAutocomplete({ nameId:'patientName', birthId:'patientBirth', callback:fn })
-    // On intercepte ici AVANT que global.js soit chargé (ce script tourne avant).
-    // Mais global.js est un module ES6 donc il s'exécute après — on peut définir la surcharge maintenant.
-
-    window._omcPatientAutocompleteConfig = null; // sera rempli par global.js via le onSnapshot
-
-    // On redéfinit setupPatientAutocomplete ici.
-    // global.js le redéfinira sur window, MAIS comme global.js est type="module"
-    // il s'exécute en dernier — donc on laisse global.js créer sa version,
-    // puis on la remplace à la fin du chargement via window.addEventListener('load').
-
     window.addEventListener('load', function() {
-        // À ce stade global.js a fini de s'exécuter et patientsCache est alimenté.
-        // On branche l'autocomplete sur #patientPrenom en utilisant directement patientsCache.
-
         const inputPrenom = document.getElementById('patientPrenom');
-        const inputNom    = document.getElementById('patientNom');
         const list        = document.getElementById('ac-list');
         if (!inputPrenom || !list) return;
 
         inputPrenom.addEventListener('input', function() {
             const val = this.value.trim().toLowerCase();
-            list.innerHTML = '';
-            list.style.display = 'none';
+            list.innerHTML = ''; list.style.display = 'none';
             if (val.length < 2) return;
-
-            // patientsCache est exposé par global.js via window.getPatientsDB()
             const patients = window.getPatientsDB ? window.getPatientsDB() : [];
-
-            // On cherche sur le nom complet (p.nom contient "    " ou "    " selon comment tu sauvegardes)
-            const matches = patients.filter(p => {
-                const haystack = (p.nom || '').toLowerCase();
-                return haystack.includes(val);
-            }).slice(0, 8);
-
+            const matches  = patients.filter(p => (p.nom||'').toLowerCase().includes(val)).slice(0, 8);
             if (!matches.length) return;
-
             list.style.display = 'block';
             matches.forEach(p => {
                 const item = document.createElement('div');
                 item.className = 'autocomplete-item';
-                // Affichage : nom tel qu'il est en base
-                item.innerHTML = `<strong>${p.nom}</strong>${p.naissance ? `<br><small style="color:#94a3b8">Né(e) le ${formatDateFR(p.naissance)}</small>` : ''}`;
-
+                item.innerHTML = `<strong>${p.nom}</strong>${p.naissance ? `<br><small>${formatDateFR(p.naissance)}</small>` : ''}`;
                 item.onclick = function() {
-                    // p.nom contient le nom complet tel que sauvegardé ("    ")
-                    // On splitte : dernier mot = NOM, le reste = prénom
-                    const parts  = (p.nom || '').trim().split(/\s+/);
+                    const parts = (p.nom||'').trim().split(/\s+/);
                     let prenom, nom;
-
                     if (parts.length >= 2) {
-                        // Convention : dernier segment = NOM famille (majuscules)
-                        // Si le dernier mot est tout en majuscules → c'est le NOM
-                        const last = parts[parts.length - 1];
-                        if (last === last.toUpperCase() && last.length > 1) {
-                            nom    = last;
-                            prenom = parts.slice(0, -1).join(' ');
-                        } else {
-                            // Sinon on suppose prénom = premier mot, NOM = le reste
-                            prenom = parts[0];
-                            nom    = parts.slice(1).join(' ');
-                        }
-                    } else {
-                        prenom = '';
-                        nom    = parts[0] || '';
-                    }
-
-                    inputPrenom.value = formatPrenom(prenom);
-                    inputNom.value    = formatNom(nom);
-
-                    // Remplir la date de naissance
+                        const last = parts[parts.length-1];
+                        if (last === last.toUpperCase() && last.length > 1) { nom=last; prenom=parts.slice(0,-1).join(' '); }
+                        else { prenom=parts[0]; nom=parts.slice(1).join(' '); }
+                    } else { prenom=''; nom=parts[0]||''; }
+                    document.getElementById('patientPrenom').value = formatPrenom(prenom);
+                    document.getElementById('patientNom').value    = formatNom(nom);
                     if (p.naissance) {
-                        const birthEl = document.getElementById('patientBirth');
-                        if (birthEl) {
-                            birthEl.value = p.naissance;
-                            if (typeof upDate === 'function') upDate('d-naiss', p.naissance);
-                        }
+                        const b = document.getElementById('patientBirth');
+                        if (b) { b.value=p.naissance; if(typeof upDate==='function') upDate('d-naiss',p.naissance); }
                     }
-
-                    list.style.display = 'none';
-                    buildFullName();
-                    updateCertif();
+                    list.style.display='none'; buildFullName(); updateCertif();
                 };
                 list.appendChild(item);
             });
         });
-
-        // Ferme si clic dehors
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.autocomplete-wrapper')) {
-                list.style.display = 'none';
-            }
-        });
+        document.addEventListener('click', e => { if(!e.target.closest('.autocomplete-wrapper')) list.style.display='none'; });
     });
 
     function formatDateFR(val) {
         if (!val) return '';
-        // Accepte YYYY-MM-DD ou DD/MM/YYYY
-        if (val.includes('-')) {
-            const [y, m, d] = val.split('-');
-            return `${d}/${m}/${y}`;
-        }
+        if (val.includes('-')) { const [y,m,d]=val.split('-'); return `${d}/${m}/${y}`; }
         return val;
     }
 
-    // ══════════════════════════════════════════════════════════
-    //  CONFIG DISCORD / GÉNÉRATION
-    // ══════════════════════════════════════════════════════════
     var OMC_CONFIG = {
         webhook:      'https://discord.com/api/webhooks/1421827797965471855/aBgwIgdIRP3TO0Qp_culr5GJHVLDRnwtKnxjv7N62ThG8L_bRQ1gwsqV_aYXhu4eCHa2',
         captureId:    'document',
-        nomPatientId: 'patientName',   // champ caché = "    " — utilisé par generation.js
+        nomPatientId: 'patientName',
         typeDoc:      'Certificat Médical',
         pageSource:   'certificat.html',
-        getThreadName: () => `📝 ${document.getElementById('d-titre-doc')?.innerText || 'Certificat'} - ${document.getElementById('d-nom')?.innerText || 'Inconnu'}`,
-        getContent:    () => `📜 **Nouveau Rapport Médical**\n👤 Patient : ${document.getElementById('d-nom')?.innerText || 'Inconnu'}\n📋 Type : ${document.getElementById('d-titre-doc')?.innerText || 'Certificat'}`
+        getThreadName: () => `📝 ${document.getElementById('d-titre-doc')?.innerText||'Certificat'} - ${document.getElementById('d-nom')?.innerText||'Inconnu'}`,
+        getContent:    () => `📜 **Nouveau Rapport Médical**\n👤 Patient : ${document.getElementById('d-nom')?.innerText||'Inconnu'}\n📋 Type : ${document.getElementById('d-titre-doc')?.innerText||'Certificat'}`
     };
     </script>
 

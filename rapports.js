@@ -286,4 +286,4 @@ window.upCustom = function(id) {
     if (dTitre) dTitre.innerText  = titre || 'SECTION SUPPLÉMENTAIRE';
     if (dText)  dText.innerHTML   = formatMD(texte);
     if (wrap)   wrap.style.display = texte ? 'block' : 'none';
-};
+}; 

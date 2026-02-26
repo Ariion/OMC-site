@@ -17,170 +17,159 @@
         }
         .md-toolbar button:hover { background: #38bdf8; color: #0f172a; }
 
-        /* ══ LAYOUT TROIS COLONNES ══ */
-        .interface-container {
-            display: flex; width: 100%; height: 100vh; overflow: hidden;
-        }
+        /* ══ LAYOUT 3 COLONNES ══ */
+        .interface-container { display: flex; width: 100%; height: 100vh; overflow: hidden; }
 
         /* ══ PANNEAU RÉSUMÉ IA ══ */
         #panneau-resume {
-            width: 300px; min-width: 300px;
+            width: 290px; min-width: 290px; flex-shrink: 0;
             background: #060d18;
-            border-left: 1px solid #1a3050;
-            border-right: 1px solid #1a3050;
-            display: flex; flex-direction: column;
-            overflow: hidden; position: relative;
-            flex-shrink: 0;
+            border-left: 1px solid #1a3050; border-right: 1px solid #1a3050;
+            display: flex; flex-direction: column; overflow: hidden;
         }
-
-        #panneau-resume .panel-header {
-            padding: 16px 18px 12px;
-            border-bottom: 1px solid #1a3050;
-            flex-shrink: 0;
-        }
-        #panneau-resume .panel-title {
-            font-size: 11px; font-weight: 800; letter-spacing: 2.5px;
+        .panel-header { padding: 15px 16px 11px; border-bottom: 1px solid #1a3050; flex-shrink: 0; }
+        .panel-title {
+            font-size: 10px; font-weight: 800; letter-spacing: 2.5px;
             text-transform: uppercase; color: #38bdf8; margin-bottom: 2px;
             display: flex; align-items: center; gap: 7px;
         }
-        #panneau-resume .panel-title::before {
-            content: ''; display: inline-block; width: 6px; height: 6px;
-            background: #38bdf8; border-radius: 50%;
-            box-shadow: 0 0 8px #38bdf8;
+        .panel-title::before {
+            content:''; width:5px; height:5px; background:#38bdf8;
+            border-radius:50%; box-shadow:0 0 7px #38bdf8; flex-shrink:0;
         }
-        #panneau-resume .panel-sub {
-            font-size: 10px; color: #334155; letter-spacing: 0.5px; padding-left: 13px;
-        }
+        .panel-sub { font-size: 10px; color: #334155; padding-left: 12px; }
 
-        /* Bouton générer */
         #btn-generer-resume {
-            margin: 14px 18px 0;
-            padding: 10px 14px;
-            background: linear-gradient(135deg, #0c4a6e, #0ea5e9);
+            margin: 12px 16px 0; padding: 10px 14px;
+            background: linear-gradient(135deg,#0c4a6e,#0ea5e9);
             border: 1px solid #0ea5e9; border-radius: 6px;
             color: #e0f2fe; font-weight: 700; font-size: 11px;
             letter-spacing: 1.5px; text-transform: uppercase;
-            cursor: pointer; width: calc(100% - 36px);
+            cursor: pointer; width: calc(100% - 32px);
             transition: all .2s; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        #btn-generer-resume:hover {
-            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-            color: #060d18; box-shadow: 0 4px 16px rgba(56,189,248,.2);
-        }
-        #btn-generer-resume:disabled { opacity: .4; cursor: not-allowed; }
+        #btn-generer-resume:hover { background: linear-gradient(135deg,#0ea5e9,#38bdf8); color:#060d18; }
+        #btn-generer-resume:disabled { opacity:.4; cursor:not-allowed; }
 
         .ia-spin {
-            width: 13px; height: 13px;
-            border: 2px solid rgba(224,242,254,.2); border-top-color: #e0f2fe;
-            border-radius: 50%; animation: iaspin .7s linear infinite;
-            display: none; flex-shrink: 0;
+            width:13px; height:13px;
+            border:2px solid rgba(224,242,254,.2); border-top-color:#e0f2fe;
+            border-radius:50%; animation:iaspin .7s linear infinite; display:none;
         }
-        .loading-state .ia-spin  { display: block; }
-        .loading-state .ia-label { display: none; }
-        @keyframes iaspin { to { transform: rotate(360deg); } }
+        .loading-state .ia-spin  { display:block; }
+        .loading-state .ia-label { display:none; }
+        @keyframes iaspin { to { transform:rotate(360deg); } }
 
-        /* Statut */
-        #resume-status {
-            margin: 8px 18px 0; font-size: 10px;
-            color: #334155; min-height: 13px; flex-shrink: 0;
-        }
-        #resume-status.ok  { color: #4ade80; }
-        #resume-status.err { color: #f87171; }
-        #resume-status.go  { color: #38bdf8; }
+        #resume-status { margin:7px 16px 0; font-size:10px; color:#334155; min-height:13px; flex-shrink:0; }
+        #resume-status.ok  { color:#4ade80; }
+        #resume-status.err { color:#f87171; }
+        #resume-status.go  { color:#38bdf8; }
 
-        /* Label section */
-        .panel-section-label {
-            margin: 12px 18px 6px;
-            font-size: 9px; font-weight: 800; letter-spacing: 2px;
-            text-transform: uppercase; color: #1e3a5f; flex-shrink: 0;
-        }
+        .panel-sep { margin:10px 16px 5px; font-size:9px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#1e3a5f; flex-shrink:0; }
 
-        /* Textarea */
         #resume-textarea {
-            flex: 1; min-height: 0;
-            margin: 0 18px;
-            background: #0a1628;
-            border: 1px solid #1a3050; border-radius: 6px;
-            color: #cbd5e1; font-size: 12px; line-height: 1.75;
-            padding: 12px 14px; resize: none; outline: none;
-            font-family: 'Segoe UI', sans-serif;
-            transition: border-color .2s;
+            flex:1; min-height:0; margin:0 16px;
+            background:#0a1628; border:1px solid #1a3050; border-radius:6px;
+            color:#cbd5e1; font-size:12px; line-height:1.7;
+            padding:11px 13px; resize:none; outline:none;
+            font-family:'Segoe UI',sans-serif; transition:border-color .2s;
         }
-        #resume-textarea:focus { border-color: #38bdf8; }
-        #resume-textarea::placeholder { color: #1e3a5f; font-style: italic; font-size: 11px; }
+        #resume-textarea:focus { border-color:#38bdf8; }
+        #resume-textarea::placeholder { color:#1e3a5f; font-style:italic; font-size:11px; }
 
-        /* Note */
-        #resume-note {
-            margin: 6px 18px 0; font-size: 9px;
-            color: #1e3a5f; flex-shrink: 0;
+        #resume-note { margin:5px 16px 0; font-size:9px; color:#1e3a5f; flex-shrink:0; }
+
+        .panel-btn {
+            margin: 8px 16px 0; padding:10px;
+            border-radius:6px; font-weight:700; font-size:11px;
+            letter-spacing:1.5px; text-transform:uppercase;
+            cursor:pointer; width:calc(100% - 32px);
+            transition:all .2s; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center; gap:8px;
         }
-
-        /* Bouton imprimer */
         #btn-imprimer {
-            margin: 10px 18px 16px;
-            padding: 11px;
-            background: transparent;
-            border: 1px solid #166534; border-radius: 6px;
-            color: #4ade80; font-weight: 700; font-size: 11px;
-            letter-spacing: 1.5px; text-transform: uppercase;
-            cursor: pointer; width: calc(100% - 36px);
-            transition: all .2s; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background:transparent; border:1px solid #166534; color:#4ade80;
         }
-        #btn-imprimer:hover { background: #166534; color: white; border-color: #22c55e; }
-        #btn-imprimer:disabled { opacity: .3; cursor: not-allowed; }
+        #btn-imprimer:hover { background:#166534; color:white; }
+        #btn-intranet {
+            background:#5865f2; border:none; color:white;
+            margin-bottom:14px;
+        }
+        #btn-intranet:hover { filter:brightness(1.1); }
 
         /* ══ ZONE APERÇU ══ */
         .preview-area {
-            flex-grow: 1; display: flex; justify-content: center;
-            align-items: flex-start; padding: 30px 20px;
-            overflow: auto; background: #d1d5db;
+            flex-grow:1; display:flex; flex-direction:column;
+            align-items:center; padding:30px 20px;
+            overflow-y:auto; gap:0; background:#c8cdd4;
         }
 
-        /* ══ DOCUMENT IMPRIMABLE ══ */
-        #document-imprime {
-            width: 794px !important; min-width: 794px !important;
-            height: auto !important; background: white !important;
-            color: #000 !important; padding: 48px 52px !important;
-            box-shadow: 0 4px 20px rgba(0,0,0,.2);
-            box-sizing: border-box !important; overflow: visible !important;
-            margin-bottom: 40px; font-family: 'Times New Roman', Times, serif;
+        /* Labels */
+        .doc-zone-label {
+            width:794px; text-align:center;
+            font-family:'Segoe UI',sans-serif;
+            font-size:10px; font-weight:700; letter-spacing:2px;
+            text-transform:uppercase; padding:6px 0; border-radius:4px 4px 0 0;
         }
+        .doc-zone-label.resume  { background:#dcfce7; color:#15803d; margin-top:0; }
+        .doc-zone-label.complet { background:#dbeafe; color:#1d4ed8; margin-top:30px; }
 
-        /* Section résumé dans le document */
-        #doc-resume-section { margin-top: 22px; display: none; }
+        /* ══ DOCUMENTS ══ */
+        .omc-doc {
+            width:794px !important; min-width:794px !important;
+            height:auto !important; background:white !important; color:#000 !important;
+            padding:46px 50px !important; box-sizing:border-box !important;
+            overflow:visible !important; font-family:'Times New Roman',Times,serif;
+            box-shadow:0 4px 20px rgba(0,0,0,.15);
+        }
         .doc-h4 {
-            color: #0f172a; border-bottom: 1.5px solid #cbd5e1;
-            padding-bottom: 4px; font-size: 13px; font-weight: 800;
-            margin-top: 0; margin-bottom: 10px;
-            text-transform: uppercase; letter-spacing: 0.5px;
-            font-family: 'Segoe UI', sans-serif;
+            color:#0f172a; border-bottom:1.5px solid #cbd5e1;
+            padding-bottom:4px; font-size:13px; font-weight:800;
+            margin-top:22px; margin-bottom:10px;
+            text-transform:uppercase; letter-spacing:.5px;
+            font-family:'Segoe UI',sans-serif;
         }
-        #doc-resume-text {
-            font-size: 13px; line-height: 1.85; color: #1e293b;
-            white-space: pre-wrap; margin: 0;
-            font-family: 'Times New Roman', Times, serif;
+        .doc-p { margin:5px 0; font-size:13px; white-space:pre-wrap; line-height:1.65; }
+        .patient-card {
+            background:#f8fafc; padding:15px 18px;
+            border:1px solid #e2e8f0; border-radius:6px;
+            font-size:13px; color:#1e293b;
+            font-family:'Segoe UI',sans-serif; line-height:1.8;
+        }
+        .signature-line {
+            border-top:1px solid #000; min-width:200px;
+            display:inline-block; padding-top:5px;
+            font-family:'Alex Brush',cursive; font-size:28px; color:#000;
+        }
+        .doc-footer { margin-top:32px; display:flex; justify-content:space-between; align-items:flex-end; }
+        .doc-legal {
+            margin-top:14px; font-size:9px; color:#64748b;
+            border-top:1px dotted #e2e8f0; padding-top:8px;
+            font-style:italic; margin-bottom:0; font-family:'Segoe UI',sans-serif;
         }
 
-        /* Carte patient */
-        .patient-card {
-            background: #f8fafc; padding: 16px 20px;
-            border: 1px solid #e2e8f0; border-radius: 6px;
-            font-size: 13px; color: #1e293b;
-            font-family: 'Segoe UI', Tahoma, sans-serif; line-height: 1.8;
+        /* Grille résumé */
+        .resume-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+        .resume-box {
+            background:#f8fafc; border:1px solid #e2e8f0;
+            border-radius:6px; padding:11px 13px; font-family:'Segoe UI',sans-serif;
         }
-        .doc-p { margin: 5px 0; font-size: 13px; white-space: pre-wrap; line-height: 1.6; }
-        .signature-line {
-            border-top: 1px solid #000; min-width: 220px;
-            display: inline-block; padding-top: 5px;
-            font-family: 'Alex Brush', cursive; font-size: 28px; color: #000;
-        }
+        .resume-box.full   { grid-column:span 2; }
+        .resume-box.danger { background:#fff1f2; border-color:#fca5a5; }
+        .resume-box label  { display:block; font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:3px; }
+        .resume-box .rval  { font-size:14px; font-weight:700; color:#0f172a; line-height:1.4; }
+        .resume-box.danger .rval { color:#b91c1c; }
+
+        /* Résumé IA dans doc */
+        #doc-resume-section { display:none; }
+        #doc-resume-text { font-size:13px; line-height:1.85; color:#1e293b; white-space:pre-wrap; margin:0; }
     </style>
 </head>
 <body class="rapports-body">
 <div class="interface-container">
 
+    <!-- ══════════ SIDEBAR ══════════ -->
     <aside class="sidebar">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:-10px;margin-bottom:25px;gap:10px;">
             <a href="index.html" class="back-link" style="margin-bottom:0;white-space:nowrap;">← RETOUR PORTAIL</a>
@@ -197,19 +186,22 @@
             <button type="button" id="btn-auto" class="mode-btn"        onclick="switchReport('auto')">💀 AUTOPSIE</button>
         </div>
 
+        <!-- INFOS GÉNÉRALES -->
         <div class="form-group" style="background:#0f172a;padding:10px;border-radius:6px;border:1px solid #334155;margin-bottom:15px;">
             <label style="color:#38bdf8;font-weight:bold;margin-bottom:10px;display:block;">INFORMATIONS GÉNÉRALES</label>
             <label>Sujet du rapport</label>
-            <input type="text" id="in-sujet" oninput="up('d-sujet',this.value)" placeholder="..." style="margin-bottom:10px;">
+            <input type="text" id="in-sujet" oninput="upSujet(this.value)" placeholder="..." style="margin-bottom:10px;">
             <label id="label-nom">Prénom & Nom du Patient</label>
             <div style="display:flex;gap:10px;margin-bottom:10px;">
-                <input type="text" id="in-prenom"      placeholder="Prénom"  autocomplete="off" oninput="upNom();genererRef();">
-                <input type="text" id="in-nom-famille" placeholder="NOM"     autocomplete="off" oninput="upNom();genererRef();this.value=this.value.toUpperCase();">
+                <input type="text" id="in-prenom"      placeholder="Prénom" autocomplete="off" oninput="upNom();genererRef();">
+                <input type="text" id="in-nom-famille" placeholder="NOM"    autocomplete="off" oninput="upNom();genererRef();this.value=this.value.toUpperCase();">
             </div>
             <div style="display:flex;gap:10px;">
-                <div style="flex:1;"><label>Date de Naissance</label><input type="date" id="in-ddn" oninput="upDate('d-ddn',this.value)"></div>
+                <div style="flex:1;"><label>Date de Naissance</label>
+                    <input type="date" id="in-ddn" oninput="upDate('d-ddn',this.value);upDate('d-ddn-r',this.value);">
+                </div>
                 <div style="flex:1;"><label>Sexe</label>
-                    <select id="in-sexe" onchange="up('d-sexe',this.options[this.selectedIndex].text)" style="width:100%;background:#111b2d;color:white;border:1px solid #334155;padding:8px;border-radius:4px;font-size:11px;">
+                    <select id="in-sexe" onchange="upSexe(this.options[this.selectedIndex].text)" style="width:100%;background:#111b2d;color:white;border:1px solid #334155;padding:8px;border-radius:4px;font-size:11px;">
                         <option>Homme</option><option>Femme</option><option>Autre</option>
                     </select>
                 </div>
@@ -219,16 +211,17 @@
         <div class="form-group">
             <label>Date & Heure de l'intervention</label>
             <div style="display:flex;gap:5px;">
-                <input type="date"  id="in-date-prel"  oninput="upDate('d-date',this.value);genererRef();" style="flex:2;">
-                <input type="time"  id="in-heure-prel" oninput="up('d-heure',this.value);genererRef();"   style="flex:1;">
+                <input type="date" id="in-date-prel" oninput="upDate('d-date',this.value);upDate('d-date-r',this.value);genererRef();" style="flex:2;">
+                <input type="time" id="in-heure-prel" oninput="up('d-heure',this.value);up('d-heure-r',this.value);genererRef();" style="flex:1;">
             </div>
         </div>
 
         <div class="form-group" style="display:flex;gap:10px;">
             <div style="flex:1;"><label id="label-doc">Praticien intervenant</label><input type="text" id="in-doc"   placeholder="..." oninput="upDoc();"></div>
-            <div style="flex:1;"><label>Grade</label>                               <input type="text" id="in-grade" placeholder="..." oninput="upDoc();"></div>
+            <div style="flex:1;"><label>Grade</label>                                <input type="text" id="in-grade" placeholder="..." oninput="upDoc();"></div>
         </div>
 
+        <!-- MÉDICAL -->
         <div id="fields-med" class="dynamic-fields">
             <div class="form-group"><label>Circonstances / Déclarations</label>
                 <textarea id="in-med-circ" rows="3" oninput="upBlock('d-med-circ','wrap-med-circ',this.value)" placeholder="Intervention sur..."></textarea></div>
@@ -246,6 +239,7 @@
             </div>
         </div>
 
+        <!-- PSYCHOLOGIE -->
         <div id="fields-psy" class="dynamic-fields" style="display:none;">
             <div class="form-group"><label>Contexte / Motif</label><textarea id="in-psy-circ" rows="2" oninput="upBlock('d-psy-circ','wrap-psy-circ',this.value)"></textarea></div>
             <div class="form-group"><label>Observations Cliniques</label><textarea id="in-psy-obs" rows="3" oninput="upBlock('d-psy-obs','wrap-psy-obs',this.value)"></textarea></div>
@@ -253,6 +247,7 @@
             <div class="form-group"><label>Conclusion & Recommandations</label><textarea id="in-psy-reco" rows="2" oninput="upBlock('d-psy-reco','wrap-psy-reco',this.value)"></textarea></div>
         </div>
 
+        <!-- AUTOPSIE -->
         <div id="fields-auto" class="dynamic-fields" style="display:none;">
             <div class="form-group"><label>Heure estimée du décès</label><input type="time" id="in-auto-heure" oninput="upAutoHeure(this.value)"></div>
             <div class="form-group"><label>Examen Externe</label><textarea id="in-auto-ext" rows="3" oninput="upBlock('d-auto-ext','wrap-auto-ext',this.value)"></textarea></div>
@@ -260,6 +255,7 @@
             <div class="form-group"><label>Conclusion Médico-légale</label><textarea id="in-auto-cause" rows="2" oninput="upBlock('d-auto-cause','wrap-auto-cause',this.value)"></textarea></div>
         </div>
 
+        <!-- CUSTOM -->
         <div style="margin-top:20px;border-top:2px solid #334155;padding-top:15px;">
             <button type="button" onclick="ajouterSectionCustom()" style="background:transparent;color:#f472b6;border:1px dashed #f472b6;padding:10px;width:100%;border-radius:6px;cursor:pointer;font-weight:bold;font-size:11px;">
                 ➕ AJOUTER UNE SECTION SUPPLÉMENTAIRE
@@ -271,14 +267,9 @@
             <label style="color:#cbd5e1;font-weight:bold;">Signataire (Bas de page)</label>
             <input type="text" id="in-sig" placeholder="..." oninput="upSig(this.value);">
         </div>
-
-        <div style="margin-top:20px;">
-            <button id="discord-btn" type="button" class="btn-discord" onclick="envoyerDiscord(this)">
-                📨 ENVOYER SUR L'INTRANET
-            </button>
-        </div>
     </aside>
 
+    <!-- ══════════ PANNEAU RÉSUMÉ IA ══════════ -->
     <div id="panneau-resume">
         <div class="panel-header">
             <div class="panel-title">Résumé IA</div>
@@ -291,30 +282,84 @@
         </button>
 
         <div id="resume-status">Remplissez le formulaire puis générez</div>
-
-        <div class="panel-section-label">Résumé médical</div>
+        <div class="panel-sep">Résumé médical</div>
 
         <textarea id="resume-textarea"
-            placeholder="Le résumé apparaîtra ici…&#10;&#10;Modifiable avant impression."
+            placeholder="Le résumé généré apparaîtra ici…&#10;Modifiable avant impression."
             oninput="syncResumeDoc(this.value)"></textarea>
 
-        <div id="resume-note">↑ Modifiable — mis à jour dans le document</div>
+        <div id="resume-note">↑ Mis à jour en temps réel dans le document résumé</div>
 
-        <button id="btn-imprimer" onclick="genererImage(this,'document-imprime')">
+        <button id="btn-imprimer" class="panel-btn" onclick="genererImage(this,'document-resume')">
             🖨 IMPRIMER LE RÉSUMÉ
+        </button>
+        <button id="btn-intranet" class="panel-btn" onclick="envoyerDiscord(this)">
+            📨 ENVOYER SUR L'INTRANET
         </button>
     </div>
 
+    <!-- ══════════ ZONE APERÇU — 2 DOCUMENTS ══════════ -->
     <main class="preview-area">
-        <div id="document-imprime">
 
+        <!-- ── DOC 1 : RÉSUMÉ ── -->
+        <div class="doc-zone-label resume">🖨 Résumé — document imprimé remis aux autorités</div>
+        <div id="document-resume" class="omc-doc">
+            <!-- En-tête résumé -->
+            <div style="display:flex;align-items:center;gap:18px;border-bottom:2px solid #0a192f;padding-bottom:16px;margin-bottom:18px;">
+                <img src="assets/logo_omc.png" alt="OMC" style="height:56px;object-fit:contain;">
+                <div style="flex-grow:1;">
+                    <div style="background:#0a192f;color:white;display:inline-block;padding:2px 10px;border-radius:4px;font-weight:800;font-size:10px;letter-spacing:1px;margin-bottom:4px;">OCEAN MEDICAL CENTER</div>
+                    <h1 id="d-titre-r" style="margin:0;font-size:20px;font-weight:900;color:#0a192f;text-transform:uppercase;">DOSSIER MÉDICAL</h1>
+                </div>
+                <div style="text-align:right;font-size:10px;color:#64748b;font-weight:bold;">
+                    RÉF : <span id="d-ref-r">#...</span><br>
+                    <span id="d-date-r">...</span> — <span id="d-heure-r">--:--</span>
+                </div>
+            </div>
+
+            <!-- Grille patient résumé -->
+            <div class="resume-grid">
+                <div class="resume-box"><label>Patient / Sujet</label><div class="rval" id="d-nom-r">...</div></div>
+                <div class="resume-box"><label>Naissance — Sexe</label><div class="rval"><span id="d-ddn-r">...</span> — <span id="d-sexe-r">Homme</span></div></div>
+                <div class="resume-box full" id="r-sujet-box" style="display:none;"><label>Sujet</label><div class="rval" id="d-sujet-r"></div></div>
+                <div class="resume-box full danger" id="r-heure-box" style="display:none;"><label>⚠ Heure du décès estimée</label><div class="rval" id="d-heure-deces-r"></div></div>
+            </div>
+
+            <!-- Résumé IA -->
+            <div id="doc-resume-section">
+                <h4 class="doc-h4">RÉSUMÉ MÉDICAL</h4>
+                <p id="doc-resume-text" class="doc-p"></p>
+            </div>
+
+            <!-- Praticien résumé -->
+            <div id="wrap-doc-r" style="display:none;margin-top:14px;font-family:'Segoe UI',sans-serif;font-size:13px;color:#0a1324;border-top:1px solid #e2e8f0;padding-top:10px;">
+                <strong>Praticien :</strong> <span id="d-doc-r"></span>
+            </div>
+
+            <div class="doc-footer">
+                <div>
+                    <span style="font-size:11px;font-weight:bold;font-family:'Segoe UI',sans-serif;">Établi par :</span><br><br>
+                    <span id="d-sig-r" class="signature-line" style="display:none;"></span>
+                </div>
+                <div style="text-align:center;">
+                    <img id="qr-ref-r" src="" alt="QR" style="width:70px;height:70px;border:1px solid #0a192f;border-radius:6px;padding:2px;background:white;display:block;">
+                    <div style="font-size:9px;font-weight:900;color:#0a192f;margin-top:3px;font-family:'Segoe UI',sans-serif;">OMC CERTIFIED</div>
+                </div>
+            </div>
+            <p class="doc-legal">Résumé officiel — Ocean Medical Center. Document complet disponible sur l'intranet OMC. Destiné aux autorités compétentes (DOJ/LSPD/BCSO).</p>
+        </div>
+
+        <!-- ── DOC 2 : COMPLET ── -->
+        <div class="doc-zone-label complet">📨 Rapport complet — archive intranet</div>
+        <div id="document" class="omc-doc">
+            <!-- En-tête complet -->
             <div style="display:flex;align-items:center;gap:20px;border-bottom:2px solid #0a192f;padding-bottom:18px;margin-bottom:22px;">
                 <img src="assets/logo_omc.png" alt="OMC" style="height:60px;object-fit:contain;">
                 <div style="flex-grow:1;">
-                    <div style="background:#0a192f;color:white;display:inline-block;padding:2px 10px;border-radius:4px;font-weight:800;font-size:10px;letter-spacing:1px;margin-bottom:5px;">OCEAN MEDICAL CENTER</div>
-                    <h1 id="d-titre-doc" style="margin:0;font-size:22px;font-weight:900;color:#0a192f;text-transform:uppercase;letter-spacing:-0.5px;">DOSSIER MÉDICAL</h1>
+                    <div style="background:#0a192f;color:white;display:inline-block;padding:2px 10px;border-radius:4px;font-weight:800;font-size:11px;letter-spacing:1px;margin-bottom:5px;">OCEAN MEDICAL CENTER</div>
+                    <h1 id="d-titre-doc" style="margin:0;font-size:24px;font-weight:900;color:#0a192f;text-transform:uppercase;letter-spacing:-1px;">DOSSIER MÉDICAL</h1>
                 </div>
-                <div style="text-align:right;font-size:10px;color:#64748b;font-weight:bold;">
+                <div style="text-align:right;font-size:10px;color:#94a3b8;font-weight:bold;">
                     RÉF : <span id="d-ref">#...</span><br>
                     <span id="d-date">...</span> — <span id="d-heure">--:--</span>
                 </div>
@@ -323,8 +368,8 @@
             <div class="patient-card">
                 <div style="display:flex;justify-content:space-between;">
                     <div>
-                        Sujet : <strong id="d-sujet" style="font-size:15px;">...</strong><br>
-                        Nom / Prénom : <strong id="d-nom">...</strong><br>
+                        Sujet : <strong id="d-sujet" style="font-size:16px;">...</strong><br>
+                        Nom/Prénom : <strong id="d-nom">...</strong><br>
                         Date de Naissance : <span id="d-ddn">...</span><br>
                         Sexe : <span id="d-sexe">Homme</span>
                     </div>
@@ -335,69 +380,57 @@
                 </div>
             </div>
 
-            <div id="wrap-doc" style="margin-top:16px;display:none;font-family:'Segoe UI',sans-serif;font-size:13px;color:#0a1324;">
-                <strong>PRATICIEN EN CHARGE :</strong> <span id="d-doc"></span>
+            <div id="wrap-doc" style="margin-top:20px;display:none;font-family:'Segoe UI',sans-serif;font-size:13px;">
+                <strong style="color:#0a1324;">PRATICIEN EN CHARGE :</strong> <span id="d-doc"></span>
             </div>
 
-            <div id="doc-resume-section">
-                <h4 class="doc-h4">RÉSUMÉ MÉDICAL</h4>
-                <p id="doc-resume-text"></p>
-            </div>
-
+            <!-- SECTIONS MÉDICAL -->
             <div id="render-med" class="render-section">
-                <div id="wrap-med-circ" style="display:none;">
-                    <h4 class="doc-h4">CIRCONSTANCES DE L'INTERVENTION</h4>
-                    <p id="d-med-circ" class="doc-p"></p>
-                </div>
-                <div id="wrap-med-bilan" style="display:none;">
-                    <h4 class="doc-h4">BILAN CLINIQUE ET IMAGERIE</h4>
-                    <p id="d-med-bilan" class="doc-p"></p>
-                </div>
-                <div id="wrap-med-soins" style="display:none;">
-                    <h4 class="doc-h4">PROTOCOLE DE SOINS APPLIQUÉ</h4>
-                    <p id="d-med-soins" class="doc-p"></p>
-                </div>
+                <div id="wrap-med-circ"  style="display:none;"><h4 class="doc-h4">CIRCONSTANCES DE L'INTERVENTION</h4><p id="d-med-circ"  class="doc-p"></p></div>
+                <div id="wrap-med-bilan" style="display:none;"><h4 class="doc-h4">BILAN CLINIQUE ET IMAGERIE</h4>    <p id="d-med-bilan" class="doc-p"></p></div>
+                <div id="wrap-med-soins" style="display:none;"><h4 class="doc-h4">PROTOCOLE DE SOINS APPLIQUÉ</h4>  <p id="d-med-soins" class="doc-p"></p></div>
                 <div id="wrap-med-suivi" style="display:none;">
-                    <h4 class="doc-h4">SUIVI &amp; CONCLUSION</h4>
+                    <h4 class="doc-h4">SUIVI & CONCLUSION</h4>
                     <p id="d-med-conclusion" class="doc-p" style="display:none;"></p>
                     <p id="wrap-med-repos" class="doc-p" style="display:none;margin:2px 0;"><strong>Temps de récupération :</strong> <span id="d-med-repos"></span></p>
-                    <p id="wrap-med-prix" class="doc-p" style="display:none;margin:2px 0;"><strong>Facturation :</strong> <span id="d-med-prix"></span> $</p>
+                    <p id="wrap-med-prix"  class="doc-p" style="display:none;margin:2px 0;"><strong>Facturation :</strong> <span id="d-med-prix"></span> $</p>
                 </div>
             </div>
 
+            <!-- SECTIONS PSYCHOLOGIE -->
             <div id="render-psy" class="render-section" style="display:none;">
-                <div id="wrap-psy-circ" style="display:none;"><h4 class="doc-h4">CONTEXTE &amp; MOTIF</h4><p id="d-psy-circ" class="doc-p"></p></div>
-                <div id="wrap-psy-obs"  style="display:none;"><h4 class="doc-h4">OBSERVATIONS CLINIQUES</h4><p id="d-psy-obs" class="doc-p"></p></div>
-                <div id="wrap-psy-diag" style="display:none;"><h4 class="doc-h4">ANALYSE &amp; DIAGNOSTIC</h4><p id="d-psy-diag" class="doc-p"></p></div>
-                <div id="wrap-psy-reco" style="display:none;"><h4 class="doc-h4">CONCLUSION &amp; RECOMMANDATIONS</h4><p id="d-psy-reco" class="doc-p"></p></div>
+                <div id="wrap-psy-circ"  style="display:none;"><h4 class="doc-h4">CONTEXTE & MOTIF</h4>             <p id="d-psy-circ"  class="doc-p"></p></div>
+                <div id="wrap-psy-obs"   style="display:none;"><h4 class="doc-h4">OBSERVATIONS CLINIQUES</h4>       <p id="d-psy-obs"   class="doc-p"></p></div>
+                <div id="wrap-psy-diag"  style="display:none;"><h4 class="doc-h4">ANALYSE & DIAGNOSTIC</h4>         <p id="d-psy-diag"  class="doc-p"></p></div>
+                <div id="wrap-psy-reco"  style="display:none;"><h4 class="doc-h4">CONCLUSION & RECOMMANDATIONS</h4> <p id="d-psy-reco"  class="doc-p"></p></div>
             </div>
 
+            <!-- SECTIONS AUTOPSIE -->
             <div id="render-auto" class="render-section" style="display:none;">
-                <div id="wrap-auto-ext"   style="display:none;"><h4 class="doc-h4">EXAMEN EXTERNE</h4><p id="d-auto-ext" class="doc-p"></p></div>
-                <div id="wrap-auto-int"   style="display:none;"><h4 class="doc-h4">EXAMEN INTERNE</h4><p id="d-auto-int" class="doc-p"></p></div>
-                <div id="wrap-auto-cause" style="display:none;"><h4 class="doc-h4">CONCLUSION MÉDICO-LÉGALE</h4><p id="d-auto-cause" class="doc-p" style="font-weight:bold;"></p></div>
+                <div id="wrap-auto-ext"   style="display:none;"><h4 class="doc-h4">EXAMEN EXTERNE</h4>          <p id="d-auto-ext"   class="doc-p"></p></div>
+                <div id="wrap-auto-int"   style="display:none;"><h4 class="doc-h4">EXAMEN INTERNE</h4>          <p id="d-auto-int"   class="doc-p"></p></div>
+                <div id="wrap-auto-cause" style="display:none;"><h4 class="doc-h4">CONCLUSION MÉDICO-LÉGALE</h4> <p id="d-auto-cause" class="doc-p" style="font-weight:bold;"></p></div>
             </div>
 
             <div id="render-custom"></div>
 
-            <div style="margin-top:36px;display:flex;justify-content:space-between;align-items:flex-end;">
+            <div class="doc-footer">
                 <div>
                     <span style="font-size:12px;font-weight:bold;font-family:'Segoe UI',sans-serif;">Établi par :</span><br><br>
                     <span id="d-sig" class="signature-line" style="display:none;"></span>
                 </div>
                 <div style="text-align:center;">
-                    <img id="qr-ref" src="" alt="QR" style="width:80px;height:80px;border:1px solid #0a192f;border-radius:6px;padding:2px;background:white;display:block;">
-                    <div style="font-size:9px;font-weight:900;color:#0a192f;margin-top:4px;font-family:'Segoe UI',sans-serif;">OMC CERTIFIED</div>
+                    <img id="qr-ref" src="" alt="QR" style="width:85px;height:85px;border:1px solid #0a192f;border-radius:8px;padding:2px;background:white;display:block;">
+                    <div style="font-size:10px;font-weight:900;color:#0a192f;margin-top:5px;font-family:'Segoe UI',sans-serif;">OMC CERTIFIED</div>
                 </div>
             </div>
-
-            <p style="margin-top:16px;font-size:9px;color:#64748b;border-top:1px dotted #e2e8f0;padding-top:8px;font-style:italic;margin-bottom:0;font-family:'Segoe UI',sans-serif;">
-                Document officiel — Ocean Medical Center. Destiné aux autorités compétentes (DOJ/LSPD/BCSO). Toute falsification est passible de poursuites pénales.
-            </p>
+            <p class="doc-legal" style="margin-bottom:40px;">Ce document est un acte officiel de l'Ocean Medical Center. Destiné aux autorités compétentes (DOJ/LSPD/BCSO). Toute falsification est passible de poursuites pénales.</p>
         </div>
+
     </main>
 </div>
 
+<!-- POPUP -->
 <div id="image-popup" class="popup-overlay" style="display:none;">
     <div class="popup-content">
         <h3>Document Généré</h3>
@@ -412,12 +445,12 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-/* ══════════════════════════════════════════════════
-   CONFIG INTRANET / DISCORD
-══════════════════════════════════════════════════ */
+// Clé Gemini gratuite
+window.GEMINI_API_KEY = 'AIzaSyBvycltRp88TS6p3wtXmnDS5wpMIFFxzLA';
+
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
-    captureId:    'document-imprime',
+    captureId:    'document',
     nomPatientId: 'in-prenom',
     typeDoc:      'Rapport Officiel',
     pageSource:   'rapports.html',
@@ -426,55 +459,131 @@ var OMC_CONFIG = {
         const nom  = document.getElementById('d-nom')?.innerText  || 'Inconnu';
         const titre= document.getElementById('d-titre-doc')?.innerText || 'Rapport';
         const ref  = document.getElementById('d-ref')?.innerText  || '...';
-        const sig  = document.getElementById('in-sig')?.value      || 'Non renseigné';
+        const sig  = document.getElementById('in-sig')?.value     || 'Non renseigné';
         return `📂 **NOUVEAU DOSSIER DÉPOSÉ**\n━━━━━━━━━━━━━━━━━━━━\n👤 **Patient/Sujet :** ${nom}\n📄 **Type :** ${titre}\n🏷️ **Réf :** \`${ref}\`\n👨‍⚕️ **Signataire :** ${sig}\n━━━━━━━━━━━━━━━━━━━━`;
     }
 };
 
-/* ══════════════════════════════════════════════════
-   GÉNÉRATEUR DE RÉSUMÉ (Moteur Logique - Sans Erreur)
-══════════════════════════════════════════════════ */
-function genererResumeIA() {
-    const btn = document.getElementById('btn-generer-resume');
-    const ta = document.getElementById('resume-textarea');
+/* ══ RÉSUMÉ IA via Gemini ══ */
+async function genererResumeIA() {
+    const btn    = document.getElementById('btn-generer-resume');
     const status = document.getElementById('resume-status');
+    const ta     = document.getElementById('resume-textarea');
+    const type   = window.currentReportType || 'med';
 
-    // Récupération des données communes
-    const prenom = document.getElementById('in-prenom')?.value.trim() || '';
-    const nom = document.getElementById('in-nom-famille')?.value.trim() || '';
-    const patient = (prenom || nom) ? `${prenom} ${nom}` : "le patient";
+    const prenom    = document.getElementById('in-prenom')?.value.trim()      || '';
+    const nom       = document.getElementById('in-nom-famille')?.value.trim() || '';
+    const sujet     = document.getElementById('in-sujet')?.value.trim()       || '';
+    const ddnRaw    = document.getElementById('in-ddn')?.value                || '';
+    const sexe      = document.getElementById('in-sexe')?.value               || '';
+    const dateRaw   = document.getElementById('in-date-prel')?.value          || '';
+    const heure     = document.getElementById('in-heure-prel')?.value         || '';
+    const praticien = document.getElementById('in-doc')?.value.trim()         || '';
+    const grade     = document.getElementById('in-grade')?.value.trim()       || '';
 
-    // Collecte de TOUS les textes possibles dans le formulaire
-    const tousLesTextes = Array.from(document.querySelectorAll('textarea'))
-        .map(t => t.value.trim())
-        .filter(v => v !== "" && v !== ta.value); // On ignore le textarea du résumé lui-même
-
-    // VERIFICATION : Si aucun champ de texte n'est rempli
-    if (tousLesTextes.length === 0) {
-        status.textContent = '⚠ Remplissez le détail du rapport avant de générer.';
-        status.className = 'err';
-        return;
+    let sections = {};
+    if (type === 'med') {
+        sections = {
+            'Circonstances':         document.getElementById('in-med-circ')?.value.trim(),
+            'Bilan clinique':        document.getElementById('in-med-bilan')?.value.trim(),
+            'Protocole de soins':    document.getElementById('in-med-soins')?.value.trim(),
+            'Conclusion':            document.getElementById('in-med-conclusion')?.value.trim(),
+            'Temps de récupération': document.getElementById('in-med-repos')?.value.trim(),
+            'Facturation':           document.getElementById('in-med-prix')?.value.trim(),
+        };
+    } else if (type === 'psy') {
+        sections = {
+            'Contexte':        document.getElementById('in-psy-circ')?.value.trim(),
+            'Observations':    document.getElementById('in-psy-obs')?.value.trim(),
+            'Diagnostic':      document.getElementById('in-psy-diag')?.value.trim(),
+            'Recommandations': document.getElementById('in-psy-reco')?.value.trim(),
+        };
+    } else if (type === 'auto') {
+        sections = {
+            'Heure du décès':    document.getElementById('in-auto-heure')?.value,
+            'Examen externe':    document.getElementById('in-auto-ext')?.value.trim(),
+            'Examen interne':    document.getElementById('in-auto-int')?.value.trim(),
+            'Conclusion légale': document.getElementById('in-auto-cause')?.value.trim(),
+        };
     }
 
-    // --- CONSTRUCTION DU RÉSUMÉ ---
-    // Note : On concatène simplement les informations pour l'impression
-    let texte = `SYNTHÈSE DU RAPPORT : ${patient.toUpperCase()}\n\n`;
-    
-    texte += tousLesTextes.join('\n\n');
+    const secStr = Object.entries(sections)
+        .filter(([,v]) => v && v.length > 0)
+        .map(([k,v]) => `${k} :\n${v}`)
+        .join('\n\n');
 
-    // Affichage
-    ta.value = texte;
-    syncResumeDoc(texte);
-    
-    status.textContent = '✓ Résumé construit avec succès';
-    status.className = 'ok';
+    if (!secStr && !prenom && !nom) {
+        status.textContent = '⚠ Remplissez d\'abord quelques champs';
+        status.className = 'err'; return;
+    }
+
+    const typeLabel = {med:'médical', psy:'psychologique', auto:"d'autopsie"}[type] || type;
+    const ddn  = ddnRaw  ? new Date(ddnRaw).toLocaleDateString('fr-FR')  : '';
+    const date = dateRaw ? new Date(dateRaw).toLocaleDateString('fr-FR') : '';
+
+    const infos = [
+        prenom && nom ? `Patient : ${prenom} ${nom}` : '',
+        ddn   ? `Date de naissance : ${ddn}` : '',
+        sexe  ? `Sexe : ${sexe}` : '',
+        sujet ? `Sujet : ${sujet}` : '',
+        date  ? `Date d'intervention : ${date}${heure ? ' à '+heure : ''}` : '',
+        praticien ? `Praticien : ${praticien}${grade ? ', '+grade : ''}` : '',
+    ].filter(Boolean).join('\n');
+
+    const prompt = `Tu es médecin légiste à l'Ocean Medical Center. Rédige un résumé médical officiel professionnel en français pour un document imprimé remis aux autorités.
+
+Type de rapport : ${typeLabel}
+${infos ? '\nInformations :\n'+infos : ''}
+${secStr ? '\nContenu du rapport :\n'+secStr : ''}
+
+Consignes strictes :
+- Prose médicale fluide, 2 à 4 paragraphes
+- Commence directement par le contenu clinique sans phrase d'introduction générique
+- Ne répète pas le nom ni la date (déjà dans l'en-tête du document)
+- Aucun markdown, tiret, astérisque ou mise en forme spéciale
+- Vocabulaire médical précis et professionnel
+- 120 à 250 mots maximum`;
+
+    btn.classList.add('loading-state');
+    btn.disabled = true;
+    status.textContent = 'Rédaction en cours…';
+    status.className = 'go';
+
+    try {
+        const res = await fetch(
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': window.GEMINI_API_KEY },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { maxOutputTokens: 800, temperature: 0.3 }
+                })
+            }
+        );
+        const data  = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || 'Erreur '+res.status);
+        const texte = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        if (!texte) throw new Error('Réponse vide');
+
+        ta.value = texte;
+        syncResumeDoc(texte);
+        status.textContent = '✓ Résumé généré — modifiable ci-dessus';
+        status.className = 'ok';
+    } catch(e) {
+        console.error('Erreur IA :', e);
+        status.textContent = '✗ ' + (e.message || 'Erreur — réessayez');
+        status.className = 'err';
+    }
+
+    btn.classList.remove('loading-state');
+    btn.disabled = false;
 }
 
-/* Synchronise le textarea → document imprimable */
 function syncResumeDoc(texte) {
     const section = document.getElementById('doc-resume-section');
-    const el = document.getElementById('doc-resume-text');
-    if (el) el.textContent = texte || '';
+    const el      = document.getElementById('doc-resume-text');
+    if (el)      el.textContent        = texte || '';
     if (section) section.style.display = (texte && texte.trim()) ? 'block' : 'none';
 }
 </script>
