@@ -537,8 +537,9 @@ async function genererResumeIA() {
                 'X-Title': 'OMC_Intranet'
             },
             body: JSON.stringify({
-                model: "openrouter/auto",
-                messages: [{ role: "user", content: prompt }]
+                model: "mistralai/mistral-7b-instruct:free", 
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0.4
             })
         });
 
