@@ -393,6 +393,9 @@
 /* ══════════════════════════════════════════════════
    CONFIG INTRANET / DISCORD
 ══════════════════════════════════════════════════ */
+// Clé API Gemini (gratuit — https://aistudio.google.com/app/apikey)
+window.GEMINI_API_KEY = 'AIzaSyAzwqzM5JVjrtTlQhXJ7wMXZp5o51b83x8';
+
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
     captureId:    'document-imprime',
@@ -509,18 +512,21 @@ Consignes strictes :
     status.className = 'go';
 
     try {
-        const res  = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model:      'claude-sonnet-4-20250514',
-                max_tokens: 1000,
-                messages:   [{ role: 'user', content: prompt }]
-            })
-        });
+        const GEMINI_KEY = window.GEMINI_API_KEY || '';
+        const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { maxOutputTokens: 1000, temperature: 0.4 }
+                })
+            }
+        );
 
         const data  = await res.json();
-        const texte = data.content?.map(b => b.text || '').join('').trim();
+        const texte = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
         if (!texte) throw new Error('Réponse vide');
 
         ta.value = texte;
