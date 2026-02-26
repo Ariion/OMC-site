@@ -436,7 +436,7 @@
    CONFIG INTRANET / DISCORD
 ══════════════════════════════════════════════════ */
 // Clé API Gemini (gratuit — https://aistudio.google.com/app/apikey)
-window.GEMINI_API_KEY = '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';
+window.GEMINI_API_KEY = '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';
 
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
@@ -553,21 +553,18 @@ Consignes strictes :
     status.textContent = 'Rédaction en cours…';
     status.className = 'go';
 
-   try {
-        const OPENROUTER_KEY = window.GEMINI_API_KEY || '';
+  try {
+        const OPENROUTER_KEY = window.GEMINI_API_KEY.trim(); // .trim() enlève les espaces invisibles
         
-        // Appel à l'API OpenRouter
         const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${OPENROUTER_KEY}`,
-                // OpenRouter demande ces deux lignes par courtoisie
-                'HTTP-Referer': window.location.href,
-                'X-Title': 'OMC Intranet' 
+                'Authorization': 'Bearer ' + OPENROUTER_KEY, // Syntaxe classique
+                'HTTP-Referer': 'https://omc-intranet.fr', // Mettre une URL (même fictive)
+                'X-Title': 'OMC_Intranet'
             },
             body: JSON.stringify({
-                // On utilise la version 100% gratuite de Gemini via OpenRouter !
                 model: "google/gemini-2.0-flash:free", 
                 messages: [{ role: "user", content: prompt }],
                 temperature: 0.4
@@ -576,13 +573,14 @@ Consignes strictes :
 
         if (!res.ok) {
             const errDetails = await res.json();
-            throw new Error(`Erreur API (${res.status}): ${errDetails.error?.message || 'Refusé'}`);
+            // Cela affichera l'erreur précise d'OpenRouter dans ton interface
+            throw new Error(`Erreur ${res.status}: ${errDetails.error?.message || 'Inconnue'}`);
         }
 
         const data = await res.json();
         const texte = data.choices?.[0]?.message?.content?.trim();
         
-        if (!texte) throw new Error('Réponse vide ou format inattendu');
+        if (!texte) throw new Error('Réponse vide');
 
         ta.value = texte;
         syncResumeDoc(texte);
@@ -591,13 +589,9 @@ Consignes strictes :
 
     } catch(e) {
         console.error('Erreur IA :', e);
-        status.textContent = '✗ Erreur : ' + e.message;
+        status.textContent = '✗ ' + e.message;
         status.className = 'err';
     }
-
-    btn.classList.remove('loading-state');
-    btn.disabled = false;
-}
 
 /* Synchronise le textarea → document imprimable */
 function syncResumeDoc(texte) {
