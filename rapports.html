@@ -436,7 +436,7 @@
    CONFIG INTRANET / DISCORD
 ══════════════════════════════════════════════════ */
 // Clé API Gemini (gratuit — https://aistudio.google.com/app/apikey)
-window.GEMINI_API_KEY = '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';
+window.GEMINI_API_KEY = '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';
 
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
@@ -547,13 +547,13 @@ Consignes strictes :
 — Aucun markdown, aucun tiret, aucun astérisque
 — Entre 120 et 280 mots`;
 
-    // ── Appel API ─────────────────────────────────────
+    // ── Appel API OpenRouter ──────────────────────────
     btn.classList.add('loading-state');
     btn.disabled = true;
     status.textContent = 'Rédaction en cours…';
     status.className = 'go';
 
-try {
+    try {
         const OPENROUTER_KEY = window.GEMINI_API_KEY.trim(); 
         
         const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -582,7 +582,7 @@ try {
         if (!texte) throw new Error('Réponse vide');
 
         ta.value = texte;
-        syncResumeDoc(texte);
+        syncResumeDoc(texte); // Appel de la fonction de synchro
         status.textContent = '✓ Résumé généré — modifiable ci-dessus';
         status.className = 'ok';
 
@@ -591,18 +591,17 @@ try {
         status.textContent = '✗ ' + e.message;
         status.className = 'err';
     } finally {
-        // Indispensable pour redonner l'accès au bouton après l'appel
         btn.classList.remove('loading-state');
         btn.disabled = false;
     }
-}
+} // Fermeture de la fonction genererResumeIA
 
-/* Synchronise le textarea → document imprimable */
+/* CETTE FONCTION DOIT ÊTRE BIEN SÉPARÉE */
 function syncResumeDoc(texte) {
     const section = document.getElementById('doc-resume-section');
-    const el = document.getElementById('doc-resume-text');
-    if (el) el.textContent = texte || '';
-    if (section) section.style.display = (texte && texte.trim()) ? 'block' : 'none';
+    const el      = document.getElementById('doc-resume-text');
+    if (el)      el.textContent          = texte || '';
+    if (section) section.style.display   = (texte && texte.trim()) ? 'block' : 'none';
 }
 </script>
 
