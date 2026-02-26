@@ -394,7 +394,7 @@
    CONFIG INTRANET / DISCORD
 ══════════════════════════════════════════════════ */
 // Clé API Gemini (gratuit — https://aistudio.google.com/app/apikey)
-window.GEMINI_API_KEY = 'AIzaSyAzwqzM5JVjrtTlQhXJ7wMXZp5o51b83x8';
+window.GEMINI_API_KEY = 'AIzaSyBvycltRp88TS6p3wtXmnDS5wpMIFFxzLA';
 
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
@@ -413,8 +413,7 @@ var OMC_CONFIG = {
 };
 
 /* ══════════════════════════════════════════════════
-   RÉSUMÉ IA — génération via Claude API
-   Collecte tous les champs remplis → envoie à Claude
+   RÉSUMÉ IA — 
    → résumé médical professionnel en français
    → affiché dans le textarea (modifiable)
    → synchronisé dans le document imprimable
@@ -514,7 +513,7 @@ Consignes strictes :
     try {
         const GEMINI_KEY = window.GEMINI_API_KEY || '';
         const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
