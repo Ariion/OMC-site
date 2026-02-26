@@ -439,49 +439,30 @@ function genererResumeIA() {
     const ta = document.getElementById('resume-textarea');
     const status = document.getElementById('resume-status');
 
-    // Récupération des données de base
+    // Récupération des données communes
     const prenom = document.getElementById('in-prenom')?.value.trim() || '';
     const nom = document.getElementById('in-nom-famille')?.value.trim() || '';
-    const sexe = document.getElementById('in-sexe')?.value || 'Homme';
     const patient = (prenom || nom) ? `${prenom} ${nom}` : "le patient";
-    const pronom = (sexe === 'Femme') ? "La patiente" : "Le patient";
-    const accord = (sexe === 'Femme') ? "e" : "";
 
-    // Récupération des blocs de saisie
-    const circ = document.getElementById('in-med-circ')?.value.trim();
-    const bilan = document.getElementById('in-med-bilan')?.value.trim();
-    const soins = document.getElementById('in-med-soins')?.value.trim();
-    const concl = document.getElementById('in-med-conclusion')?.value.trim();
+    // Collecte de TOUS les textes possibles dans le formulaire
+    const tousLesTextes = Array.from(document.querySelectorAll('textarea'))
+        .map(t => t.value.trim())
+        .filter(v => v !== "" && v !== ta.value); // On ignore le textarea du résumé lui-même
 
-    // Vérification si au moins un champ est rempli
-    if (!circ && !bilan && !soins && !concl) {
-        status.textContent = '⚠ Remplissez quelques champs avant de générer.';
+    // VERIFICATION : Si aucun champ de texte n'est rempli
+    if (tousLesTextes.length === 0) {
+        status.textContent = '⚠ Remplissez le détail du rapport avant de générer.';
         status.className = 'err';
         return;
     }
 
-    // --- CONSTRUCTION DU TEXTE ---
-    let texte = `SYNTHÈSE MÉDICALE : ${patient.toUpperCase()}\n\n`;
+    // --- CONSTRUCTION DU RÉSUMÉ ---
+    // Note : On concatène simplement les informations pour l'impression
+    let texte = `SYNTHÈSE DU RAPPORT : ${patient.toUpperCase()}\n\n`;
+    
+    texte += tousLesTextes.join('\n\n');
 
-    if (circ) {
-        texte += `PRÉSENTATION : ${pronom} a été pris${accord} en charge dans le cadre suivant : ${circ}.\n\n`;
-    }
-
-    if (bilan) {
-        texte += `EXAMEN CLINIQUE : Les investigations et observations ont mis en évidence : ${bilan}.\n\n`;
-    }
-
-    if (soins) {
-        texte += `THÉRAPEUTIQUE : Le protocole de soins appliqué a consisté en : ${soins}.\n\n`;
-    }
-
-    if (concl) {
-        texte += `CONCLUSION ET PRONOSTIC : ${concl}.`;
-    } else {
-        texte += `CONCLUSION : État stable au moment de la rédaction, surveillance recommandée.`;
-    }
-
-    // Mise à jour immédiate
+    // Affichage
     ta.value = texte;
     syncResumeDoc(texte);
     
