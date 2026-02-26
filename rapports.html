@@ -413,7 +413,8 @@ var OMC_CONFIG = {
 };
 
 /* ══════════════════════════════════════════════════
-   RÉSUMÉ IA — 
+   RÉSUMÉ IA — génération via Claude API
+   Collecte tous les champs remplis → envoie à Claude
    → résumé médical professionnel en français
    → affiché dans le textarea (modifiable)
    → synchronisé dans le document imprimable
@@ -513,7 +514,7 @@ Consignes strictes :
     try {
         const GEMINI_KEY = window.GEMINI_API_KEY || '';
         const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_KEY}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
