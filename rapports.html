@@ -436,7 +436,7 @@
    CONFIG INTRANET / DISCORD
 ══════════════════════════════════════════════════ */
 // Clé API Gemini (gratuit — https://aistudio.google.com/app/apikey)
-window.GEMINI_API_KEY = 'AIzaSyAyNwQUvaqRfcjV90fORQG-m3rJq907jsI';
+window.GEMINI_API_KEY = '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';
 
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
@@ -554,30 +554,34 @@ Consignes strictes :
     status.className = 'go';
 
    try {
-        const GEMINI_KEY = window.GEMINI_API_KEY || '';
-        // La clé est maintenant dans l'URL
-        const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                    // Ne remets SURTOUT PAS le 'x-goog-api-key' ici
-                },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { maxOutputTokens: 1000, temperature: 0.4 }
-                })
-            }
-        );
+        const OPENROUTER_KEY = window.GEMINI_API_KEY || '';
+        
+        // Appel à l'API OpenRouter
+        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENROUTER_KEY}`,
+                // OpenRouter demande ces deux lignes par courtoisie
+                'HTTP-Referer': window.location.href,
+                'X-Title': 'OMC Intranet' 
+            },
+            body: JSON.stringify({
+                // On utilise la version 100% gratuite de Gemini via OpenRouter !
+                model: "google/gemini-2.0-flash:free", 
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0.4
+            })
+        });
 
         if (!res.ok) {
             const errDetails = await res.json();
             throw new Error(`Erreur API (${res.status}): ${errDetails.error?.message || 'Refusé'}`);
         }
 
-        const data  = await res.json();
-        const texte = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        const data = await res.json();
+        const texte = data.choices?.[0]?.message?.content?.trim();
+        
         if (!texte) throw new Error('Réponse vide ou format inattendu');
 
         ta.value = texte;
@@ -587,7 +591,7 @@ Consignes strictes :
 
     } catch(e) {
         console.error('Erreur IA :', e);
-        status.textContent = '✗ Erreur — réessayez';
+        status.textContent = '✗ Erreur : ' + e.message;
         status.className = 'err';
     }
 
