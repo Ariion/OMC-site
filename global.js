@@ -53,14 +53,14 @@ onSnapshot(q, (snapshot) => {
 window.toggleTheme = function() {
     const body = document.body;
     body.classList.toggle('light-mode');
-
-    // Persistance localStorage
     const isLight = body.classList.contains('light-mode');
     localStorage.setItem('omc-theme', isLight ? 'light' : 'dark');
 
-    // Mise à jour du texte du bouton (id="theme-text" présent sur toutes les pages)
-    const btn = document.getElementById('theme-text');
-    if (btn) btn.textContent = isLight ? 'Passer mode sombre' : 'Passer mode clair';
+    const btnText = document.getElementById('theme-text');
+    if (btnText) btnText.textContent = isLight ? 'Passer mode sombre' : 'Passer mode clair';
+    
+    // Dispatch un event pour prévenir les scripts spécifiques (comme constat.js)
+    window.dispatchEvent(new Event('themeChanged'));
 };
 
 // Applique le thème sauvegardé au chargement
