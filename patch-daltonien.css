@@ -3,7 +3,7 @@
    Remplace toutes les teintes vertes (#64ffda, #00d2ff cyan-vert)
    par du bleu électrique (#38bdf8) lisible par tous.
 
-   À IMPORTER EN DERNIER dans chaque page HTML :
+   À IMPORTER EN DERNIER dans chaque page HTML tout en haut de la section <head> :
    <link rel="stylesheet" href="patch-daltonien.css">
    ============================================================ */
 
@@ -114,7 +114,6 @@ input:focus, textarea:focus {
 }
 
 /* ---- DIAGNOSTICS & CALCULATRICE (nouveaux fichiers) ---- */
-/* Ces fichiers utilisent déjà --cyan: #64ffda, on écrase */
 :root {
     --cyan: #38bdf8;
     --cyan2: #0ea5e9;
@@ -190,143 +189,4 @@ mark {
 
 .card-subtotal strong {
     color: #38bdf8 !important;
-}
-
-
-/* ============================================================
-   THÈME CLAIR — body.light-mode
-   S'applique à TOUTES les pages qui chargent patch-daltonien.css
-   ============================================================ */
-
-/* ── Variables globales en mode clair ── */
-body.light-mode {
-    --omc-bg:      #f0f4f8;
-    --omc-dark:    #0a192f;
-    --omc-sidebar: #1e293b;
-}
-
-/* ── FOND GÉNÉRAL (toutes pages) ── */
-body.light-mode,
-body.light-mode .rapports-body,
-body.light-mode .labo-body,
-body.light-mode .portal-body {
-    background-color: #e8edf3 !important;
-}
-
-/* ── SIDEBAR ── */
-body.light-mode .sidebar {
-    background: #1e3a5f !important;
-    border-right-color: #2d5a8e !important;
-}
-
-body.light-mode .sidebar label,
-body.light-mode .sidebar h1,
-body.light-mode .sidebar-title {
-    color: #e2e8f0 !important;
-}
-
-/* ── ZONE APERÇU (fond gris derrière les documents) ── */
-body.light-mode .preview-area {
-    background: #d0d8e4 !important;
-}
-
-/* ── PANNEAU RÉSUMÉ IA ── */
-body.light-mode #panneau-resume {
-    background: #112240 !important;
-    border-color: #2d5a8e !important;
-}
-
-/* ── DOCUMENTS BLANCS — restent blancs ── */
-body.light-mode .omc-doc,
-body.light-mode #document,
-body.light-mode #document-resume {
-    background: white !important;
-    color: #000 !important;
-}
-
-/* ── LABELS DE ZONE ── */
-body.light-mode .doc-zone-label.resume  { background: #bbf7d0 !important; color: #14532d !important; }
-body.light-mode .doc-zone-label.complet { background: #bfdbfe !important; color: #1e3a8a !important; }
-
-/* ── INPUTS / TEXTAREA / SELECT dans sidebar ── */
-body.light-mode .sidebar input[type="text"],
-body.light-mode .sidebar input[type="date"],
-body.light-mode .sidebar input[type="time"],
-body.light-mode .sidebar select,
-body.light-mode .sidebar textarea {
-    background: #0f2942 !important;
-    border-color: #2d5a8e !important;
-    color: #e2e8f0 !important;
-}
-
-/* ── FORM GROUPS background dans sidebar ── */
-body.light-mode .sidebar .form-group [style*="background:#0f172a"],
-body.light-mode .sidebar [style*="background:#0f172a"] {
-    background: #0f2942 !important;
-}
-
-/* ── BOUTON THÈME ── */
-body.light-mode #theme-text {
-    color: white !important;
-}
-
-/* ── SCROLLBAR en mode clair ── */
-body.light-mode ::-webkit-scrollbar-track { background: #c8d6e5 !important; }
-body.light-mode ::-webkit-scrollbar-thumb { background: #7a9bbf !important; }
-
-/* ── CALCULATRICE / DIAGNOSTICS ── */
-body.light-mode .calc-card,
-body.light-mode .diag-card {
-    background: #1e3a5f !important;
-    border-color: #2d5a8e !important;
-}
-
-body.light-mode .summary-panel,
-body.light-mode .result-panel {
-    background: #1e3a5f !important;
-}
-
-/* ── POPUP ── */
-body.light-mode .popup-overlay {
-    background: rgba(0,0,0,0.85) !important;
-}
-body.light-mode .popup-content {
-    background: #1e3a5f !important;
-    border-color: #38bdf8 !important;
-}
-
-/* ── CERTIFICAT — zone document ── */
-body.light-mode #document {
-    background: white !important;
-    color: #000 !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
-}
-
-/* ── TRANSITIONS DOUCES pour tous les éléments thémables ── */
-body,
-.sidebar,
-.preview-area,
-#panneau-resume,
-.rapports-body,
-.labo-body {
-    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
-}
-
-/* ── FORCER le fond preview-area en mode clair
-   (écrase même les styles inline/scoped) ── */
-body.light-mode main.preview-area,
-body.light-mode .preview-area {
-    background-color: #d0d8e4 !important;
-    background: #d0d8e4 !important;
-}
-
-/* ── FORCER les body des pages internes ── */
-body.light-mode {
-    background-color: #e8edf3 !important;
-    background: #e8edf3 !important;
-}
-
-/* ── SIDEBAR toutes pages ── */
-body.light-mode aside.sidebar {
-    background: #1e3a5f !important;
 }
