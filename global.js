@@ -47,6 +47,39 @@ onSnapshot(q, (snapshot) => {
 });
 
 /* ============================================================
+    THÈME CLAIR / SOMBRE
+   ============================================================ */
+
+window.toggleTheme = function() {
+    const body = document.body;
+    body.classList.toggle('theme-light');
+
+    // Persistance localStorage
+    const isLight = body.classList.contains('theme-light');
+    localStorage.setItem('omc-theme', isLight ? 'light' : 'dark');
+
+    // Mise à jour du texte du bouton (id="theme-text" présent sur toutes les pages)
+    const btn = document.getElementById('theme-text');
+    if (btn) btn.textContent = isLight ? 'Passer mode sombre' : 'Passer mode clair';
+};
+
+// Applique le thème sauvegardé au chargement
+(function() {
+    const saved = localStorage.getItem('omc-theme');
+    if (saved === 'light') {
+        document.body.classList.add('theme-light');
+    }
+    // Mettre à jour le texte du bouton après que le DOM soit prêt
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('theme-text');
+        if (btn) {
+            const isLight = document.body.classList.contains('theme-light');
+            btn.textContent = isLight ? 'Passer mode sombre' : 'Passer mode clair';
+        }
+    });
+})();
+
+/* ============================================================
     FONCTIONS STORAGE — VERSION SÉCURISÉE (CORS PROOF)
    ============================================================ */
 
@@ -57,16 +90,14 @@ window.uploadImageFirebase = async function(blob, nomPatient, typeDoc) {
     const fileRef = storageRef(storage, chemin);
 
     try {
-        // On ajoute un timeout de 4 secondes pour ne pas bloquer le site si Firebase refuse
         const uploadPromise = uploadBytes(fileRef, blob, { contentType: 'image/png' });
         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Firebase")), 4000));
-
         await Promise.race([uploadPromise, timeoutPromise]);
         const url = await getDownloadURL(fileRef);
         return url;
     } catch (e) {
         console.error("⚠️ Erreur Storage (CORS probable) :", e.message);
-        return null; // On renvoie null pour signaler l'échec sans bloquer
+        return null;
     }
 };
 
@@ -77,13 +108,9 @@ window.uploadImageFirebase = async function(blob, nomPatient, typeDoc) {
 window.archiverDocument = async function(config) {
     const { captureId, nomPatientId, typeDoc, pageSource, onSuccess } = config;
 
-    // --- ASPIRATION DE TOUTES LES DONNÉES DU FORMULAIRE ---
     const formData = {};
-    // On récupère TOUS les champs de saisie de la page
-    const inputs = document.querySelectorAll('input, textarea, select');
-    inputs.forEach(input => {
+    document.querySelectorAll('input, textarea, select').forEach(input => {
         if (input.id) {
-            // Sauvegarde de la valeur ou de l'état coché
             formData[input.id] = (input.type === 'checkbox' || input.type === 'radio') 
                 ? input.checked 
                 : input.value;
@@ -98,16 +125,8 @@ window.archiverDocument = async function(config) {
         const canvas = await html2canvas(captureEl, { scale: 1.5, useCORS: true });
         const localDataUrl = canvas.toDataURL('image/jpeg', 0.7);
 
-        // Sauvegarde dans Firebase avec le "sac à dos" de données (formData)
         if (window.ajouterEvenementPatient) {
-            await window.ajouterEvenementPatient(
-                nomPatient, 
-                typeDoc, 
-                typeDoc, 
-                localDataUrl, 
-                pageSource, 
-                formData // On envoie l'objet complet ici
-            );
+            await window.ajouterEvenementPatient(nomPatient, typeDoc, typeDoc, localDataUrl, pageSource, formData);
         }
 
         if (onSuccess) onSuccess(localDataUrl);
@@ -117,36 +136,29 @@ window.archiverDocument = async function(config) {
         return null;
     }
 };
+
 /* ============================================================
     HISTORIQUE ET BASE DE DONNÉES
    ============================================================ */
 
 window.ajouterEvenementPatient = async function(nomPatient, typeEvent, details, urlImage = null, pageSource = null, formData = null) {
-    // 1. On cherche si le patient existe
     let patient = patientsCache.find(p => p.nom.trim().toLowerCase() === nomPatient.trim().toLowerCase());
 
-    // 2. SI LE PATIENT N'EXISTE PAS : ON LE CRÉE
     if (!patient) {
         console.log("🆕 Nouveau patient détecté, création automatique du dossier...");
         const nouveauDossier = {
             nom: nomPatient,
-            naissance: formData?.patientBirth || "", // On essaie de récupérer la DDN si elle est dans le formulaire
+            naissance: formData?.patientBirth || "",
             groupe: formData?.patientBlood || "",
             job: formData?.patientJob || "Civil",
             notes: "Dossier créé automatiquement via " + typeEvent,
             historique: [],
             dateCreation: new Date().toISOString()
         };
-        
-        // On sauvegarde le nouveau patient
         await window.savePatientToDB(nouveauDossier);
-        
-        // On attend un tout petit peu que Firebase se mette à jour et on le récupère
-        // (Ou on utilise directement l'objet qu'on vient de créer)
         patient = nouveauDossier;
     }
 
-    // 3. ON RAJOUTE L'ÉVÉNEMENT À L'HISTORIQUE
     let historique = patient.historique || [];
     historique.unshift({
         date: new Date().toISOString(),
@@ -154,11 +166,9 @@ window.ajouterEvenementPatient = async function(nomPatient, typeEvent, details, 
         details: details,
         url: urlImage,
         pageSource: pageSource,
-        formData: formData // Le fameux sac à dos pour le bouton "Modifier"
+        formData: formData
     });
 
-    // 4. MISE À JOUR DANS FIREBASE
-    // On cherche l'ID (soit celui existant, soit on laisse savePatientToDB gérer)
     const patientRef = patientsCache.find(p => p.nom.trim().toLowerCase() === nomPatient.trim().toLowerCase());
     if (patientRef) {
         const ref = doc(db, COLLECTION_NAME, patientRef.id);
@@ -171,7 +181,6 @@ window.ajouterEvenementPatient = async function(nomPatient, typeEvent, details, 
     }
 };
 
-// --- LE RESTE DES FONCTIONS (AUTOCOMPLETE, THEME, ETC.) ---
 window.getPatientsDB = () => patientsCache;
 
 window.savePatientToDB = async function(patientData) {
@@ -221,53 +230,52 @@ window.setupPatientAutocomplete = function(config) {
     });
 };
 
-// UTILITAIRES DE MISE À JOUR
-window.up = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val || "..."; };
-window.upDate = (id, val) => { if (!val) return; const [y, m, d] = val.split('-'); const el = document.getElementById(id); if (el) el.innerText = `${d}/${m}/${y}`; };
+// UTILITAIRES DE MISE À JOUR (compatibilité pages qui utilisent ces fonctions globales)
+// Note : rapports.js redéfinit up/upDate localement avec une logique plus riche
+window.up     = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val || "..."; };
+window.upDate = (id, val) => {
+    if (!val) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    try {
+        el.innerText = new Date(val).toLocaleDateString('fr-FR', {year:'numeric', month:'long', day:'numeric'});
+    } catch(e) {
+        const [y, m, d] = val.split('-');
+        el.innerText = `${d}/${m}/${y}`;
+    }
+};
 
-
-
-
-
-
-
-// Variable globale pour éviter les doublons durant la session sur la page
+// Variable globale pour éviter les doublons durant la session
 window.omc_last_archive = { url: null, done: false };
 
 window.omc_moteur_generation = async function(config) {
     const { captureId, nomPatientId, typeDoc, pageSource, imgBBKey } = config;
 
-    // 1. Si déjà fait, on renvoie l'URL mémorisée
     if (window.omc_last_archive.done) {
         return { url: window.omc_last_archive.url, dejaFait: true };
     }
 
     try {
-        // 2. Capture de l'élément
         const captureEl = document.getElementById(captureId);
         const canvas = await html2canvas(captureEl, { scale: 1.5, useCORS: true });
         const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
 
-        // 3. Envoi ImgBB (Lien court RP)
         const formDataBB = new FormData();
         formDataBB.append("image", blob);
         const resBB = await fetch(`https://api.imgbb.com/1/upload?key=${imgBBKey}`, { method: "POST", body: formDataBB });
         const jsonBB = await resBB.json();
         const shortUrl = jsonBB.data.url;
 
-        // 4. Aspiration des données (Sac à dos pour modification)
         const formSnapshot = {};
         document.querySelectorAll('input, textarea, select').forEach(el => {
             if(el.id) formSnapshot[el.id] = (el.type === 'checkbox' || el.type === 'radio') ? el.checked : el.value;
         });
 
-        // 5. Archivage Firebase (Dossier Patient)
         const nomPatient = document.getElementById(nomPatientId).value || "Anonyme";
         if (window.ajouterEvenementPatient) {
             await window.ajouterEvenementPatient(nomPatient, typeDoc, typeDoc, shortUrl, pageSource, formSnapshot);
         }
 
-        // 6. Verrouillage
         window.omc_last_archive = { url: shortUrl, done: true };
         return { url: shortUrl, dejaFait: false };
 
