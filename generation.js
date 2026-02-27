@@ -65,7 +65,7 @@ function _showPopup(url) {
 
     if (content) {
         // Format A4 vertical exact
-        content.style.width = '794px';
+        content.style.width = '100%';
         content.style.maxWidth = '95vw';
         content.style.height = '1123px';   // hauteur A4 96dpi
         content.style.maxHeight = '95vh';
