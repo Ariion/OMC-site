@@ -52,10 +52,10 @@ onSnapshot(q, (snapshot) => {
 
 window.toggleTheme = function() {
     const body = document.body;
-    body.classList.toggle('theme-light');
+    body.classList.toggle('light-mode');
 
     // Persistance localStorage
-    const isLight = body.classList.contains('theme-light');
+    const isLight = body.classList.contains('light-mode');
     localStorage.setItem('omc-theme', isLight ? 'light' : 'dark');
 
     // Mise à jour du texte du bouton (id="theme-text" présent sur toutes les pages)
@@ -67,13 +67,13 @@ window.toggleTheme = function() {
 (function() {
     const saved = localStorage.getItem('omc-theme');
     if (saved === 'light') {
-        document.body.classList.add('theme-light');
+        document.body.classList.add('light-mode');
     }
     // Mettre à jour le texte du bouton après que le DOM soit prêt
     document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('theme-text');
         if (btn) {
-            const isLight = document.body.classList.contains('theme-light');
+            const isLight = document.body.classList.contains('light-mode');
             btn.textContent = isLight ? 'Passer mode sombre' : 'Passer mode clair';
         }
     });

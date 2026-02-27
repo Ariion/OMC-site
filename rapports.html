@@ -102,7 +102,7 @@
         .preview-area {
             flex-grow:1; display:flex; flex-direction:column;
             align-items:center; padding:30px 20px;
-            overflow-y:auto; gap:0; background:#c8cdd4;
+            overflow-y:auto; gap:0; transition: background-color 0.3s;
         }
 
         /* Labels */
@@ -446,8 +446,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 // Clé Gemini gratuite
-window.GEMINI_API_KEY = 'AIzaSyBvycltRp88TS6p3wtXmnDS5wpMIFFxzLA'; // ← Remplacer si expirée : aistudio.google.com/app/apikey
-
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
     captureId:    'document',
@@ -465,6 +463,9 @@ var OMC_CONFIG = {
 };
 
 /* ══ RÉSUMÉ IA via Gemini ══ */
+// Remplace VOTRE_CLE_ICI par une clé obtenue sur : aistudio.google.com/app/apikey
+const GEMINI_KEY = 'AIzaSyDBJNFfIhhf3mPJ-8x6LryOF7hVD5w4xqU';
+
 async function genererResumeIA() {
     const btn    = document.getElementById('btn-generer-resume');
     const status = document.getElementById('resume-status');
@@ -484,26 +485,26 @@ async function genererResumeIA() {
     let sections = {};
     if (type === 'med') {
         sections = {
-            'Circonstances':         document.getElementById('in-med-circ')?.value.trim(),
-            'Bilan clinique':        document.getElementById('in-med-bilan')?.value.trim(),
-            'Protocole de soins':    document.getElementById('in-med-soins')?.value.trim(),
-            'Conclusion':            document.getElementById('in-med-conclusion')?.value.trim(),
-            'Temps de récupération': document.getElementById('in-med-repos')?.value.trim(),
-            'Facturation':           document.getElementById('in-med-prix')?.value.trim(),
+            'Circonstances':          document.getElementById('in-med-circ')?.value.trim(),
+            'Bilan clinique':         document.getElementById('in-med-bilan')?.value.trim(),
+            'Protocole de soins':     document.getElementById('in-med-soins')?.value.trim(),
+            'Conclusion / Pronostic': document.getElementById('in-med-conclusion')?.value.trim(),
+            'Temps de récupération':  document.getElementById('in-med-repos')?.value.trim(),
+            'Facturation':            document.getElementById('in-med-prix')?.value.trim(),
         };
     } else if (type === 'psy') {
         sections = {
-            'Contexte':        document.getElementById('in-psy-circ')?.value.trim(),
-            'Observations':    document.getElementById('in-psy-obs')?.value.trim(),
-            'Diagnostic':      document.getElementById('in-psy-diag')?.value.trim(),
-            'Recommandations': document.getElementById('in-psy-reco')?.value.trim(),
+            'Contexte / Motif': document.getElementById('in-psy-circ')?.value.trim(),
+            'Observations':     document.getElementById('in-psy-obs')?.value.trim(),
+            'Diagnostic':       document.getElementById('in-psy-diag')?.value.trim(),
+            'Recommandations':  document.getElementById('in-psy-reco')?.value.trim(),
         };
     } else if (type === 'auto') {
         sections = {
-            'Heure du décès':    document.getElementById('in-auto-heure')?.value,
-            'Examen externe':    document.getElementById('in-auto-ext')?.value.trim(),
-            'Examen interne':    document.getElementById('in-auto-int')?.value.trim(),
-            'Conclusion légale': document.getElementById('in-auto-cause')?.value.trim(),
+            'Heure du décès estimée':   document.getElementById('in-auto-heure')?.value,
+            'Examen externe':           document.getElementById('in-auto-ext')?.value.trim(),
+            'Examen interne':           document.getElementById('in-auto-int')?.value.trim(),
+            'Conclusion médico-légale': document.getElementById('in-auto-cause')?.value.trim(),
         };
     }
 
@@ -513,36 +514,36 @@ async function genererResumeIA() {
         .join('\n\n');
 
     if (!secStr && !prenom && !nom) {
-        status.textContent = '⚠ Remplissez d\'abord quelques champs';
+        status.textContent = "⚠ Remplissez d'abord quelques champs";
         status.className = 'err'; return;
     }
 
     const typeLabel = {med:'médical', psy:'psychologique', auto:"d'autopsie"}[type] || type;
-    const ddn  = ddnRaw  ? new Date(ddnRaw).toLocaleDateString('fr-FR')  : '';
+    const ddn  = ddnRaw  ? new Date(ddnRaw).toLocaleDateString('fr-FR') : '';
     const date = dateRaw ? new Date(dateRaw).toLocaleDateString('fr-FR') : '';
 
     const infos = [
-        prenom && nom ? `Patient : ${prenom} ${nom}` : '',
-        ddn   ? `Date de naissance : ${ddn}` : '',
-        sexe  ? `Sexe : ${sexe}` : '',
-        sujet ? `Sujet : ${sujet}` : '',
-        date  ? `Date d'intervention : ${date}${heure ? ' à '+heure : ''}` : '',
-        praticien ? `Praticien : ${praticien}${grade ? ', '+grade : ''}` : '',
+        (prenom || nom) ? `Patient : ${prenom} ${nom}`.trim() : '',
+        ddn       ? `Date de naissance : ${ddn}` : '',
+        sexe      ? `Sexe : ${sexe}` : '',
+        sujet     ? `Motif / Sujet : ${sujet}` : '',
+        date      ? `Date d'intervention : ${date}${heure ? ' à ' + heure : ''}` : '',
+        praticien ? `Praticien : ${praticien}${grade ? ', ' + grade : ''}` : '',
     ].filter(Boolean).join('\n');
 
-    const prompt = `Tu es médecin légiste à l'Ocean Medical Center. Rédige un résumé médical officiel professionnel en français pour un document imprimé remis aux autorités.
+    const prompt = `Tu es médecin à l'Ocean Medical Center. À partir des notes brutes ci-dessous, rédige un résumé médical officiel en français, destiné à être imprimé et remis aux autorités.
 
 Type de rapport : ${typeLabel}
-${infos ? '\nInformations :\n'+infos : ''}
-${secStr ? '\nContenu du rapport :\n'+secStr : ''}
+${infos ? '\nIdentité :\n' + infos : ''}
+${secStr ? '\nNotes brutes :\n' + secStr : ''}
 
-Consignes strictes :
-- Prose médicale fluide, 2 à 4 paragraphes
-- Commence directement par le contenu clinique sans phrase d'introduction générique
-- Ne répète pas le nom ni la date (déjà dans l'en-tête du document)
-- Aucun markdown, tiret, astérisque ou mise en forme spéciale
-- Vocabulaire médical précis et professionnel
-- 120 à 250 mots maximum`;
+Règles absolues :
+- Reformule et synthétise : ne recopie PAS les notes mot pour mot
+- Prose médicale fluide et professionnelle, 2 à 4 paragraphes bien rédigés
+- Commence immédiatement par les faits cliniques, sans phrase d'intro
+- N'inclus pas le nom du patient ni la date (déjà dans l'en-tête)
+- Zéro markdown, zéro tiret, zéro astérisque
+- 150 à 280 mots`;
 
     btn.classList.add('loading-state');
     btn.disabled = true;
@@ -550,19 +551,25 @@ Consignes strictes :
     status.className = 'go';
 
     try {
+        if (!GEMINI_KEY || GEMINI_KEY === 'VOTRE_CLE_ICI') {
+            throw new Error('Clé Gemini manquante — voir aistudio.google.com/app/apikey');
+        }
+
         const res = await fetch(
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': window.GEMINI_API_KEY },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { maxOutputTokens: 800, temperature: 0.3 }
+                    generationConfig: { maxOutputTokens: 700, temperature: 0.3 }
                 })
             }
         );
-        const data  = await res.json();
-        if (!res.ok) throw new Error(data.error?.message || 'Erreur '+res.status);
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || 'Erreur ' + res.status);
+
         const texte = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
         if (!texte) throw new Error('Réponse vide');
 
@@ -570,72 +577,15 @@ Consignes strictes :
         syncResumeDoc(texte);
         status.textContent = '✓ Résumé généré — modifiable ci-dessus';
         status.className = 'ok';
+
     } catch(e) {
         console.error('Erreur IA :', e);
-        // Fallback : résumé textuel sans IA
-        const fallback = _genererFallbackResume();
-        if (fallback) {
-            ta.value = fallback;
-            syncResumeDoc(fallback);
-            status.textContent = '⚠ IA indisponible — résumé généré localement';
-            status.className = 'ok';
-        } else {
-            status.textContent = '✗ ' + (e.message || 'Erreur — réessayez');
-            status.className = 'err';
-        }
+        status.textContent = '✗ ' + (e.message || 'Erreur — réessayez');
+        status.className = 'err';
     }
 
     btn.classList.remove('loading-state');
     btn.disabled = false;
-}
-
-/* Résumé de secours sans IA — concatène les champs remplis proprement */
-function _genererFallbackResume() {
-    const type = window.currentReportType || 'med';
-    const prenom = document.getElementById('in-prenom')?.value.trim() || '';
-    const nom    = document.getElementById('in-nom-famille')?.value.trim() || '';
-    const praticien = document.getElementById('in-doc')?.value.trim() || '';
-    const grade     = document.getElementById('in-grade')?.value.trim() || '';
-
-    let lignes = [];
-
-    if (type === 'med') {
-        const circ  = document.getElementById('in-med-circ')?.value.trim();
-        const bilan = document.getElementById('in-med-bilan')?.value.trim();
-        const soins = document.getElementById('in-med-soins')?.value.trim();
-        const concl = document.getElementById('in-med-conclusion')?.value.trim();
-        const repos = document.getElementById('in-med-repos')?.value.trim();
-        const prix  = document.getElementById('in-med-prix')?.value.trim();
-        if (circ)  lignes.push(circ);
-        if (bilan) lignes.push(bilan);
-        if (soins) lignes.push(soins);
-        if (concl) lignes.push(concl);
-        if (repos) lignes.push('Temps de récupération : ' + repos);
-        if (prix)  lignes.push('Facturation : ' + prix + ' $');
-    } else if (type === 'psy') {
-        const circ = document.getElementById('in-psy-circ')?.value.trim();
-        const obs  = document.getElementById('in-psy-obs')?.value.trim();
-        const diag = document.getElementById('in-psy-diag')?.value.trim();
-        const reco = document.getElementById('in-psy-reco')?.value.trim();
-        if (circ) lignes.push(circ);
-        if (obs)  lignes.push(obs);
-        if (diag) lignes.push(diag);
-        if (reco) lignes.push(reco);
-    } else if (type === 'auto') {
-        const heure = document.getElementById('in-auto-heure')?.value;
-        const ext   = document.getElementById('in-auto-ext')?.value.trim();
-        const int_  = document.getElementById('in-auto-int')?.value.trim();
-        const cause = document.getElementById('in-auto-cause')?.value.trim();
-        if (heure) lignes.push('Heure estimée du décès : ' + heure);
-        if (ext)   lignes.push(ext);
-        if (int_)  lignes.push(int_);
-        if (cause) lignes.push(cause);
-    }
-
-    if (!lignes.length) return null;
-    let texte = lignes.join('\n\n');
-    if (praticien) texte += '\n\nPraticien : ' + praticien + (grade ? ', ' + grade : '');
-    return texte;
 }
 
 function syncResumeDoc(texte) {
