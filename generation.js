@@ -1,6 +1,6 @@
 /* ============================================================
-   GENERATION.JS — MOTEUR UNIVERSEL OMC v3.1
-   Patch : scale 3 + width 794 (A4) + hauteur totale capturée
+   GENERATION.JS — MOTEUR UNIVERSEL OMC v3.2
+   Capture dynamique : respecte la taille réelle du rapport
    Logique deux docs : genererImage → #document-jeu si présent
                        envoyerDiscord → #document (complet)
    ============================================================ */
@@ -21,23 +21,26 @@ function _getNomPatient(nomPatientId) {
     return (el.value || el.innerText || 'Anonyme').trim();
 }
 
-async function _captureToBlob(el, quality) {
+async function _captureToBlob(el, quality, html2canvasOptions) {
     quality = quality || 0.92;
 
-    // Hauteur totale — jamais tronquée
+    // Capture aux dimensions réelles de l'élément pour éviter le forçage A4.
+    const fullWidth = Math.max(el.scrollWidth, el.offsetWidth, el.clientWidth);
     const fullHeight = Math.max(el.scrollHeight, el.offsetHeight, el.clientHeight);
+    const options = html2canvasOptions || {};
 
     const canvas = await html2canvas(el, {
-        scale:           3,       // ×3 → net et zoomable en jeu
+        scale:           2,
         useCORS:         true,
         backgroundColor: '#ffffff',
         scrollX:         0,
         scrollY:         -window.scrollY,
-        width:           794,     // A4 fixe (96 dpi)
-        windowWidth:     794,     // force le rendu A4
+        width:           fullWidth,
+        windowWidth:     fullWidth,
         height:          fullHeight,
         windowHeight:    fullHeight,
-        logging:         false
+        logging:         false,
+        ...options,
     });
 
     return new Promise(function(resolve) {
@@ -92,7 +95,7 @@ window.genererImage = async function(btn, captureId) {
                  || 'document';
         const el  = _getCaptureEl(id);
 
-        const blob = await _captureToBlob(el, 0.92);
+        const blob = await _captureToBlob(el, 0.92, cfg.html2canvasOptions);
         if (btn) btn.innerText = '⏳ HÉBERGEMENT IBB...';
 
         const url = await _uploadImgBB(blob);
@@ -125,7 +128,7 @@ window.envoyerDiscord = async function(btn) {
         // Discord reçoit TOUJOURS le document complet
         const id   = cfg.captureId || 'document';
         const el   = _getCaptureEl(id);
-        const blob = await _captureToBlob(el, 0.95);
+        const blob = await _captureToBlob(el, 0.95, cfg.html2canvasOptions);
 
         if (btn) btn.innerText = '⏳ ENVOI DISCORD...';
 
