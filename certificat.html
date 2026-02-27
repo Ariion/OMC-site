@@ -117,15 +117,9 @@
 
             <!-- ══ OBSERVATIONS COMPLÉMENTAIRES ══ -->
             <div class="form-group" style="border-top:1px solid #334155;padding-top:14px;margin-top:5px;">
-                <label style="color:white;font-weight:bold;display:block;margin-bottom:6px;">
-                    📝 OBSERVATIONS COMPLÉMENTAIRES
-                </label>
+                <label>Observations complémentaires</label>
                 <textarea id="f-observations" rows="4" oninput="updateCertif()"
-                    placeholder="Ex : Apte sous conditions — port de lunettes obligatoire&#10;Suivi cardiologique recommandé dans les 3 mois&#10;Contre-indication temporaire au port d'arme&#10;Nécessite aménagement horaire..."
-                    style="width:100%;resize:vertical;font-size:12px;line-height:1.6;box-sizing:border-box;"></textarea>
-                <div style="font-size:10px;color:#475569;margin-top:4px;">
-                    Affiché sur le document si renseigné · PPA, aptitude sous conditions, notes médicales…
-                </div>
+                    placeholder="Ex : Apte sous conditions — port de lunettes obligatoire&#10;Suivi cardiologique recommandé dans les 3 mois&#10;Contre-indication temporaire au port d'arme..."></textarea>
             </div>
 
             <div class="form-group">
@@ -170,10 +164,10 @@
 
                     <!-- ══ OBSERVATIONS COMPLÉMENTAIRES dans le document ══ -->
                     <div class="cert-box" id="doc-observations-block"
-                         style="grid-column:span 2;display:non;background:#fffbeb;">
-                        <label style="font-weight:800;">📝 OBSERVATIONS COMPLÉMENTAIRES</label>
+                         style="grid-column:span 2;display:none;">
+                        <label>Observations complémentaires</label>
                         <div id="d-observations-text" class="cert-val"
-                             style="white-space:pre-wrap;font-size:13px;line-height:1.7;color:#1e293b;margin-top:4px;"></div>
+                             style="white-space:pre-wrap;font-size:14px;line-height:1.7;"></div>
                     </div>
                 </div>
 

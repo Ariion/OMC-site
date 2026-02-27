@@ -1,6 +1,11 @@
 // ==========================================
+<<<<<<< HEAD
 // RAPPORTS OFFICIELS - OMC v5.0
 // Compatible avec rapports.html du projet
+=======
+// RAPPORTS OFFICIELS - OMC v4.0
+// Synchronisation complète : résumé + complet
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 // ==========================================
 
 const IMGBB_API_KEY = "5eed3e87aedfe942a0bbd78503174282";
@@ -21,9 +26,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const m = String(today.getMinutes()).padStart(2,'0');
         if (elHeure) elHeure.value = `${h}:${m}`;
 
+<<<<<<< HEAD
         upDate('d-date', today.toISOString().split('T')[0]);
         up('d-heure', `${h}:${m}`);
         up('d-sexe', 'Homme');
+=======
+        // Init les deux docs avec la date du jour
+        const iso = today.toISOString().split('T')[0];
+        _upBoth('d-date', 'd-date-r',   _formatDate(iso));
+        _upBoth('d-heure', 'd-heure-r', `${h}:${m}`);
+
+        // Init sexe
+        _upBoth('d-sexe', 'd-sexe-r', 'Homme');
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 
         switchReport('med');
         initToolbars();
@@ -31,8 +46,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
+<<<<<<< HEAD
 // MARKDOWN
 // ==========================================
+=======
+// UTILITAIRES INTERNES
+// ==========================================
+
+function _formatDate(iso) {
+    if (!iso) return '...';
+    try {
+        return new Date(iso).toLocaleDateString('fr-FR', {year:'numeric', month:'long', day:'numeric'});
+    } catch(e) { return iso; }
+}
+
+// Met à jour deux éléments en même temps (doc complet + doc résumé)
+function _upBoth(id1, id2, val) {
+    const e1 = document.getElementById(id1);
+    const e2 = document.getElementById(id2);
+    if (e1) e1.innerText = val || '...';
+    if (e2) e2.innerText = val || '...';
+}
+
+// ==========================================
+// MARKDOWN
+// ==========================================
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 window.formatMD = function(text) {
     if (!text) return '';
     let html = text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -75,16 +114,29 @@ window.initToolbars = function() {
         const tb = document.createElement('div');
         tb.className = 'md-toolbar';
         tb.innerHTML = `
+<<<<<<< HEAD
             <button type="button" onclick="insertMD('${ta.id}','bold')">B</button>
             <button type="button" onclick="insertMD('${ta.id}','italic')">I</button>
             <button type="button" onclick="insertMD('${ta.id}','list')">• Liste</button>`;
+=======
+            <button type="button" onclick="insertMD('${ta.id}','bold')"   title="Gras">B</button>
+            <button type="button" onclick="insertMD('${ta.id}','italic')" title="Italique">I</button>
+            <button type="button" onclick="insertMD('${ta.id}','list')"   title="Liste">• Liste</button>`;
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
         ta.parentNode.insertBefore(tb, ta);
     });
 };
 
 // ==========================================
+<<<<<<< HEAD
 // MISE À JOUR DOM
 // ==========================================
+=======
+// FONCTIONS DE MISE À JOUR — LES DEUX DOCS
+// ==========================================
+
+// Exposée globalement car appelée depuis oninput dans le HTML
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 window.up = function(id, val) {
     const el = document.getElementById(id);
     if (el) el.innerText = val || '...';
@@ -92,11 +144,15 @@ window.up = function(id, val) {
 
 window.upDate = function(id, val) {
     const el = document.getElementById(id);
+<<<<<<< HEAD
     if (!el) return;
     if (val) {
         try { el.innerText = new Date(val).toLocaleDateString('fr-FR', {year:'numeric',month:'long',day:'numeric'}); }
         catch(e) { el.innerText = val; }
     } else { el.innerText = '...'; }
+=======
+    if (el) el.innerText = val ? _formatDate(val) : '...';
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 };
 
 window.upBlock = function(textId, wrapId, val) {
@@ -106,33 +162,76 @@ window.upBlock = function(textId, wrapId, val) {
     if (wrap) wrap.style.display = (val && val.trim()) ? 'block' : 'none';
 };
 
+window.upSujet = function(val) {
+    // Doc complet
+    const el = document.getElementById('d-sujet');
+    if (el) el.innerText = val || '...';
+    // Doc résumé — affiche la box "sujet" seulement si renseigné
+    const elR = document.getElementById('d-sujet-r');
+    const box = document.getElementById('r-sujet-box');
+    if (elR) elR.innerText = val || '';
+    if (box) box.style.display = val && val.trim() ? 'block' : 'none';
+};
+
 window.upNom = function() {
     let prenom = document.getElementById('in-prenom')?.value.trim()      || '';
     let nom    = document.getElementById('in-nom-famille')?.value.trim() || '';
     if (prenom) prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase();
     if (nom)    nom    = nom.toUpperCase();
     const full = [prenom, nom].filter(Boolean).join(' ') || '...';
+<<<<<<< HEAD
     const el  = document.getElementById('d-nom');
     const el2 = document.getElementById('d-nom-titre');
     if (el)  el.innerText  = full;
     if (el2) el2.innerText = full;
+=======
+    // Sync les deux docs
+    _upBoth('d-nom', 'd-nom-r', full);
+};
+
+window.upSexe = function(val) {
+    _upBoth('d-sexe', 'd-sexe-r', val);
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 };
 
 window.upDoc = function() {
     const docVal   = document.getElementById('in-doc')?.value.trim()   || '';
     const gradeVal = document.getElementById('in-grade')?.value.trim() || '';
+<<<<<<< HEAD
     const wrap = document.getElementById('wrap-doc');
     const dDoc = document.getElementById('d-doc');
     if (!docVal) { if (wrap) wrap.style.display='none'; return; }
     const complet = docVal + (gradeVal ? ` - ${gradeVal}` : '') + ` de l'Ocean Medical Center`;
     if (wrap) wrap.style.display = 'block';
     if (dDoc) dDoc.innerText = complet;
+=======
+    const complet  = docVal + (gradeVal ? ` — ${gradeVal}` : '') + ` de l'Ocean Medical Center`;
+
+    // Doc complet
+    const wrap = document.getElementById('wrap-doc');
+    const dDoc = document.getElementById('d-doc');
+    if (wrap) wrap.style.display = docVal ? 'block' : 'none';
+    if (dDoc && docVal) dDoc.innerText = complet;
+
+    // Doc résumé
+    const wrapR = document.getElementById('wrap-doc-r');
+    const dDocR = document.getElementById('d-doc-r');
+    if (wrapR) wrapR.style.display = docVal ? 'block' : 'none';
+    if (dDocR && docVal) dDocR.innerText = complet;
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 };
 
 window.upSig = function(val) {
     const text = (val||'').trim();
+<<<<<<< HEAD
     const el = document.getElementById('d-sig');
     if (el) { el.innerText = text; el.style.display = text ? 'inline-block' : 'none'; }
+=======
+    ['d-sig','d-sig-r'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.innerText = text; el.style.display = text ? 'inline-block' : 'none'; }
+    });
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 };
 
 window.upMedSuivi = function() {
@@ -154,10 +253,23 @@ window.upMedSuivi = function() {
 };
 
 window.upAutoHeure = function(val) {
+<<<<<<< HEAD
     const el  = document.getElementById('d-auto-heure');
     const box = document.getElementById('d-info-auto');
     if (el)  el.innerText      = val || '...';
     if (box) box.style.display = (currentReportType==='auto' && val) ? 'block' : 'none';
+=======
+    // Doc complet
+    const el  = document.getElementById('d-auto-heure');
+    const box = document.getElementById('d-info-auto');
+    if (el)  el.innerText       = val || '...';
+    if (box) box.style.display  = val ? 'block' : 'none';
+    // Doc résumé
+    const elR  = document.getElementById('d-heure-deces-r');
+    const boxR = document.getElementById('r-heure-box');
+    if (elR)  elR.innerText       = val || '...';
+    if (boxR) boxR.style.display  = (currentReportType==='auto' && val) ? 'block' : 'none';
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 };
 
 window.genererRef = function() {
@@ -170,26 +282,37 @@ window.genererRef = function() {
             if (clean.length >= 8)
                 ref = '#' + clean.substring(6,8) + clean.substring(4,6) + heureInput.replace(/\D/g,'');
         }
-        const elRef = document.getElementById('d-ref');
-        if (elRef) elRef.innerText = ref;
+        // Sync les deux docs
+        _upBoth('d-ref', 'd-ref-r', ref);
 
+        // QR code identique pour les deux
         const nom  = document.getElementById('d-nom')?.innerText || 'Inconnu';
         const data = encodeURIComponent(`OMC-${currentReportType.toUpperCase()}|${nom}|${ref}`);
+<<<<<<< HEAD
         const qr   = document.getElementById('qr-ref');
         if (qr) qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
+=======
+        const src  = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data}`;
+        ['qr-ref','qr-ref-r'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.src = src;
+        });
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
     } catch(e) { console.error('QR error',e); }
 };
 
 // ==========================================
-// ONGLETS
+// ONGLETS — met à jour les DEUX docs
 // ==========================================
 window.switchReport = function(type) {
     currentReportType = type;
     window.currentReportType = type;
 
+    // Boutons actifs
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('btn-'+type)?.classList.add('active');
 
+<<<<<<< HEAD
     document.querySelectorAll('.dynamic-fields').forEach(f => f.style.display='none');
     document.getElementById('fields-'+type).style.display='block';
 
@@ -212,6 +335,40 @@ window.switchReport = function(type) {
     const heure   = document.getElementById('in-auto-heure')?.value || '';
     const boxAuto = document.getElementById('d-info-auto');
     if (boxAuto) boxAuto.style.display = (type==='auto' && heure) ? 'block' : 'none';
+=======
+    // Formulaire
+    document.querySelectorAll('.dynamic-fields').forEach(f => f.style.display='none');
+    document.getElementById('fields-'+type).style.display='block';
+
+    // Sections doc complet
+    document.querySelectorAll('.render-section').forEach(s => s.style.display='none');
+    const rs = document.getElementById('render-'+type);
+    if (rs) rs.style.display='block';
+
+    // Titres et labels
+    const titres  = {med:'DOSSIER MÉDICAL', psy:'BILAN PSYCHOLOGIQUE', auto:"RAPPORT D'AUTOPSIE"};
+    const labels  = {med:'Praticien intervenant', psy:'Psychologue / Médecin', auto:'Médecin Légiste (Coroner)'};
+    const nomLbls = {med:'Prénom & Nom du Patient', psy:'Prénom & Nom du Patient', auto:'Prénom & Nom du Défunt'};
+
+    // Sync titre dans les deux docs
+    _upBoth('d-titre-doc', 'd-titre-r', titres[type]);
+
+    const lDoc = document.getElementById('label-doc');
+    const lNom = document.getElementById('label-nom');
+    if (lDoc) lDoc.innerText = labels[type];
+    if (lNom) lNom.innerText = nomLbls[type];
+
+    // Boîte heure décès (autopsie seulement)
+    const heure = document.getElementById('in-auto-heure')?.value || '';
+    const boxAuto = document.getElementById('d-info-auto');
+    const boxR    = document.getElementById('r-heure-box');
+    if (boxAuto) boxAuto.style.display = (type==='auto' && heure) ? 'block' : 'none';
+    if (boxR)    boxR.style.display    = (type==='auto' && heure) ? 'block' : 'none';
+
+    // Reset statut résumé
+    const status = document.getElementById('resume-status');
+    if (status) { status.textContent='Remplissez le formulaire puis générez'; status.className=''; }
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 
     genererRef();
 };
@@ -235,11 +392,19 @@ window.ajouterSectionCustom = function() {
                 oninput="upCustom(${id})"
                 style="border:none;background:#111b2d;color:white;width:100%;resize:vertical;padding:8px;border-radius:4px;outline:none;box-sizing:border-box;"></textarea>
         </div>`);
+<<<<<<< HEAD
+=======
+
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
     document.getElementById('render-custom').insertAdjacentHTML('beforeend', `
         <div id="wrap-c${id}" style="display:none;margin-top:20px;">
             <h4 id="d-c${id}-titre" class="doc-h4"></h4>
             <p  id="d-c${id}-text"  class="doc-p"></p>
         </div>`);
+<<<<<<< HEAD
+=======
+
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
     initToolbars();
 };
 
@@ -257,6 +422,7 @@ window.upCustom = function(id) {
     if (dTitre) dTitre.innerText = titre || 'SECTION SUPPLÉMENTAIRE';
     if (dText)  dText.innerHTML  = formatMD(texte);
     if (wrap)   wrap.style.display = texte ? 'block' : 'none';
+<<<<<<< HEAD
 };
 
 // ==========================================
@@ -443,3 +609,6 @@ window.envoyerRapportDiscord = async function() {
 
 function copyLink() { navigator.clipboard.writeText(document.getElementById("direct-link").value); alert("Copié !"); }
 function closePopup() { document.getElementById('image-popup').style.display = 'none'; }
+=======
+};
+>>>>>>> a709d396fc484408844ac95182b3b7858e065c9b

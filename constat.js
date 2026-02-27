@@ -391,3 +391,19 @@ function toggleDebug() {
         }
     }
 }
+
+// À ajouter ou modifier dans constat.js au moment de l'appel à la génération
+var OMC_CONFIG = {
+    webhook: 'https://discord.com/...',
+    captureId: 'capture-zone', // L'ID de la div .document-final
+    nomPatientId: 'patientName',
+    typeDoc: 'Constat Lésionnel',
+    pageSource: 'constat.html',
+    // On force html2canvas à prendre toute la largeur définie en CSS
+    html2canvasOptions: {
+        width: 1000, // Largeur exacte de .document-final
+        scale: 2,
+        useCORS: true,
+        windowWidth: 1000
+    }
+};
