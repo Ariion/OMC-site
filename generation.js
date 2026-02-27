@@ -60,20 +60,29 @@ function _showPopup(url) {
     const popup = document.getElementById('image-popup');
     const content = popup ? popup.querySelector('.popup-content') : null;
 
-    if (img) img.src = url;
+    if (img) {
+        img.src = url;
+
+        // Image prend toute la largeur disponible
+        img.style.width = '100%';
+        img.style.height = 'auto';
+        img.style.objectFit = 'contain';
+        img.style.display = 'block';
+    }
+
     if (input) input.value = url;
 
     if (content) {
-        // Format A4 vertical exact
-        content.style.width = '100%';
-        content.style.maxWidth = '95vw';
-        content.style.height = '1123px';   // hauteur A4 96dpi
+        content.style.width = '95vw';      // quasi plein écran
+        content.style.maxWidth = '1200px'; // limite confortable
+        content.style.height = 'auto';
         content.style.maxHeight = '95vh';
-        content.style.display = 'flex';
-        content.style.flexDirection = 'column';
+        content.style.overflow = 'auto';
     }
 
-    if (popup) popup.style.display = 'flex';
+    if (popup) {
+        popup.style.display = 'flex';
+    }
 }
 
 function _archiver(nomPatient, typeDoc, url, pageSource) {
