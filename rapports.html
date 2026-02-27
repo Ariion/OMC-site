@@ -446,7 +446,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 // Clé Gemini gratuite
-window.GEMINI_API_KEY = 'AIzaSyBvycltRp88TS6p3wtXmnDS5wpMIFFxzLA';
+window.GEMINI_API_KEY = 'AIzaSyBvycltRp88TS6p3wtXmnDS5wpMIFFxzLA'; // ← Remplacer si expirée : aistudio.google.com/app/apikey
 
 var OMC_CONFIG = {
     webhook:      'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG',
@@ -572,12 +572,70 @@ Consignes strictes :
         status.className = 'ok';
     } catch(e) {
         console.error('Erreur IA :', e);
-        status.textContent = '✗ ' + (e.message || 'Erreur — réessayez');
-        status.className = 'err';
+        // Fallback : résumé textuel sans IA
+        const fallback = _genererFallbackResume();
+        if (fallback) {
+            ta.value = fallback;
+            syncResumeDoc(fallback);
+            status.textContent = '⚠ IA indisponible — résumé généré localement';
+            status.className = 'ok';
+        } else {
+            status.textContent = '✗ ' + (e.message || 'Erreur — réessayez');
+            status.className = 'err';
+        }
     }
 
     btn.classList.remove('loading-state');
     btn.disabled = false;
+}
+
+/* Résumé de secours sans IA — concatène les champs remplis proprement */
+function _genererFallbackResume() {
+    const type = window.currentReportType || 'med';
+    const prenom = document.getElementById('in-prenom')?.value.trim() || '';
+    const nom    = document.getElementById('in-nom-famille')?.value.trim() || '';
+    const praticien = document.getElementById('in-doc')?.value.trim() || '';
+    const grade     = document.getElementById('in-grade')?.value.trim() || '';
+
+    let lignes = [];
+
+    if (type === 'med') {
+        const circ  = document.getElementById('in-med-circ')?.value.trim();
+        const bilan = document.getElementById('in-med-bilan')?.value.trim();
+        const soins = document.getElementById('in-med-soins')?.value.trim();
+        const concl = document.getElementById('in-med-conclusion')?.value.trim();
+        const repos = document.getElementById('in-med-repos')?.value.trim();
+        const prix  = document.getElementById('in-med-prix')?.value.trim();
+        if (circ)  lignes.push(circ);
+        if (bilan) lignes.push(bilan);
+        if (soins) lignes.push(soins);
+        if (concl) lignes.push(concl);
+        if (repos) lignes.push('Temps de récupération : ' + repos);
+        if (prix)  lignes.push('Facturation : ' + prix + ' $');
+    } else if (type === 'psy') {
+        const circ = document.getElementById('in-psy-circ')?.value.trim();
+        const obs  = document.getElementById('in-psy-obs')?.value.trim();
+        const diag = document.getElementById('in-psy-diag')?.value.trim();
+        const reco = document.getElementById('in-psy-reco')?.value.trim();
+        if (circ) lignes.push(circ);
+        if (obs)  lignes.push(obs);
+        if (diag) lignes.push(diag);
+        if (reco) lignes.push(reco);
+    } else if (type === 'auto') {
+        const heure = document.getElementById('in-auto-heure')?.value;
+        const ext   = document.getElementById('in-auto-ext')?.value.trim();
+        const int_  = document.getElementById('in-auto-int')?.value.trim();
+        const cause = document.getElementById('in-auto-cause')?.value.trim();
+        if (heure) lignes.push('Heure estimée du décès : ' + heure);
+        if (ext)   lignes.push(ext);
+        if (int_)  lignes.push(int_);
+        if (cause) lignes.push(cause);
+    }
+
+    if (!lignes.length) return null;
+    let texte = lignes.join('\n\n');
+    if (praticien) texte += '\n\nPraticien : ' + praticien + (grade ? ', ' + grade : '');
+    return texte;
 }
 
 function syncResumeDoc(texte) {
