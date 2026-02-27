@@ -1,40 +1,26 @@
 /* ============================================================
    GLOBAL.CSS — Ocean Medical Center
-   Variables, base commune, thème clair/sombre
+   Restauré fidèlement depuis le projet
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap');
 
-<<<<<<< HEAD
-/* ══ VARIABLES ══ */
 :root {
+    --bg-preview: #f1f5f9;
     --omc-dark:   #0a192f;
     --omc-cyan:   #38bdf8;
-    --omc-bg:     #0d1117;
-    --omc-card:   #112240;
-    --bg-preview: #d1d5db;
-}
-
-/* ══ BASE ══ */
-* { box-sizing: border-box; }
-=======
-h1 { color: white; }
-
-:root {
-    --bg-preview: #0f172a;
-    --omc-dark:   #0a192f;
-    --omc-cyan:   #00d2ff;
     --omc-bg:     #112240;
     --omc-card:   #112240;
 }
->>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 
 body {
     font-family: 'Segoe UI', sans-serif;
     margin: 0;
     background: var(--omc-bg);
-<<<<<<< HEAD
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
 }
 
 h1 { color: white; }
@@ -45,47 +31,14 @@ h1 { color: white; }
 ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
-/* ══ LAYOUT INTERFACE (toutes les pages internes) ══ */
+/* ══ LAYOUT ══ */
 .interface-container {
     display: flex;
     width: 100vw;
-=======
->>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
     height: 100vh;
-    display: flex;
     overflow: hidden;
 }
 
-<<<<<<< HEAD
-/* ══ SIDEBAR ══ */
-=======
-/* ============================================================
-   THÈME — toutes les zones de fond réactives
-   ============================================================ */
-
-/* MODE SOMBRE (défaut) */
-.preview-area,
-.dashboard-area {
-    background-color: #0f172a !important;
-    transition: background-color 0.3s ease;
-}
-
-/* MODE CLAIR */
-body.light-mode .preview-area,
-body.light-mode .dashboard-area {
-    background-color: #d1d5db !important;
-}
-
-/* Sidebar : toujours sombre peu importe le theme */
-body.light-mode .sidebar,
-body.light-mode #panneau-resume {
-    /* Intentionnellement vide — on ne touche pas la sidebar */
-}
-
-/* ============================================================
-   SIDEBAR COMMUNE
-   ============================================================ */
->>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 .sidebar {
     width: 420px;
     min-width: 420px;
@@ -99,7 +52,6 @@ body.light-mode #panneau-resume {
 }
 
 .sidebar-title {
-<<<<<<< HEAD
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 20px;
@@ -108,80 +60,22 @@ body.light-mode #panneau-resume {
     text-align: center;
 }
 
-/* ══ ZONE APERÇU — NE PAS FORCER display ══ */
-/* Chaque page définit son propre display dans son CSS */
-.preview-area, #preview-area {
-    flex-grow: 1;
-    overflow-y: auto;
-    background-color: var(--bg-preview);
-    transition: background-color 0.25s ease;
-}
-
-/* ══ LIENS RETOUR ══ */
+/* ══ LIENS ══ */
 .back-link, .back-btn {
-    color: #38bdf8;
-    text-decoration: none;
-    font-size: 11px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    display: inline-block;
-}
-.back-link:hover, .back-btn:hover { text-decoration: underline; }
-
-/* ══ FORM ELEMENTS (base commune) ══ */
-.form-group { margin-bottom: 12px; }
-label {
-    display: block;
-    font-size: 10px;
-    font-weight: bold;
-    color: #94a3b8;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-}
-
-/* ══ AUTOCOMPLETE ══ */
-.autocomplete-wrapper { position: relative; }
-.autocomplete-list {
-    position: absolute;
-    top: 100%; left: 0; right: 0;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 4px;
-    z-index: 1000;
-    max-height: 200px;
-    overflow-y: auto;
-}
-.autocomplete-item {
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 12px;
-    color: #e2e8f0;
-    border-bottom: 1px solid #334155;
-}
-.autocomplete-item:hover { background: #0284c7; color: white; }
-
-/* ══ CALENDRIER (icône blanche) ══ */
-=======
-    color: white;
-    font-size: 18px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-}
-
-.back-link {
     color: var(--omc-cyan);
     text-decoration: none;
     font-size: 11px;
     font-weight: bold;
+    letter-spacing: 1px;
     margin-bottom: 15px;
     display: inline-block;
 }
 
-/* ============================================================
-   FORMULAIRES
-   ============================================================ */
+/* ══ FORMULAIRES ══ */
+.form-group { margin-bottom: 12px; }
+.input-group { margin-bottom: 15px; border-bottom: 1px solid #1d3354; padding-bottom: 10px; }
+#input-panel { width: 480px; background: var(--omc-dark); color: white; padding: 25px; overflow-y: auto; border-right: 1px solid #233554; }
+
 label {
     display: block;
     font-size: 0.8em;
@@ -192,21 +86,15 @@ label {
 
 input, textarea, select {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     border-radius: 4px;
     border: 1px solid #233554;
     background: #0a192f;
     color: white;
     box-sizing: border-box;
-    font-size: 11px;
 }
 
-textarea { resize: vertical; }
-
-.form-group { margin-bottom: 15px; }
-
-/* Icône calendrier blanche */
->>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
+/* ══ CALENDRIER ══ */
 input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
     cursor: pointer;
@@ -214,238 +102,32 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
-<<<<<<< HEAD
+/* ══ SECTIONS ══ */
+.section { display: none; }
+.section.active { display: block !important; margin-bottom: 20px; }
+.row { display: none; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
+.row.active { display: grid !important; grid-template-columns: 2fr 1fr 1.5fr; padding: 5px 10px; border-bottom: 1px solid #f0f0f0; }
+
 /* ══ SIGNATURE ══ */
 .signature-line {
+    margin-top: 60px;
     border-top: 2px solid #000;
     display: inline-block;
     min-width: 250px;
+    float: right;
+    text-align: right;
     padding-top: 5px;
+    clear: both;
     font-family: 'Alex Brush', cursive;
     font-size: 30px;
     font-weight: 400;
     color: #1a1a1a;
+    letter-spacing: 0px;
+    padding-right: 10px;
+    transform: rotate(-1.5deg) translateY(-2px);
 }
 
-/* ══ BOUTONS ACTIONS (communs) ══ */
-.btn-image {
-    background: #ffffff !important; color: #000000 !important;
-    border: 1px solid #ccc !important;
-    text-transform: uppercase; font-size: 11px; padding: 12px !important;
-    font-weight: bold; width: 100%; border-radius: 4px; cursor: pointer; transition: 0.2s;
-=======
-/* ============================================================
-   LAYOUT
-   ============================================================ */
-.interface-container {
-    display: flex !important;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-}
-
-#input-panel {
-    width: 480px;
-    background: var(--omc-dark);
-    color: white;
-    padding: 25px;
-    overflow-y: auto;
-    border-right: 1px solid #233554;
-}
-
-#preview-area, .preview-area {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 20px;
-    overflow-y: auto;
-    transition: background-color 0.3s ease;
-    min-height: 0;
-}
-
-/* ============================================================
-   BOUTONS D'ACTION
-   ============================================================ */
-.btn-image {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 1px solid #ccc !important;
-    text-transform: uppercase;
-    font-size: 11px;
-    padding: 12px !important;
-    font-weight: bold;
-    width: 100%;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: 0.2s;
->>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
-}
-.btn-image:hover { background: #f1f5f9 !important; }
-
-.btn-discord {
-<<<<<<< HEAD
-    background: #5865f2 !important; color: white !important; padding: 12px !important;
-    width: 100%; border-radius: 4px; border: none; font-weight: bold;
-    cursor: pointer; transition: 0.2s; text-transform: uppercase; font-size: 11px;
-=======
-    background: #5865f2 !important;
-    color: white !important;
-    padding: 12px !important;
-    width: 100%;
-    border-radius: 4px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-    text-transform: uppercase;
-    font-size: 11px;
->>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
-}
-.btn-discord:hover { filter: brightness(1.1); }
-.btn-discord:disabled, .btn-image:disabled { opacity: 0.6; cursor: not-allowed; }
-
-<<<<<<< HEAD
-/* ══ POPUP ══ */
-.popup-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-=======
-#print-btn, #discord-btn {
-    width: 100%; padding: 15px;
-    background: var(--omc-cyan);
-    border: none; font-weight: bold;
-    cursor: pointer; margin-top: 12px; border-radius: 5px;
-}
-#discord-btn { background: #5865F2; color: white; }
-
-/* ============================================================
-   DOCUMENT IMPRIMABLE
-   ============================================================ */
-#document {
-    width: 800px !important;
-    min-width: 800px !important;
-    height: auto !important;
-    min-height: 500px !important;
-    background: white !important;
-    color: #000 !important;
-    padding: 40px 40px 60px 40px !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    position: relative;
-    box-sizing: border-box;
-    overflow: visible !important;
-    margin-bottom: 50px;
-}
-
-.doc-h4 {
-    color: #0f172a;
-    border-bottom: 1px solid #cbd5e1;
-    padding-bottom: 3px;
-    font-size: 14px;
-    margin-top: 25px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-.doc-p {
-    margin: 5px 0;
-    font-size: 14px;
-    white-space: pre-wrap;
-    line-height: 1.5;
-}
-
-/* ============================================================
-   POPUP IMAGE
-   ============================================================ */
-.popup-overlay {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
->>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
-    background: rgba(0,0,0,0.9);
-    display: flex; justify-content: center; align-items: flex-start;
-    padding: 40px 20px; overflow-y: auto; z-index: 9999;
-}
-.popup-content {
-    background: #112240; padding: 25px; border-radius: 12px;
-<<<<<<< HEAD
-    width: 100%; max-width: 650px; border: 1px solid #38bdf8;
-    text-align: center; color: white;
-}
-.popup-buttons { display: flex; gap: 10px; margin-top: 15px; }
-.btn-copy { flex: 2; background: #38bdf8; border: none; color: #0a192f; font-weight: bold; padding: 10px; border-radius: 4px; cursor: pointer; }
-.btn-close { flex: 1; background: transparent; border: 1px solid #ef4444; color: #ef4444; font-weight: bold; padding: 10px; border-radius: 4px; cursor: pointer; }
-.btn-close:hover { background: #ef4444; color: white; }
-#preview-img-result { max-width: 100%; margin-top: 15px; border-radius: 8px; border: 2px solid white; }
-#direct-link { background: white; color: black; text-align: center; font-weight: bold; margin-top: 15px; width: 100%; padding: 8px; border: none; }
-
-/* ══ THÈME CLAIR — body.light-mode ══ */
-/* Fond général */
-body.light-mode { background-color: #e8edf3 !important; }
-
-/* Zone aperçu */
-body.light-mode .preview-area,
-body.light-mode #preview-area,
-body.light-mode .dashboard-area {
-    background-color: #d0d8e4 !important;
-}
-
-/* Documents blancs — restent blancs */
-body.light-mode #document,
-body.light-mode #document-resume,
-body.light-mode .omc-doc,
-body.light-mode .document-final {
-    background: white !important;
-    color: #000 !important;
-}
-
-/* Panneau résumé IA */
-body.light-mode #panneau-resume {
-    background: #112240 !important;
-    border-color: #2d5a8e !important;
-}
-
-/* Scrollbar en mode clair */
-body.light-mode ::-webkit-scrollbar-track { background: #c8d6e5; }
-body.light-mode ::-webkit-scrollbar-thumb { background: #7a9bbf; }
-
-/* Transitions douces */
-.sidebar, .preview-area, #preview-area, .dashboard-area, #panneau-resume {
-    transition: background-color 0.25s ease;
-=======
-    width: 100%; max-width: 650px;
-    border: 1px solid var(--omc-cyan); text-align: center; color: white;
-}
-.popup-buttons { display: flex; gap: 10px; margin-top: 15px; }
-.btn-copy {
-    flex: 2; background: var(--omc-cyan); border: none;
-    color: var(--omc-dark); font-weight: bold;
-    padding: 10px; border-radius: 4px; cursor: pointer;
-}
-.btn-close {
-    flex: 1; background: transparent; border: 1px solid #ef4444;
-    color: #ef4444; font-weight: bold;
-    padding: 10px; border-radius: 4px; cursor: pointer;
-}
-.btn-close:hover { background: #ef4444; color: white; }
-#preview-img-result { max-width: 100%; margin-top: 15px; border-radius: 8px; border: 2px solid white; }
-#direct-link { background: white; color: black; text-align: center; font-weight: bold; margin-top: 15px; }
-
-/* ============================================================
-   SIGNATURE
-   ============================================================ */
-.signature-line {
-    border-top: 1px solid #000;
-    display: inline-block;
-    min-width: 200px;
-    padding-top: 5px;
-    font-family: 'Alex Brush', cursive;
-    font-size: 28px;
-    color: #000;
-}
-
-/* ============================================================
-   AUTOCOMPLETE
-   ============================================================ */
+/* ══ AUTOCOMPLETE ══ */
 .autocomplete-wrapper { position: relative; width: 100%; }
 .autocomplete-list {
     position: absolute; top: 100%; left: 0; right: 0;
@@ -464,65 +146,54 @@ body.light-mode ::-webkit-scrollbar-thumb { background: #7a9bbf; }
 .autocomplete-item small { color: #94a3b8; }
 .autocomplete-item:hover small { color: #e2e8f0; }
 
-/* ============================================================
-   SECTIONS (affichage conditionnel)
-   ============================================================ */
-.section { display: none; }
-.section.active { display: block !important; margin-bottom: 20px; }
-.row { display: none; }
-.row.active {
-    display: grid !important;
-    grid-template-columns: 2fr 1fr 1.5fr;
-    padding: 5px 10px;
-    border-bottom: 1px solid #f0f0f0;
+/* ══ POPUP ══ */
+.popup-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex; justify-content: center; align-items: center; z-index: 1000;
+}
+.popup-content {
+    background: #112240; padding: 25px; border-radius: 10px;
+    width: 500px; text-align: center; border: 1px solid var(--omc-cyan);
+}
+#direct-link {
+    margin: 15px 0; background: #0a192f; border: 1px solid #233554;
+    color: var(--omc-cyan); text-align: center; width: 100%; padding: 8px;
+}
+.btn-copy { background: var(--omc-cyan); color: var(--omc-dark); width: 48%; }
+.btn-close { background: #4b5563; color: white; width: 48%; }
+#preview-img-result { max-width: 100%; margin-top: 15px; border-radius: 8px; }
+
+/* ══ PREVIEW AREA — transition douce ══ */
+.preview-area, #preview-area, .dashboard-area {
+    transition: background-color 0.25s ease;
 }
 
-/* ============================================================
-   SCROLLBAR
-   ============================================================ */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0a192f; }
-::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #334155; }
+/* ══════════════════════════════════════════════════════════
+   THÈME CLAIR — body.light-mode
+   UNIQUEMENT la zone de droite (preview-area) change.
+   La sidebar reste TOUJOURS sombre — on ne la touche pas.
+   ══════════════════════════════════════════════════════════ */
+body.light-mode .preview-area,
+body.light-mode #preview-area,
+body.light-mode .dashboard-area {
+    background-color: #d1d5db !important;
+}
 
-/* ============================================================
-   RESPONSIVE MOBILE
-   ============================================================ */
-@media screen and (max-width: 1024px) {
-    body, html { height: auto !important; overflow-y: auto !important; }
-    .interface-container {
-        flex-direction: column !important;
-        height: auto !important;
-        min-height: 100vh;
-        overflow: visible !important;
-    }
+/* ══ RESPONSIVE ══ */
+@media (max-width: 768px) {
+    .interface-container { flex-direction: column; }
     .sidebar {
-        width: 100% !important;
-        height: auto !important;
-        position: relative !important;
-        border-right: none;
-        border-bottom: 4px solid #1e293b;
-        padding: 20px;
-        box-sizing: border-box;
+        width: 100% !important; height: auto !important;
+        min-height: auto !important; position: relative !important;
+        border-right: none; border-bottom: 4px solid #1e293b;
+        padding: 20px; box-sizing: border-box; background: #0f172a;
     }
-    .sidebar-title { text-align: center; margin-top: 10px; }
     .preview-area {
-        width: 100% !important;
-        height: auto !important;
-        display: block !important;
-        padding: 20px 0 !important;
-        overflow-x: auto !important;
-        overflow-y: visible !important;
-        flex-grow: 0 !important;
+        width: 100% !important; height: auto !important;
+        display: block !important; padding: 20px 0 !important;
+        overflow-x: auto !important; overflow-y: visible !important;
+        background: #0f172a; flex-grow: 0 !important;
     }
-    .form-group { margin-bottom: 15px; width: 100%; }
     .menu-grid { grid-template-columns: 1fr; padding: 10px; }
-}
-
-@media print {
-    #input-panel, .back-link, button { display: none !important; }
-    body { display: block !important; }
-    #preview-area { background: white; padding: 0; }
-    #document { box-shadow: none !important; width: 210mm !important; }
->>>>>>> a709d396fc484408844ac95182b3b7858e065c9b
 }
