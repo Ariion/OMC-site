@@ -156,6 +156,29 @@
 
         .form-group select option { background: var(--card); }
 
+        /* ── Champ heure avec bouton Now ── */
+        .time-row {
+            display: flex;
+            gap: 5px;
+            align-items: flex-end;
+        }
+        .time-row .form-group { flex: 1; }
+        .btn-now {
+            height: 30px;
+            padding: 0 9px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: var(--cyan);
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: border-color 0.2s;
+        }
+        .btn-now:hover { border-color: var(--cyan); }
+
         .btn-assign {
             width: 100%;
             padding: 10px;
@@ -522,6 +545,9 @@
 
             .legend-item { font-size: 9px; gap: 4px; }
             .leg-dot { width: 8px; height: 8px; }
+
+            /* Bouton Now mobile */
+            .btn-now { height: 36px; font-size: 11px; }
         }
 
         /* Desktop : cacher le bandeau mobile */
@@ -570,6 +596,17 @@
         </select>
     </div>
     <div class="form-group"><label>Médecin référent</label><input type="text" id="in-medecin" placeholder="Dr. ..."></div>
+
+    <!-- ── NOUVEAU : heure d'admission manuelle ── -->
+    <div class="form-group">
+        <label>Date &amp; heure d'admission</label>
+        <div class="time-row">
+            <div class="form-group" style="flex:1;gap:0;">
+                <input type="datetime-local" id="in-since" style="font-size:10px;padding:6px 7px;">
+            </div>
+            <button class="btn-now" onclick="setNow('in-since')" title="Heure actuelle">⏱ Now</button>
+        </div>
+    </div>
 
     <button class="btn-assign"  onclick="assignerLit()">✅ Assigner ce lit</button>
     <button class="btn-liberer" onclick="libererLit()">🔓 Libérer ce lit</button>
@@ -641,6 +678,14 @@
             </select>
         </div>
         <div><label>Médecin référent</label><input type="text" id="m-medecin" placeholder="Dr. ..."></div>
+        <!-- ── NOUVEAU : heure d'admission mobile ── -->
+        <div>
+            <label>Date &amp; heure d'admission</label>
+            <div class="time-row" style="margin-top:3px;">
+                <input type="datetime-local" id="m-since" style="flex:1;background:var(--card);border:1px solid var(--border);color:#e2e8f0;border-radius:5px;padding:8px 10px;font-size:12px;font-family:'Segoe UI',sans-serif;">
+                <button class="btn-now" onclick="setNow('m-since')" style="margin-left:5px;">⏱ Now</button>
+            </div>
+        </div>
         <div class="panel-btns">
             <button class="panel-assign"  onclick="assignerLit()">✅ Assigner</button>
             <button class="panel-liberer" onclick="libererLit()">🔓 Libérer</button>
@@ -789,7 +834,6 @@ const ROOMS = [
         shape: 'polygon(40% 0%, 88% 0, 88% 60%, 100% 60%, 100% 100%, 47% 100%, 47% 60%, 20% 80%, 0 40%)',
         litsPos: [
             { xPct: 17, yPct: 34 },
-        
             { xPct: 19.3, yPct: 34 },
         ]
     },
@@ -803,9 +847,6 @@ let state = {};
 let selectedBed = null;
 let currentFloor = 1;
 
-// On n'utilise plus loadState() au démarrage, on attend Firebase.
-// window.addEventListener('DOMContentLoaded', ...) s'occupera d'appeler l'écouteur.
-
 async function saveState() {
     localStorage.setItem('omc_chambres_v4', JSON.stringify(state));
     
@@ -817,10 +858,36 @@ async function saveState() {
 }
 
 function bedKey(roomId, litNum) { return `${roomId}_lit${litNum}`; }
+
 /* ══════════════════════════════════════════════════════════════
-   DESSIN SVG — le secret du responsive :
-   On positionne le SVG exactement sur l'image rendue (pas le conteneur).
-   La taille rendue de l'image est calculée via getBoundingClientRect.
+   HEURE MANUELLE — bouton ⏱ Now
+   ══════════════════════════════════════════════════════════════ */
+function setNow(inputId) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    el.value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+}
+
+/* Lit la valeur du champ heure → ISO string (ou now si vide) */
+function sinceFromInput(inputId) {
+    const el = document.getElementById(inputId);
+    if (el && el.value) return new Date(el.value).toISOString();
+    return new Date().toISOString();
+}
+
+/* Remplit un champ datetime-local depuis un ISO string */
+function fillSince(inputId, isoString) {
+    const el = document.getElementById(inputId);
+    if (!el || !isoString) { if (el) el.value = ''; return; }
+    const d = new Date(isoString);
+    const pad = n => String(n).padStart(2, '0');
+    el.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DESSIN SVG
    ══════════════════════════════════════════════════════════════ */
 
 function fitOverlay(floor) {
@@ -828,10 +895,9 @@ function fitOverlay(floor) {
     const svg     = document.getElementById(`svg-${floor}`);
     const wrapper = document.getElementById(`wrap-${floor}`);
 
-    const imgRect = img.getBoundingClientRect();
+    const imgRect  = img.getBoundingClientRect();
     const wrapRect = wrapper.getBoundingClientRect();
 
-    // Position relative au wrapper
     const left   = imgRect.left   - wrapRect.left;
     const top    = imgRect.top    - wrapRect.top;
     const width  = imgRect.width;
@@ -842,7 +908,6 @@ function fitOverlay(floor) {
     svg.style.width  = width  + 'px';
     svg.style.height = height + 'px';
 
-    // viewBox = dimensions naturelles de l'image (coordonnées % seront multipliées par ça)
     const nw = img.naturalWidth  || 1080;
     const nh = img.naturalHeight || 620;
     svg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
@@ -886,7 +951,6 @@ function drawFloor(floor) {
         const zw = p(room.zone.wPct, nw);
         const zh = p(room.zone.hPct, nh);
 
-        // Zone chambre
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         g.setAttribute('class', 'room-zone');
         g.style.pointerEvents = 'none';
@@ -904,16 +968,14 @@ function drawFloor(floor) {
         if (room.shape) {
             rect.style.clipPath = room.shape;
         }
-        // Label chambre
+
         const lbl = svgText(room.id, zx + 5, zy + 14, 11, '800', 'left');
-        // Compteur
         const ctr = svgText(`${occ}/${tot}`, zx + zw - 5, zy + 14, 9, '600', 'right');
         ctr.setAttribute('fill', 'rgba(255,255,255,0.55)');
 
         g.appendChild(rect); g.appendChild(lbl); g.appendChild(ctr);
         svg.appendChild(g);
 
-        // Points lits
         room.litsPos.forEach((lp, idx) => {
             const litNum = idx + 1;
             const key    = bedKey(room.id, litNum);
@@ -979,7 +1041,6 @@ function selectBed(roomId, litNum, key) {
     selectedBed = { roomId, litNum, key };
     redrawAll();
     refreshSidebar();
-    // Mobile : ouvrir la modale
     if (window.innerWidth <= 768) openMobilePanel();
 }
 
@@ -990,7 +1051,6 @@ function refreshSidebar() {
     const patient = state[key];
     const occ     = countOcc(room);
 
-    // Desktop
     document.getElementById('selected-info').innerHTML = `
         <strong>${roomId} — Lit ${litNum}</strong>
         <span style="color:#64748b;font-size:10px;margin-left:6px;">${occ}/${room.lits} occupé(s)</span><br>
@@ -998,7 +1058,6 @@ function refreshSidebar() {
             ${patient ? `🔴 ${patient.prenom} ${patient.nom}` : '🟢 Disponible'}
         </span>`;
 
-    // Grille lits desktop
     const bar = document.getElementById('beds-sidebar');
     bar.innerHTML = '';
     for (let i = 1; i <= room.lits; i++) {
@@ -1011,17 +1070,17 @@ function refreshSidebar() {
         bar.appendChild(btn);
     }
 
-    const fill = (prefix, p) => {
-        setVal(prefix+'prenom', p?.prenom||'');
-        setVal(prefix+'nom',    p?.nom   ||'');
-        setVal(prefix+'motif',  p?.motif ||'');
-        setVal(prefix+'duree',  p?.duree ||'');
-        setVal(prefix+'medecin',p?.medecin||'');
+    const fill = (prefix, pt) => {
+        setVal(prefix+'prenom',  pt?.prenom  || '');
+        setVal(prefix+'nom',     pt?.nom     || '');
+        setVal(prefix+'motif',   pt?.motif   || '');
+        setVal(prefix+'duree',   pt?.duree   || '');
+        setVal(prefix+'medecin', pt?.medecin || '');
+        fillSince(prefix+'since', pt?.since || '');
     };
     fill('in-', patient);
     fill('m-',  patient);
 
-    // Mobile
     const mTitle = document.getElementById('panel-title');
     if (mTitle) mTitle.textContent = `${roomId} — Lit ${litNum}`;
 
@@ -1055,35 +1114,35 @@ function getFormValues() {
         motif:   getVal(pfx+'motif'),
         duree:   getVal(pfx+'duree'),
         medecin: getVal(pfx+'medecin'),
+        since:   sinceFromInput(pfx+'since'),  // ← heure manuelle ou now
     };
 }
 
 async function assignerLit() {
     if (!selectedBed) { showToast('⚠️ Sélectionnez d\'abord un lit', 'warn'); return; }
-    const { prenom, nom, motif, duree, medecin } = getFormValues();
+    const { prenom, nom, motif, duree, medecin, since } = getFormValues();
     if (!prenom || !nom) { showToast('⚠️ Prénom et Nom obligatoires', 'warn'); return; }
 
     const { roomId, litNum, key } = selectedBed;
-    state[key] = { prenom, nom, motif, duree, medecin, since: new Date().toISOString() };
+    state[key] = { prenom, nom, motif, duree, medecin, since };
     
-    await saveState(); // On attend la sauvegarde
-    // redrawAll() et refreshSidebar() seront appelés automatiquement par listenToRoomsState !
+    await saveState();
     showToast(`✅ ${prenom} ${nom} — ${roomId} Lit ${litNum}`);
 }
 
 async function libererLit() {
-    if (!selectedBed)          { showToast('⚠️ Sélectionnez d\'abord un lit', 'warn'); return; }
+    if (!selectedBed)            { showToast('⚠️ Sélectionnez d\'abord un lit', 'warn'); return; }
     if (!state[selectedBed.key]) { showToast('Ce lit est déjà disponible', 'warn'); return; }
 
     const p = state[selectedBed.key];
     const { roomId, litNum, key } = selectedBed;
     delete state[key];
     
-    await saveState(); // On attend la sauvegarde
-    // redrawAll() et refreshSidebar() seront appelés automatiquement par listenToRoomsState !
+    await saveState();
     showToast(`🔓 ${p.prenom} ${p.nom} — ${roomId} Lit ${litNum} libéré`);
     if (window.innerWidth <= 768) closeMobilePanel();
 }
+
 /* ══════════════════════════════════════════════════════════════
    STATS
    ══════════════════════════════════════════════════════════════ */
@@ -1116,7 +1175,6 @@ function switchFloor(floor) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`floor-${floor}`).classList.add('active');
     document.getElementById(`tab-${floor}`).classList.add('active');
-    // Redessiner après que l'onglet soit visible
     requestAnimationFrame(() => drawFloor(floor));
 }
 
@@ -1134,7 +1192,7 @@ function closeMobilePanel() { document.getElementById('mobile-panel').classList.
 const tooltip = document.getElementById('tooltip');
 
 function showTooltip(e, key, roomId, litNum) {
-    if (window.innerWidth <= 768) return; // pas de tooltip sur mobile
+    if (window.innerWidth <= 768) return;
     const pt = state[key];
     document.getElementById('tt-title').textContent   = `${roomId} — Lit ${litNum}`;
     document.getElementById('tt-patient').textContent = pt ? `${pt.prenom} ${pt.nom}` : '—';
@@ -1191,7 +1249,6 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialiser l'affichage de base (vide)
     initFloor(1);
     initFloor(2);
     
@@ -1203,70 +1260,28 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         if (window.listenToRoomsState) {
             window.listenToRoomsState((newState) => {
-                state = newState; // Met à jour l'état local avec celui de la BDD
-                updateStats();    // Met à jour les compteurs
-                redrawAll();      // Redessine les lits (vert/rouge)
-                refreshSidebar(); // Rafraîchit les infos de la sélection actuelle
-                
-                // Petit retour visuel si on veut (optionnel)
-                // console.log("État des chambres synchronisé !");
+                state = newState;
+                updateStats();
+                redrawAll();
+                refreshSidebar();
             });
         } else {
              console.error("Impossible de se connecter à la base de données des lits.");
-             // Fallback de secours si Firebase bugge : on utilise le localStorage
              try { state = JSON.parse(localStorage.getItem('omc_chambres_v4') || '{}'); } catch(e) {}
              redrawAll();
              updateStats();
         }
-    }, 500); // 500ms d'attente
+    }, 500);
 });
 </script>
 
 <script type="module" src="global.js"></script>
 
 <style>
-/* ── Conteneur zoomable ── */
-#zoom-container {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    position: relative;
-    touch-action: none; /* on gère nous-mêmes tous les gestes tactiles */
-}
+/* ══════════════════════════════════════════════════════════════
+   ZOOM — styles
+   ══════════════════════════════════════════════════════════════ */
 
-#zoom-content {
-    width: 100%;
-    height: 100%;
-    transform-origin: 0 0;
-    will-change: transform;
-    /* transition douce uniquement pour double-tap (JS retire cette classe pour le pinch) */
-}
-
-#zoom-content.animated {
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Indicateur de zoom (petit badge en bas à gauche) */
-#zoom-badge {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    background: rgba(6, 14, 28, 0.85);
-    border: 1px solid #1e3a5f;
-    color: #94a3b8;
-    font-size: 10px;
-    font-family: 'Segoe UI', sans-serif;
-    padding: 4px 9px;
-    border-radius: 12px;
-    z-index: 20;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-#zoom-badge.visible { opacity: 1; }
-
-/* Boutons zoom +/- (desktop discret, utile aussi sur tablette) */
 .zoom-controls {
     position: absolute;
     bottom: 10px;
@@ -1299,70 +1314,79 @@ window.addEventListener('DOMContentLoaded', () => {
     color: var(--cyan, #00d2ff);
 }
 
-/* Sur mobile on les rend un peu plus gros */
+.zoom-badge-inst {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(6, 14, 28, 0.85);
+    border: 1px solid #1e3a5f;
+    color: #94a3b8;
+    font-size: 10px;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 4px 9px;
+    border-radius: 12px;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
 @media (max-width: 768px) {
     .zoom-btn { width: 36px; height: 36px; }
 }
 </style>
 
 <script>
-/* ════════════════════════════════════════════════════════════
-   ZOOM MANAGER — Pinch + double-tap + boutons +/-
-   Fonctionne en wrappant .plan-wrapper dans #zoom-content,
-   lui-même dans #zoom-container.
-   ════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   ZOOM MANAGER — Pinch + double-tap + molette + boutons +/-
+
+   CORRECTION DU BUG DE DÉCALAGE SVG :
+   Le problème d'origine : applyTransform() rappelait fitOverlay() +
+   drawFloor() après chaque zoom. Mais fitOverlay() utilise
+   getBoundingClientRect() sur l'image — qui retourne des coordonnées
+   ÉCRAN déjà affectées par le CSS transform du zoom-content.
+   Résultat : le SVG était repositionné dans un référentiel transformé
+   → décalage croissant à chaque zoom.
+
+   LA FIX : applyTransform() ne rappelle PLUS fitOverlay/drawFloor.
+   Le SVG est dessiné une seule fois au chargement (à scale=1).
+   Pendant le zoom, le zoom-content scale entier (image + SVG ensemble)
+   → aucun recalcul nécessaire, aucun décalage possible.
+   ══════════════════════════════════════════════════════════════ */
 (function() {
     const MIN_SCALE = 1;
     const MAX_SCALE = 5;
 
-    // État du zoom par étage (pour retrouver le bon zoom quand on switch d'onglet)
     const zoomState = {
         1: { scale: 1, tx: 0, ty: 0 },
         2: { scale: 1, tx: 0, ty: 0 },
     };
 
-    let activeFloor = 1;
-
-    /* ── Injecter les wrappers et boutons dans chaque floor-view ── */
     function setupFloor(floor) {
-        const floorEl  = document.getElementById(`floor-${floor}`);
+        const floorEl   = document.getElementById(`floor-${floor}`);
         const wrapperEl = document.getElementById(`wrap-${floor}`);
         if (!floorEl || !wrapperEl) return;
 
-        // Créer #zoom-container
         const zoomContainer = document.createElement('div');
         zoomContainer.id = `zoom-container-${floor}`;
-        zoomContainer.className = 'zoom-container-inst';
         Object.assign(zoomContainer.style, {
             width: '100%', height: '100%',
             overflow: 'hidden', position: 'relative',
             touchAction: 'none',
         });
 
-        // Créer #zoom-content
         const zoomContent = document.createElement('div');
         zoomContent.id = `zoom-content-${floor}`;
-        zoomContent.className = 'zoom-content-inst animated';
         Object.assign(zoomContent.style, {
             width: '100%', height: '100%',
             transformOrigin: '0 0',
             willChange: 'transform',
-            transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1)',
         });
 
-        // Badge zoom
         const badge = document.createElement('div');
         badge.id = `zoom-badge-${floor}`;
         badge.className = 'zoom-badge-inst';
-        badge.style.cssText = `
-            position:absolute; bottom:10px; left:10px;
-            background:rgba(6,14,28,0.85); border:1px solid #1e3a5f;
-            color:#94a3b8; font-size:10px; font-family:'Segoe UI',sans-serif;
-            padding:4px 9px; border-radius:12px; z-index:20;
-            pointer-events:none; opacity:0; transition:opacity 0.3s;
-        `;
 
-        // Boutons +/-/reset
         const controls = document.createElement('div');
         controls.className = 'zoom-controls';
         controls.innerHTML = `
@@ -1371,7 +1395,6 @@ window.addEventListener('DOMContentLoaded', () => {
             <button class="zoom-btn" onclick="zoomBtn(${floor}, 0.7)" title="Zoom −">−</button>
         `;
 
-        // Réorganiser le DOM : floorEl > zoomContainer > zoomContent > wrapperEl
         floorEl.appendChild(zoomContainer);
         zoomContainer.appendChild(zoomContent);
         zoomContent.appendChild(wrapperEl);
@@ -1381,73 +1404,54 @@ window.addEventListener('DOMContentLoaded', () => {
         bindGestures(floor, zoomContainer, zoomContent);
     }
 
-    /* ── Applique la transform ── */
+    /* ── Applique le transform — NE RAPPELLE PAS fitOverlay/drawFloor ── */
     function applyTransform(floor, animated) {
         const content = document.getElementById(`zoom-content-${floor}`);
         if (!content) return;
         const s = zoomState[floor];
 
-        if (animated) {
-            content.style.transition = 'transform 0.25s cubic-bezier(0.4,0,0.2,1)';
-        } else {
-            content.style.transition = 'none';
-        }
+        content.style.transition = animated
+            ? 'transform 0.25s cubic-bezier(0.4,0,0.2,1)'
+            : 'none';
 
         content.style.transform = `translate(${s.tx}px, ${s.ty}px) scale(${s.scale})`;
         showBadge(floor, s.scale);
 
-        // Repositionner le SVG overlay après zoom
-        if (typeof fitOverlay === 'function' && typeof drawFloor === 'function') {
-            // On attend la fin de la transition si animé
-            const delay = animated ? 260 : 0;
-            setTimeout(() => {
-                try { fitOverlay(floor); drawFloor(floor); } catch(e) {}
-            }, delay);
-        }
+        /* ── SUPPRIMÉ : l'appel à fitOverlay/drawFloor qui causait le décalage ──
+           fitOverlay() recalculait la position du SVG dans un système de
+           coordonnées déjà transformé par scale() → offset croissant.
+           Désormais le SVG scale avec le zoom-content → zéro décalage. */
     }
 
-    /* ── Clampe la position pour ne pas sortir du cadre ── */
     function clampTranslate(floor, container) {
-        const s   = zoomState[floor];
-        const cw  = container.offsetWidth;
-        const ch  = container.offsetHeight;
-
-        const maxTx = 0;
-        const maxTy = 0;
-        const minTx = cw  - cw  * s.scale;
-        const minTy = ch  - ch  * s.scale;
-
-        s.tx = Math.min(maxTx, Math.max(minTx, s.tx));
-        s.ty = Math.min(maxTy, Math.max(minTy, s.ty));
+        const s  = zoomState[floor];
+        const cw = container.offsetWidth;
+        const ch = container.offsetHeight;
+        s.tx = Math.min(0, Math.max(cw - cw * s.scale, s.tx));
+        s.ty = Math.min(0, Math.max(ch - ch * s.scale, s.ty));
     }
 
-    /* ── Badge ── */
     let badgeTimer = {};
     function showBadge(floor, scale) {
         const badge = document.getElementById(`zoom-badge-${floor}`);
         if (!badge) return;
         badge.textContent = Math.round(scale * 100) + '%';
-        badge.style.opacity = '1';
+        badge.style.opacity = scale === 1 ? '0' : '1';
         clearTimeout(badgeTimer[floor]);
-        if (scale === 1) {
-            badge.style.opacity = '0';
-        } else {
+        if (scale !== 1) {
             badgeTimer[floor] = setTimeout(() => { badge.style.opacity = '0'; }, 1500);
         }
     }
 
-    /* ── Boutons +/−/reset ── */
     window.zoomBtn = function(floor, factor) {
         const s = zoomState[floor];
         const container = document.getElementById(`zoom-container-${floor}`);
         if (!container) return;
 
         if (factor === -1) {
-            // Reset
             s.scale = 1; s.tx = 0; s.ty = 0;
         } else {
             const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, s.scale * factor));
-            // Zoom centré sur le milieu du conteneur
             const cx = container.offsetWidth  / 2;
             const cy = container.offsetHeight / 2;
             s.tx = cx - (cx - s.tx) * (newScale / s.scale);
@@ -1458,7 +1462,6 @@ window.addEventListener('DOMContentLoaded', () => {
         applyTransform(floor, true);
     };
 
-    /* ── Gestes tactiles ── */
     function bindGestures(floor, container, content) {
         const s = zoomState[floor];
         let touches = [];
@@ -1467,28 +1470,16 @@ window.addEventListener('DOMContentLoaded', () => {
         let pinchStartScale = 1;
         let pinchOriginX    = 0;
         let pinchOriginY    = 0;
-        let panStartX = 0;
-        let panStartY = 0;
-        let panStartTx = 0;
-        let panStartTy = 0;
+        let panStartX = 0, panStartY = 0, panStartTx = 0, panStartTy = 0;
         let isPinching = false;
 
-        function dist(t1, t2) {
-            return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-        }
-
-        function midpoint(t1, t2) {
-            return {
-                x: (t1.clientX + t2.clientX) / 2,
-                y: (t1.clientY + t2.clientY) / 2,
-            };
-        }
+        function dist(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
+        function midpoint(t1, t2) { return { x: (t1.clientX+t2.clientX)/2, y: (t1.clientY+t2.clientY)/2 }; }
 
         container.addEventListener('touchstart', (e) => {
             touches = Array.from(e.touches);
 
             if (touches.length === 2) {
-                // Pinch start
                 isPinching = true;
                 content.style.transition = 'none';
                 pinchStartDist  = dist(touches[0], touches[1]);
@@ -1501,7 +1492,6 @@ window.addEventListener('DOMContentLoaded', () => {
             } else if (touches.length === 1) {
                 isPinching = false;
 
-                // Double-tap
                 const now = Date.now();
                 if (now - lastTap < 300) {
                     e.preventDefault();
@@ -1510,10 +1500,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     const tapY = touches[0].clientY - rect.top;
 
                     if (s.scale > 1.1) {
-                        // Reset
                         s.scale = 1; s.tx = 0; s.ty = 0;
                     } else {
-                        // Zoom ×2.5 centré sur le tap
                         const newScale = 2.5;
                         s.tx = tapX - (tapX - s.tx) * (newScale / s.scale);
                         s.ty = tapY - (tapY - s.ty) * (newScale / s.scale);
@@ -1526,7 +1514,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
                 lastTap = now;
 
-                // Pan start
                 panStartX  = touches[0].clientX;
                 panStartY  = touches[0].clientY;
                 panStartTx = s.tx;
@@ -1540,15 +1527,11 @@ window.addEventListener('DOMContentLoaded', () => {
             if (touches.length === 2 && isPinching) {
                 e.preventDefault();
                 const newDist  = dist(touches[0], touches[1]);
-                let   newScale = pinchStartScale * (newDist / pinchStartDist);
-                newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
-
-                // Zoom centré sur le point de pinch
-                const scaleRatio = newScale / s.scale;
-                s.tx = pinchOriginX - (pinchOriginX - s.tx) * scaleRatio;
-                s.ty = pinchOriginY - (pinchOriginY - s.ty) * scaleRatio;
+                let   newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, pinchStartScale * (newDist / pinchStartDist)));
+                const ratio = newScale / s.scale;
+                s.tx = pinchOriginX - (pinchOriginX - s.tx) * ratio;
+                s.ty = pinchOriginY - (pinchOriginY - s.ty) * ratio;
                 s.scale = newScale;
-
                 clampTranslate(floor, container);
                 applyTransform(floor, false);
 
@@ -1564,22 +1547,16 @@ window.addEventListener('DOMContentLoaded', () => {
         container.addEventListener('touchend', (e) => {
             if (e.touches.length < 2) isPinching = false;
             touches = Array.from(e.touches);
-            // Re-fit le SVG une fois le geste terminé
-            if (typeof fitOverlay === 'function' && typeof drawFloor === 'function') {
-                setTimeout(() => {
-                    try { fitOverlay(floor); drawFloor(floor); } catch(e) {}
-                }, 50);
-            }
         });
 
-        // Molette souris (desktop)
+        /* ── MOLETTE SOURIS — zoom centré sur le curseur ── */
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
-            const rect = container.getBoundingClientRect();
-            const ox = e.clientX - rect.left;
-            const oy = e.clientY - rect.top;
-            const delta     = e.deltaY < 0 ? 1.15 : 0.87;
-            const newScale  = Math.min(MAX_SCALE, Math.max(MIN_SCALE, s.scale * delta));
+            const rect     = container.getBoundingClientRect();
+            const ox       = e.clientX - rect.left;
+            const oy       = e.clientY - rect.top;
+            const delta    = e.deltaY < 0 ? 1.12 : 0.89;
+            const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, s.scale * delta));
             s.tx = ox - (ox - s.tx) * (newScale / s.scale);
             s.ty = oy - (oy - s.ty) * (newScale / s.scale);
             s.scale = newScale;
@@ -1588,7 +1565,6 @@ window.addEventListener('DOMContentLoaded', () => {
         }, { passive: false });
     }
 
-    /* ── Init après DOMContentLoaded ── */
     function init() {
         setupFloor(1);
         setupFloor(2);
@@ -1597,7 +1573,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
-        // Page déjà chargée (script injecté tard)
         init();
     }
 
