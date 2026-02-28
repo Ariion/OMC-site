@@ -13,7 +13,7 @@
 
 // 1. IMPORTATION DE FIREBASE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, setDoc } 
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, setDoc }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } 
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
@@ -285,12 +285,10 @@ window.omc_moteur_generation = async function(config) {
     }
 };
 
-import { doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const ROOMS_DOC_ID = 'etat_chambres'; // Un document unique pour tout l'hôpital
+const ROOMS_DOC_ID = 'ETAT_DES_CHAMBRES_COMPLET'; 
 
 window.listenToRoomsState = function(callback) {
-    const docRef = doc(db, 'systeme', ROOMS_DOC_ID);
+    const docRef = doc(db, 'patients', ROOMS_DOC_ID);
     onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists()) {
             callback(docSnap.data());
@@ -301,7 +299,7 @@ window.listenToRoomsState = function(callback) {
 };
 
 window.saveRoomsState = async function(newState) {
-    const docRef = doc(db, 'systeme', ROOMS_DOC_ID);
+    const docRef = doc(db, 'patients', ROOMS_DOC_ID);
     try {
         await setDoc(docRef, newState);
         return true;
