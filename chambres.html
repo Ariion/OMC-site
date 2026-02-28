@@ -2,12 +2,19 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>OMC — Gestion des Chambres</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="patch-daltonien.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --cyan: var(--omc-cyan, #00d2ff);
+            --dark: #060e1c;
+            --card: #0f1f38;
+            --border: #1e3a5f;
+        }
 
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -18,23 +25,24 @@
             overflow: hidden;
         }
 
-        /* ══════════════════════════════════
+        /* ═══════════════════════════════════
            SIDEBAR
-        ══════════════════════════════════ */
+        ═══════════════════════════════════ */
         .sidebar {
-            width: 300px;
-            min-width: 300px;
-            background: #060e1c;
+            width: 280px;
+            min-width: 280px;
+            background: var(--dark);
             border-right: 1px solid #1e293b;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            padding: 16px;
-            gap: 10px;
+            padding: 14px;
+            gap: 9px;
+            z-index: 20;
         }
 
         .back-link {
-            color: var(--omc-cyan, #00d2ff);
+            color: var(--cyan);
             text-decoration: none;
             font-size: 11px;
             font-weight: bold;
@@ -42,9 +50,9 @@
         }
 
         .sidebar-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 900;
-            color: var(--omc-cyan, #00d2ff);
+            color: var(--cyan);
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -54,18 +62,18 @@
         .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 
         .stat-box {
-            background: #0f1f38;
+            background: var(--card);
             border: 1px solid #1e293b;
             border-radius: 6px;
-            padding: 8px 10px;
+            padding: 8px;
             text-align: center;
         }
 
-        .stat-box .val { font-size: 20px; font-weight: 900; line-height: 1; }
-        .stat-box .lbl { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+        .stat-box .val { font-size: 18px; font-weight: 900; line-height: 1; }
+        .stat-box .lbl { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
         .val.green { color: #22c55e; }
         .val.red   { color: #ef4444; }
-        .val.cyan  { color: var(--omc-cyan, #00d2ff); }
+        .val.cyan  { color: var(--cyan); }
 
         .section-label {
             font-size: 9px;
@@ -74,32 +82,30 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             border-top: 1px solid #1e293b;
-            padding-top: 10px;
+            padding-top: 9px;
         }
 
         .selected-info {
-            background: #0f1f38;
-            border: 1px solid #1e3a5f;
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 10px 12px;
+            padding: 9px 11px;
             font-size: 11px;
             color: #94a3b8;
-            min-height: 46px;
+            min-height: 44px;
         }
 
-        .selected-info strong { color: var(--omc-cyan, #00d2ff); font-size: 12px; }
+        .selected-info strong { color: var(--cyan); font-size: 12px; }
 
-        /* Grille des lits dans la sidebar */
         .beds-sidebar {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 6px;
+            gap: 5px;
         }
 
         .bed-btn {
-            width: 32px;
-            height: 26px;
+            width: 30px;
+            height: 24px;
             border-radius: 4px;
             border: 1px solid rgba(255,255,255,0.2);
             cursor: pointer;
@@ -110,13 +116,13 @@
             align-items: center;
             justify-content: center;
             transition: all 0.15s;
+            background: #166534;
+            border-color: #22c55e;
         }
 
-        .bed-btn.available { background: #166534; border-color: #22c55e; }
-        .bed-btn.available:hover { background: #15803d; transform: scale(1.1); }
         .bed-btn.occupied  { background: #7f1d1d; border-color: #ef4444; }
-        .bed-btn.occupied:hover  { background: #991b1b; transform: scale(1.1); }
-        .bed-btn.bed-selected { outline: 2px solid var(--omc-cyan, #00d2ff); outline-offset: 1px; }
+        .bed-btn.bed-selected { outline: 2px solid var(--cyan); outline-offset: 1px; }
+        .bed-btn:hover { transform: scale(1.12); }
 
         .form-group { display: flex; flex-direction: column; gap: 4px; }
 
@@ -131,11 +137,11 @@
         .form-group input,
         .form-group select,
         .form-group textarea {
-            background: #0f1f38;
-            border: 1px solid #1e3a5f;
+            background: var(--card);
+            border: 1px solid var(--border);
             color: #e2e8f0;
             border-radius: 5px;
-            padding: 7px 10px;
+            padding: 7px 9px;
             font-size: 12px;
             font-family: 'Segoe UI', sans-serif;
             width: 100%;
@@ -145,15 +151,15 @@
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: var(--omc-cyan, #00d2ff);
+            border-color: var(--cyan);
         }
 
-        .form-group select option { background: #0f1f38; }
+        .form-group select option { background: var(--card); }
 
         .btn-assign {
             width: 100%;
             padding: 10px;
-            background: var(--omc-cyan, #00d2ff);
+            background: var(--cyan);
             color: #0a1324;
             font-weight: 900;
             font-size: 11px;
@@ -182,29 +188,29 @@
         }
         .btn-liberer:hover { background: #ef4444; color: white; }
 
-        /* ══════════════════════════════════
+        /* ═══════════════════════════════════
            MAIN
-        ══════════════════════════════════ */
+        ═══════════════════════════════════ */
         .main {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            background: #0a1324;
+            min-width: 0;
         }
 
-        /* Onglets étages */
+        /* Onglets */
         .tabs {
             display: flex;
-            background: #060e1c;
+            background: var(--dark);
             border-bottom: 2px solid #1e293b;
-            padding: 0 20px;
+            padding: 0 16px;
             flex-shrink: 0;
         }
 
         .tab-btn {
-            padding: 13px 26px;
-            font-size: 12px;
+            padding: 12px 22px;
+            font-size: 11px;
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
@@ -215,111 +221,106 @@
             border-bottom: 3px solid transparent;
             margin-bottom: -2px;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
-        .tab-btn.active {
-            color: var(--omc-cyan, #00d2ff);
-            border-bottom-color: var(--omc-cyan, #00d2ff);
-        }
-
+        .tab-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); }
         .tab-btn:hover:not(.active) { color: #94a3b8; }
 
-        /* Zone du plan */
+        /* Plan */
         .plan-area {
             flex: 1;
-            overflow: auto;
+            overflow: hidden;
             position: relative;
-            background: #0a1324;
         }
 
-        .floor-view {
-            display: none;
-            height: 100%;
-        }
+        .floor-view { display: none; width: 100%; height: 100%; position: relative; }
+        .floor-view.active { display: block; }
 
-        .floor-view.active { display: block; height: 100%; }
-
-        /* Wrapper image+SVG — prend toute la hauteur disponible */
+        /* 
+          La clé du responsive SVG :
+          L'image et le SVG overlay sont dans un div relatif.
+          Le SVG utilise preserveAspectRatio pour s'aligner exactement
+          sur l'image, quelle que soit la taille d'écran.
+        */
         .plan-wrapper {
             position: relative;
             width: 100%;
             height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
+        /* 
+          L'image occupe tout l'espace en conservant son ratio.
+          On utilise object-fit: contain pour ne pas la déformer.
+        */
         .plan-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            object-position: left center;
             display: block;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
             user-select: none;
             pointer-events: none;
+            position: relative;
+            z-index: 1;
         }
 
+        /*
+          Le SVG overlay est positionné en absolu et couvre exactement
+          la zone de l'image rendue (pas juste le conteneur).
+          On le dimensionne via JS pour qu'il corresponde pixel-perfect.
+        */
         .plan-overlay {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            z-index: 2;
+            pointer-events: none; /* les enfants auront pointer-events: all */
             overflow: visible;
         }
 
-        /* Zones chambres SVG */
         .room-zone { cursor: pointer; }
         .room-zone .room-bg { transition: all 0.15s; }
-        .room-zone:hover .room-bg { filter: brightness(1.3); stroke-width: 3px !important; }
-        .room-zone.r-selected .room-bg { stroke-width: 3px !important; }
+        .room-zone:hover .room-bg { filter: brightness(1.35); stroke-width: 3px !important; }
 
-        /* Points lits SVG */
-        .bed-dot {
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .bed-dot circle {
-            transition: all 0.15s;
-        }
-
-        .bed-dot:hover circle {
-            r: 10;
-            filter: brightness(1.3);
-        }
-
-        .bed-dot.bd-selected circle {
-            stroke: var(--omc-cyan, #00d2ff);
-            stroke-width: 3;
-        }
+        .bed-dot { cursor: pointer; }
+        .bed-dot circle { transition: all 0.15s; }
+        .bed-dot:hover circle { r: 9; }
 
         /* Légende */
         .legend-bar {
             position: absolute;
-            top: 12px;
-            right: 16px;
+            top: 10px;
+            right: 12px;
             display: flex;
-            gap: 14px;
+            gap: 12px;
             align-items: center;
-            background: rgba(6,14,28,0.85);
-            border: 1px solid #1e3a5f;
+            background: rgba(6,14,28,0.88);
+            border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 7px 12px;
+            padding: 6px 11px;
             z-index: 10;
         }
 
-        .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #94a3b8; }
-        .legend-dot  { width: 12px; height: 12px; border-radius: 50%; }
-        .legend-dot.available { background: #22c55e; }
-        .legend-dot.occupied  { background: #ef4444; }
-        .legend-dot.selected  { background: var(--omc-cyan, #00d2ff); }
+        .legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #94a3b8; }
+        .leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .leg-dot.av { background: #22c55e; }
+        .leg-dot.oc { background: #ef4444; }
+        .leg-dot.sl { background: var(--cyan); }
 
         /* ── TOOLTIP ── */
         .tooltip {
             position: fixed;
             z-index: 9999;
             background: #080f1e;
-            border: 1px solid var(--omc-cyan, #00d2ff);
+            border: 1px solid var(--cyan);
             border-radius: 8px;
-            padding: 12px 14px;
-            min-width: 195px;
-            max-width: 255px;
+            padding: 11px 13px;
+            min-width: 185px;
+            max-width: 240px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.9);
             pointer-events: none;
             display: none;
@@ -327,23 +328,23 @@
         }
 
         .tooltip.visible { display: block; }
-        .tooltip-title { font-size: 13px; font-weight: 900; color: var(--omc-cyan, #00d2ff); margin-bottom: 8px; border-bottom: 1px solid #1e3a5f; padding-bottom: 6px; }
-        .tooltip-row { display: flex; gap: 6px; margin-bottom: 4px; align-items: flex-start; }
-        .tooltip-row .t-label { font-size: 9px; font-weight: 700; color: #475569; text-transform: uppercase; min-width: 58px; letter-spacing: 0.5px; padding-top: 1px; }
-        .tooltip-row .t-val   { color: #e2e8f0; font-size: 12px; flex: 1; }
-        .tooltip-status { margin-top: 8px; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
-        .tooltip-status.available { background: #14532d; color: #22c55e; }
-        .tooltip-status.occupied  { background: #450a0a; color: #ef4444; }
+        .tooltip-title { font-size: 12px; font-weight: 900; color: var(--cyan); margin-bottom: 7px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .tooltip-row { display: flex; gap: 6px; margin-bottom: 3px; }
+        .t-label { font-size: 9px; font-weight: 700; color: #475569; text-transform: uppercase; min-width: 55px; padding-top: 1px; }
+        .t-val   { color: #e2e8f0; font-size: 11px; flex: 1; }
+        .tooltip-status { margin-top: 7px; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+        .tooltip-status.av { background: #14532d; color: #22c55e; }
+        .tooltip-status.oc { background: #450a0a; color: #ef4444; }
 
-        /* Toast */
+        /* ── TOAST ── */
         .toast {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #0f1f38;
-            border: 1px solid var(--omc-cyan, #00d2ff);
+            bottom: 20px;
+            right: 20px;
+            background: var(--card);
+            border: 1px solid var(--cyan);
             color: #e2e8f0;
-            padding: 12px 18px;
+            padding: 11px 16px;
             border-radius: 7px;
             font-size: 12px;
             font-weight: 600;
@@ -352,85 +353,238 @@
             opacity: 0;
             transition: all 0.3s;
             pointer-events: none;
+            max-width: 320px;
         }
 
         .toast.show { transform: translateY(0); opacity: 1; }
+
+        /* ═══════════════════════════════════
+           MOBILE — sidebar cachée, modale en bas
+        ═══════════════════════════════════ */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: 100dvh; overflow: hidden; }
+
+            .sidebar { display: none; } /* cachée, remplacée par la modale */
+
+            .main { flex: 1; min-height: 0; }
+
+            /* Modale patient sur mobile */
+            .mobile-panel {
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                background: var(--dark);
+                border-top: 2px solid var(--cyan);
+                border-radius: 16px 16px 0 0;
+                z-index: 100;
+                padding: 16px;
+                transform: translateY(100%);
+                transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+                max-height: 85dvh;
+                overflow-y: auto;
+            }
+
+            .mobile-panel.open { transform: translateY(0); }
+
+            .panel-handle {
+                width: 40px; height: 4px;
+                background: #334155;
+                border-radius: 2px;
+                margin: 0 auto 14px;
+            }
+
+            .panel-close {
+                position: absolute;
+                top: 14px; right: 16px;
+                background: none;
+                border: none;
+                color: #64748b;
+                font-size: 18px;
+                cursor: pointer;
+                line-height: 1;
+            }
+
+            .panel-title {
+                font-size: 13px;
+                font-weight: 900;
+                color: var(--cyan);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 12px;
+            }
+
+            .panel-beds {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-bottom: 14px;
+            }
+
+            .panel-bed-btn {
+                width: 36px;
+                height: 30px;
+                border-radius: 5px;
+                border: 1px solid #22c55e;
+                background: #166534;
+                color: white;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .panel-bed-btn.occupied { background: #7f1d1d; border-color: #ef4444; }
+            .panel-bed-btn.sel { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+            .panel-form { display: flex; flex-direction: column; gap: 9px; }
+
+            .panel-form label {
+                font-size: 10px;
+                font-weight: 700;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                display: block;
+                margin-bottom: 3px;
+            }
+
+            .panel-form input,
+            .panel-form select,
+            .panel-form textarea {
+                width: 100%;
+                background: var(--card);
+                border: 1px solid var(--border);
+                color: #e2e8f0;
+                border-radius: 5px;
+                padding: 8px 10px;
+                font-size: 13px;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+            .panel-btns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-top: 4px;
+            }
+
+            .panel-assign {
+                padding: 11px;
+                background: var(--cyan);
+                color: #0a1324;
+                font-weight: 900;
+                font-size: 12px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                text-transform: uppercase;
+            }
+
+            .panel-liberer {
+                padding: 11px;
+                background: transparent;
+                color: #ef4444;
+                font-weight: 700;
+                font-size: 12px;
+                border: 1px solid #ef4444;
+                border-radius: 5px;
+                cursor: pointer;
+                text-transform: uppercase;
+            }
+
+            /* Bandeau stats compact en haut sur mobile */
+            .mobile-stats {
+                display: flex !important;
+                gap: 0;
+                background: var(--dark);
+                border-bottom: 1px solid #1e293b;
+                flex-shrink: 0;
+            }
+
+            .mobile-stat {
+                flex: 1;
+                text-align: center;
+                padding: 6px 4px;
+                border-right: 1px solid #1e293b;
+            }
+
+            .mobile-stat:last-child { border-right: none; }
+            .mobile-stat .v { font-size: 16px; font-weight: 900; line-height: 1; }
+            .mobile-stat .l { font-size: 8px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+
+            /* Légende compacte sur mobile */
+            .legend-bar {
+                top: 6px; right: 6px;
+                padding: 4px 8px;
+                gap: 8px;
+            }
+
+            .legend-item { font-size: 9px; gap: 4px; }
+            .leg-dot { width: 8px; height: 8px; }
+        }
+
+        /* Desktop : cacher le bandeau mobile */
+        .mobile-stats { display: none; }
+        .mobile-panel { display: none; }
+
+        @media (max-width: 768px) {
+            .mobile-panel { display: block; }
+        }
+
     </style>
 </head>
 <body>
 
-<!-- ══════════ SIDEBAR ══════════ -->
+<!-- ═══════════ SIDEBAR (desktop) ═══════════ -->
 <aside class="sidebar">
     <a href="index.html" class="back-link">← RETOUR PORTAIL</a>
-
     <div class="sidebar-title">Gestion des Chambres</div>
     <div class="sidebar-sub">Ocean Medical Center</div>
 
     <div class="stats-row">
-        <div class="stat-box">
-            <div class="val green" id="stat-dispo">—</div>
-            <div class="lbl">Lits disponibles</div>
-        </div>
-        <div class="stat-box">
-            <div class="val red" id="stat-occupe">—</div>
-            <div class="lbl">Lits occupés</div>
-        </div>
+        <div class="stat-box"><div class="val green" id="stat-dispo">—</div><div class="lbl">Lits disponibles</div></div>
+        <div class="stat-box"><div class="val red"   id="stat-occupe">—</div><div class="lbl">Lits occupés</div></div>
     </div>
     <div class="stats-row">
-        <div class="stat-box">
-            <div class="val cyan" id="stat-total">—</div>
-            <div class="lbl">Total lits</div>
-        </div>
-        <div class="stat-box">
-            <div class="val cyan" id="stat-taux">—</div>
-            <div class="lbl">Taux d'occupation</div>
-        </div>
+        <div class="stat-box"><div class="val cyan"  id="stat-total">—</div><div class="lbl">Total lits</div></div>
+        <div class="stat-box"><div class="val cyan"  id="stat-taux">—</div><div class="lbl">Taux occupation</div></div>
     </div>
 
     <div class="section-label">Chambre sélectionnée</div>
-    <div class="selected-info" id="selected-info">
-        <span style="color:#475569;">Cliquez sur un lit du plan</span>
-    </div>
+    <div class="selected-info" id="selected-info"><span style="color:#475569;">Cliquez sur un lit du plan</span></div>
     <div class="beds-sidebar" id="beds-sidebar"></div>
 
     <div class="section-label">Assigner un patient</div>
 
-    <div class="form-group">
-        <label>Prénom</label>
-        <input type="text" id="in-prenom" placeholder="Prénom du patient">
-    </div>
-    <div class="form-group">
-        <label>Nom</label>
-        <input type="text" id="in-nom" placeholder="NOM du patient">
-    </div>
-    <div class="form-group">
-        <label>Motif d'hospitalisation</label>
-        <textarea id="in-motif" rows="2" placeholder="Fracture, post-op, surveillance..."></textarea>
-    </div>
+    <div class="form-group"><label>Prénom</label><input type="text" id="in-prenom" placeholder="Prénom du patient"></div>
+    <div class="form-group"><label>Nom</label><input type="text" id="in-nom" placeholder="NOM du patient"></div>
+    <div class="form-group"><label>Motif</label><textarea id="in-motif" rows="2" placeholder="Fracture, post-op..."></textarea></div>
     <div class="form-group">
         <label>Durée estimée</label>
         <select id="in-duree">
             <option value="">— Sélectionner —</option>
-            <option>Moins d'1 heure</option>
-            <option>1 à 3 heures</option>
-            <option>3 à 6 heures</option>
-            <option>6 à 12 heures</option>
-            <option>12 à 24 heures</option>
-            <option>Plusieurs jours</option>
+            <option>Moins d'1 heure</option><option>1 à 3 heures</option><option>3 à 6 heures</option>
+            <option>6 à 12 heures</option><option>12 à 24 heures</option><option>Plusieurs jours</option>
             <option>Durée indéterminée</option>
         </select>
     </div>
-    <div class="form-group">
-        <label>Médecin référent</label>
-        <input type="text" id="in-medecin" placeholder="Dr. ...">
-    </div>
+    <div class="form-group"><label>Médecin référent</label><input type="text" id="in-medecin" placeholder="Dr. ..."></div>
 
-    <button class="btn-assign" onclick="assignerLit()">✅ Assigner ce lit</button>
+    <button class="btn-assign"  onclick="assignerLit()">✅ Assigner ce lit</button>
     <button class="btn-liberer" onclick="libererLit()">🔓 Libérer ce lit</button>
 </aside>
 
-<!-- ══════════ MAIN ══════════ -->
+<!-- ═══════════ MAIN ═══════════ -->
 <div class="main">
+
+    <!-- Bandeau stats mobile -->
+    <div class="mobile-stats">
+        <div class="mobile-stat"><div class="v green" id="m-dispo">—</div><div class="l">Dispo</div></div>
+        <div class="mobile-stat"><div class="v red"   id="m-occupe">—</div><div class="l">Occupés</div></div>
+        <div class="mobile-stat"><div class="v cyan"  id="m-total">—</div><div class="l">Total</div></div>
+        <div class="mobile-stat"><div class="v cyan"  id="m-taux">—</div><div class="l">Taux</div></div>
+    </div>
 
     <!-- Onglets -->
     <div class="tabs">
@@ -438,30 +592,28 @@
         <button class="tab-btn"        id="tab-2" onclick="switchFloor(2)">🏥 Niveau 2 — NV-2</button>
     </div>
 
-    <div class="plan-area">
+    <div class="plan-area" id="plan-area">
 
-        <!-- ── ÉTAGE 1 ── -->
         <div class="floor-view active" id="floor-1">
             <div class="plan-wrapper" id="wrap-1">
                 <img class="plan-img" src="assets/1er-etage.png" id="img-1" alt="NV-1">
-                <svg class="plan-overlay" id="svg-1"></svg>
+                <svg class="plan-overlay" id="svg-1" style="pointer-events:none;"></svg>
                 <div class="legend-bar">
-                    <div class="legend-item"><div class="legend-dot available"></div> Disponible</div>
-                    <div class="legend-item"><div class="legend-dot occupied"></div>  Occupé</div>
-                    <div class="legend-item"><div class="legend-dot selected"></div>  Sélectionné</div>
+                    <div class="legend-item"><div class="leg-dot av"></div>Disponible</div>
+                    <div class="legend-item"><div class="leg-dot oc"></div>Occupé</div>
+                    <div class="legend-item"><div class="leg-dot sl"></div>Sélectionné</div>
                 </div>
             </div>
         </div>
 
-        <!-- ── ÉTAGE 2 ── -->
         <div class="floor-view" id="floor-2">
             <div class="plan-wrapper" id="wrap-2">
                 <img class="plan-img" src="assets/2e-etage.png" id="img-2" alt="NV-2">
-                <svg class="plan-overlay" id="svg-2"></svg>
+                <svg class="plan-overlay" id="svg-2" style="pointer-events:none;"></svg>
                 <div class="legend-bar">
-                    <div class="legend-item"><div class="legend-dot available"></div> Disponible</div>
-                    <div class="legend-item"><div class="legend-dot occupied"></div>  Occupé</div>
-                    <div class="legend-item"><div class="legend-dot selected"></div>  Sélectionné</div>
+                    <div class="legend-item"><div class="leg-dot av"></div>Disponible</div>
+                    <div class="legend-item"><div class="leg-dot oc"></div>Occupé</div>
+                    <div class="legend-item"><div class="leg-dot sl"></div>Sélectionné</div>
                 </div>
             </div>
         </div>
@@ -469,9 +621,36 @@
     </div>
 </div>
 
+<!-- ═══════════ MODALE MOBILE ═══════════ -->
+<div class="mobile-panel" id="mobile-panel">
+    <div class="panel-handle"></div>
+    <button class="panel-close" onclick="closeMobilePanel()">✕</button>
+    <div class="panel-title" id="panel-title">—</div>
+    <div class="panel-beds" id="panel-beds"></div>
+    <div class="panel-form">
+        <div><label>Prénom</label><input type="text" id="m-prenom" placeholder="Prénom du patient"></div>
+        <div><label>Nom</label><input type="text" id="m-nom" placeholder="NOM du patient"></div>
+        <div><label>Motif</label><textarea id="m-motif" rows="2" placeholder="Fracture, post-op..."></textarea></div>
+        <div>
+            <label>Durée estimée</label>
+            <select id="m-duree">
+                <option value="">— Sélectionner —</option>
+                <option>Moins d'1 heure</option><option>1 à 3 heures</option><option>3 à 6 heures</option>
+                <option>6 à 12 heures</option><option>12 à 24 heures</option><option>Plusieurs jours</option>
+                <option>Durée indéterminée</option>
+            </select>
+        </div>
+        <div><label>Médecin référent</label><input type="text" id="m-medecin" placeholder="Dr. ..."></div>
+        <div class="panel-btns">
+            <button class="panel-assign"  onclick="assignerLit()">✅ Assigner</button>
+            <button class="panel-liberer" onclick="libererLit()">🔓 Libérer</button>
+        </div>
+    </div>
+</div>
+
 <!-- Tooltip -->
 <div class="tooltip" id="tooltip">
-    <div class="tooltip-title" id="tt-title">Lit —</div>
+    <div class="tooltip-title" id="tt-title">—</div>
     <div class="tooltip-row"><span class="t-label">Patient</span><span class="t-val" id="tt-patient">—</span></div>
     <div class="tooltip-row"><span class="t-label">Motif</span>  <span class="t-val" id="tt-motif">—</span></div>
     <div class="tooltip-row"><span class="t-label">Durée</span>  <span class="t-val" id="tt-duree">—</span></div>
@@ -484,154 +663,154 @@
 
 <script>
 /* ══════════════════════════════════════════════════════════════
-   CONFIGURATION DES CHAMBRES + POSITIONS DES LITS
+   CHAMBRES — coordonnées en % des dimensions NATURELLES de chaque image.
 
-   Chaque chambre : {
-     id       : identifiant
-     floor    : 1 ou 2
-     lits     : nombre de lits
-     zone     : { xPct, yPct, wPct, hPct } rectangle coloré (% image naturelle)
-     litsPos  : [ {xPct, yPct} ] positions des cercles lits (% image naturelle)
-   }
+   CALIBRATION :
+   - NV-1 (1er-etage.png) : image naturelle supposée ≈ 1080×620
+     W100  : grande salle à gauche (avec couloir W100 vertical)
+     W110/111 : pièces en bas à gauche (rangée haute/basse)
+     W112/113 : pièces en bas à gauche (à droite des précédentes)
 
-   Coordonnées calibrées visuellement sur les plans NV-1 et NV-2
-   fournis par l'utilisateur.
+   - NV-2 (2e-etage.png) : image naturelle supposée ≈ 1080×620
+     W200 : grande pièce haut-gauche (au-dessus du couloir)
+     W201 : pièce milieu-gauche
+     W202 : pièce à droite du couloir
+     W203 : petite pièce sous W202
+     W204 : 3e rangée gauche
+     W205 : 4e rangée gauche (la plus basse)
    ══════════════════════════════════════════════════════════════ */
 
 const ROOMS = [
 
-    /* ─────────────── ÉTAGE 1 ─────────────── */
-
+    /* ─── ÉTAGE 1 ─── */
+    // W100 : la grande salle à gauche avec le couloir vertical "W100"
+    // Sur le plan : c'est le bloc bleuté/mauve à gauche center
+    // Deux colonnes de lits de 6+5 = 11 lits
     {
         id: 'W100', floor: 1, lits: 11,
-        // Grande salle gauche (2 sous-pièces visibles)
-        zone: { xPct: 19.5, yPct: 26, wPct: 8.5, hPct: 46 },
+        zone: { xPct: 29.5, yPct: 30, wPct: 8, hPct: 42 },
         litsPos: [
-            // Colonne gauche (6 lits)
-            { xPct: 21.5, yPct: 30 }, { xPct: 21.5, yPct: 37 },
-            { xPct: 21.5, yPct: 44 }, { xPct: 21.5, yPct: 51 },
-            { xPct: 21.5, yPct: 58 }, { xPct: 21.5, yPct: 65 },
-            // Colonne droite (5 lits)
-            { xPct: 26,   yPct: 30 }, { xPct: 26,   yPct: 37 },
-            { xPct: 26,   yPct: 44 }, { xPct: 26,   yPct: 51 },
-            { xPct: 26,   yPct: 58 },
+            // Colonne gauche 6 lits
+            { xPct: 31.5, yPct: 35 }, { xPct: 31.5, yPct: 42 },
+            { xPct: 31.5, yPct: 49 }, { xPct: 31.5, yPct: 56 },
+            { xPct: 31.5, yPct: 63 }, { xPct: 31.5, yPct: 70 },
+            // Colonne droite 5 lits
+            { xPct: 35.5, yPct: 35 }, { xPct: 35.5, yPct: 42 },
+            { xPct: 35.5, yPct: 49 }, { xPct: 35.5, yPct: 56 },
+            { xPct: 35.5, yPct: 63 },
         ]
     },
 
+    // W110 : rangée haute gauche du groupe bas-gauche
     {
         id: 'W110', floor: 1, lits: 2,
-        // Bas gauche — première pièce
-        zone: { xPct: 27, yPct: 68, wPct: 6.5, hPct: 12 },
+        zone: { xPct: 39.5, yPct: 72, wPct: 6, hPct: 11 },
         litsPos: [
-            { xPct: 29,   yPct: 72 },
-            { xPct: 32,   yPct: 72 },
+            { xPct: 41.2, yPct: 76 },
+            { xPct: 44.0, yPct: 76 },
         ]
     },
 
+    // W111 : rangée basse gauche du groupe bas-gauche
     {
         id: 'W111', floor: 1, lits: 2,
-        // Bas gauche — pièce en dessous
-        zone: { xPct: 27, yPct: 81, wPct: 6.5, hPct: 12 },
+        zone: { xPct: 39.5, yPct: 84, wPct: 6, hPct: 11 },
         litsPos: [
-            { xPct: 29,   yPct: 85 },
-            { xPct: 32,   yPct: 85 },
+            { xPct: 41.2, yPct: 88 },
+            { xPct: 44.0, yPct: 88 },
         ]
     },
 
+    // W112 : à droite de W110 (rangée haute)
     {
         id: 'W112', floor: 1, lits: 3,
-        // Bas gauche — à droite de W110
-        zone: { xPct: 33.5, yPct: 68, wPct: 6.5, hPct: 12 },
+        zone: { xPct: 45.5, yPct: 72, wPct: 6, hPct: 11 },
         litsPos: [
-            { xPct: 35,   yPct: 71 },
-            { xPct: 37.5, yPct: 71 },
-            { xPct: 36.2, yPct: 76 },
+            { xPct: 47.0, yPct: 75.5 },
+            { xPct: 49.5, yPct: 75.5 },
+            { xPct: 48.2, yPct: 80.5 },
         ]
     },
 
+    // W113 : à droite de W111 (rangée basse)
     {
         id: 'W113', floor: 1, lits: 2,
-        // Bas gauche — à droite de W111
-        zone: { xPct: 33.5, yPct: 81, wPct: 6.5, hPct: 12 },
+        zone: { xPct: 45.5, yPct: 84, wPct: 6, hPct: 11 },
         litsPos: [
-            { xPct: 35,   yPct: 85 },
-            { xPct: 37.5, yPct: 85 },
+            { xPct: 47.0, yPct: 88 },
+            { xPct: 49.5, yPct: 88 },
         ]
     },
 
-    /* ─────────────── ÉTAGE 2 ─────────────── */
-
+    /* ─── ÉTAGE 2 ─── */
+    // W200 : grande pièce haut, juste à gauche de l'escalier (LEVEL2)
     {
         id: 'W200', floor: 2, lits: 2,
-        // Grande chambre haut gauche
-        zone: { xPct: 20, yPct: 13, wPct: 10, hPct: 20 },
+        zone: { xPct: 32.5, yPct: 12, wPct: 10, hPct: 22 },
         litsPos: [
-            { xPct: 22.5, yPct: 18 },
-            { xPct: 27,   yPct: 18 },
+            { xPct: 35.0, yPct: 19 },
+            { xPct: 40.0, yPct: 19 },
         ]
     },
 
+    // W201 : pièce en dessous de W200, milieu gauche
     {
         id: 'W201', floor: 2, lits: 2,
-        // Milieu gauche — première
-        zone: { xPct: 20, yPct: 36, wPct: 10, hPct: 17 },
+        zone: { xPct: 32.5, yPct: 37, wPct: 10, hPct: 17 },
         litsPos: [
-            { xPct: 22.5, yPct: 41 },
-            { xPct: 27,   yPct: 41 },
+            { xPct: 35.0, yPct: 43 },
+            { xPct: 40.0, yPct: 43 },
         ]
     },
 
+    // W202 : pièce à droite, à côté du corridor DOWN
     {
         id: 'W202', floor: 2, lits: 2,
-        // À droite de W201
-        zone: { xPct: 30, yPct: 25, wPct: 10, hPct: 17 },
+        zone: { xPct: 43, yPct: 27, wPct: 10, hPct: 17 },
         litsPos: [
-            { xPct: 32.5, yPct: 30 },
-            { xPct: 37,   yPct: 30 },
+            { xPct: 45.5, yPct: 33 },
+            { xPct: 50.5, yPct: 33 },
         ]
     },
 
+    // W203 : petite pièce sous W202
     {
         id: 'W203', floor: 2, lits: 1,
-        // Petite chambre — sous W202
-        zone: { xPct: 30, yPct: 44, wPct: 10, hPct: 13 },
+        zone: { xPct: 43, yPct: 47, wPct: 10, hPct: 15 },
         litsPos: [
-            { xPct: 35, yPct: 50 },
+            { xPct: 48, yPct: 54 },
         ]
     },
 
+    // W204 : 3e rangée sur l'aile gauche
     {
         id: 'W204', floor: 2, lits: 1,
-        // Bas gauche — troisième rangée
-        zone: { xPct: 20, yPct: 55, wPct: 10, hPct: 15 },
+        zone: { xPct: 32.5, yPct: 57, wPct: 10, hPct: 14 },
         litsPos: [
-            { xPct: 25, yPct: 62 },
+            { xPct: 37.5, yPct: 63 },
         ]
     },
 
+    // W205 : dernière rangée, la plus basse
     {
         id: 'W205', floor: 2, lits: 2,
-        // Bas gauche — quatrième rangée
-        zone: { xPct: 20, yPct: 72, wPct: 10, hPct: 17 },
+        zone: { xPct: 32.5, yPct: 74, wPct: 10, hPct: 15 },
         litsPos: [
-            { xPct: 22.5, yPct: 78 },
-            { xPct: 27,   yPct: 78 },
+            { xPct: 35.0, yPct: 80 },
+            { xPct: 40.0, yPct: 80 },
         ]
     },
-
 ];
 
 /* ══════════════════════════════════════════════════════════════
    ÉTAT
-   Clé : "W100_lit1", "W100_lit2", etc.
-   Valeur : { prenom, nom, motif, duree, medecin, since } | absent
    ══════════════════════════════════════════════════════════════ */
 
 function loadState() {
-    try { return JSON.parse(localStorage.getItem('omc_chambres_v3') || '{}'); }
+    try { return JSON.parse(localStorage.getItem('omc_chambres_v4') || '{}'); }
     catch(e) { return {}; }
 }
-function saveState() { localStorage.setItem('omc_chambres_v3', JSON.stringify(state)); }
+function saveState() { localStorage.setItem('omc_chambres_v4', JSON.stringify(state)); }
 
 let state        = loadState();
 let selectedBed  = null; // { roomId, litNum, key }
@@ -640,149 +819,155 @@ let currentFloor = 1;
 function bedKey(roomId, litNum) { return `${roomId}_lit${litNum}`; }
 
 /* ══════════════════════════════════════════════════════════════
-   DESSIN SVG OVERLAY
-   Convertit les % en coordonnées SVG en utilisant le viewBox
-   égal aux dimensions naturelles de l'image.
+   DESSIN SVG — le secret du responsive :
+   On positionne le SVG exactement sur l'image rendue (pas le conteneur).
+   La taille rendue de l'image est calculée via getBoundingClientRect.
    ══════════════════════════════════════════════════════════════ */
 
-function getImgNatural(floor) {
-    const img = document.getElementById(`img-${floor}`);
-    return { nw: img.naturalWidth || 1080, nh: img.naturalHeight || 600 };
+function fitOverlay(floor) {
+    const img     = document.getElementById(`img-${floor}`);
+    const svg     = document.getElementById(`svg-${floor}`);
+    const wrapper = document.getElementById(`wrap-${floor}`);
+
+    const imgRect = img.getBoundingClientRect();
+    const wrapRect = wrapper.getBoundingClientRect();
+
+    // Position relative au wrapper
+    const left   = imgRect.left   - wrapRect.left;
+    const top    = imgRect.top    - wrapRect.top;
+    const width  = imgRect.width;
+    const height = imgRect.height;
+
+    svg.style.left   = left   + 'px';
+    svg.style.top    = top    + 'px';
+    svg.style.width  = width  + 'px';
+    svg.style.height = height + 'px';
+
+    // viewBox = dimensions naturelles de l'image (coordonnées % seront multipliées par ça)
+    const nw = img.naturalWidth  || 1080;
+    const nh = img.naturalHeight || 620;
+    svg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+    return { nw, nh };
 }
 
-function pct2px(pct, total) { return pct / 100 * total; }
+function p(pct, total) { return pct / 100 * total; }
 
-function bedColor(key) {
+function bedStyle(key) {
     if (selectedBed && selectedBed.key === key)
-        return { fill: 'rgba(0,210,255,0.7)', stroke: '#00d2ff' };
+        return { fill: 'rgba(0,210,255,0.9)', stroke: '#00d2ff', sw: 3, r: 8 };
     if (state[key])
-        return { fill: 'rgba(220,38,38,0.85)',  stroke: '#ef4444' };
-    return     { fill: 'rgba(34,197,94,0.85)',   stroke: '#22c55e' };
+        return { fill: 'rgba(220,38,38,0.90)',  stroke: '#ef4444', sw: 1.5, r: 7.5 };
+    return     { fill: 'rgba(34,197,94,0.90)',   stroke: '#22c55e', sw: 1.5, r: 7.5 };
+}
+
+function countOcc(room) {
+    let n = 0;
+    for (let i = 1; i <= room.lits; i++) if (state[bedKey(room.id, i)]) n++;
+    return n;
 }
 
 function drawFloor(floor) {
-    const svg   = document.getElementById(`svg-${floor}`);
-    const { nw, nh } = getImgNatural(floor);
-    svg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
+    const { nw, nh } = fitOverlay(floor);
+    const svg  = document.getElementById(`svg-${floor}`);
     svg.innerHTML = '';
+    svg.style.pointerEvents = 'none';
 
     const rooms = ROOMS.filter(r => r.floor === floor);
 
     rooms.forEach(room => {
-        // ── Rectangle de la chambre (fond coloré semi-transparent) ──
-        const occ   = countOccupied(room);
-        const total = room.lits;
-        const allFree = occ === 0;
-        const allFull = occ === total;
+        const occ  = countOcc(room);
+        const tot  = room.lits;
+        const fc   = occ === 0 ? 'rgba(34,197,94,0.12)'   : occ === tot ? 'rgba(220,38,38,0.20)' : 'rgba(234,179,8,0.15)';
+        const sc   = occ === 0 ? '#22c55e'                  : occ === tot ? '#ef4444'               : '#eab308';
 
-        const zoneColor = allFull
-            ? 'rgba(220,38,38,0.20)'
-            : allFree
-                ? 'rgba(34,197,94,0.12)'
-                : 'rgba(234,179,8,0.15)';
+        const zx = p(room.zone.xPct, nw);
+        const zy = p(room.zone.yPct, nh);
+        const zw = p(room.zone.wPct, nw);
+        const zh = p(room.zone.hPct, nh);
 
-        const zoneStroke = allFull ? '#ef4444' : allFree ? '#22c55e' : '#eab308';
+        // Zone chambre
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'room-zone');
+        g.style.pointerEvents = 'none';
 
-        const zx = pct2px(room.zone.xPct, nw);
-        const zy = pct2px(room.zone.yPct, nh);
-        const zw = pct2px(room.zone.wPct, nw);
-        const zh = pct2px(room.zone.hPct, nh);
-
-        const zoneG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        zoneG.setAttribute('class', 'room-zone');
-
-        const zoneRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        zoneRect.setAttribute('class', 'room-bg');
-        zoneRect.setAttribute('x', zx); zoneRect.setAttribute('y', zy);
-        zoneRect.setAttribute('width', zw); zoneRect.setAttribute('height', zh);
-        zoneRect.setAttribute('rx', 5);
-        zoneRect.setAttribute('fill', zoneColor);
-        zoneRect.setAttribute('stroke', zoneStroke);
-        zoneRect.setAttribute('stroke-width', '1.5');
-        zoneRect.setAttribute('stroke-dasharray', '4 3');
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('class', 'room-bg');
+        rect.setAttribute('x', zx); rect.setAttribute('y', zy);
+        rect.setAttribute('width', zw); rect.setAttribute('height', zh);
+        rect.setAttribute('rx', 5);
+        rect.setAttribute('fill', fc);
+        rect.setAttribute('stroke', sc);
+        rect.setAttribute('stroke-width', '1.5');
+        rect.setAttribute('stroke-dasharray', '4 3');
 
         // Label chambre
-        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        label.setAttribute('x', zx + 4);
-        label.setAttribute('y', zy + 13);
-        label.setAttribute('fill', 'white');
-        label.setAttribute('font-size', '11');
-        label.setAttribute('font-weight', '800');
-        label.setAttribute('font-family', 'Segoe UI, sans-serif');
-        label.setAttribute('paint-order', 'stroke');
-        label.setAttribute('stroke', 'rgba(0,0,0,0.8)');
-        label.setAttribute('stroke-width', '3');
-        label.setAttribute('stroke-linejoin', 'round');
-        label.textContent = room.id;
+        const lbl = svgText(room.id, zx + 5, zy + 14, 11, '800', 'left');
+        // Compteur
+        const ctr = svgText(`${occ}/${tot}`, zx + zw - 5, zy + 14, 9, '600', 'right');
+        ctr.setAttribute('fill', 'rgba(255,255,255,0.55)');
 
-        // Compteur lits
-        const counter = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        counter.setAttribute('x', zx + zw - 4);
-        counter.setAttribute('y', zy + 13);
-        counter.setAttribute('text-anchor', 'end');
-        counter.setAttribute('fill', 'rgba(255,255,255,0.6)');
-        counter.setAttribute('font-size', '9');
-        counter.setAttribute('font-family', 'Segoe UI, sans-serif');
-        counter.textContent = `${occ}/${total}`;
+        g.appendChild(rect); g.appendChild(lbl); g.appendChild(ctr);
+        svg.appendChild(g);
 
-        zoneG.appendChild(zoneRect);
-        zoneG.appendChild(label);
-        zoneG.appendChild(counter);
-        svg.appendChild(zoneG);
-
-        // ── Points lits ──
+        // Points lits
         room.litsPos.forEach((lp, idx) => {
             const litNum = idx + 1;
             const key    = bedKey(room.id, litNum);
-            const c      = bedColor(key);
+            const s      = bedStyle(key);
 
-            const cx = pct2px(lp.xPct, nw);
-            const cy = pct2px(lp.yPct, nh);
+            const cx = p(lp.xPct, nw);
+            const cy = p(lp.yPct, nh);
 
-            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            g.setAttribute('class', 'bed-dot' + (selectedBed?.key === key ? ' bd-selected' : ''));
+            const bg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            bg.setAttribute('class', 'bed-dot');
+            bg.style.pointerEvents = 'all';
+            bg.style.cursor = 'pointer';
 
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            circle.setAttribute('cx', cx);
-            circle.setAttribute('cy', cy);
-            circle.setAttribute('r', 7.5);
-            circle.setAttribute('fill', c.fill);
-            circle.setAttribute('stroke', c.stroke);
-            circle.setAttribute('stroke-width', selectedBed?.key === key ? '3' : '1.5');
+            circle.setAttribute('cx', cx); circle.setAttribute('cy', cy);
+            circle.setAttribute('r', s.r);
+            circle.setAttribute('fill', s.fill);
+            circle.setAttribute('stroke', s.stroke);
+            circle.setAttribute('stroke-width', s.sw);
 
-            // Numéro du lit au centre
-            const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            t.setAttribute('x', cx);
-            t.setAttribute('y', cy);
-            t.setAttribute('text-anchor', 'middle');
-            t.setAttribute('dominant-baseline', 'middle');
-            t.setAttribute('fill', 'white');
-            t.setAttribute('font-size', '7');
-            t.setAttribute('font-weight', '900');
-            t.setAttribute('font-family', 'Segoe UI, sans-serif');
-            t.setAttribute('paint-order', 'stroke');
-            t.setAttribute('stroke', 'rgba(0,0,0,0.5)');
-            t.setAttribute('stroke-width', '2');
-            t.textContent = litNum;
+            const num = svgText(litNum, cx, cy, 7, '900', 'center');
+            num.setAttribute('fill', 'white');
+            num.setAttribute('paint-order', 'stroke');
+            num.setAttribute('stroke', 'rgba(0,0,0,0.5)');
+            num.setAttribute('stroke-width', '2');
 
-            g.appendChild(circle);
-            g.appendChild(t);
+            bg.appendChild(circle); bg.appendChild(num);
 
-            g.addEventListener('click',      ()  => selectBed(room.id, litNum, key));
-            g.addEventListener('mouseenter', (e) => showTooltip(e, key, room.id, litNum));
-            g.addEventListener('mousemove',  (e) => moveTooltip(e));
-            g.addEventListener('mouseleave', ()  => hideTooltip());
+            bg.addEventListener('click',      ()  => selectBed(room.id, litNum, key));
+            bg.addEventListener('mouseenter', (e) => showTooltip(e, key, room.id, litNum));
+            bg.addEventListener('mousemove',  (e) => moveTooltip(e));
+            bg.addEventListener('mouseleave', ()  => hideTooltip());
 
-            svg.appendChild(g);
+            svg.appendChild(bg);
         });
     });
 }
 
-function redrawAll() {
-    drawFloor(1);
-    drawFloor(2);
-    updateStats();
+function svgText(txt, x, y, size, weight, anchor) {
+    const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    t.setAttribute('x', x); t.setAttribute('y', y);
+    t.setAttribute('font-size', size);
+    t.setAttribute('font-weight', weight);
+    t.setAttribute('font-family', 'Segoe UI, sans-serif');
+    t.setAttribute('fill', 'white');
+    t.setAttribute('dominant-baseline', 'middle');
+    t.setAttribute('text-anchor', anchor === 'center' ? 'middle' : anchor === 'right' ? 'end' : 'start');
+    t.setAttribute('paint-order', 'stroke');
+    t.setAttribute('stroke', 'rgba(0,0,0,0.7)');
+    t.setAttribute('stroke-width', '3');
+    t.setAttribute('stroke-linejoin', 'round');
+    t.textContent = txt;
+    return t;
 }
+
+function redrawAll() { drawFloor(1); drawFloor(2); updateStats(); }
 
 /* ══════════════════════════════════════════════════════════════
    SÉLECTION
@@ -792,91 +977,93 @@ function selectBed(roomId, litNum, key) {
     selectedBed = { roomId, litNum, key };
     redrawAll();
     refreshSidebar();
+    // Mobile : ouvrir la modale
+    if (window.innerWidth <= 768) openMobilePanel();
 }
 
 function refreshSidebar() {
-    if (!selectedBed) {
-        document.getElementById('selected-info').innerHTML =
-            '<span style="color:#475569;">Cliquez sur un lit du plan</span>';
-        document.getElementById('beds-sidebar').innerHTML = '';
-        clearForm();
-        return;
-    }
-
+    if (!selectedBed) return;
     const { roomId, litNum, key } = selectedBed;
     const room    = ROOMS.find(r => r.id === roomId);
     const patient = state[key];
+    const occ     = countOcc(room);
 
-    // Info chambre
-    const occ   = countOccupied(room);
+    // Desktop
     document.getElementById('selected-info').innerHTML = `
         <strong>${roomId} — Lit ${litNum}</strong>
-        <span style="color:#64748b;font-size:10px;margin-left:6px;">${occ}/${room.lits} lit(s) occupé(s)</span>
-        <br><span style="${patient ? 'color:#ef4444' : 'color:#22c55e'};font-size:10px;margin-top:2px;display:block;">
+        <span style="color:#64748b;font-size:10px;margin-left:6px;">${occ}/${room.lits} occupé(s)</span><br>
+        <span style="color:${patient ? '#ef4444':'#22c55e'};font-size:10px;margin-top:2px;display:block;">
             ${patient ? `🔴 ${patient.prenom} ${patient.nom}` : '🟢 Disponible'}
-        </span>
-    `;
+        </span>`;
 
-    // Grille lits de la chambre
-    const bedsBar = document.getElementById('beds-sidebar');
-    bedsBar.innerHTML = '';
+    // Grille lits desktop
+    const bar = document.getElementById('beds-sidebar');
+    bar.innerHTML = '';
     for (let i = 1; i <= room.lits; i++) {
-        const k = bedKey(roomId, i);
+        const k   = bedKey(roomId, i);
         const btn = document.createElement('button');
-        btn.className = 'bed-btn ' + (state[k] ? 'occupied' : 'available') + (i === litNum ? ' bed-selected' : '');
+        btn.className = 'bed-btn ' + (state[k] ? 'occupied' : '') + (i === litNum ? ' bed-selected' : '');
         btn.title = state[k] ? `${state[k].prenom} ${state[k].nom}` : 'Disponible';
         btn.textContent = i;
         btn.onclick = () => selectBed(roomId, i, bedKey(roomId, i));
-        bedsBar.appendChild(btn);
+        bar.appendChild(btn);
     }
 
-    // Pré-remplir formulaire
-    if (patient) {
-        document.getElementById('in-prenom').value  = patient.prenom  || '';
-        document.getElementById('in-nom').value     = patient.nom     || '';
-        document.getElementById('in-motif').value   = patient.motif   || '';
-        document.getElementById('in-duree').value   = patient.duree   || '';
-        document.getElementById('in-medecin').value = patient.medecin || '';
-    } else {
-        clearForm();
+    const fill = (prefix, p) => {
+        setVal(prefix+'prenom', p?.prenom||'');
+        setVal(prefix+'nom',    p?.nom   ||'');
+        setVal(prefix+'motif',  p?.motif ||'');
+        setVal(prefix+'duree',  p?.duree ||'');
+        setVal(prefix+'medecin',p?.medecin||'');
+    };
+    fill('in-', patient);
+    fill('m-',  patient);
+
+    // Mobile
+    const mTitle = document.getElementById('panel-title');
+    if (mTitle) mTitle.textContent = `${roomId} — Lit ${litNum}`;
+
+    const mBeds = document.getElementById('panel-beds');
+    if (mBeds) {
+        mBeds.innerHTML = '';
+        for (let i = 1; i <= room.lits; i++) {
+            const k   = bedKey(roomId, i);
+            const btn = document.createElement('button');
+            btn.className = 'panel-bed-btn ' + (state[k] ? 'occupied':'') + (i === litNum ? ' sel':'');
+            btn.textContent = i;
+            btn.onclick = () => selectBed(roomId, i, bedKey(roomId, i));
+            mBeds.appendChild(btn);
+        }
     }
 }
 
-function clearForm() {
-    ['in-prenom','in-nom','in-motif','in-medecin'].forEach(id => {
-        document.getElementById(id).value = '';
-    });
-    document.getElementById('in-duree').value = '';
-}
-
-function countOccupied(room) {
-    let n = 0;
-    for (let i = 1; i <= room.lits; i++) {
-        if (state[bedKey(room.id, i)]) n++;
-    }
-    return n;
-}
+function setVal(id, v) { const el = document.getElementById(id); if (el) el.value = v; }
+function getVal(id)    { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 
 /* ══════════════════════════════════════════════════════════════
    ASSIGNER / LIBÉRER
    ══════════════════════════════════════════════════════════════ */
 
+function getFormValues() {
+    const mobile = window.innerWidth <= 768;
+    const pfx    = mobile ? 'm-' : 'in-';
+    return {
+        prenom:  getVal(pfx+'prenom'),
+        nom:     getVal(pfx+'nom').toUpperCase(),
+        motif:   getVal(pfx+'motif'),
+        duree:   getVal(pfx+'duree'),
+        medecin: getVal(pfx+'medecin'),
+    };
+}
+
 function assignerLit() {
-    if (!selectedBed) { showToast('⚠️ Sélectionnez d\'abord un lit sur le plan', 'warn'); return; }
-
-    const prenom  = document.getElementById('in-prenom').value.trim();
-    const nom     = document.getElementById('in-nom').value.trim().toUpperCase();
-    const motif   = document.getElementById('in-motif').value.trim();
-    const duree   = document.getElementById('in-duree').value;
-    const medecin = document.getElementById('in-medecin').value.trim();
-
+    if (!selectedBed) { showToast('⚠️ Sélectionnez d\'abord un lit', 'warn'); return; }
+    const { prenom, nom, motif, duree, medecin } = getFormValues();
     if (!prenom || !nom) { showToast('⚠️ Prénom et Nom obligatoires', 'warn'); return; }
 
     const { roomId, litNum, key } = selectedBed;
     state[key] = { prenom, nom, motif, duree, medecin, since: new Date().toISOString() };
-    saveState();
-    redrawAll();
-    refreshSidebar();
+    saveState(); redrawAll(); refreshSidebar();
     showToast(`✅ ${prenom} ${nom} — ${roomId} Lit ${litNum}`);
 }
 
@@ -887,31 +1074,31 @@ function libererLit() {
     const p = state[selectedBed.key];
     const { roomId, litNum, key } = selectedBed;
     delete state[key];
-    saveState();
-    redrawAll();
-    refreshSidebar();
-    showToast(`🔓 ${p.prenom} ${p.nom} sorti(e) — ${roomId} Lit ${litNum} libéré`);
+    saveState(); redrawAll(); refreshSidebar();
+    showToast(`🔓 ${p.prenom} ${p.nom} — ${roomId} Lit ${litNum} libéré`);
+    if (window.innerWidth <= 768) closeMobilePanel();
 }
 
 /* ══════════════════════════════════════════════════════════════
-   STATS GLOBALES
+   STATS
    ══════════════════════════════════════════════════════════════ */
 
 function updateStats() {
     let total = 0, occupied = 0;
-    ROOMS.forEach(room => {
-        total += room.lits;
-        for (let i = 1; i <= room.lits; i++) {
-            if (state[bedKey(room.id, i)]) occupied++;
-        }
+    ROOMS.forEach(r => {
+        total += r.lits;
+        for (let i = 1; i <= r.lits; i++) if (state[bedKey(r.id, i)]) occupied++;
     });
     const dispo = total - occupied;
     const taux  = total ? Math.round(occupied / total * 100) : 0;
-    document.getElementById('stat-dispo').textContent  = dispo;
-    document.getElementById('stat-occupe').textContent = occupied;
-    document.getElementById('stat-total').textContent  = total;
-    document.getElementById('stat-taux').textContent   = taux + '%';
+
+    ['stat-dispo','m-dispo']  .forEach(id => setVal2(id, dispo));
+    ['stat-occupe','m-occupe'].forEach(id => setVal2(id, occupied));
+    ['stat-total','m-total']  .forEach(id => setVal2(id, total));
+    ['stat-taux','m-taux']    .forEach(id => setVal2(id, taux+'%'));
 }
+
+function setVal2(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
 
 /* ══════════════════════════════════════════════════════════════
    ONGLETS
@@ -923,28 +1110,37 @@ function switchFloor(floor) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`floor-${floor}`).classList.add('active');
     document.getElementById(`tab-${floor}`).classList.add('active');
-    // On ne reset pas la sélection pour garder la cohérence
+    // Redessiner après que l'onglet soit visible
+    requestAnimationFrame(() => drawFloor(floor));
 }
 
 /* ══════════════════════════════════════════════════════════════
-   TOOLTIP
+   MODALE MOBILE
+   ══════════════════════════════════════════════════════════════ */
+
+function openMobilePanel()  { document.getElementById('mobile-panel').classList.add('open'); }
+function closeMobilePanel() { document.getElementById('mobile-panel').classList.remove('open'); }
+
+/* ══════════════════════════════════════════════════════════════
+   TOOLTIP (desktop uniquement)
    ══════════════════════════════════════════════════════════════ */
 
 const tooltip = document.getElementById('tooltip');
 
 function showTooltip(e, key, roomId, litNum) {
-    const p = state[key];
+    if (window.innerWidth <= 768) return; // pas de tooltip sur mobile
+    const pt = state[key];
     document.getElementById('tt-title').textContent   = `${roomId} — Lit ${litNum}`;
-    document.getElementById('tt-patient').textContent = p ? `${p.prenom} ${p.nom}` : '—';
-    document.getElementById('tt-motif').textContent   = p?.motif   || '—';
-    document.getElementById('tt-duree').textContent   = p?.duree   || '—';
-    document.getElementById('tt-medecin').textContent = p?.medecin || '—';
-    document.getElementById('tt-since').textContent   = p?.since
-        ? new Date(p.since).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+    document.getElementById('tt-patient').textContent = pt ? `${pt.prenom} ${pt.nom}` : '—';
+    document.getElementById('tt-motif').textContent   = pt?.motif   || '—';
+    document.getElementById('tt-duree').textContent   = pt?.duree   || '—';
+    document.getElementById('tt-medecin').textContent = pt?.medecin || '—';
+    document.getElementById('tt-since').textContent   = pt?.since
+        ? new Date(pt.since).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
         : '—';
     const s = document.getElementById('tt-status');
-    s.textContent = p ? '🔴 Occupé' : '🟢 Disponible';
-    s.className   = 'tooltip-status ' + (p ? 'occupied' : 'available');
+    s.textContent = pt ? '🔴 Occupé' : '🟢 Disponible';
+    s.className   = 'tooltip-status ' + (pt ? 'oc' : 'av');
     tooltip.classList.add('visible');
     moveTooltip(e);
 }
@@ -954,8 +1150,7 @@ function moveTooltip(e) {
     let x = e.clientX + 14, y = e.clientY + 14;
     if (x + tw > window.innerWidth  - 10) x = e.clientX - tw - 14;
     if (y + th > window.innerHeight - 10) y = e.clientY - th - 14;
-    tooltip.style.left = x + 'px';
-    tooltip.style.top  = y + 'px';
+    tooltip.style.left = x + 'px'; tooltip.style.top = y + 'px';
 }
 
 function hideTooltip() { tooltip.classList.remove('visible'); }
@@ -973,24 +1168,26 @@ function showToast(msg, type) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   INIT — attendre que les images soient chargées pour avoir
-          leurs dimensions naturelles (viewBox correct)
+   INIT & RESPONSIVE
    ══════════════════════════════════════════════════════════════ */
 
 function initFloor(floor) {
     const img = document.getElementById(`img-${floor}`);
-    const go  = () => drawFloor(floor);
+    const go  = () => { fitOverlay(floor); drawFloor(floor); };
     if (img.complete && img.naturalWidth > 0) go();
     else img.addEventListener('load', go);
 }
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => redrawAll(), 80);
+});
 
 window.addEventListener('DOMContentLoaded', () => {
     initFloor(1);
     initFloor(2);
     updateStats();
-
-    // Redessiner si la fenêtre est redimensionnée (le viewBox s'adapte)
-    window.addEventListener('resize', () => redrawAll());
 });
 </script>
 
