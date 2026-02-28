@@ -1223,5 +1223,385 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script type="module" src="global.js"></script>
+
+<style>
+/* ── Conteneur zoomable ── */
+#zoom-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    touch-action: none; /* on gère nous-mêmes tous les gestes tactiles */
+}
+
+#zoom-content {
+    width: 100%;
+    height: 100%;
+    transform-origin: 0 0;
+    will-change: transform;
+    /* transition douce uniquement pour double-tap (JS retire cette classe pour le pinch) */
+}
+
+#zoom-content.animated {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Indicateur de zoom (petit badge en bas à gauche) */
+#zoom-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(6, 14, 28, 0.85);
+    border: 1px solid #1e3a5f;
+    color: #94a3b8;
+    font-size: 10px;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 4px 9px;
+    border-radius: 12px;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#zoom-badge.visible { opacity: 1; }
+
+/* Boutons zoom +/- (desktop discret, utile aussi sur tablette) */
+.zoom-controls {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 20;
+}
+
+.zoom-btn {
+    width: 30px;
+    height: 30px;
+    background: rgba(6, 14, 28, 0.88);
+    border: 1px solid #1e3a5f;
+    color: #94a3b8;
+    font-size: 16px;
+    line-height: 1;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, color 0.2s;
+    user-select: none;
+}
+
+.zoom-btn:hover {
+    border-color: var(--cyan, #00d2ff);
+    color: var(--cyan, #00d2ff);
+}
+
+/* Sur mobile on les rend un peu plus gros */
+@media (max-width: 768px) {
+    .zoom-btn { width: 36px; height: 36px; }
+}
+</style>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   ZOOM MANAGER — Pinch + double-tap + boutons +/-
+   Fonctionne en wrappant .plan-wrapper dans #zoom-content,
+   lui-même dans #zoom-container.
+   ════════════════════════════════════════════════════════════ */
+(function() {
+    const MIN_SCALE = 1;
+    const MAX_SCALE = 5;
+
+    // État du zoom par étage (pour retrouver le bon zoom quand on switch d'onglet)
+    const zoomState = {
+        1: { scale: 1, tx: 0, ty: 0 },
+        2: { scale: 1, tx: 0, ty: 0 },
+    };
+
+    let activeFloor = 1;
+
+    /* ── Injecter les wrappers et boutons dans chaque floor-view ── */
+    function setupFloor(floor) {
+        const floorEl  = document.getElementById(`floor-${floor}`);
+        const wrapperEl = document.getElementById(`wrap-${floor}`);
+        if (!floorEl || !wrapperEl) return;
+
+        // Créer #zoom-container
+        const zoomContainer = document.createElement('div');
+        zoomContainer.id = `zoom-container-${floor}`;
+        zoomContainer.className = 'zoom-container-inst';
+        Object.assign(zoomContainer.style, {
+            width: '100%', height: '100%',
+            overflow: 'hidden', position: 'relative',
+            touchAction: 'none',
+        });
+
+        // Créer #zoom-content
+        const zoomContent = document.createElement('div');
+        zoomContent.id = `zoom-content-${floor}`;
+        zoomContent.className = 'zoom-content-inst animated';
+        Object.assign(zoomContent.style, {
+            width: '100%', height: '100%',
+            transformOrigin: '0 0',
+            willChange: 'transform',
+            transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1)',
+        });
+
+        // Badge zoom
+        const badge = document.createElement('div');
+        badge.id = `zoom-badge-${floor}`;
+        badge.className = 'zoom-badge-inst';
+        badge.style.cssText = `
+            position:absolute; bottom:10px; left:10px;
+            background:rgba(6,14,28,0.85); border:1px solid #1e3a5f;
+            color:#94a3b8; font-size:10px; font-family:'Segoe UI',sans-serif;
+            padding:4px 9px; border-radius:12px; z-index:20;
+            pointer-events:none; opacity:0; transition:opacity 0.3s;
+        `;
+
+        // Boutons +/-/reset
+        const controls = document.createElement('div');
+        controls.className = 'zoom-controls';
+        controls.innerHTML = `
+            <button class="zoom-btn" onclick="zoomBtn(${floor}, 1.4)" title="Zoom +">+</button>
+            <button class="zoom-btn" onclick="zoomBtn(${floor}, -1)" title="Réinitialiser" style="font-size:11px;">↺</button>
+            <button class="zoom-btn" onclick="zoomBtn(${floor}, 0.7)" title="Zoom −">−</button>
+        `;
+
+        // Réorganiser le DOM : floorEl > zoomContainer > zoomContent > wrapperEl
+        floorEl.appendChild(zoomContainer);
+        zoomContainer.appendChild(zoomContent);
+        zoomContent.appendChild(wrapperEl);
+        zoomContainer.appendChild(badge);
+        zoomContainer.appendChild(controls);
+
+        bindGestures(floor, zoomContainer, zoomContent);
+    }
+
+    /* ── Applique la transform ── */
+    function applyTransform(floor, animated) {
+        const content = document.getElementById(`zoom-content-${floor}`);
+        if (!content) return;
+        const s = zoomState[floor];
+
+        if (animated) {
+            content.style.transition = 'transform 0.25s cubic-bezier(0.4,0,0.2,1)';
+        } else {
+            content.style.transition = 'none';
+        }
+
+        content.style.transform = `translate(${s.tx}px, ${s.ty}px) scale(${s.scale})`;
+        showBadge(floor, s.scale);
+
+        // Repositionner le SVG overlay après zoom
+        if (typeof fitOverlay === 'function' && typeof drawFloor === 'function') {
+            // On attend la fin de la transition si animé
+            const delay = animated ? 260 : 0;
+            setTimeout(() => {
+                try { fitOverlay(floor); drawFloor(floor); } catch(e) {}
+            }, delay);
+        }
+    }
+
+    /* ── Clampe la position pour ne pas sortir du cadre ── */
+    function clampTranslate(floor, container) {
+        const s   = zoomState[floor];
+        const cw  = container.offsetWidth;
+        const ch  = container.offsetHeight;
+
+        const maxTx = 0;
+        const maxTy = 0;
+        const minTx = cw  - cw  * s.scale;
+        const minTy = ch  - ch  * s.scale;
+
+        s.tx = Math.min(maxTx, Math.max(minTx, s.tx));
+        s.ty = Math.min(maxTy, Math.max(minTy, s.ty));
+    }
+
+    /* ── Badge ── */
+    let badgeTimer = {};
+    function showBadge(floor, scale) {
+        const badge = document.getElementById(`zoom-badge-${floor}`);
+        if (!badge) return;
+        badge.textContent = Math.round(scale * 100) + '%';
+        badge.style.opacity = '1';
+        clearTimeout(badgeTimer[floor]);
+        if (scale === 1) {
+            badge.style.opacity = '0';
+        } else {
+            badgeTimer[floor] = setTimeout(() => { badge.style.opacity = '0'; }, 1500);
+        }
+    }
+
+    /* ── Boutons +/−/reset ── */
+    window.zoomBtn = function(floor, factor) {
+        const s = zoomState[floor];
+        const container = document.getElementById(`zoom-container-${floor}`);
+        if (!container) return;
+
+        if (factor === -1) {
+            // Reset
+            s.scale = 1; s.tx = 0; s.ty = 0;
+        } else {
+            const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, s.scale * factor));
+            // Zoom centré sur le milieu du conteneur
+            const cx = container.offsetWidth  / 2;
+            const cy = container.offsetHeight / 2;
+            s.tx = cx - (cx - s.tx) * (newScale / s.scale);
+            s.ty = cy - (cy - s.ty) * (newScale / s.scale);
+            s.scale = newScale;
+            clampTranslate(floor, container);
+        }
+        applyTransform(floor, true);
+    };
+
+    /* ── Gestes tactiles ── */
+    function bindGestures(floor, container, content) {
+        const s = zoomState[floor];
+        let touches = [];
+        let lastTap  = 0;
+        let pinchStartDist  = 0;
+        let pinchStartScale = 1;
+        let pinchOriginX    = 0;
+        let pinchOriginY    = 0;
+        let panStartX = 0;
+        let panStartY = 0;
+        let panStartTx = 0;
+        let panStartTy = 0;
+        let isPinching = false;
+
+        function dist(t1, t2) {
+            return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        }
+
+        function midpoint(t1, t2) {
+            return {
+                x: (t1.clientX + t2.clientX) / 2,
+                y: (t1.clientY + t2.clientY) / 2,
+            };
+        }
+
+        container.addEventListener('touchstart', (e) => {
+            touches = Array.from(e.touches);
+
+            if (touches.length === 2) {
+                // Pinch start
+                isPinching = true;
+                content.style.transition = 'none';
+                pinchStartDist  = dist(touches[0], touches[1]);
+                pinchStartScale = s.scale;
+                const mid = midpoint(touches[0], touches[1]);
+                const rect = container.getBoundingClientRect();
+                pinchOriginX = mid.x - rect.left;
+                pinchOriginY = mid.y - rect.top;
+
+            } else if (touches.length === 1) {
+                isPinching = false;
+
+                // Double-tap
+                const now = Date.now();
+                if (now - lastTap < 300) {
+                    e.preventDefault();
+                    const rect = container.getBoundingClientRect();
+                    const tapX = touches[0].clientX - rect.left;
+                    const tapY = touches[0].clientY - rect.top;
+
+                    if (s.scale > 1.1) {
+                        // Reset
+                        s.scale = 1; s.tx = 0; s.ty = 0;
+                    } else {
+                        // Zoom ×2.5 centré sur le tap
+                        const newScale = 2.5;
+                        s.tx = tapX - (tapX - s.tx) * (newScale / s.scale);
+                        s.ty = tapY - (tapY - s.ty) * (newScale / s.scale);
+                        s.scale = newScale;
+                        clampTranslate(floor, container);
+                    }
+                    applyTransform(floor, true);
+                    lastTap = 0;
+                    return;
+                }
+                lastTap = now;
+
+                // Pan start
+                panStartX  = touches[0].clientX;
+                panStartY  = touches[0].clientY;
+                panStartTx = s.tx;
+                panStartTy = s.ty;
+            }
+        }, { passive: false });
+
+        container.addEventListener('touchmove', (e) => {
+            touches = Array.from(e.touches);
+
+            if (touches.length === 2 && isPinching) {
+                e.preventDefault();
+                const newDist  = dist(touches[0], touches[1]);
+                let   newScale = pinchStartScale * (newDist / pinchStartDist);
+                newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
+
+                // Zoom centré sur le point de pinch
+                const scaleRatio = newScale / s.scale;
+                s.tx = pinchOriginX - (pinchOriginX - s.tx) * scaleRatio;
+                s.ty = pinchOriginY - (pinchOriginY - s.ty) * scaleRatio;
+                s.scale = newScale;
+
+                clampTranslate(floor, container);
+                applyTransform(floor, false);
+
+            } else if (touches.length === 1 && !isPinching && s.scale > 1.01) {
+                e.preventDefault();
+                s.tx = panStartTx + (touches[0].clientX - panStartX);
+                s.ty = panStartTy + (touches[0].clientY - panStartY);
+                clampTranslate(floor, container);
+                applyTransform(floor, false);
+            }
+        }, { passive: false });
+
+        container.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) isPinching = false;
+            touches = Array.from(e.touches);
+            // Re-fit le SVG une fois le geste terminé
+            if (typeof fitOverlay === 'function' && typeof drawFloor === 'function') {
+                setTimeout(() => {
+                    try { fitOverlay(floor); drawFloor(floor); } catch(e) {}
+                }, 50);
+            }
+        });
+
+        // Molette souris (desktop)
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const rect = container.getBoundingClientRect();
+            const ox = e.clientX - rect.left;
+            const oy = e.clientY - rect.top;
+            const delta     = e.deltaY < 0 ? 1.15 : 0.87;
+            const newScale  = Math.min(MAX_SCALE, Math.max(MIN_SCALE, s.scale * delta));
+            s.tx = ox - (ox - s.tx) * (newScale / s.scale);
+            s.ty = oy - (oy - s.ty) * (newScale / s.scale);
+            s.scale = newScale;
+            clampTranslate(floor, container);
+            applyTransform(floor, false);
+        }, { passive: false });
+    }
+
+    /* ── Init après DOMContentLoaded ── */
+    function init() {
+        setupFloor(1);
+        setupFloor(2);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        // Page déjà chargée (script injecté tard)
+        init();
+    }
+
+})();
+</script>
 </body>
 </html>

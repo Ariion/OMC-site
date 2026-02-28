@@ -7,8 +7,200 @@
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="patch-daltonien.css">
+    <style>
+        /* ══════════════════════════════════════
+           BANDEAU RAPPEL PATIENTS HOSPITALISÉS
+        ══════════════════════════════════════ */
+        #patients-alert {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: #060e1c;
+            border-top: 2px solid #38bdf8;
+            padding: 0;
+            transform: translateY(100%);
+            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 42vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #patients-alert.visible {
+            transform: translateY(0);
+        }
+
+        /* Barre de titre cliquable */
+        .alert-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            cursor: pointer;
+            user-select: none;
+            background: #060e1c;
+            border-bottom: 1px solid #1e3a5f;
+            flex-shrink: 0;
+        }
+
+        .alert-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-pulse {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ef4444;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+            animation: pulse-ring 1.8s ease-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            70%  { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .alert-title {
+            font-size: 12px;
+            font-weight: 900;
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .alert-count {
+            font-size: 11px;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+
+        .alert-toggle {
+            font-size: 14px;
+            color: #475569;
+            transition: transform 0.3s;
+            line-height: 1;
+        }
+
+        .alert-toggle.open { transform: rotate(180deg); }
+
+        /* Corps scrollable */
+        .alert-body {
+            overflow-y: auto;
+            padding: 12px 20px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Carte patient dans le bandeau */
+        .alert-card {
+            background: #0f1f38;
+            border: 1px solid #1e3a5f;
+            border-left: 3px solid #ef4444;
+            border-radius: 8px;
+            padding: 10px 14px;
+            min-width: 200px;
+            flex: 1;
+            max-width: 280px;
+            text-decoration: none;
+            transition: border-color 0.2s, transform 0.2s;
+            cursor: pointer;
+        }
+
+        .alert-card:hover {
+            border-left-color: #38bdf8;
+            transform: translateY(-2px);
+        }
+
+        .alert-card-room {
+            font-size: 10px;
+            font-weight: 800;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
+
+        .alert-card-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 2px;
+        }
+
+        .alert-card-motif {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .alert-card-since {
+            font-size: 10px;
+            color: #475569;
+        }
+
+        .alert-card-duree {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .alert-card-duree.normal  { background: #14532d; color: #22c55e; }
+        .alert-card-duree.warning { background: #78350f; color: #f59e0b; }
+        .alert-card-duree.danger  { background: #450a0a; color: #ef4444; }
+
+        /* Lien vers la page chambres */
+        .alert-link {
+            display: block;
+            text-align: center;
+            padding: 6px 14px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-top: 1px solid #1e3a5f;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .alert-link:hover { background: rgba(56,189,248,0.06); }
+
+        /* Message vide (ne devrait pas apparaître, mais au cas où) */
+        .alert-empty {
+            font-size: 12px;
+            color: #475569;
+            text-align: center;
+            width: 100%;
+            padding: 8px 0;
+        }
+
+        /* Scrollbar du body */
+        .alert-body::-webkit-scrollbar { height: 4px; width: 4px; }
+        .alert-body::-webkit-scrollbar-track { background: #060e1c; }
+        .alert-body::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 4px; }
+
+        @media (max-width: 600px) {
+            .alert-card { max-width: 100%; }
+            .alert-header { padding: 9px 14px; }
+        }
+    </style>
 </head>
 <body class="portal-body">
+
     <div class="portal-container">
         <img src="assets/logo_omc.png" alt="Logo OMC" class="portal-logo">
         <h1>OCEAN MEDICAL CENTER</h1>
@@ -69,16 +261,161 @@
                 <span class="card-icon">📁</span>
                 <h3>Archives</h3>
                 <p>Dossiers Patients</p>
-                
             </a>
             <a href="aptitude.html" class="menu-card">
                 <span class="card-icon">📜</span>
                 <h3>Guide VMT & PPA</h3>
-                <p>réussir son rdv VMT & PPA</p>
+                <p>Réussir son rdv VMT & PPA</p>
             </a>
         </div>
     </div>
-    <script type="module" src="global.js"></script>
-</body>
 
+    <!-- ══════════ BANDEAU PATIENTS HOSPITALISÉS ══════════ -->
+    <div id="patients-alert" role="status" aria-live="polite">
+        <div class="alert-header" onclick="toggleAlert()">
+            <div class="alert-header-left">
+                <div class="alert-pulse"></div>
+                <span class="alert-title">🛏 Patients hospitalisés</span>
+                <span class="alert-count" id="alert-count">—</span>
+            </div>
+            <span class="alert-toggle" id="alert-toggle">▲</span>
+        </div>
+        <div class="alert-body" id="alert-body">
+            <div class="alert-empty">Chargement…</div>
+        </div>
+        <a href="chambres.html" class="alert-link">→ Voir le plan complet des chambres</a>
+    </div>
+
+    <script type="module" src="global.js"></script>
+
+    <script>
+    /* ══════════════════════════════════════════════════════
+       RAPPEL PATIENTS HOSPITALISÉS
+       Lit l'état des chambres depuis Firebase via global.js
+       (window.listenToRoomsState), construit les cartes,
+       puis fait glisser le bandeau vers le haut.
+    ══════════════════════════════════════════════════════ */
+
+    let alertOpen = true; // Le bandeau s'ouvre par défaut
+
+    function toggleAlert() {
+        alertOpen = !alertOpen;
+        const body   = document.getElementById('alert-body');
+        const toggle = document.getElementById('alert-toggle');
+        const link   = document.querySelector('.alert-link');
+        if (alertOpen) {
+            body.style.display   = 'flex';
+            if (link) link.style.display = 'block';
+            toggle.textContent   = '▲';
+            toggle.classList.add('open');
+        } else {
+            body.style.display   = 'none';
+            if (link) link.style.display = 'none';
+            toggle.textContent   = '▼';
+            toggle.classList.remove('open');
+        }
+    }
+
+    /* Durée depuis l'admission */
+    function dureeSince(isoString) {
+        if (!isoString) return null;
+        const diff = Date.now() - new Date(isoString).getTime();
+        const mins  = Math.floor(diff / 60000);
+        const hours = Math.floor(mins / 60);
+        const days  = Math.floor(hours / 24);
+        if (days  >= 1) return `Il y a ${days}j ${hours % 24}h`;
+        if (hours >= 1) return `Il y a ${hours}h ${mins % 60}min`;
+        return `Il y a ${mins} min`;
+    }
+
+    /* Classe CSS de la pastille durée (normal / warning / danger) */
+    function dureeClass(isoString, dureeEstimee) {
+        if (!isoString) return 'normal';
+        const diffH = (Date.now() - new Date(isoString).getTime()) / 3600000;
+
+        // Seuils basés sur la durée estimée choisie dans le formulaire
+        const map = {
+            "Moins d'1 heure": 1,
+            "1 à 3 heures":    3,
+            "3 à 6 heures":    6,
+            "6 à 12 heures":   12,
+            "12 à 24 heures":  24,
+            "Plusieurs jours": 72,
+            "Durée indéterminée": null,
+        };
+        const limitH = map[dureeEstimee] ?? null;
+        if (!limitH) return 'normal';
+        if (diffH > limitH)        return 'danger';   // dépasse la durée prévue
+        if (diffH > limitH * 0.75) return 'warning';  // à 75% de la durée
+        return 'normal';
+    }
+
+    /* Construit les cartes depuis l'état Firebase */
+    function renderAlert(state) {
+        const body    = document.getElementById('alert-body');
+        const counter = document.getElementById('alert-count');
+        const alert   = document.getElementById('patients-alert');
+
+        if (!state || typeof state !== 'object') return;
+
+        // Filtrer les clés qui sont des lits occupés (format: ROOM_litN)
+        const occupied = Object.entries(state).filter(([key, val]) =>
+            val && val.prenom && key.includes('_lit')
+        );
+
+        if (occupied.length === 0) {
+            // Personne → on masque le bandeau discrètement
+            alert.classList.remove('visible');
+            return;
+        }
+
+        counter.textContent = `— ${occupied.length} patient${occupied.length > 1 ? 's' : ''} en cours`;
+
+        body.innerHTML = '';
+
+        occupied
+            .sort((a, b) => new Date(a[1].since) - new Date(b[1].since)) // du plus ancien au plus récent
+            .forEach(([key, patient]) => {
+                // Extraire la chambre et le numéro de lit depuis la clé
+                const parts  = key.split('_lit');
+                const roomId = parts[0];
+                const litNum = parts[1];
+                const dc     = dureeClass(patient.since, patient.duree);
+
+                const card = document.createElement('div');
+                card.className = 'alert-card';
+                card.onclick   = () => { window.location.href = 'chambres.html'; };
+
+                card.innerHTML = `
+                    <div class="alert-card-room">🛏 ${roomId} — Lit ${litNum}</div>
+                    <div class="alert-card-name">${patient.prenom} ${patient.nom}</div>
+                    ${patient.motif   ? `<div class="alert-card-motif">${patient.motif}</div>` : ''}
+                    ${patient.medecin ? `<div class="alert-card-since" style="margin-bottom:3px;">Dr. ${patient.medecin}</div>` : ''}
+                    ${patient.since   ? `<div class="alert-card-since">⏱ ${dureeSince(patient.since)}</div>` : ''}
+                    ${patient.duree   ? `<div class="alert-card-duree ${dc}">${patient.duree}</div>` : ''}
+                `;
+
+                body.appendChild(card);
+            });
+
+        // Faire glisser le bandeau après un court délai (laisse la page se charger)
+        setTimeout(() => alert.classList.add('visible'), 600);
+    }
+
+    /* Attendre que global.js expose listenToRoomsState */
+    function waitForFirebase(attempts) {
+        if (window.listenToRoomsState) {
+            window.listenToRoomsState(renderAlert);
+        } else if (attempts > 0) {
+            setTimeout(() => waitForFirebase(attempts - 1), 300);
+        }
+        // Si Firebase n'est pas dispo après ~3s, on ne montre rien — silencieux
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        waitForFirebase(10); // 10 × 300ms = 3s max
+    });
+    </script>
+
+</body>
 </html>
