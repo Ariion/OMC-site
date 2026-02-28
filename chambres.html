@@ -662,83 +662,71 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══════════════════════════════════════════════════════════════
-   CHAMBRES — coordonnées en % des dimensions NATURELLES de chaque image.
 
-   CALIBRATION :
-   - NV-1 (1er-etage.png) : image naturelle supposée ≈ 1080×620
-     W100  : grande salle à gauche (avec couloir W100 vertical)
-     W110/111 : pièces en bas à gauche (rangée haute/basse)
-     W112/113 : pièces en bas à gauche (à droite des précédentes)
-
-   - NV-2 (2e-etage.png) : image naturelle supposée ≈ 1080×620
-     W200 : grande pièce haut-gauche (au-dessus du couloir)
-     W201 : pièce milieu-gauche
-     W202 : pièce à droite du couloir
-     W203 : petite pièce sous W202
-     W204 : 3e rangée gauche
-     W205 : 4e rangée gauche (la plus basse)
-   ══════════════════════════════════════════════════════════════ */
 
 const ROOMS = [
 
     /* ─── ÉTAGE 1 ─── */
     // W100 : la grande salle à gauche avec le couloir vertical "W100"
-    // Sur le plan : c'est le bloc bleuté/mauve à gauche center
-    // Deux colonnes de lits de 6+5 = 11 lits
     {
         id: 'W100', floor: 1, lits: 11,
-        zone: { xPct: 29.5, yPct: 30, wPct: 8, hPct: 42 },
+        zone: { xPct: 1, yPct: 26, wPct: 10, hPct: 42 },
         litsPos: [
             // Colonne gauche 6 lits
-            { xPct: 31.5, yPct: 35 }, { xPct: 31.5, yPct: 42 },
-            { xPct: 31.5, yPct: 49 }, { xPct: 31.5, yPct: 56 },
-            { xPct: 31.5, yPct: 63 }, { xPct: 31.5, yPct: 70 },
-            // Colonne droite 5 lits
-            { xPct: 35.5, yPct: 35 }, { xPct: 35.5, yPct: 42 },
-            { xPct: 35.5, yPct: 49 }, { xPct: 35.5, yPct: 56 },
-            { xPct: 35.5, yPct: 63 },
+        /* 1 */   { xPct: 2, yPct: 30 }, 
+        /* 2 */   { xPct: 6, yPct: 30 },
+        /* 3 */   { xPct: 9, yPct: 30 }, 
+        /* 4 */   { xPct: 3, yPct: 45 },
+        /* 5 */   { xPct: 10, yPct: 40 }, 
+        /* 6 */   { xPct: 10, yPct: 45 },
+        /* 7 */   { xPct: 10, yPct: 50 }, 
+        /* 8 */   { xPct: 3, yPct: 48.5 },
+        /* 9 */   { xPct: 3.2, yPct: 57.5 }, 
+        /* 10 */   { xPct: 3.5, yPct: 63.5 },
+        /* 11 */   { xPct: 10, yPct: 64 },
         ]
     },
 
     // W110 : rangée haute gauche du groupe bas-gauche
     {
         id: 'W110', floor: 1, lits: 2,
-        zone: { xPct: 39.5, yPct: 72, wPct: 6, hPct: 11 },
+        zone: { xPct: 10, yPct: 68, wPct: 7, hPct: 10.2 },
         litsPos: [
-            { xPct: 41.2, yPct: 76 },
-            { xPct: 44.0, yPct: 76 },
+            { xPct: 12.5, yPct: 70 },
+            { xPct: 12.3, yPct: 75.5 },
         ]
     },
 
     // W111 : rangée basse gauche du groupe bas-gauche
     {
         id: 'W111', floor: 1, lits: 2,
-        zone: { xPct: 39.5, yPct: 84, wPct: 6, hPct: 11 },
+        zone: { xPct: 10, yPct: 79, wPct: 9.7, hPct: 13 },
         litsPos: [
-            { xPct: 41.2, yPct: 88 },
-            { xPct: 44.0, yPct: 88 },
+            { xPct: 12.5, yPct: 87 },
+            { xPct: 18.5, yPct: 88.8 },
         ]
     },
 
     // W112 : à droite de W110 (rangée haute)
     {
-        id: 'W112', floor: 1, lits: 3,
-        zone: { xPct: 45.5, yPct: 72, wPct: 6, hPct: 11 },
+        id: 'W112', floor: 1, lits: 2,
+        zone: { xPct: 21, yPct: 68, wPct: 13, hPct: 16 },
+        shape: 'polygon(0% 0%,  100% 0%, 100% 60%, 80% 100%, 30% 40%, 0% 40%)',
         litsPos: [
-            { xPct: 47.0, yPct: 75.5 },
-            { xPct: 49.5, yPct: 75.5 },
-            { xPct: 48.2, yPct: 80.5 },
+            { xPct: 28.7, yPct: 76 },
+            { xPct: 31.2, yPct: 79.2 },
         ]
     },
 
     // W113 : à droite de W111 (rangée basse)
     {
-        id: 'W113', floor: 1, lits: 2,
-        zone: { xPct: 45.5, yPct: 84, wPct: 6, hPct: 11 },
+        id: 'W113', floor: 1, lits: 3,
+        zone: { xPct: 20, yPct: 75, wPct: 12, hPct: 16.5 },
+        shape: 'polygon(10% 0%, 10% 30%, 0% 30%, 0% 100%, 75% 100%, 100% 50%, 40% 0% )',
         litsPos: [
-            { xPct: 47.0, yPct: 88 },
-            { xPct: 49.5, yPct: 88 },
+            { xPct: 21.3, yPct: 82 },
+            { xPct: 21.3, yPct: 88.5 },
+            { xPct: 26, yPct: 88 },
         ]
     },
 
@@ -746,58 +734,63 @@ const ROOMS = [
     // W200 : grande pièce haut, juste à gauche de l'escalier (LEVEL2)
     {
         id: 'W200', floor: 2, lits: 2,
-        zone: { xPct: 32.5, yPct: 12, wPct: 10, hPct: 22 },
+        zone: { xPct: 21.5, yPct: 31.5, wPct: 7, hPct: 13 },
+        shape: 'polygon(90% 0, 100% 25%, 100% 100%, 16% 99%, 15% 60%, 0% 60%, 0 0)',
         litsPos: [
-            { xPct: 35.0, yPct: 19 },
-            { xPct: 40.0, yPct: 19 },
+            { xPct: 23.5, yPct: 36 },
+            { xPct: 26, yPct: 34 },
         ]
     },
 
     // W201 : pièce en dessous de W200, milieu gauche
     {
         id: 'W201', floor: 2, lits: 2,
-        zone: { xPct: 32.5, yPct: 37, wPct: 10, hPct: 17 },
+        zone: { xPct: 22.5, yPct: 45, wPct: 6.7, hPct: 14 },
         litsPos: [
-            { xPct: 35.0, yPct: 43 },
-            { xPct: 40.0, yPct: 43 },
+            { xPct: 24, yPct: 52 },
+            { xPct: 24, yPct: 56 },
         ]
     },
 
     // W202 : pièce à droite, à côté du corridor DOWN
     {
         id: 'W202', floor: 2, lits: 2,
-        zone: { xPct: 43, yPct: 27, wPct: 10, hPct: 17 },
+        zone: { xPct: 16.5, yPct: 59, wPct: 13, hPct: 11 },
+        shape: 'polygon(100% 0, 100% 21%, 70% 100%, 35% 100%, 35% 71%, 0 71%, 0 0)',
         litsPos: [
-            { xPct: 45.5, yPct: 33 },
-            { xPct: 50.5, yPct: 33 },
+            { xPct: 22, yPct: 67 },
+            { xPct: 25, yPct: 65 },
         ]
     },
 
     // W203 : petite pièce sous W202
     {
         id: 'W203', floor: 2, lits: 1,
-        zone: { xPct: 43, yPct: 47, wPct: 10, hPct: 15 },
+        zone: { xPct: 16.5, yPct: 65, wPct: 9.5, hPct: 11.5 },
+        shape: 'polygon(46% 0, 46% 33%, 100% 35%, 71% 100%, 0 100%, 0% 60%, 0 0)',
         litsPos: [
-            { xPct: 48, yPct: 54 },
+            { xPct: 22, yPct: 72 },
         ]
     },
 
     // W204 : 3e rangée sur l'aile gauche
     {
         id: 'W204', floor: 2, lits: 1,
-        zone: { xPct: 32.5, yPct: 57, wPct: 10, hPct: 14 },
+        zone: { xPct: 16.5, yPct: 45, wPct: 6, hPct: 14 },
         litsPos: [
-            { xPct: 37.5, yPct: 63 },
+            { xPct: 21, yPct: 52 },
         ]
     },
 
     // W205 : dernière rangée, la plus basse
     {
         id: 'W205', floor: 2, lits: 2,
-        zone: { xPct: 32.5, yPct: 74, wPct: 10, hPct: 15 },
+        zone: { xPct: 11.5, yPct: 31.5, wPct: 11, hPct: 13.2 },
+        shape: 'polygon(40% 0%, 88% 0, 88% 60%, 100% 60%, 100% 100%, 47% 100%, 47% 60%, 20% 80%, 0 40%)',
         litsPos: [
-            { xPct: 35.0, yPct: 80 },
-            { xPct: 40.0, yPct: 80 },
+            { xPct: 17, yPct: 34 },
+        
+            { xPct: 19.3, yPct: 34 },
         ]
     },
 ];
@@ -902,6 +895,9 @@ function drawFloor(floor) {
         rect.setAttribute('stroke-width', '1.5');
         rect.setAttribute('stroke-dasharray', '4 3');
 
+        if (room.shape) {
+            rect.style.clipPath = room.shape;
+        }
         // Label chambre
         const lbl = svgText(room.id, zx + 5, zy + 14, 11, '800', 'left');
         // Compteur
@@ -1106,6 +1102,7 @@ function setVal2(id, v) { const el = document.getElementById(id); if (el) el.tex
 
 function switchFloor(floor) {
     currentFloor = floor;
+    localStorage.setItem('omc_last_floor', floor);
     document.querySelectorAll('.floor-view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`floor-${floor}`).classList.add('active');
@@ -1188,6 +1185,10 @@ window.addEventListener('DOMContentLoaded', () => {
     initFloor(1);
     initFloor(2);
     updateStats();
+    const savedFloor = localStorage.getItem('omc_last_floor');
+    if (savedFloor) {
+        switchFloor(parseInt(savedFloor, 10));
+    }
 });
 </script>
 
