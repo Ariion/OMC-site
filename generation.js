@@ -24,17 +24,18 @@ function _getNomPatient(nomPatientId) {
 async function _captureToBlob(el, quality) {
     quality = quality || 0.92;
 
-    // Hauteur totale — jamais tronquée
+    // Largeur et hauteur réelles de l'élément — pas de valeur forcée
+    const fullWidth  = Math.max(el.scrollWidth,  el.offsetWidth,  el.clientWidth);
     const fullHeight = Math.max(el.scrollHeight, el.offsetHeight, el.clientHeight);
 
     const canvas = await html2canvas(el, {
-        scale:           3,       // ×3 → net et zoomable en jeu
+        scale:           2,
         useCORS:         true,
         backgroundColor: '#ffffff',
         scrollX:         0,
         scrollY:         -window.scrollY,
-        width:           794,     // A4 fixe (96 dpi)
-        windowWidth:     794,     // force le rendu A4
+        width:           fullWidth,      // ← largeur réelle (1000px pour constat, 794 pour les autres)
+        windowWidth:     fullWidth,      // ← idem
         height:          fullHeight,
         windowHeight:    fullHeight,
         logging:         false
