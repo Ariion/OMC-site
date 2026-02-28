@@ -13,7 +13,7 @@
 
 // 1. IMPORTATION DE FIREBASE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query } 
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, setDoc } 
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } 
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
@@ -287,18 +287,14 @@ window.omc_moteur_generation = async function(config) {
 
 import { doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- SYNCHRONISATION DES LITS (CHAMBRES) ---
 const ROOMS_DOC_ID = 'etat_chambres'; // Un document unique pour tout l'hôpital
 
 window.listenToRoomsState = function(callback) {
     const docRef = doc(db, 'systeme', ROOMS_DOC_ID);
-    
-    // onSnapshot "écoute" les changements en direct. Dès que quelqu'un modifie, ça se met à jour chez tout le monde.
     onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists()) {
             callback(docSnap.data());
         } else {
-            // Si le document n'existe pas encore (première utilisation), on renvoie un objet vide
             callback({});
         }
     });

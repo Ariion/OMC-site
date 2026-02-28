@@ -807,11 +807,12 @@ let currentFloor = 1;
 // window.addEventListener('DOMContentLoaded', ...) s'occupera d'appeler l'écouteur.
 
 async function saveState() {
-    // Au lieu du localStorage, on envoie à Firebase
+    localStorage.setItem('omc_chambres_v4', JSON.stringify(state));
+    
     if (window.saveRoomsState) {
         await window.saveRoomsState(state);
     } else {
-        console.error("Firebase non initialisé ou fonction introuvable.");
+        console.error("Firebase n'est pas encore prêt.");
     }
 }
 
@@ -1199,8 +1200,6 @@ window.addEventListener('DOMContentLoaded', () => {
         switchFloor(parseInt(savedFloor, 10));
     }
 
-    // 2. Écouter Firebase pour charger et synchroniser les données
-    // On met un petit délai pour être sûr que global.js a fini de charger
     setTimeout(() => {
         if (window.listenToRoomsState) {
             window.listenToRoomsState((newState) => {
