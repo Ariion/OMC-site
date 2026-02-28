@@ -55,34 +55,31 @@ async function _uploadImgBB(blob) {
 }
 
 function _showPopup(url) {
-    const img   = document.getElementById('preview-img-result');
-    const input = document.getElementById('direct-link');
-    const popup = document.getElementById('image-popup');
+    const img    = document.getElementById('preview-img-result');
+    const input  = document.getElementById('direct-link');
+    const popup  = document.getElementById('image-popup');
     const content = popup ? popup.querySelector('.popup-content') : null;
 
     if (img) {
         img.src = url;
-
-        // Image prend toute la largeur disponible
-        img.style.width = '100%';
-        img.style.height = 'auto';
-        img.style.objectFit = 'contain';
-        img.style.display = 'block';
+        img.style.width      = '100%';
+        img.style.height     = 'auto';
+        img.style.objectFit  = 'contain';
+        img.style.display    = 'block';
+        img.style.maxHeight  = '70vh';  // ← LIMITE la hauteur
     }
 
     if (input) input.value = url;
 
     if (content) {
-        content.style.width = '95vw';      // quasi plein écran
-        content.style.maxWidth = '1200px'; // limite confortable
-        content.style.height = 'auto';
+        content.style.width     = '90vw';
+        content.style.maxWidth  = '900px';   // ← réduit (était 1200px)
+        content.style.height    = 'auto';
         content.style.maxHeight = '95vh';
-        content.style.overflow = 'auto';
+        content.style.overflow  = 'auto';
     }
 
-    if (popup) {
-        popup.style.display = 'flex';
-    }
+    if (popup) popup.style.display = 'flex';
 }
 
 function _archiver(nomPatient, typeDoc, url, pageSource) {
