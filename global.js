@@ -284,3 +284,33 @@ window.omc_moteur_generation = async function(config) {
         return null;
     }
 };
+
+import { doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// --- SYNCHRONISATION DES LITS (CHAMBRES) ---
+const ROOMS_DOC_ID = 'etat_chambres'; // Un document unique pour tout l'hôpital
+
+window.listenToRoomsState = function(callback) {
+    const docRef = doc(db, 'systeme', ROOMS_DOC_ID);
+    
+    // onSnapshot "écoute" les changements en direct. Dès que quelqu'un modifie, ça se met à jour chez tout le monde.
+    onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists()) {
+            callback(docSnap.data());
+        } else {
+            // Si le document n'existe pas encore (première utilisation), on renvoie un objet vide
+            callback({});
+        }
+    });
+};
+
+window.saveRoomsState = async function(newState) {
+    const docRef = doc(db, 'systeme', ROOMS_DOC_ID);
+    try {
+        await setDoc(docRef, newState);
+        return true;
+    } catch (e) {
+        console.error("Erreur de sauvegarde des chambres :", e);
+        return false;
+    }
+};

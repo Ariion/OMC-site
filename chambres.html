@@ -796,21 +796,26 @@ const ROOMS = [
 ];
 
 /* ══════════════════════════════════════════════════════════════
-   ÉTAT
+   ÉTAT (Synchronisé via Firebase)
    ══════════════════════════════════════════════════════════════ */
 
-function loadState() {
-    try { return JSON.parse(localStorage.getItem('omc_chambres_v4') || '{}'); }
-    catch(e) { return {}; }
-}
-function saveState() { localStorage.setItem('omc_chambres_v4', JSON.stringify(state)); }
-
-let state        = loadState();
-let selectedBed  = null; // { roomId, litNum, key }
+let state = {};
+let selectedBed = null;
 let currentFloor = 1;
 
-function bedKey(roomId, litNum) { return `${roomId}_lit${litNum}`; }
+// On n'utilise plus loadState() au démarrage, on attend Firebase.
+// window.addEventListener('DOMContentLoaded', ...) s'occupera d'appeler l'écouteur.
 
+async function saveState() {
+    // Au lieu du localStorage, on envoie à Firebase
+    if (window.saveRoomsState) {
+        await window.saveRoomsState(state);
+    } else {
+        console.error("Firebase non initialisé ou fonction introuvable.");
+    }
+}
+
+function bedKey(roomId, litNum) { return `${roomId}_lit${litNum}`; }
 /* ══════════════════════════════════════════════════════════════
    DESSIN SVG — le secret du responsive :
    On positionne le SVG exactement sur l'image rendue (pas le conteneur).
@@ -1052,29 +1057,32 @@ function getFormValues() {
     };
 }
 
-function assignerLit() {
+async function assignerLit() {
     if (!selectedBed) { showToast('⚠️ Sélectionnez d\'abord un lit', 'warn'); return; }
     const { prenom, nom, motif, duree, medecin } = getFormValues();
     if (!prenom || !nom) { showToast('⚠️ Prénom et Nom obligatoires', 'warn'); return; }
 
     const { roomId, litNum, key } = selectedBed;
     state[key] = { prenom, nom, motif, duree, medecin, since: new Date().toISOString() };
-    saveState(); redrawAll(); refreshSidebar();
+    
+    await saveState(); // On attend la sauvegarde
+    // redrawAll() et refreshSidebar() seront appelés automatiquement par listenToRoomsState !
     showToast(`✅ ${prenom} ${nom} — ${roomId} Lit ${litNum}`);
 }
 
-function libererLit() {
+async function libererLit() {
     if (!selectedBed)          { showToast('⚠️ Sélectionnez d\'abord un lit', 'warn'); return; }
     if (!state[selectedBed.key]) { showToast('Ce lit est déjà disponible', 'warn'); return; }
 
     const p = state[selectedBed.key];
     const { roomId, litNum, key } = selectedBed;
     delete state[key];
-    saveState(); redrawAll(); refreshSidebar();
+    
+    await saveState(); // On attend la sauvegarde
+    // redrawAll() et refreshSidebar() seront appelés automatiquement par listenToRoomsState !
     showToast(`🔓 ${p.prenom} ${p.nom} — ${roomId} Lit ${litNum} libéré`);
     if (window.innerWidth <= 768) closeMobilePanel();
 }
-
 /* ══════════════════════════════════════════════════════════════
    STATS
    ══════════════════════════════════════════════════════════════ */
@@ -1182,13 +1190,36 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+    // 1. Initialiser l'affichage de base (vide)
     initFloor(1);
     initFloor(2);
-    updateStats();
+    
     const savedFloor = localStorage.getItem('omc_last_floor');
     if (savedFloor) {
         switchFloor(parseInt(savedFloor, 10));
     }
+
+    // 2. Écouter Firebase pour charger et synchroniser les données
+    // On met un petit délai pour être sûr que global.js a fini de charger
+    setTimeout(() => {
+        if (window.listenToRoomsState) {
+            window.listenToRoomsState((newState) => {
+                state = newState; // Met à jour l'état local avec celui de la BDD
+                updateStats();    // Met à jour les compteurs
+                redrawAll();      // Redessine les lits (vert/rouge)
+                refreshSidebar(); // Rafraîchit les infos de la sélection actuelle
+                
+                // Petit retour visuel si on veut (optionnel)
+                // console.log("État des chambres synchronisé !");
+            });
+        } else {
+             console.error("Impossible de se connecter à la base de données des lits.");
+             // Fallback de secours si Firebase bugge : on utilise le localStorage
+             try { state = JSON.parse(localStorage.getItem('omc_chambres_v4') || '{}'); } catch(e) {}
+             redrawAll();
+             updateStats();
+        }
+    }, 500); // 500ms d'attente
 });
 </script>
 
