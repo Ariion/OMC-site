@@ -20,23 +20,18 @@
 
         /* ── SIDEBAR ── */
         .sidebar {
-            width: 340px;
-            min-width: 340px;
+            width: 320px;
+            min-width: 320px;
             background: #060e1c;
             border-right: 1px solid #1e293b;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            padding: 20px;
-            gap: 14px;
+            padding: 18px;
+            gap: 12px;
         }
 
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 4px;
-        }
+        .sidebar-header { display: flex; align-items: center; justify-content: space-between; }
 
         .back-link {
             color: var(--omc-cyan, #00d2ff);
@@ -47,57 +42,31 @@
         }
 
         .sidebar-title {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 900;
             color: var(--omc-cyan, #00d2ff);
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 2px;
         }
 
-        .sidebar-sub {
-            font-size: 10px;
-            color: #475569;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
+        .sidebar-sub { font-size: 10px; color: #475569; letter-spacing: 1px; text-transform: uppercase; }
 
-        /* Stats */
-        .stats-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
 
         .stat-box {
             background: #0f1f38;
             border: 1px solid #1e293b;
             border-radius: 6px;
-            padding: 10px 12px;
+            padding: 9px 10px;
             text-align: center;
         }
 
-        .stat-box .val {
-            font-size: 22px;
-            font-weight: 900;
-            line-height: 1;
-        }
-
-        .stat-box .lbl {
-            font-size: 9px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 3px;
-        }
-
+        .stat-box .val { font-size: 20px; font-weight: 900; line-height: 1; }
+        .stat-box .lbl { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
         .val.green { color: #22c55e; }
         .val.red   { color: #ef4444; }
         .val.cyan  { color: var(--omc-cyan, #00d2ff); }
 
-        /* Séparateur section */
         .section-label {
             font-size: 9px;
             font-weight: 700;
@@ -105,15 +74,22 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             border-top: 1px solid #1e293b;
-            padding-top: 12px;
+            padding-top: 10px;
         }
 
-        /* Formulaire d'assignation */
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
+        .selected-info {
+            background: #0f1f38;
+            border: 1px solid #1e3a5f;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 11px;
+            color: #94a3b8;
+            min-height: 48px;
         }
+
+        .selected-info strong { color: var(--omc-cyan, #00d2ff); font-size: 13px; }
+
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
 
         .form-group label {
             font-size: 10px;
@@ -130,7 +106,7 @@
             border: 1px solid #1e3a5f;
             color: #e2e8f0;
             border-radius: 5px;
-            padding: 8px 10px;
+            padding: 7px 10px;
             font-size: 12px;
             font-family: 'Segoe UI', sans-serif;
             width: 100%;
@@ -147,11 +123,11 @@
 
         .btn-assign {
             width: 100%;
-            padding: 11px;
+            padding: 10px;
             background: var(--omc-cyan, #00d2ff);
             color: #0a1324;
             font-weight: 900;
-            font-size: 12px;
+            font-size: 11px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
             border: none;
@@ -159,12 +135,11 @@
             cursor: pointer;
             transition: opacity 0.2s;
         }
-
         .btn-assign:hover { opacity: 0.85; }
 
         .btn-liberer {
             width: 100%;
-            padding: 10px;
+            padding: 9px;
             background: transparent;
             color: #ef4444;
             font-weight: 700;
@@ -175,230 +150,91 @@
             border-radius: 5px;
             cursor: pointer;
             transition: all 0.2s;
-            margin-top: 2px;
         }
-
         .btn-liberer:hover { background: #ef4444; color: white; }
-
-        /* Sélection active */
-        .selected-info {
-            background: #0f1f38;
-            border: 1px solid #1e3a5f;
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 11px;
-            color: #94a3b8;
-        }
-
-        .selected-info strong {
-            color: var(--omc-cyan, #00d2ff);
-            font-size: 13px;
-        }
 
         /* ── MAIN ── */
         .main {
             flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: #0d1a2e;
+            padding: 20px 24px;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            gap: 8px;
         }
-
-        /* Onglets étages */
-        .tabs {
-            display: flex;
-            background: #060e1c;
-            border-bottom: 2px solid #1e293b;
-            padding: 0 20px;
-        }
-
-        .tab-btn {
-            padding: 14px 28px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: #475569;
-            background: none;
-            border: none;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
-            transition: all 0.2s;
-        }
-
-        .tab-btn.active {
-            color: var(--omc-cyan, #00d2ff);
-            border-bottom-color: var(--omc-cyan, #00d2ff);
-        }
-
-        .tab-btn:hover:not(.active) { color: #94a3b8; }
-
-        /* Zone du plan */
-        .plan-area {
-            flex: 1;
-            overflow: auto;
-            padding: 30px;
-            background: #0d1a2e;
-            position: relative;
-        }
-
-        .floor-plan {
-            position: relative;
-            display: none;
-        }
-
-        .floor-plan.active { display: block; }
 
         /* Légende */
         .legend {
             display: flex;
             gap: 16px;
-            margin-bottom: 18px;
             align-items: center;
             flex-wrap: wrap;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1e293b;
+            flex-shrink: 0;
         }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            color: #94a3b8;
-        }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8; }
 
-        .legend-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 3px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
+        .legend-dot { width: 14px; height: 14px; border-radius: 3px; }
+        .legend-dot.available { background: rgba(34,197,94,0.55);  border: 1px solid #22c55e; }
+        .legend-dot.occupied  { background: rgba(220,38,38,0.55);   border: 1px solid #ef4444; }
+        .legend-dot.selected  { background: rgba(0,210,255,0.4);    border: 1px solid var(--omc-cyan, #00d2ff); }
 
-        .legend-dot.available { background: #16a34a; }
-        .legend-dot.occupied  { background: #dc2626; }
-        .legend-dot.selected  { background: var(--omc-cyan, #00d2ff); }
-
-        /* Grille des chambres */
-        .rooms-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .floor-section-title {
+        /* Titre étage */
+        .floor-title {
             font-size: 11px;
             font-weight: 700;
-            color: #475569;
+            color: var(--omc-cyan, #00d2ff);
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 4px;
+            flex-shrink: 0;
         }
 
-        .rooms-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        /* Chambre */
-        .room-card {
-            background: #0f1f38;
+        /* Conteneur image + SVG */
+        .plan-wrapper {
+            position: relative;
+            display: block;
+            line-height: 0;
             border: 1px solid #1e3a5f;
-            border-radius: 8px;
-            padding: 10px 12px;
-            min-width: 110px;
-            cursor: pointer;
-            transition: all 0.15s;
-            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            flex-shrink: 0;
         }
 
-        .room-card:hover {
-            border-color: var(--omc-cyan, #00d2ff);
-            transform: translateY(-2px);
+        .plan-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+            user-select: none;
+            pointer-events: none;
         }
 
-        .room-card.selected {
-            border-color: var(--omc-cyan, #00d2ff);
-            background: #0a2040;
-            box-shadow: 0 0 0 2px rgba(0,210,255,0.2);
+        .plan-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
         }
 
-        .room-number {
-            font-size: 13px;
-            font-weight: 900;
-            color: #e2e8f0;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        .beds-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        /* Lit */
-        .bed {
-            width: 28px;
-            height: 22px;
-            border-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.15);
-            cursor: pointer;
-            position: relative;
-            transition: all 0.15s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .bed::before {
-            content: '🛏';
-            font-size: 10px;
-            line-height: 1;
-        }
-
-        .bed.available {
-            background: #15803d;
-            border-color: #22c55e;
-        }
-
-        .bed.available:hover {
-            background: #16a34a;
-            transform: scale(1.15);
-        }
-
-        .bed.occupied {
-            background: #991b1b;
-            border-color: #ef4444;
-        }
-
-        .bed.occupied:hover {
-            background: #b91c1c;
-            transform: scale(1.15);
-        }
-
-        .bed.bed-selected {
-            outline: 2px solid var(--omc-cyan, #00d2ff);
-            outline-offset: 1px;
-        }
-
-        .room-occupancy {
-            font-size: 9px;
-            color: #475569;
-            margin-top: 6px;
-            text-align: right;
-        }
+        /* Zones chambre */
+        .room-zone { cursor: pointer; }
+        .room-zone rect { transition: all 0.15s; }
+        .room-zone:hover rect { filter: brightness(1.25); stroke-width: 3px !important; }
+        .room-zone.r-selected rect { stroke-width: 3px !important; }
 
         /* ── TOOLTIP ── */
         .tooltip {
             position: fixed;
             z-index: 9999;
-            background: #0a1324;
+            background: #080f1e;
             border: 1px solid var(--omc-cyan, #00d2ff);
             border-radius: 8px;
             padding: 12px 14px;
             min-width: 200px;
             max-width: 260px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.9);
             pointer-events: none;
             display: none;
             font-size: 12px;
@@ -415,28 +251,9 @@
             padding-bottom: 6px;
         }
 
-        .tooltip-row {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 4px;
-            align-items: flex-start;
-        }
-
-        .tooltip-row .t-label {
-            font-size: 9px;
-            font-weight: 700;
-            color: #475569;
-            text-transform: uppercase;
-            min-width: 60px;
-            letter-spacing: 0.5px;
-            padding-top: 1px;
-        }
-
-        .tooltip-row .t-val {
-            color: #e2e8f0;
-            font-size: 12px;
-            flex: 1;
-        }
+        .tooltip-row { display: flex; gap: 6px; margin-bottom: 4px; align-items: flex-start; }
+        .tooltip-row .t-label { font-size: 9px; font-weight: 700; color: #475569; text-transform: uppercase; min-width: 60px; letter-spacing: 0.5px; padding-top: 1px; }
+        .tooltip-row .t-val   { color: #e2e8f0; font-size: 12px; flex: 1; }
 
         .tooltip-status {
             margin-top: 8px;
@@ -452,7 +269,7 @@
         .tooltip-status.available { background: #14532d; color: #22c55e; }
         .tooltip-status.occupied  { background: #450a0a; color: #ef4444; }
 
-        /* Toast notification */
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -468,12 +285,10 @@
             transform: translateY(60px);
             opacity: 0;
             transition: all 0.3s;
+            pointer-events: none;
         }
 
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
+        .toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
@@ -487,32 +302,30 @@
     <div class="sidebar-title">Gestion des Chambres</div>
     <div class="sidebar-sub">Ocean Medical Center</div>
 
-    <!-- Stats -->
     <div class="stats-row">
         <div class="stat-box">
-            <div class="val green" id="stat-dispo">0</div>
-            <div class="lbl">Lits disponibles</div>
+            <div class="val green" id="stat-dispo">—</div>
+            <div class="lbl">Disponibles</div>
         </div>
         <div class="stat-box">
-            <div class="val red" id="stat-occupe">0</div>
-            <div class="lbl">Lits occupés</div>
+            <div class="val red" id="stat-occupe">—</div>
+            <div class="lbl">Occupées</div>
         </div>
     </div>
     <div class="stats-row">
         <div class="stat-box">
-            <div class="val cyan" id="stat-total">0</div>
-            <div class="lbl">Lits totaux</div>
+            <div class="val cyan" id="stat-total">—</div>
+            <div class="lbl">Total chambres</div>
         </div>
         <div class="stat-box">
-            <div class="val cyan" id="stat-taux">0%</div>
+            <div class="val cyan" id="stat-taux">—</div>
             <div class="lbl">Taux d'occupation</div>
         </div>
     </div>
 
-    <div class="section-label">Lit sélectionné</div>
-
+    <div class="section-label">Chambre sélectionnée</div>
     <div class="selected-info" id="selected-info">
-        <span style="color:#475569;font-size:11px;">Cliquez sur un lit pour le sélectionner</span>
+        <span style="color:#475569;">Cliquez sur une chambre du plan</span>
     </div>
 
     <div class="section-label">Assigner un patient</div>
@@ -521,17 +334,14 @@
         <label>Prénom</label>
         <input type="text" id="in-prenom" placeholder="Prénom du patient">
     </div>
-
     <div class="form-group">
         <label>Nom</label>
         <input type="text" id="in-nom" placeholder="NOM du patient">
     </div>
-
     <div class="form-group">
         <label>Motif d'hospitalisation</label>
         <textarea id="in-motif" rows="2" placeholder="Fracture, post-op, surveillance..."></textarea>
     </div>
-
     <div class="form-group">
         <label>Durée estimée</label>
         <select id="in-duree">
@@ -545,218 +355,189 @@
             <option>Durée indéterminée</option>
         </select>
     </div>
-
     <div class="form-group">
         <label>Médecin référent</label>
         <input type="text" id="in-medecin" placeholder="Dr. ...">
     </div>
 
-    <button class="btn-assign" onclick="assignerLit()">✅ Assigner ce lit</button>
-    <button class="btn-liberer" onclick="libererLit()">🔓 Libérer ce lit</button>
+    <button class="btn-assign" onclick="assignerChambre()">✅ Assigner cette chambre</button>
+    <button class="btn-liberer" onclick="libererChambre()">🔓 Libérer cette chambre</button>
 </aside>
 
 <!-- MAIN -->
 <div class="main">
 
-    <!-- Onglets -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchFloor(1, this)">🏥 Niveau 1 — NV-1</button>
-        <button class="tab-btn"       onclick="switchFloor(2, this)">🏥 Niveau 2 — NV-2</button>
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot available"></div> Disponible</div>
+        <div class="legend-item"><div class="legend-dot occupied"></div>  Occupée</div>
+        <div class="legend-item"><div class="legend-dot selected"></div>  Sélectionnée</div>
+        <div style="margin-left:auto;font-size:11px;color:#475569;">Survolez une chambre pour les infos patient</div>
     </div>
 
-    <!-- Zone plan -->
-    <div class="plan-area">
-
-        <!-- Légende -->
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-dot available"></div> Disponible
-            </div>
-            <div class="legend-item">
-                <div class="legend-dot occupied"></div> Occupé
-            </div>
-            <div class="legend-item">
-                <div class="legend-dot selected"></div> Sélectionné
-            </div>
-            <div style="margin-left: auto; font-size: 11px; color: #475569;">
-                Survolez un lit occupé pour voir les infos patient
-            </div>
-        </div>
-
-        <!-- ETAGE 1 -->
-        <div class="floor-plan active" id="floor-1">
-            <div class="floor-section-title">Aile Ouest — Niveau 1</div>
-            <div class="rooms-row" id="rooms-floor1-west"></div>
-
-            <div class="floor-section-title" style="margin-top:20px;">Aile Est — Niveau 1</div>
-            <div class="rooms-row" id="rooms-floor1-east"></div>
-        </div>
-
-        <!-- ETAGE 2 -->
-        <div class="floor-plan" id="floor-2">
-            <div class="floor-section-title">Aile Ouest — Niveau 2</div>
-            <div class="rooms-row" id="rooms-floor2-west"></div>
-
-            <div class="floor-section-title" style="margin-top:20px;">Aile Est — Niveau 2</div>
-            <div class="rooms-row" id="rooms-floor2-east"></div>
-        </div>
-
+    <!-- NV-1 -->
+    <div class="floor-title">🏥 Niveau 1 — NV-1</div>
+    <div class="plan-wrapper">
+        <img src="assets/1er-etage.png" alt="Plan Niveau 1" id="img-1">
+        <svg class="plan-overlay" id="overlay-1"></svg>
     </div>
+
+    <!-- NV-2 -->
+    <div class="floor-title" style="margin-top:10px;">🏥 Niveau 2 — NV-2</div>
+    <div class="plan-wrapper">
+        <img src="assets/2e-etage.png" alt="Plan Niveau 2" id="img-2">
+        <svg class="plan-overlay" id="overlay-2"></svg>
+    </div>
+
 </div>
 
 <!-- Tooltip -->
 <div class="tooltip" id="tooltip">
-    <div class="tooltip-title" id="tt-bed">Lit —</div>
-    <div class="tooltip-row">
-        <span class="t-label">Patient</span>
-        <span class="t-val" id="tt-patient">—</span>
-    </div>
-    <div class="tooltip-row">
-        <span class="t-label">Motif</span>
-        <span class="t-val" id="tt-motif">—</span>
-    </div>
-    <div class="tooltip-row">
-        <span class="t-label">Durée</span>
-        <span class="t-val" id="tt-duree">—</span>
-    </div>
-    <div class="tooltip-row">
-        <span class="t-label">Médecin</span>
-        <span class="t-val" id="tt-medecin">—</span>
-    </div>
-    <div class="tooltip-row">
-        <span class="t-label">Depuis</span>
-        <span class="t-val" id="tt-since">—</span>
-    </div>
-    <div class="tooltip-status" id="tt-status">Disponible</div>
+    <div class="tooltip-title" id="tt-room">Chambre —</div>
+    <div class="tooltip-row"><span class="t-label">Patient</span><span class="t-val" id="tt-patient">—</span></div>
+    <div class="tooltip-row"><span class="t-label">Motif</span>  <span class="t-val" id="tt-motif">—</span></div>
+    <div class="tooltip-row"><span class="t-label">Durée</span>  <span class="t-val" id="tt-duree">—</span></div>
+    <div class="tooltip-row"><span class="t-label">Médecin</span><span class="t-val" id="tt-medecin">—</span></div>
+    <div class="tooltip-row"><span class="t-label">Depuis</span> <span class="t-val" id="tt-since">—</span></div>
+    <div class="tooltip-status" id="tt-status"></div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
 /* ============================================================
-   DONNÉES — Chambres par étage (d'après le plan NV-1 / NV-2)
-   Format: { id, lits }
-   Chambres commençant par W, extraites des plans
+   CHAMBRES — coordonnées exprimées en % (0–100)
+   par rapport aux dimensions réelles de chaque image
+   Format : { id, xPct, yPct, wPct, hPct }
+
+   IMPORTANT : ces valeurs sont des estimations visuelles
+   basées sur le plan. Ajuste-les si les zones ne tombent
+   pas exactement sur les bonnes pièces.
    ============================================================ */
 
-const FLOORS = {
-    1: {
-        west: [
-            { id: 'W100', lits: 2 },
-            { id: 'W101', lits: 2 },
-            { id: 'W110', lits: 1 },
-            { id: 'W111', lits: 1 },
-            { id: 'W112', lits: 1 },
-            { id: 'W113', lits: 1 },
-        ],
-        east: [
-            { id: 'A1',  lits: 3 },
-            { id: 'B1',  lits: 2 },
-            { id: 'B2',  lits: 2 },
-        ]
-    },
-    2: {
-        west: [
-            { id: 'W200', lits: 2 },
-            { id: 'W205', lits: 2 },
-            { id: 'W204', lits: 2 },
-            { id: 'W205b', lits: 2 },
-            { id: 'W206', lits: 2 },
-            { id: 'W201', lits: 2 },
-        ],
-        east: [
-            { id: 'W210', lits: 3 },
-            { id: 'W211', lits: 2 },
-            { id: 'W212', lits: 2 },
-        ]
-    }
+const ROOMS = {
+    1: [
+        // Aile Ouest — corridor gauche
+        { id: 'W100',  xPct:  1.5, yPct: 26,  wPct: 10,  hPct: 16 },
+        { id: 'W101',  xPct:  1.5, yPct: 47,  wPct: 10,  hPct: 16 },
+        // Aile Ouest — bas
+        { id: 'W110',  xPct:  8,   yPct: 67,  wPct:  6,  hPct: 10 },
+        { id: 'W111',  xPct:  8,   yPct: 79,  wPct:  6,  hPct: 10 },
+        { id: 'W112',  xPct: 14,   yPct: 67,  wPct:  6,  hPct: 10 },
+        { id: 'W113',  xPct: 14,   yPct: 79,  wPct:  6,  hPct: 10 },
+        // Salles centrales (A1, B1, B2)
+        { id: 'B1',    xPct: 20,   yPct: 38,  wPct:  9,  hPct: 20 },
+        { id: 'A1',    xPct: 29,   yPct: 38,  wPct: 10,  hPct: 20 },
+        { id: 'B2',    xPct: 39,   yPct: 38,  wPct:  7,  hPct: 20 },
+    ],
+    2: [
+        // Aile Ouest — rangée de chambres
+        { id: 'W200',  xPct:  2,   yPct: 22,  wPct:  8,  hPct: 12 },
+        { id: 'W201',  xPct:  2,   yPct: 35,  wPct:  8,  hPct: 12 },
+        { id: 'W204',  xPct:  2,   yPct: 48,  wPct:  8,  hPct: 12 },
+        { id: 'W205',  xPct:  2,   yPct: 61,  wPct:  8,  hPct: 12 },
+        { id: 'W206',  xPct: 11,   yPct: 35,  wPct:  8,  hPct: 12 },
+        // Aile Est — côté droit
+        { id: 'W210',  xPct: 61,   yPct: 22,  wPct:  9,  hPct: 14 },
+        { id: 'W211',  xPct: 61,   yPct: 37,  wPct:  9,  hPct: 12 },
+        { id: 'W212',  xPct: 61,   yPct: 50,  wPct:  9,  hPct: 12 },
+    ]
 };
 
 /* ============================================================
-   ÉTAT — stocké dans localStorage
-   beds[bedKey] = { prenom, nom, motif, duree, medecin, since }
-                   ou null si disponible
+   ÉTAT localStorage
    ============================================================ */
 
 function loadState() {
-    try { return JSON.parse(localStorage.getItem('omc_chambres') || '{}'); }
+    try { return JSON.parse(localStorage.getItem('omc_chambres_v2') || '{}'); }
     catch(e) { return {}; }
 }
-
-function saveState(state) {
-    localStorage.setItem('omc_chambres', JSON.stringify(state));
-}
+function saveState() { localStorage.setItem('omc_chambres_v2', JSON.stringify(state)); }
 
 let state = loadState();
-let selectedBed = null; // { roomId, bedIndex, key }
+let selectedRoom = null; // { id, floor }
 
 /* ============================================================
-   RENDU
+   COULEURS selon état
    ============================================================ */
 
-function bedKey(roomId, bedIndex) {
-    return `${roomId}_lit${bedIndex}`;
+function roomStyle(roomId) {
+    if (selectedRoom && selectedRoom.id === roomId)
+        return { fill: 'rgba(0,210,255,0.40)', stroke: '#00d2ff', sw: 2.5 };
+    if (state[roomId])
+        return { fill: 'rgba(220,38,38,0.50)',  stroke: '#ef4444', sw: 2   };
+    return     { fill: 'rgba(34,197,94,0.40)',  stroke: '#22c55e', sw: 2   };
 }
 
-function renderFloor(floorNum) {
-    const floor = FLOORS[floorNum];
+/* ============================================================
+   RENDU SVG OVERLAY — viewBox suit les dimensions réelles de l'image
+   ============================================================ */
 
-    ['west','east'].forEach(wing => {
-        const containerId = `rooms-floor${floorNum}-${wing}`;
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        container.innerHTML = '';
+function drawOverlay(floor) {
+    const img    = document.getElementById(`img-${floor}`);
+    const svgEl  = document.getElementById(`overlay-${floor}`);
+    const rooms  = ROOMS[floor];
 
-        floor[wing].forEach(room => {
-            const card = document.createElement('div');
-            card.className = 'room-card';
-            card.id = `room-${room.id}`;
+    // Dimensions naturelles de l'image (fallback 1080×600)
+    const nw = img.naturalWidth  || 1080;
+    const nh = img.naturalHeight || 600;
 
-            const occCount = Array.from({length: room.lits}, (_, i) => {
-                const k = bedKey(room.id, i);
-                return state[k] ? 1 : 0;
-            }).reduce((a,b) => a+b, 0);
+    svgEl.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
+    svgEl.innerHTML = '';
 
-            card.innerHTML = `
-                <div class="room-number">${room.id}</div>
-                <div class="beds-container" id="beds-${room.id}"></div>
-                <div class="room-occupancy">${occCount}/${room.lits} occupé${occCount>1?'s':''}</div>
-            `;
+    rooms.forEach(room => {
+        const s = roomStyle(room.id);
 
-            container.appendChild(card);
+        // Convertir % → pixels naturels
+        const x = room.xPct / 100 * nw;
+        const y = room.yPct / 100 * nh;
+        const w = room.wPct / 100 * nw;
+        const h = room.hPct / 100 * nh;
 
-            // Créer les lits
-            const bedsContainer = card.querySelector(`#beds-${room.id}`);
-            for (let i = 0; i < room.lits; i++) {
-                const key = bedKey(room.id, i);
-                const bed = document.createElement('div');
-                bed.className = 'bed ' + (state[key] ? 'occupied' : 'available');
-                bed.id = `bed-${key}`;
-                bed.dataset.key = key;
-                bed.dataset.room = room.id;
-                bed.dataset.index = i;
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'room-zone' + (selectedRoom?.id === room.id ? ' r-selected' : ''));
 
-                // Sélection au clic
-                bed.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    selectBed(room.id, i, key);
-                });
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width',  w);
+        rect.setAttribute('height', h);
+        rect.setAttribute('rx', 4);
+        rect.setAttribute('fill',         s.fill);
+        rect.setAttribute('stroke',       s.stroke);
+        rect.setAttribute('stroke-width', s.sw);
 
-                // Tooltip au survol
-                bed.addEventListener('mouseenter', (e) => showTooltip(e, key, room.id, i));
-                bed.addEventListener('mousemove',  (e) => moveTooltip(e));
-                bed.addEventListener('mouseleave', hideTooltip);
+        // Label chambre
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x + w / 2);
+        text.setAttribute('y', y + h / 2);
+        text.setAttribute('text-anchor',       'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('fill',        'white');
+        text.setAttribute('font-size',   Math.max(10, Math.min(w * 0.28, 14)));
+        text.setAttribute('font-weight', '800');
+        text.setAttribute('font-family', 'Segoe UI, sans-serif');
+        // Contour noir pour lisibilité sur le plan
+        text.setAttribute('paint-order', 'stroke');
+        text.setAttribute('stroke',       'rgba(0,0,0,0.7)');
+        text.setAttribute('stroke-width', '3');
+        text.setAttribute('stroke-linejoin', 'round');
+        text.textContent = room.id;
 
-                bedsContainer.appendChild(bed);
-            }
-        });
+        g.appendChild(rect);
+        g.appendChild(text);
+
+        g.addEventListener('click',      ()  => selectRoom(room.id, floor));
+        g.addEventListener('mouseenter', (e) => showTooltip(e, room.id));
+        g.addEventListener('mousemove',  (e) => moveTooltip(e));
+        g.addEventListener('mouseleave', ()  => hideTooltip());
+
+        svgEl.appendChild(g);
     });
 }
 
-function renderAll() {
-    renderFloor(1);
-    renderFloor(2);
+function redrawAll() {
+    drawOverlay(1);
+    drawOverlay(2);
     updateStats();
 }
 
@@ -764,40 +545,26 @@ function renderAll() {
    SÉLECTION
    ============================================================ */
 
-function selectBed(roomId, bedIndex, key) {
-    // Déselectionner l'ancien
-    if (selectedBed) {
-        const old = document.getElementById(`bed-${selectedBed.key}`);
-        if (old) old.classList.remove('bed-selected');
-        const oldRoom = document.getElementById(`room-${selectedBed.roomId}`);
-        if (oldRoom) oldRoom.classList.remove('selected');
-    }
+function selectRoom(roomId, floor) {
+    selectedRoom = { id: roomId, floor };
+    redrawAll();
 
-    selectedBed = { roomId, bedIndex, key };
-
-    const el = document.getElementById(`bed-${key}`);
-    if (el) el.classList.add('bed-selected');
-    const roomEl = document.getElementById(`room-${roomId}`);
-    if (roomEl) roomEl.classList.add('selected');
-
-    // Mettre à jour l'info sidebar
-    const info = document.getElementById('selected-info');
-    const patient = state[key];
+    const info    = document.getElementById('selected-info');
+    const patient = state[roomId];
 
     if (patient) {
         info.innerHTML = `
-            <strong>${roomId} — Lit ${bedIndex + 1}</strong><br>
-            <div style="margin-top:6px;color:#e2e8f0;">${patient.prenom} ${patient.nom}</div>
+            <strong>${roomId}</strong> — <span style="color:#22c55e;font-size:10px;">Occupée</span><br>
+            <div style="color:#e2e8f0;margin-top:4px;font-size:12px;">${patient.prenom} ${patient.nom}</div>
             <div style="color:#64748b;font-size:10px;margin-top:2px;">${patient.motif || '—'}</div>
         `;
-        // Pré-remplir le formulaire
-        document.getElementById('in-prenom').value  = patient.prenom || '';
-        document.getElementById('in-nom').value     = patient.nom    || '';
-        document.getElementById('in-motif').value   = patient.motif  || '';
-        document.getElementById('in-duree').value   = patient.duree  || '';
-        document.getElementById('in-medecin').value = patient.medecin|| '';
+        document.getElementById('in-prenom').value  = patient.prenom  || '';
+        document.getElementById('in-nom').value     = patient.nom     || '';
+        document.getElementById('in-motif').value   = patient.motif   || '';
+        document.getElementById('in-duree').value   = patient.duree   || '';
+        document.getElementById('in-medecin').value = patient.medecin || '';
     } else {
-        info.innerHTML = `<strong>${roomId} — Lit ${bedIndex + 1}</strong><br><span style="color:#22c55e;font-size:11px;">✅ Disponible</span>`;
+        info.innerHTML = `<strong>${roomId}</strong> — <span style="color:#22c55e;font-size:10px;">✅ Disponible</span>`;
         document.getElementById('in-prenom').value  = '';
         document.getElementById('in-nom').value     = '';
         document.getElementById('in-motif').value   = '';
@@ -810,94 +577,46 @@ function selectBed(roomId, bedIndex, key) {
    ASSIGNER / LIBÉRER
    ============================================================ */
 
-function assignerLit() {
-    if (!selectedBed) { showToast('⚠️ Sélectionnez d\'abord un lit', 'warn'); return; }
+function assignerChambre() {
+    if (!selectedRoom) { showToast('⚠️ Sélectionnez d\'abord une chambre sur le plan', 'warn'); return; }
 
     const prenom  = document.getElementById('in-prenom').value.trim();
-    const nom     = document.getElementById('in-nom').value.trim();
+    const nom     = document.getElementById('in-nom').value.trim().toUpperCase();
     const motif   = document.getElementById('in-motif').value.trim();
     const duree   = document.getElementById('in-duree').value;
     const medecin = document.getElementById('in-medecin').value.trim();
 
     if (!prenom || !nom) { showToast('⚠️ Prénom et Nom obligatoires', 'warn'); return; }
 
-    state[selectedBed.key] = {
-        prenom, nom, motif, duree, medecin,
-        since: new Date().toISOString()
-    };
-    saveState(state);
-
-    // Mettre à jour le lit visuellement
-    const el = document.getElementById(`bed-${selectedBed.key}`);
-    if (el) {
-        el.classList.remove('available');
-        el.classList.add('occupied');
-    }
-
-    // Mettre à jour le compteur de la chambre
-    updateRoomCount(selectedBed.roomId);
-    updateStats();
-    showToast(`✅ ${prenom} ${nom} assigné(e) — ${selectedBed.roomId} Lit ${selectedBed.bedIndex+1}`);
-    selectBed(selectedBed.roomId, selectedBed.bedIndex, selectedBed.key);
+    state[selectedRoom.id] = { prenom, nom, motif, duree, medecin, since: new Date().toISOString() };
+    saveState();
+    redrawAll();
+    selectRoom(selectedRoom.id, selectedRoom.floor);
+    showToast(`✅ ${prenom} ${nom} assigné(e) en chambre ${selectedRoom.id}`);
 }
 
-function libererLit() {
-    if (!selectedBed) { showToast('⚠️ Sélectionnez d\'abord un lit', 'warn'); return; }
-    if (!state[selectedBed.key]) { showToast('Ce lit est déjà disponible', 'warn'); return; }
+function libererChambre() {
+    if (!selectedRoom)          { showToast('⚠️ Sélectionnez d\'abord une chambre', 'warn'); return; }
+    if (!state[selectedRoom.id]){ showToast('Cette chambre est déjà disponible', 'warn'); return; }
 
-    const p = state[selectedBed.key];
-    const nom = p ? `${p.prenom} ${p.nom}` : 'le patient';
-
-    delete state[selectedBed.key];
-    saveState(state);
-
-    const el = document.getElementById(`bed-${selectedBed.key}`);
-    if (el) {
-        el.classList.remove('occupied');
-        el.classList.add('available');
-    }
-
-    updateRoomCount(selectedBed.roomId);
-    updateStats();
-    showToast(`🔓 Lit libéré — ${nom} sorti(e)`);
-    selectBed(selectedBed.roomId, selectedBed.bedIndex, selectedBed.key);
+    const p = state[selectedRoom.id];
+    delete state[selectedRoom.id];
+    saveState();
+    redrawAll();
+    selectRoom(selectedRoom.id, selectedRoom.floor);
+    showToast(`🔓 ${p.prenom} ${p.nom} sorti(e) — ${selectedRoom.id} libérée`);
 }
 
-function updateRoomCount(roomId) {
-    // Trouver le nombre de lits de cette chambre
-    let lits = 0;
-    for (const floor of Object.values(FLOORS)) {
-        for (const wing of Object.values(floor)) {
-            const room = wing.find(r => r.id === roomId);
-            if (room) { lits = room.lits; break; }
-        }
-        if (lits) break;
-    }
-    const occCount = Array.from({length: lits}, (_, i) => {
-        return state[bedKey(roomId, i)] ? 1 : 0;
-    }).reduce((a,b) => a+b, 0);
-
-    const roomEl = document.getElementById(`room-${roomId}`);
-    if (roomEl) {
-        const occ = roomEl.querySelector('.room-occupancy');
-        if (occ) occ.textContent = `${occCount}/${lits} occupé${occCount>1?'s':''}`;
-    }
-}
+/* ============================================================
+   STATS
+   ============================================================ */
 
 function updateStats() {
-    let total = 0, occupied = 0;
-    for (const floor of Object.values(FLOORS)) {
-        for (const wing of Object.values(floor)) {
-            for (const room of wing) {
-                total += room.lits;
-                for (let i = 0; i < room.lits; i++) {
-                    if (state[bedKey(room.id, i)]) occupied++;
-                }
-            }
-        }
-    }
-    const dispo = total - occupied;
-    const taux  = total > 0 ? Math.round(occupied / total * 100) : 0;
+    const all      = [...ROOMS[1], ...ROOMS[2]];
+    const total    = all.length;
+    const occupied = all.filter(r => state[r.id]).length;
+    const dispo    = total - occupied;
+    const taux     = total ? Math.round(occupied / total * 100) : 0;
 
     document.getElementById('stat-dispo').textContent  = dispo;
     document.getElementById('stat-occupe').textContent = occupied;
@@ -911,65 +630,35 @@ function updateStats() {
 
 const tooltip = document.getElementById('tooltip');
 
-function showTooltip(e, key, roomId, bedIndex) {
-    const patient = state[key];
-    const bedLabel = `${roomId} — Lit ${bedIndex + 1}`;
+function showTooltip(e, roomId) {
+    const p = state[roomId];
+    document.getElementById('tt-room').textContent    = `Chambre ${roomId}`;
+    document.getElementById('tt-patient').textContent = p ? `${p.prenom} ${p.nom}` : '—';
+    document.getElementById('tt-motif').textContent   = p?.motif   || '—';
+    document.getElementById('tt-duree').textContent   = p?.duree   || '—';
+    document.getElementById('tt-medecin').textContent = p?.medecin || '—';
+    document.getElementById('tt-since').textContent   = p?.since
+        ? new Date(p.since).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+        : '—';
 
-    document.getElementById('tt-bed').textContent = bedLabel;
-
-    if (patient) {
-        document.getElementById('tt-patient').textContent = `${patient.prenom} ${patient.nom}`;
-        document.getElementById('tt-motif').textContent   = patient.motif   || '—';
-        document.getElementById('tt-duree').textContent   = patient.duree   || '—';
-        document.getElementById('tt-medecin').textContent = patient.medecin || '—';
-        document.getElementById('tt-since').textContent   = patient.since
-            ? new Date(patient.since).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
-            : '—';
-        const status = document.getElementById('tt-status');
-        status.textContent = '🔴 Occupé';
-        status.className   = 'tooltip-status occupied';
-    } else {
-        document.getElementById('tt-patient').textContent = '—';
-        document.getElementById('tt-motif').textContent   = '—';
-        document.getElementById('tt-duree').textContent   = '—';
-        document.getElementById('tt-medecin').textContent = '—';
-        document.getElementById('tt-since').textContent   = '—';
-        const status = document.getElementById('tt-status');
-        status.textContent = '🟢 Disponible';
-        status.className   = 'tooltip-status available';
-    }
+    const s = document.getElementById('tt-status');
+    if (p) { s.textContent = '🔴 Occupée';     s.className = 'tooltip-status occupied'; }
+    else   { s.textContent = '🟢 Disponible';  s.className = 'tooltip-status available'; }
 
     tooltip.classList.add('visible');
     moveTooltip(e);
 }
 
 function moveTooltip(e) {
-    const tw = tooltip.offsetWidth;
-    const th = tooltip.offsetHeight;
-    let x = e.clientX + 14;
-    let y = e.clientY + 14;
+    const tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+    let x = e.clientX + 14, y = e.clientY + 14;
     if (x + tw > window.innerWidth  - 10) x = e.clientX - tw - 14;
     if (y + th > window.innerHeight - 10) y = e.clientY - th - 14;
     tooltip.style.left = x + 'px';
     tooltip.style.top  = y + 'px';
 }
 
-function hideTooltip() {
-    tooltip.classList.remove('visible');
-}
-
-/* ============================================================
-   ONGLETS ÉTAGES
-   ============================================================ */
-
-function switchFloor(num, btn) {
-    document.querySelectorAll('.floor-plan').forEach(f => f.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`floor-${num}`).classList.add('active');
-    btn.classList.add('active');
-    selectedBed = null;
-    document.getElementById('selected-info').innerHTML = '<span style="color:#475569;font-size:11px;">Cliquez sur un lit pour le sélectionner</span>';
-}
+function hideTooltip() { tooltip.classList.remove('visible'); }
 
 /* ============================================================
    TOAST
@@ -980,13 +669,27 @@ function showToast(msg, type) {
     t.textContent = msg;
     t.style.borderColor = type === 'warn' ? '#f59e0b' : 'var(--omc-cyan, #00d2ff)';
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+    setTimeout(() => t.classList.remove('show'), 3200);
 }
 
 /* ============================================================
-   INIT
+   INIT — attendre que les images soient chargées
    ============================================================ */
-renderAll();
+
+function initFloor(floor) {
+    const img = document.getElementById(`img-${floor}`);
+    if (img.complete && img.naturalWidth > 0) {
+        drawOverlay(floor);
+    } else {
+        img.addEventListener('load', () => drawOverlay(floor));
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    initFloor(1);
+    initFloor(2);
+    updateStats();
+});
 </script>
 
 <script type="module" src="global.js"></script>
