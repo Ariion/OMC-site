@@ -18,20 +18,20 @@
             overflow: hidden;
         }
 
-        /* ── SIDEBAR ── */
+        /* ══════════════════════════════════
+           SIDEBAR
+        ══════════════════════════════════ */
         .sidebar {
-            width: 320px;
-            min-width: 320px;
+            width: 300px;
+            min-width: 300px;
             background: #060e1c;
             border-right: 1px solid #1e293b;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            padding: 18px;
-            gap: 12px;
+            padding: 16px;
+            gap: 10px;
         }
-
-        .sidebar-header { display: flex; align-items: center; justify-content: space-between; }
 
         .back-link {
             color: var(--omc-cyan, #00d2ff);
@@ -42,7 +42,7 @@
         }
 
         .sidebar-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 900;
             color: var(--omc-cyan, #00d2ff);
             text-transform: uppercase;
@@ -51,13 +51,13 @@
 
         .sidebar-sub { font-size: 10px; color: #475569; letter-spacing: 1px; text-transform: uppercase; }
 
-        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 
         .stat-box {
             background: #0f1f38;
             border: 1px solid #1e293b;
             border-radius: 6px;
-            padding: 9px 10px;
+            padding: 8px 10px;
             text-align: center;
         }
 
@@ -84,10 +84,39 @@
             padding: 10px 12px;
             font-size: 11px;
             color: #94a3b8;
-            min-height: 48px;
+            min-height: 46px;
         }
 
-        .selected-info strong { color: var(--omc-cyan, #00d2ff); font-size: 13px; }
+        .selected-info strong { color: var(--omc-cyan, #00d2ff); font-size: 12px; }
+
+        /* Grille des lits dans la sidebar */
+        .beds-sidebar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .bed-btn {
+            width: 32px;
+            height: 26px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .bed-btn.available { background: #166534; border-color: #22c55e; }
+        .bed-btn.available:hover { background: #15803d; transform: scale(1.1); }
+        .bed-btn.occupied  { background: #7f1d1d; border-color: #ef4444; }
+        .bed-btn.occupied:hover  { background: #991b1b; transform: scale(1.1); }
+        .bed-btn.bed-selected { outline: 2px solid var(--omc-cyan, #00d2ff); outline-offset: 1px; }
 
         .form-group { display: flex; flex-direction: column; gap: 4px; }
 
@@ -153,61 +182,76 @@
         }
         .btn-liberer:hover { background: #ef4444; color: white; }
 
-        /* ── MAIN ── */
+        /* ══════════════════════════════════
+           MAIN
+        ══════════════════════════════════ */
         .main {
             flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            background: #0d1a2e;
-            padding: 20px 24px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            overflow: hidden;
+            background: #0a1324;
         }
 
-        /* Légende */
-        .legend {
+        /* Onglets étages */
+        .tabs {
             display: flex;
-            gap: 16px;
-            align-items: center;
-            flex-wrap: wrap;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #1e293b;
+            background: #060e1c;
+            border-bottom: 2px solid #1e293b;
+            padding: 0 20px;
             flex-shrink: 0;
         }
 
-        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8; }
-
-        .legend-dot { width: 14px; height: 14px; border-radius: 3px; }
-        .legend-dot.available { background: rgba(34,197,94,0.55);  border: 1px solid #22c55e; }
-        .legend-dot.occupied  { background: rgba(220,38,38,0.55);   border: 1px solid #ef4444; }
-        .legend-dot.selected  { background: rgba(0,210,255,0.4);    border: 1px solid var(--omc-cyan, #00d2ff); }
-
-        /* Titre étage */
-        .floor-title {
-            font-size: 11px;
+        .tab-btn {
+            padding: 13px 26px;
+            font-size: 12px;
             font-weight: 700;
-            color: var(--omc-cyan, #00d2ff);
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            flex-shrink: 0;
+            color: #475569;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
         }
 
-        /* Conteneur image + SVG */
+        .tab-btn.active {
+            color: var(--omc-cyan, #00d2ff);
+            border-bottom-color: var(--omc-cyan, #00d2ff);
+        }
+
+        .tab-btn:hover:not(.active) { color: #94a3b8; }
+
+        /* Zone du plan */
+        .plan-area {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+            background: #0a1324;
+        }
+
+        .floor-view {
+            display: none;
+            height: 100%;
+        }
+
+        .floor-view.active { display: block; height: 100%; }
+
+        /* Wrapper image+SVG — prend toute la hauteur disponible */
         .plan-wrapper {
             position: relative;
-            display: block;
-            line-height: 0;
-            border: 1px solid #1e3a5f;
-            border-radius: 6px;
-            overflow: hidden;
-            flex-shrink: 0;
+            width: 100%;
+            height: 100%;
         }
 
-        .plan-wrapper img {
-            display: block;
+        .plan-img {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: contain;
+            object-position: left center;
+            display: block;
             user-select: none;
             pointer-events: none;
         }
@@ -216,13 +260,55 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
+            overflow: visible;
         }
 
-        /* Zones chambre */
+        /* Zones chambres SVG */
         .room-zone { cursor: pointer; }
-        .room-zone rect { transition: all 0.15s; }
-        .room-zone:hover rect { filter: brightness(1.25); stroke-width: 3px !important; }
-        .room-zone.r-selected rect { stroke-width: 3px !important; }
+        .room-zone .room-bg { transition: all 0.15s; }
+        .room-zone:hover .room-bg { filter: brightness(1.3); stroke-width: 3px !important; }
+        .room-zone.r-selected .room-bg { stroke-width: 3px !important; }
+
+        /* Points lits SVG */
+        .bed-dot {
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .bed-dot circle {
+            transition: all 0.15s;
+        }
+
+        .bed-dot:hover circle {
+            r: 10;
+            filter: brightness(1.3);
+        }
+
+        .bed-dot.bd-selected circle {
+            stroke: var(--omc-cyan, #00d2ff);
+            stroke-width: 3;
+        }
+
+        /* Légende */
+        .legend-bar {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            background: rgba(6,14,28,0.85);
+            border: 1px solid #1e3a5f;
+            border-radius: 6px;
+            padding: 7px 12px;
+            z-index: 10;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #94a3b8; }
+        .legend-dot  { width: 12px; height: 12px; border-radius: 50%; }
+        .legend-dot.available { background: #22c55e; }
+        .legend-dot.occupied  { background: #ef4444; }
+        .legend-dot.selected  { background: var(--omc-cyan, #00d2ff); }
 
         /* ── TOOLTIP ── */
         .tooltip {
@@ -232,8 +318,8 @@
             border: 1px solid var(--omc-cyan, #00d2ff);
             border-radius: 8px;
             padding: 12px 14px;
-            min-width: 200px;
-            max-width: 260px;
+            min-width: 195px;
+            max-width: 255px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.9);
             pointer-events: none;
             display: none;
@@ -241,31 +327,11 @@
         }
 
         .tooltip.visible { display: block; }
-
-        .tooltip-title {
-            font-size: 13px;
-            font-weight: 900;
-            color: var(--omc-cyan, #00d2ff);
-            margin-bottom: 8px;
-            border-bottom: 1px solid #1e3a5f;
-            padding-bottom: 6px;
-        }
-
+        .tooltip-title { font-size: 13px; font-weight: 900; color: var(--omc-cyan, #00d2ff); margin-bottom: 8px; border-bottom: 1px solid #1e3a5f; padding-bottom: 6px; }
         .tooltip-row { display: flex; gap: 6px; margin-bottom: 4px; align-items: flex-start; }
-        .tooltip-row .t-label { font-size: 9px; font-weight: 700; color: #475569; text-transform: uppercase; min-width: 60px; letter-spacing: 0.5px; padding-top: 1px; }
+        .tooltip-row .t-label { font-size: 9px; font-weight: 700; color: #475569; text-transform: uppercase; min-width: 58px; letter-spacing: 0.5px; padding-top: 1px; }
         .tooltip-row .t-val   { color: #e2e8f0; font-size: 12px; flex: 1; }
-
-        .tooltip-status {
-            margin-top: 8px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 700;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
+        .tooltip-status { margin-top: 8px; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
         .tooltip-status.available { background: #14532d; color: #22c55e; }
         .tooltip-status.occupied  { background: #450a0a; color: #ef4444; }
 
@@ -293,11 +359,9 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
+<!-- ══════════ SIDEBAR ══════════ -->
 <aside class="sidebar">
-    <div class="sidebar-header">
-        <a href="index.html" class="back-link">← RETOUR PORTAIL</a>
-    </div>
+    <a href="index.html" class="back-link">← RETOUR PORTAIL</a>
 
     <div class="sidebar-title">Gestion des Chambres</div>
     <div class="sidebar-sub">Ocean Medical Center</div>
@@ -305,17 +369,17 @@
     <div class="stats-row">
         <div class="stat-box">
             <div class="val green" id="stat-dispo">—</div>
-            <div class="lbl">Disponibles</div>
+            <div class="lbl">Lits disponibles</div>
         </div>
         <div class="stat-box">
             <div class="val red" id="stat-occupe">—</div>
-            <div class="lbl">Occupées</div>
+            <div class="lbl">Lits occupés</div>
         </div>
     </div>
     <div class="stats-row">
         <div class="stat-box">
             <div class="val cyan" id="stat-total">—</div>
-            <div class="lbl">Total chambres</div>
+            <div class="lbl">Total lits</div>
         </div>
         <div class="stat-box">
             <div class="val cyan" id="stat-taux">—</div>
@@ -325,8 +389,9 @@
 
     <div class="section-label">Chambre sélectionnée</div>
     <div class="selected-info" id="selected-info">
-        <span style="color:#475569;">Cliquez sur une chambre du plan</span>
+        <span style="color:#475569;">Cliquez sur un lit du plan</span>
     </div>
+    <div class="beds-sidebar" id="beds-sidebar"></div>
 
     <div class="section-label">Assigner un patient</div>
 
@@ -360,39 +425,53 @@
         <input type="text" id="in-medecin" placeholder="Dr. ...">
     </div>
 
-    <button class="btn-assign" onclick="assignerChambre()">✅ Assigner cette chambre</button>
-    <button class="btn-liberer" onclick="libererChambre()">🔓 Libérer cette chambre</button>
+    <button class="btn-assign" onclick="assignerLit()">✅ Assigner ce lit</button>
+    <button class="btn-liberer" onclick="libererLit()">🔓 Libérer ce lit</button>
 </aside>
 
-<!-- MAIN -->
+<!-- ══════════ MAIN ══════════ -->
 <div class="main">
 
-    <div class="legend">
-        <div class="legend-item"><div class="legend-dot available"></div> Disponible</div>
-        <div class="legend-item"><div class="legend-dot occupied"></div>  Occupée</div>
-        <div class="legend-item"><div class="legend-dot selected"></div>  Sélectionnée</div>
-        <div style="margin-left:auto;font-size:11px;color:#475569;">Survolez une chambre pour les infos patient</div>
+    <!-- Onglets -->
+    <div class="tabs">
+        <button class="tab-btn active" id="tab-1" onclick="switchFloor(1)">🏥 Niveau 1 — NV-1</button>
+        <button class="tab-btn"        id="tab-2" onclick="switchFloor(2)">🏥 Niveau 2 — NV-2</button>
     </div>
 
-    <!-- NV-1 -->
-    <div class="floor-title">🏥 Niveau 1 — NV-1</div>
-    <div class="plan-wrapper">
-        <img src="assets/1er-etage.png" alt="Plan Niveau 1" id="img-1">
-        <svg class="plan-overlay" id="overlay-1"></svg>
-    </div>
+    <div class="plan-area">
 
-    <!-- NV-2 -->
-    <div class="floor-title" style="margin-top:10px;">🏥 Niveau 2 — NV-2</div>
-    <div class="plan-wrapper">
-        <img src="assets/2e-etage.png" alt="Plan Niveau 2" id="img-2">
-        <svg class="plan-overlay" id="overlay-2"></svg>
-    </div>
+        <!-- ── ÉTAGE 1 ── -->
+        <div class="floor-view active" id="floor-1">
+            <div class="plan-wrapper" id="wrap-1">
+                <img class="plan-img" src="assets/1er-etage.png" id="img-1" alt="NV-1">
+                <svg class="plan-overlay" id="svg-1"></svg>
+                <div class="legend-bar">
+                    <div class="legend-item"><div class="legend-dot available"></div> Disponible</div>
+                    <div class="legend-item"><div class="legend-dot occupied"></div>  Occupé</div>
+                    <div class="legend-item"><div class="legend-dot selected"></div>  Sélectionné</div>
+                </div>
+            </div>
+        </div>
 
+        <!-- ── ÉTAGE 2 ── -->
+        <div class="floor-view" id="floor-2">
+            <div class="plan-wrapper" id="wrap-2">
+                <img class="plan-img" src="assets/2e-etage.png" id="img-2" alt="NV-2">
+                <svg class="plan-overlay" id="svg-2"></svg>
+                <div class="legend-bar">
+                    <div class="legend-item"><div class="legend-dot available"></div> Disponible</div>
+                    <div class="legend-item"><div class="legend-dot occupied"></div>  Occupé</div>
+                    <div class="legend-item"><div class="legend-dot selected"></div>  Sélectionné</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <!-- Tooltip -->
 <div class="tooltip" id="tooltip">
-    <div class="tooltip-title" id="tt-room">Chambre —</div>
+    <div class="tooltip-title" id="tt-title">Lit —</div>
     <div class="tooltip-row"><span class="t-label">Patient</span><span class="t-val" id="tt-patient">—</span></div>
     <div class="tooltip-row"><span class="t-label">Motif</span>  <span class="t-val" id="tt-motif">—</span></div>
     <div class="tooltip-row"><span class="t-label">Durée</span>  <span class="t-val" id="tt-duree">—</span></div>
@@ -404,181 +483,386 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ============================================================
-   CHAMBRES — coordonnées exprimées en % (0–100)
-   par rapport aux dimensions réelles de chaque image
-   Format : { id, xPct, yPct, wPct, hPct }
+/* ══════════════════════════════════════════════════════════════
+   CONFIGURATION DES CHAMBRES + POSITIONS DES LITS
 
-   IMPORTANT : ces valeurs sont des estimations visuelles
-   basées sur le plan. Ajuste-les si les zones ne tombent
-   pas exactement sur les bonnes pièces.
-   ============================================================ */
+   Chaque chambre : {
+     id       : identifiant
+     floor    : 1 ou 2
+     lits     : nombre de lits
+     zone     : { xPct, yPct, wPct, hPct } rectangle coloré (% image naturelle)
+     litsPos  : [ {xPct, yPct} ] positions des cercles lits (% image naturelle)
+   }
 
-const ROOMS = {
-    1: [
-        // Aile Ouest — corridor gauche
-        { id: 'W100',  xPct:  1.5, yPct: 26,  wPct: 10,  hPct: 16 },
-        { id: 'W101',  xPct:  1.5, yPct: 47,  wPct: 10,  hPct: 16 },
-        // Aile Ouest — bas
-        { id: 'W110',  xPct:  8,   yPct: 67,  wPct:  6,  hPct: 10 },
-        { id: 'W111',  xPct:  8,   yPct: 79,  wPct:  6,  hPct: 10 },
-        { id: 'W112',  xPct: 14,   yPct: 67,  wPct:  6,  hPct: 10 },
-        { id: 'W113',  xPct: 14,   yPct: 79,  wPct:  6,  hPct: 10 },
-        // Salles centrales (A1, B1, B2)
-        { id: 'B1',    xPct: 20,   yPct: 38,  wPct:  9,  hPct: 20 },
-        { id: 'A1',    xPct: 29,   yPct: 38,  wPct: 10,  hPct: 20 },
-        { id: 'B2',    xPct: 39,   yPct: 38,  wPct:  7,  hPct: 20 },
-    ],
-    2: [
-        // Aile Ouest — rangée de chambres
-        { id: 'W200',  xPct:  2,   yPct: 22,  wPct:  8,  hPct: 12 },
-        { id: 'W201',  xPct:  2,   yPct: 35,  wPct:  8,  hPct: 12 },
-        { id: 'W204',  xPct:  2,   yPct: 48,  wPct:  8,  hPct: 12 },
-        { id: 'W205',  xPct:  2,   yPct: 61,  wPct:  8,  hPct: 12 },
-        { id: 'W206',  xPct: 11,   yPct: 35,  wPct:  8,  hPct: 12 },
-        // Aile Est — côté droit
-        { id: 'W210',  xPct: 61,   yPct: 22,  wPct:  9,  hPct: 14 },
-        { id: 'W211',  xPct: 61,   yPct: 37,  wPct:  9,  hPct: 12 },
-        { id: 'W212',  xPct: 61,   yPct: 50,  wPct:  9,  hPct: 12 },
-    ]
-};
+   Coordonnées calibrées visuellement sur les plans NV-1 et NV-2
+   fournis par l'utilisateur.
+   ══════════════════════════════════════════════════════════════ */
 
-/* ============================================================
-   ÉTAT localStorage
-   ============================================================ */
+const ROOMS = [
+
+    /* ─────────────── ÉTAGE 1 ─────────────── */
+
+    {
+        id: 'W100', floor: 1, lits: 11,
+        // Grande salle gauche (2 sous-pièces visibles)
+        zone: { xPct: 19.5, yPct: 26, wPct: 8.5, hPct: 46 },
+        litsPos: [
+            // Colonne gauche (6 lits)
+            { xPct: 21.5, yPct: 30 }, { xPct: 21.5, yPct: 37 },
+            { xPct: 21.5, yPct: 44 }, { xPct: 21.5, yPct: 51 },
+            { xPct: 21.5, yPct: 58 }, { xPct: 21.5, yPct: 65 },
+            // Colonne droite (5 lits)
+            { xPct: 26,   yPct: 30 }, { xPct: 26,   yPct: 37 },
+            { xPct: 26,   yPct: 44 }, { xPct: 26,   yPct: 51 },
+            { xPct: 26,   yPct: 58 },
+        ]
+    },
+
+    {
+        id: 'W110', floor: 1, lits: 2,
+        // Bas gauche — première pièce
+        zone: { xPct: 27, yPct: 68, wPct: 6.5, hPct: 12 },
+        litsPos: [
+            { xPct: 29,   yPct: 72 },
+            { xPct: 32,   yPct: 72 },
+        ]
+    },
+
+    {
+        id: 'W111', floor: 1, lits: 2,
+        // Bas gauche — pièce en dessous
+        zone: { xPct: 27, yPct: 81, wPct: 6.5, hPct: 12 },
+        litsPos: [
+            { xPct: 29,   yPct: 85 },
+            { xPct: 32,   yPct: 85 },
+        ]
+    },
+
+    {
+        id: 'W112', floor: 1, lits: 3,
+        // Bas gauche — à droite de W110
+        zone: { xPct: 33.5, yPct: 68, wPct: 6.5, hPct: 12 },
+        litsPos: [
+            { xPct: 35,   yPct: 71 },
+            { xPct: 37.5, yPct: 71 },
+            { xPct: 36.2, yPct: 76 },
+        ]
+    },
+
+    {
+        id: 'W113', floor: 1, lits: 2,
+        // Bas gauche — à droite de W111
+        zone: { xPct: 33.5, yPct: 81, wPct: 6.5, hPct: 12 },
+        litsPos: [
+            { xPct: 35,   yPct: 85 },
+            { xPct: 37.5, yPct: 85 },
+        ]
+    },
+
+    /* ─────────────── ÉTAGE 2 ─────────────── */
+
+    {
+        id: 'W200', floor: 2, lits: 2,
+        // Grande chambre haut gauche
+        zone: { xPct: 20, yPct: 13, wPct: 10, hPct: 20 },
+        litsPos: [
+            { xPct: 22.5, yPct: 18 },
+            { xPct: 27,   yPct: 18 },
+        ]
+    },
+
+    {
+        id: 'W201', floor: 2, lits: 2,
+        // Milieu gauche — première
+        zone: { xPct: 20, yPct: 36, wPct: 10, hPct: 17 },
+        litsPos: [
+            { xPct: 22.5, yPct: 41 },
+            { xPct: 27,   yPct: 41 },
+        ]
+    },
+
+    {
+        id: 'W202', floor: 2, lits: 2,
+        // À droite de W201
+        zone: { xPct: 30, yPct: 25, wPct: 10, hPct: 17 },
+        litsPos: [
+            { xPct: 32.5, yPct: 30 },
+            { xPct: 37,   yPct: 30 },
+        ]
+    },
+
+    {
+        id: 'W203', floor: 2, lits: 1,
+        // Petite chambre — sous W202
+        zone: { xPct: 30, yPct: 44, wPct: 10, hPct: 13 },
+        litsPos: [
+            { xPct: 35, yPct: 50 },
+        ]
+    },
+
+    {
+        id: 'W204', floor: 2, lits: 1,
+        // Bas gauche — troisième rangée
+        zone: { xPct: 20, yPct: 55, wPct: 10, hPct: 15 },
+        litsPos: [
+            { xPct: 25, yPct: 62 },
+        ]
+    },
+
+    {
+        id: 'W205', floor: 2, lits: 2,
+        // Bas gauche — quatrième rangée
+        zone: { xPct: 20, yPct: 72, wPct: 10, hPct: 17 },
+        litsPos: [
+            { xPct: 22.5, yPct: 78 },
+            { xPct: 27,   yPct: 78 },
+        ]
+    },
+
+];
+
+/* ══════════════════════════════════════════════════════════════
+   ÉTAT
+   Clé : "W100_lit1", "W100_lit2", etc.
+   Valeur : { prenom, nom, motif, duree, medecin, since } | absent
+   ══════════════════════════════════════════════════════════════ */
 
 function loadState() {
-    try { return JSON.parse(localStorage.getItem('omc_chambres_v2') || '{}'); }
+    try { return JSON.parse(localStorage.getItem('omc_chambres_v3') || '{}'); }
     catch(e) { return {}; }
 }
-function saveState() { localStorage.setItem('omc_chambres_v2', JSON.stringify(state)); }
+function saveState() { localStorage.setItem('omc_chambres_v3', JSON.stringify(state)); }
 
-let state = loadState();
-let selectedRoom = null; // { id, floor }
+let state        = loadState();
+let selectedBed  = null; // { roomId, litNum, key }
+let currentFloor = 1;
 
-/* ============================================================
-   COULEURS selon état
-   ============================================================ */
+function bedKey(roomId, litNum) { return `${roomId}_lit${litNum}`; }
 
-function roomStyle(roomId) {
-    if (selectedRoom && selectedRoom.id === roomId)
-        return { fill: 'rgba(0,210,255,0.40)', stroke: '#00d2ff', sw: 2.5 };
-    if (state[roomId])
-        return { fill: 'rgba(220,38,38,0.50)',  stroke: '#ef4444', sw: 2   };
-    return     { fill: 'rgba(34,197,94,0.40)',  stroke: '#22c55e', sw: 2   };
+/* ══════════════════════════════════════════════════════════════
+   DESSIN SVG OVERLAY
+   Convertit les % en coordonnées SVG en utilisant le viewBox
+   égal aux dimensions naturelles de l'image.
+   ══════════════════════════════════════════════════════════════ */
+
+function getImgNatural(floor) {
+    const img = document.getElementById(`img-${floor}`);
+    return { nw: img.naturalWidth || 1080, nh: img.naturalHeight || 600 };
 }
 
-/* ============================================================
-   RENDU SVG OVERLAY — viewBox suit les dimensions réelles de l'image
-   ============================================================ */
+function pct2px(pct, total) { return pct / 100 * total; }
 
-function drawOverlay(floor) {
-    const img    = document.getElementById(`img-${floor}`);
-    const svgEl  = document.getElementById(`overlay-${floor}`);
-    const rooms  = ROOMS[floor];
+function bedColor(key) {
+    if (selectedBed && selectedBed.key === key)
+        return { fill: 'rgba(0,210,255,0.7)', stroke: '#00d2ff' };
+    if (state[key])
+        return { fill: 'rgba(220,38,38,0.85)',  stroke: '#ef4444' };
+    return     { fill: 'rgba(34,197,94,0.85)',   stroke: '#22c55e' };
+}
 
-    // Dimensions naturelles de l'image (fallback 1080×600)
-    const nw = img.naturalWidth  || 1080;
-    const nh = img.naturalHeight || 600;
+function drawFloor(floor) {
+    const svg   = document.getElementById(`svg-${floor}`);
+    const { nw, nh } = getImgNatural(floor);
+    svg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
+    svg.innerHTML = '';
 
-    svgEl.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
-    svgEl.innerHTML = '';
+    const rooms = ROOMS.filter(r => r.floor === floor);
 
     rooms.forEach(room => {
-        const s = roomStyle(room.id);
+        // ── Rectangle de la chambre (fond coloré semi-transparent) ──
+        const occ   = countOccupied(room);
+        const total = room.lits;
+        const allFree = occ === 0;
+        const allFull = occ === total;
 
-        // Convertir % → pixels naturels
-        const x = room.xPct / 100 * nw;
-        const y = room.yPct / 100 * nh;
-        const w = room.wPct / 100 * nw;
-        const h = room.hPct / 100 * nh;
+        const zoneColor = allFull
+            ? 'rgba(220,38,38,0.20)'
+            : allFree
+                ? 'rgba(34,197,94,0.12)'
+                : 'rgba(234,179,8,0.15)';
 
-        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        g.setAttribute('class', 'room-zone' + (selectedRoom?.id === room.id ? ' r-selected' : ''));
+        const zoneStroke = allFull ? '#ef4444' : allFree ? '#22c55e' : '#eab308';
 
-        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', x);
-        rect.setAttribute('y', y);
-        rect.setAttribute('width',  w);
-        rect.setAttribute('height', h);
-        rect.setAttribute('rx', 4);
-        rect.setAttribute('fill',         s.fill);
-        rect.setAttribute('stroke',       s.stroke);
-        rect.setAttribute('stroke-width', s.sw);
+        const zx = pct2px(room.zone.xPct, nw);
+        const zy = pct2px(room.zone.yPct, nh);
+        const zw = pct2px(room.zone.wPct, nw);
+        const zh = pct2px(room.zone.hPct, nh);
+
+        const zoneG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        zoneG.setAttribute('class', 'room-zone');
+
+        const zoneRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        zoneRect.setAttribute('class', 'room-bg');
+        zoneRect.setAttribute('x', zx); zoneRect.setAttribute('y', zy);
+        zoneRect.setAttribute('width', zw); zoneRect.setAttribute('height', zh);
+        zoneRect.setAttribute('rx', 5);
+        zoneRect.setAttribute('fill', zoneColor);
+        zoneRect.setAttribute('stroke', zoneStroke);
+        zoneRect.setAttribute('stroke-width', '1.5');
+        zoneRect.setAttribute('stroke-dasharray', '4 3');
 
         // Label chambre
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x + w / 2);
-        text.setAttribute('y', y + h / 2);
-        text.setAttribute('text-anchor',       'middle');
-        text.setAttribute('dominant-baseline', 'middle');
-        text.setAttribute('fill',        'white');
-        text.setAttribute('font-size',   Math.max(10, Math.min(w * 0.28, 14)));
-        text.setAttribute('font-weight', '800');
-        text.setAttribute('font-family', 'Segoe UI, sans-serif');
-        // Contour noir pour lisibilité sur le plan
-        text.setAttribute('paint-order', 'stroke');
-        text.setAttribute('stroke',       'rgba(0,0,0,0.7)');
-        text.setAttribute('stroke-width', '3');
-        text.setAttribute('stroke-linejoin', 'round');
-        text.textContent = room.id;
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', zx + 4);
+        label.setAttribute('y', zy + 13);
+        label.setAttribute('fill', 'white');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('font-weight', '800');
+        label.setAttribute('font-family', 'Segoe UI, sans-serif');
+        label.setAttribute('paint-order', 'stroke');
+        label.setAttribute('stroke', 'rgba(0,0,0,0.8)');
+        label.setAttribute('stroke-width', '3');
+        label.setAttribute('stroke-linejoin', 'round');
+        label.textContent = room.id;
 
-        g.appendChild(rect);
-        g.appendChild(text);
+        // Compteur lits
+        const counter = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        counter.setAttribute('x', zx + zw - 4);
+        counter.setAttribute('y', zy + 13);
+        counter.setAttribute('text-anchor', 'end');
+        counter.setAttribute('fill', 'rgba(255,255,255,0.6)');
+        counter.setAttribute('font-size', '9');
+        counter.setAttribute('font-family', 'Segoe UI, sans-serif');
+        counter.textContent = `${occ}/${total}`;
 
-        g.addEventListener('click',      ()  => selectRoom(room.id, floor));
-        g.addEventListener('mouseenter', (e) => showTooltip(e, room.id));
-        g.addEventListener('mousemove',  (e) => moveTooltip(e));
-        g.addEventListener('mouseleave', ()  => hideTooltip());
+        zoneG.appendChild(zoneRect);
+        zoneG.appendChild(label);
+        zoneG.appendChild(counter);
+        svg.appendChild(zoneG);
 
-        svgEl.appendChild(g);
+        // ── Points lits ──
+        room.litsPos.forEach((lp, idx) => {
+            const litNum = idx + 1;
+            const key    = bedKey(room.id, litNum);
+            const c      = bedColor(key);
+
+            const cx = pct2px(lp.xPct, nw);
+            const cy = pct2px(lp.yPct, nh);
+
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.setAttribute('class', 'bed-dot' + (selectedBed?.key === key ? ' bd-selected' : ''));
+
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', cx);
+            circle.setAttribute('cy', cy);
+            circle.setAttribute('r', 7.5);
+            circle.setAttribute('fill', c.fill);
+            circle.setAttribute('stroke', c.stroke);
+            circle.setAttribute('stroke-width', selectedBed?.key === key ? '3' : '1.5');
+
+            // Numéro du lit au centre
+            const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            t.setAttribute('x', cx);
+            t.setAttribute('y', cy);
+            t.setAttribute('text-anchor', 'middle');
+            t.setAttribute('dominant-baseline', 'middle');
+            t.setAttribute('fill', 'white');
+            t.setAttribute('font-size', '7');
+            t.setAttribute('font-weight', '900');
+            t.setAttribute('font-family', 'Segoe UI, sans-serif');
+            t.setAttribute('paint-order', 'stroke');
+            t.setAttribute('stroke', 'rgba(0,0,0,0.5)');
+            t.setAttribute('stroke-width', '2');
+            t.textContent = litNum;
+
+            g.appendChild(circle);
+            g.appendChild(t);
+
+            g.addEventListener('click',      ()  => selectBed(room.id, litNum, key));
+            g.addEventListener('mouseenter', (e) => showTooltip(e, key, room.id, litNum));
+            g.addEventListener('mousemove',  (e) => moveTooltip(e));
+            g.addEventListener('mouseleave', ()  => hideTooltip());
+
+            svg.appendChild(g);
+        });
     });
 }
 
 function redrawAll() {
-    drawOverlay(1);
-    drawOverlay(2);
+    drawFloor(1);
+    drawFloor(2);
     updateStats();
 }
 
-/* ============================================================
+/* ══════════════════════════════════════════════════════════════
    SÉLECTION
-   ============================================================ */
+   ══════════════════════════════════════════════════════════════ */
 
-function selectRoom(roomId, floor) {
-    selectedRoom = { id: roomId, floor };
+function selectBed(roomId, litNum, key) {
+    selectedBed = { roomId, litNum, key };
     redrawAll();
+    refreshSidebar();
+}
 
-    const info    = document.getElementById('selected-info');
-    const patient = state[roomId];
+function refreshSidebar() {
+    if (!selectedBed) {
+        document.getElementById('selected-info').innerHTML =
+            '<span style="color:#475569;">Cliquez sur un lit du plan</span>';
+        document.getElementById('beds-sidebar').innerHTML = '';
+        clearForm();
+        return;
+    }
 
+    const { roomId, litNum, key } = selectedBed;
+    const room    = ROOMS.find(r => r.id === roomId);
+    const patient = state[key];
+
+    // Info chambre
+    const occ   = countOccupied(room);
+    document.getElementById('selected-info').innerHTML = `
+        <strong>${roomId} — Lit ${litNum}</strong>
+        <span style="color:#64748b;font-size:10px;margin-left:6px;">${occ}/${room.lits} lit(s) occupé(s)</span>
+        <br><span style="${patient ? 'color:#ef4444' : 'color:#22c55e'};font-size:10px;margin-top:2px;display:block;">
+            ${patient ? `🔴 ${patient.prenom} ${patient.nom}` : '🟢 Disponible'}
+        </span>
+    `;
+
+    // Grille lits de la chambre
+    const bedsBar = document.getElementById('beds-sidebar');
+    bedsBar.innerHTML = '';
+    for (let i = 1; i <= room.lits; i++) {
+        const k = bedKey(roomId, i);
+        const btn = document.createElement('button');
+        btn.className = 'bed-btn ' + (state[k] ? 'occupied' : 'available') + (i === litNum ? ' bed-selected' : '');
+        btn.title = state[k] ? `${state[k].prenom} ${state[k].nom}` : 'Disponible';
+        btn.textContent = i;
+        btn.onclick = () => selectBed(roomId, i, bedKey(roomId, i));
+        bedsBar.appendChild(btn);
+    }
+
+    // Pré-remplir formulaire
     if (patient) {
-        info.innerHTML = `
-            <strong>${roomId}</strong> — <span style="color:#22c55e;font-size:10px;">Occupée</span><br>
-            <div style="color:#e2e8f0;margin-top:4px;font-size:12px;">${patient.prenom} ${patient.nom}</div>
-            <div style="color:#64748b;font-size:10px;margin-top:2px;">${patient.motif || '—'}</div>
-        `;
         document.getElementById('in-prenom').value  = patient.prenom  || '';
         document.getElementById('in-nom').value     = patient.nom     || '';
         document.getElementById('in-motif').value   = patient.motif   || '';
         document.getElementById('in-duree').value   = patient.duree   || '';
         document.getElementById('in-medecin').value = patient.medecin || '';
     } else {
-        info.innerHTML = `<strong>${roomId}</strong> — <span style="color:#22c55e;font-size:10px;">✅ Disponible</span>`;
-        document.getElementById('in-prenom').value  = '';
-        document.getElementById('in-nom').value     = '';
-        document.getElementById('in-motif').value   = '';
-        document.getElementById('in-duree').value   = '';
-        document.getElementById('in-medecin').value = '';
+        clearForm();
     }
 }
 
-/* ============================================================
-   ASSIGNER / LIBÉRER
-   ============================================================ */
+function clearForm() {
+    ['in-prenom','in-nom','in-motif','in-medecin'].forEach(id => {
+        document.getElementById(id).value = '';
+    });
+    document.getElementById('in-duree').value = '';
+}
 
-function assignerChambre() {
-    if (!selectedRoom) { showToast('⚠️ Sélectionnez d\'abord une chambre sur le plan', 'warn'); return; }
+function countOccupied(room) {
+    let n = 0;
+    for (let i = 1; i <= room.lits; i++) {
+        if (state[bedKey(room.id, i)]) n++;
+    }
+    return n;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ASSIGNER / LIBÉRER
+   ══════════════════════════════════════════════════════════════ */
+
+function assignerLit() {
+    if (!selectedBed) { showToast('⚠️ Sélectionnez d\'abord un lit sur le plan', 'warn'); return; }
 
     const prenom  = document.getElementById('in-prenom').value.trim();
     const nom     = document.getElementById('in-nom').value.trim().toUpperCase();
@@ -588,51 +872,69 @@ function assignerChambre() {
 
     if (!prenom || !nom) { showToast('⚠️ Prénom et Nom obligatoires', 'warn'); return; }
 
-    state[selectedRoom.id] = { prenom, nom, motif, duree, medecin, since: new Date().toISOString() };
+    const { roomId, litNum, key } = selectedBed;
+    state[key] = { prenom, nom, motif, duree, medecin, since: new Date().toISOString() };
     saveState();
     redrawAll();
-    selectRoom(selectedRoom.id, selectedRoom.floor);
-    showToast(`✅ ${prenom} ${nom} assigné(e) en chambre ${selectedRoom.id}`);
+    refreshSidebar();
+    showToast(`✅ ${prenom} ${nom} — ${roomId} Lit ${litNum}`);
 }
 
-function libererChambre() {
-    if (!selectedRoom)          { showToast('⚠️ Sélectionnez d\'abord une chambre', 'warn'); return; }
-    if (!state[selectedRoom.id]){ showToast('Cette chambre est déjà disponible', 'warn'); return; }
+function libererLit() {
+    if (!selectedBed)          { showToast('⚠️ Sélectionnez d\'abord un lit', 'warn'); return; }
+    if (!state[selectedBed.key]) { showToast('Ce lit est déjà disponible', 'warn'); return; }
 
-    const p = state[selectedRoom.id];
-    delete state[selectedRoom.id];
+    const p = state[selectedBed.key];
+    const { roomId, litNum, key } = selectedBed;
+    delete state[key];
     saveState();
     redrawAll();
-    selectRoom(selectedRoom.id, selectedRoom.floor);
-    showToast(`🔓 ${p.prenom} ${p.nom} sorti(e) — ${selectedRoom.id} libérée`);
+    refreshSidebar();
+    showToast(`🔓 ${p.prenom} ${p.nom} sorti(e) — ${roomId} Lit ${litNum} libéré`);
 }
 
-/* ============================================================
-   STATS
-   ============================================================ */
+/* ══════════════════════════════════════════════════════════════
+   STATS GLOBALES
+   ══════════════════════════════════════════════════════════════ */
 
 function updateStats() {
-    const all      = [...ROOMS[1], ...ROOMS[2]];
-    const total    = all.length;
-    const occupied = all.filter(r => state[r.id]).length;
-    const dispo    = total - occupied;
-    const taux     = total ? Math.round(occupied / total * 100) : 0;
-
+    let total = 0, occupied = 0;
+    ROOMS.forEach(room => {
+        total += room.lits;
+        for (let i = 1; i <= room.lits; i++) {
+            if (state[bedKey(room.id, i)]) occupied++;
+        }
+    });
+    const dispo = total - occupied;
+    const taux  = total ? Math.round(occupied / total * 100) : 0;
     document.getElementById('stat-dispo').textContent  = dispo;
     document.getElementById('stat-occupe').textContent = occupied;
     document.getElementById('stat-total').textContent  = total;
     document.getElementById('stat-taux').textContent   = taux + '%';
 }
 
-/* ============================================================
+/* ══════════════════════════════════════════════════════════════
+   ONGLETS
+   ══════════════════════════════════════════════════════════════ */
+
+function switchFloor(floor) {
+    currentFloor = floor;
+    document.querySelectorAll('.floor-view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`floor-${floor}`).classList.add('active');
+    document.getElementById(`tab-${floor}`).classList.add('active');
+    // On ne reset pas la sélection pour garder la cohérence
+}
+
+/* ══════════════════════════════════════════════════════════════
    TOOLTIP
-   ============================================================ */
+   ══════════════════════════════════════════════════════════════ */
 
 const tooltip = document.getElementById('tooltip');
 
-function showTooltip(e, roomId) {
-    const p = state[roomId];
-    document.getElementById('tt-room').textContent    = `Chambre ${roomId}`;
+function showTooltip(e, key, roomId, litNum) {
+    const p = state[key];
+    document.getElementById('tt-title').textContent   = `${roomId} — Lit ${litNum}`;
     document.getElementById('tt-patient').textContent = p ? `${p.prenom} ${p.nom}` : '—';
     document.getElementById('tt-motif').textContent   = p?.motif   || '—';
     document.getElementById('tt-duree').textContent   = p?.duree   || '—';
@@ -640,11 +942,9 @@ function showTooltip(e, roomId) {
     document.getElementById('tt-since').textContent   = p?.since
         ? new Date(p.since).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
         : '—';
-
     const s = document.getElementById('tt-status');
-    if (p) { s.textContent = '🔴 Occupée';     s.className = 'tooltip-status occupied'; }
-    else   { s.textContent = '🟢 Disponible';  s.className = 'tooltip-status available'; }
-
+    s.textContent = p ? '🔴 Occupé' : '🟢 Disponible';
+    s.className   = 'tooltip-status ' + (p ? 'occupied' : 'available');
     tooltip.classList.add('visible');
     moveTooltip(e);
 }
@@ -660,9 +960,9 @@ function moveTooltip(e) {
 
 function hideTooltip() { tooltip.classList.remove('visible'); }
 
-/* ============================================================
+/* ══════════════════════════════════════════════════════════════
    TOAST
-   ============================================================ */
+   ══════════════════════════════════════════════════════════════ */
 
 function showToast(msg, type) {
     const t = document.getElementById('toast');
@@ -672,23 +972,25 @@ function showToast(msg, type) {
     setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-/* ============================================================
-   INIT — attendre que les images soient chargées
-   ============================================================ */
+/* ══════════════════════════════════════════════════════════════
+   INIT — attendre que les images soient chargées pour avoir
+          leurs dimensions naturelles (viewBox correct)
+   ══════════════════════════════════════════════════════════════ */
 
 function initFloor(floor) {
     const img = document.getElementById(`img-${floor}`);
-    if (img.complete && img.naturalWidth > 0) {
-        drawOverlay(floor);
-    } else {
-        img.addEventListener('load', () => drawOverlay(floor));
-    }
+    const go  = () => drawFloor(floor);
+    if (img.complete && img.naturalWidth > 0) go();
+    else img.addEventListener('load', go);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
     initFloor(1);
     initFloor(2);
     updateStats();
+
+    // Redessiner si la fenêtre est redimensionnée (le viewBox s'adapte)
+    window.addEventListener('resize', () => redrawAll());
 });
 </script>
 
