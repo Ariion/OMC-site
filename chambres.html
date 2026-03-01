@@ -1277,6 +1277,1046 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <script type="module" src="global.js"></script>
 
+<!-- ══════════════════════════════════════════════════════════════
+     BONHOMMES ANIMÉS — SVG par-dessus le plan
+     Médecins (blanc/bleu) patrouillent les couloirs.
+     Patients (orange) partent de leur chambre et se baladent.
+     Tous restent dans les waypoints de couloirs définis en %.
+     ══════════════════════════════════════════════════════════════ -->
+<style>
+/* Tooltip bonhomme */
+.fig-tooltip {
+    position: fixed;
+    z-index: 99998;
+    background: #080f1e;
+    border: 1px solid #1e3a5f;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #e2e8f0;
+    pointer-events: none;
+    display: none;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.7);
+}
+.fig-tooltip.visible { display: block; }
+.fig-tooltip .fig-name { font-weight: 700; }
+.fig-tooltip .fig-role { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+</style>
+
+<div class="fig-tooltip" id="fig-tooltip">
+    <div class="fig-name" id="fig-tt-name"></div>
+    <div class="fig-role" id="fig-tt-role"></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   SYSTÈME DE BONHOMMES ANIMÉS
+   ══════════════════════════════════════════════════════════════
+
+   Architecture :
+   - Un <svg> de bonhommes séparé est superposé au plan-overlay existant
+   - Il scale avec le zoom-content comme le SVG principal
+   - Les positions sont en % des dims naturelles de l'image (même repère que ROOMS)
+   - requestAnimationFrame anime le déplacement pas-à-pas vers le prochain waypoint
+   - Quand un bonhomme arrive, il attend un peu puis choisit un nouveau waypoint
+
+   Waypoints = nœuds du graphe de couloirs, définis à la main en %
+   On connecte les nœuds proches pour former un réseau navigable.
+══════════════════════════════════════════════════════════════ */
+(function() {
+
+/* ── NOMS ── */
+
+/* ══════════════════════════════════════════════════════════════
+   GRAPHE DE COULOIRS — coords en % (xPct, yPct) des dims naturelles
+   NV-1 : image ≈ 1080×620  →  les % correspondent aux zones visibles
+   NV-2 : même repère
+
+   On définit :
+     nodes  : liste de points {id, xPct, yPct}
+     edges  : connexions entre nodes [idA, idB]
+   Un personnage se déplace de node en node via les edges.
+══════════════════════════════════════════════════════════════ */
+
+const GRAPH = {
+    1: {
+        nodes: [
+            // Couloir principal horizontal (milieu)
+            { id:'c1',  xPct: 12,   yPct: 22  },
+            { id:'c2',  xPct: 20,   yPct: 22  },
+            { id:'c3',  xPct: 30,   yPct: 22  },
+            { id:'c4',  xPct: 40,   yPct: 22  },
+            { id:'c5',  xPct: 50,   yPct: 22  },
+            { id:'c6',  xPct: 60,   yPct: 22  },
+            { id:'c7',  xPct: 70,   yPct: 22  },
+            { id:'c8',  xPct: 80,   yPct: 22  },
+            { id:'c9',  xPct: 90,   yPct: 22  },
+            // Couloir vertical gauche (zone W100)
+            { id:'v1',  xPct: 12,   yPct: 30  },
+            { id:'v2',  xPct: 12,   yPct: 40  },
+            { id:'v3',  xPct: 12,   yPct: 50  },
+            { id:'v4',  xPct: 12,   yPct: 60  },
+            { id:'v5',  xPct: 12,   yPct: 68  },
+            // Couloir horizontal bas (zone W110-W113)
+            { id:'b1',  xPct: 12,   yPct: 75  },
+            { id:'b2',  xPct: 20,   yPct: 75  },
+            { id:'b3',  xPct: 28,   yPct: 75  },
+            { id:'b4',  xPct: 36,   yPct: 75  },
+            // Branche montante couloir central
+            { id:'m1',  xPct: 40,   yPct: 30  },
+            { id:'m2',  xPct: 40,   yPct: 40  },
+            { id:'m3',  xPct: 40,   yPct: 50  },
+            // Couloir droit
+            { id:'r1',  xPct: 55,   yPct: 30  },
+            { id:'r2',  xPct: 55,   yPct: 45  },
+            { id:'r3',  xPct: 70,   yPct: 30  },
+            { id:'r4',  xPct: 70,   yPct: 45  },
+            { id:'r5',  xPct: 80,   yPct: 30  },
+            { id:'r6',  xPct: 90,   yPct: 30  },
+        ],
+        edges: [
+            // Couloir horizontal principal
+            ['c1','c2'],['c2','c3'],['c3','c4'],['c4','c5'],
+            ['c5','c6'],['c6','c7'],['c7','c8'],['c8','c9'],
+            // Vertical gauche
+            ['c1','v1'],['v1','v2'],['v2','v3'],['v3','v4'],['v4','v5'],['v5','b1'],
+            // Horizontal bas
+            ['b1','b2'],['b2','b3'],['b3','b4'],
+            // Branche centrale
+            ['c4','m1'],['m1','m2'],['m2','m3'],['m3','b2'],
+            // Couloir droit
+            ['c5','r1'],['r1','r2'],['c7','r3'],['r3','r4'],
+            ['c8','r5'],['c9','r6'],
+            // Connexions entre branches
+            ['r1','r3'],['r3','r5'],
+        ],
+        // Waypoints où les patients sortent de leur chambre
+        roomExits: {
+            'W100': 'v2',
+            'W110': 'b1',
+            'W111': 'b1',
+            'W112': 'b3',
+            'W113': 'b2',
+        },
+    },
+    2: {
+        nodes: [
+            // Couloir principal horizontal
+            { id:'c1',  xPct: 10,   yPct: 22  },
+            { id:'c2',  xPct: 20,   yPct: 22  },
+            { id:'c3',  xPct: 30,   yPct: 22  },
+            { id:'c4',  xPct: 40,   yPct: 22  },
+            { id:'c5',  xPct: 50,   yPct: 22  },
+            { id:'c6',  xPct: 60,   yPct: 22  },
+            { id:'c7',  xPct: 70,   yPct: 22  },
+            { id:'c8',  xPct: 80,   yPct: 22  },
+            // Vertical gauche
+            { id:'v1',  xPct: 20,   yPct: 30  },
+            { id:'v2',  xPct: 20,   yPct: 40  },
+            { id:'v3',  xPct: 20,   yPct: 50  },
+            { id:'v4',  xPct: 20,   yPct: 60  },
+            { id:'v5',  xPct: 20,   yPct: 70  },
+            // Vertical milieu
+            { id:'vm1', xPct: 30,   yPct: 30  },
+            { id:'vm2', xPct: 30,   yPct: 40  },
+            { id:'vm3', xPct: 30,   yPct: 55  },
+            // Horizontal bas
+            { id:'b1',  xPct: 20,   yPct: 75  },
+            { id:'b2',  xPct: 30,   yPct: 75  },
+            { id:'b3',  xPct: 40,   yPct: 75  },
+            // Couloirs droits
+            { id:'r1',  xPct: 50,   yPct: 30  },
+            { id:'r2',  xPct: 60,   yPct: 30  },
+            { id:'r3',  xPct: 70,   yPct: 30  },
+            { id:'r4',  xPct: 80,   yPct: 30  },
+            { id:'r5',  xPct: 50,   yPct: 45  },
+            { id:'r6',  xPct: 60,   yPct: 45  },
+        ],
+        edges: [
+            ['c1','c2'],['c2','c3'],['c3','c4'],['c4','c5'],['c5','c6'],['c6','c7'],['c7','c8'],
+            ['c2','v1'],['v1','v2'],['v2','v3'],['v3','v4'],['v4','v5'],['v5','b1'],
+            ['b1','b2'],['b2','b3'],
+            ['c3','vm1'],['vm1','vm2'],['vm2','vm3'],['vm3','b2'],
+            ['c5','r1'],['r1','r2'],['r2','r3'],['r3','r4'],
+            ['c6','r5'],['r5','r6'],
+            ['r1','r5'],
+        ],
+        roomExits: {
+            'W200': 'v1',
+            'W201': 'v2',
+            'W202': 'vm2',
+            'W203': 'vm3',
+            'W204': 'v3',
+            'W205': 'v1',
+        },
+    },
+};
+
+/* ── Construire la liste d'adjacence ── */
+function buildAdjacency(graph) {
+    const adj = {};
+    graph.nodes.forEach(n => { adj[n.id] = []; });
+    graph.edges.forEach(([a, b]) => {
+        adj[a].push(b);
+        adj[b].push(a);
+    });
+    return adj;
+}
+
+/* ── BFS : chemin le plus court entre deux nodes ── */
+function bfsPath(adj, start, end) {
+    if (start === end) return [start];
+    const visited = new Set([start]);
+    const queue   = [[start]];
+    while (queue.length) {
+        const path = queue.shift();
+        const cur  = path[path.length - 1];
+        for (const nb of (adj[cur] || [])) {
+            if (nb === end) return [...path, nb];
+            if (!visited.has(nb)) {
+                visited.add(nb);
+                queue.push([...path, nb]);
+            }
+        }
+    }
+    return [start]; // fallback
+}
+
+/* ── Nœud aléatoire ── */
+function randNode(nodes) {
+    return nodes[Math.floor(Math.random() * nodes.length)].id;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SPRITES PIXEL ART — dessinés pixel par pixel sur <canvas>
+   Chaque sprite = grille 11×16 px, scale ×3 = 33×48 px affiché
+   4 directions × 3 frames de marche = 12 frames par personnage
+
+   Palette médecin : blouse blanche, pantalon teal, peau beige, bonnet blanc + croix rouge
+   Palette patient  : blouse verte, pantalon gris, peau beige, cheveux bruns
+══════════════════════════════════════════════════════════════ */
+
+const PX = 3; // scale pixel art
+const SW = 11, SH = 16; // taille sprite naturelle
+
+// Couleurs
+const C = {
+    _:    null,           // transparent
+    skin: '#D4956A',
+    hair: '#7B4F2E',
+    eye:  '#1a1a2e',
+    wht:  '#EEF0F2',
+    wht2: '#C8CBD0',
+    red:  '#CC2222',
+    teal: '#3D8C8C',
+    tel2: '#2A6666',
+    grn:  '#4A8C5C',
+    grn2: '#2E6640',
+    grey: '#7A8B9A',
+    gry2: '#566070',
+    outl: '#1A1A2A',
+    shd:  'rgba(0,0,0,0.18)',
+};
+
+/* ── Sprite data : tableau de strings 11 chars, 1 char = 1 pixel ── */
+// Clé de décodage : voir C ci-dessus
+const KEY = { '_':C._, 's':C.skin, 'h':C.hair, 'e':C.eye, 'W':C.wht, 'w':C.wht2,
+              'R':C.red, 't':C.teal, 'T':C.tel2, 'g':C.grn, 'G':C.grn2,
+              'y':C.grey, 'Y':C.gry2, 'o':C.outl };
+
+/* Médecin — vue de face, frame 0 (debout) */
+const DOC_F0 = [
+//  0123456789A
+    '____oWo____',  // 0  bonnet haut
+    '___oWWWo___',  // 1
+    '__osssso___',  // 2  tête
+    '__oseseo___',  // 3  yeux
+    '__oWsWso___',  // 4  masque/bouche
+    '__oWWWWo___',  // 5  col blouse
+    '_oWWoWWWo__',  // 6  épaules
+    '_oWWWWWWo__',  // 7  torse
+    '_oWWWWWWo__',  // 8
+    '_otWWWWto__',  // 9  bas blouse
+    '_oTtttToo__',  // 10 ceinture
+    '_otttttto__',  // 11 pantalon
+    '__otototo__',  // 12
+    '__otototo__',  // 13
+    '__oTooToo__',  // 14 chaussures
+    '___________',  // 15
+];
+
+/* Médecin — vue de face, frame 1 (jambe gauche avancée) */
+const DOC_F1 = [
+    '____oWo____',
+    '___oWWWo___',
+    '__osssso___',
+    '__oseseo___',
+    '__oWsWso___',
+    '__oWWWWo___',
+    '_oWWoWWWo__',
+    '_oWWWWWWo__',
+    '_oWWWWWWo__',
+    '_otWWWWto__',
+    '_oTtttToo__',
+    '__ottttto__',
+    '_otoo_otto_',
+    '_oto___oto_',
+    '_oTo___oTo_',
+    '___________',
+];
+
+/* Médecin — vue de face, frame 2 (jambe droite avancée) */
+const DOC_F2 = [
+    '____oWo____',
+    '___oWWWo___',
+    '__osssso___',
+    '__oseseo___',
+    '__oWsWso___',
+    '__oWWWWo___',
+    '_oWWoWWWo__',
+    '_oWWWWWWo__',
+    '_oWWWWWWo__',
+    '_otWWWWto__',
+    '_oTtttToo__',
+    '__ottttto__',
+    '_otto_otoo_',
+    '_oto___oto_',
+    '_oTo___oTo_',
+    '___________',
+];
+
+/* Médecin — vue de dos, frame 0 */
+const DOC_B0 = [
+    '___oWWo____',
+    '__oWWWWo___',
+    '__owwwwo___',
+    '__owwwwo___',
+    '__owwwwo___',
+    '__oWWWWo___',
+    '_oWWoWWWo__',
+    '_oWWWWWWo__',
+    '_oWWWWWWo__',
+    '_oWwWWwto__',
+    '_oTtttToo__',
+    '_otttttto__',
+    '__otototo__',
+    '__otototo__',
+    '__oTooToo__',
+    '___________',
+];
+
+/* Médecin — vue de dos, frame 1 */
+const DOC_B1 = [
+    '___oWWo____',
+    '__oWWWWo___',
+    '__owwwwo___',
+    '__owwwwo___',
+    '__owwwwo___',
+    '__oWWWWo___',
+    '_oWWoWWWo__',
+    '_oWWWWWWo__',
+    '_oWWWWWWo__',
+    '_oWwWWwto__',
+    '_oTtttToo__',
+    '__ottttto__',
+    '_otoo_otto_',
+    '_oto___oto_',
+    '_oTo___oTo_',
+    '___________',
+];
+
+/* Médecin — vue droite, frame 0 */
+const DOC_R0 = [
+    '____oWWo___',
+    '___oWWWwo__',
+    '__osssswo__',
+    '__oseswwo__',
+    '__oWsswo___',
+    '___oWWWo___',
+    '__oWWWWWo__',
+    '__oWWWWWo__',
+    '__oWWWWWo__',
+    '__otWWWto__',
+    '__oTtttoo__',
+    '__otttto___',
+    '__ototo____',
+    '___ototo___',
+    '___oToto___',
+    '___________',
+];
+
+/* Médecin — vue droite, frame 1 (marche) */
+const DOC_R1 = [
+    '____oWWo___',
+    '___oWWWwo__',
+    '__osssswo__',
+    '__oseswwo__',
+    '__oWsswo___',
+    '___oWWWo___',
+    '__oWWWWWo__',
+    '__oWWWWWo__',
+    '__oWWWWWo__',
+    '__otWWWto__',
+    '__oTtttoo__',
+    '___otttto__',
+    '__ototo____',
+    '__ototo____',
+    '__oToto____',
+    '___________',
+];
+
+/* Médecin — vue gauche, frame 0 */
+const DOC_L0 = [
+    '___oWWo____',
+    '__owWWWo___',
+    '__owssssо__',
+    '__owwseso__',
+    '___owssWo__',
+    '___oWWWo___',
+    '__oWWWWWo__',
+    '__oWWWWWo__',
+    '__oWWWWWo__',
+    '__otWWWto__',
+    '__ootttTo__',
+    '___ottttо__',
+    '____ototо__',
+    '___ototо___',
+    '___otoTо___',
+    '___________',
+];
+
+/* ── Patient — vue face, frames ── */
+const PAT_F0 = [
+    '___ohhhо___',  // cheveux
+    '__ohhhhhо__',
+    '__ossssso__',
+    '__oseseso__',
+    '__ossssso__',
+    '__ogsgsgo__',  // col vert
+    '_oggoggggo_',
+    '_ogggggggo_',
+    '_ogggggggo_',
+    '_ogGggGggo_',
+    '_oGyyyyGoo_',
+    '_oyyyyyyy__',
+    '__oyoyoyo__',
+    '__oyoyoyo__',
+    '__oYooYoo__',
+    '___________',
+];
+
+const PAT_F1 = [
+    '___ohhhо___',
+    '__ohhhhhо__',
+    '__ossssso__',
+    '__oseseso__',
+    '__ossssso__',
+    '__ogsgsgo__',
+    '_oggoggggo_',
+    '_ogggggggo_',
+    '_ogggggggo_',
+    '_ogGggGggo_',
+    '_oGyyyyGoo_',
+    '___oyyyyyo_',
+    '_oyoo_ooyо_',
+    '_oyo___oyо_',
+    '_oYo___oYо_',
+    '___________',
+];
+
+const PAT_F2 = [
+    '___ohhhо___',
+    '__ohhhhhо__',
+    '__ossssso__',
+    '__oseseso__',
+    '__ossssso__',
+    '__ogsgsgo__',
+    '_oggoggggo_',
+    '_ogggggggo_',
+    '_ogggggggo_',
+    '_ogGggGggo_',
+    '_oGyyyyGoo_',
+    '___oyyyyyo_',
+    '_ooyо_oyoo_',
+    '_ooyо___oyo',
+    '_ooYо___oYo',
+    '___________',
+];
+
+const PAT_B0 = [
+    '__ohhhhhо__',
+    '_ohhhhhhho_',
+    '__ohhhhhо__',
+    '__ohhhhhо__',
+    '__ohhhhhо__',
+    '__ogggggо__',
+    '_oggoggggo_',
+    '_ogggggggo_',
+    '_ogggggggo_',
+    '_ogGggGggo_',
+    '_oGyyyyGoo_',
+    '_oyyyyyyy__',
+    '__oyoyoyo__',
+    '__oyoyoyo__',
+    '__oYooYoo__',
+    '___________',
+];
+
+const PAT_B1 = [
+    '__ohhhhhо__',
+    '_ohhhhhhho_',
+    '__ohhhhhо__',
+    '__ohhhhhо__',
+    '__ohhhhhо__',
+    '__ogggggо__',
+    '_oggoggggo_',
+    '_ogggggggo_',
+    '_ogggggggo_',
+    '_ogGggGggo_',
+    '_oGyyyyGoo_',
+    '___oyyyyyo_',
+    '_oyoo_ooyо_',
+    '_oyo___oyо_',
+    '_oYo___oYо_',
+    '___________',
+];
+
+const PAT_R0 = [
+    '____ohhho__',
+    '___ohhhhhо_',
+    '__osssshо__',
+    '__oseshо___',
+    '__osssho___',
+    '___ogggo___',
+    '__ogggggo__',
+    '__ogggggo__',
+    '__ogggggo__',
+    '__ogGgGgo__',
+    '__oGyyyyo__',
+    '__oyyyy____',
+    '__oyoyo____',
+    '___oyoyo___',
+    '___oYoyo___',
+    '___________',
+];
+
+const PAT_L0 = [
+    '__ohhho____',
+    '_оhhhhhо___',
+    '__оhssssо__',
+    '___оhsesо__',
+    '___ohsssо__',
+    '___ogggо___',
+    '__oggggggо_',
+    '__oggggggо_',
+    '__oggggggо_',
+    '__ogGgGggо_',
+    '__oyyyyGо__',
+    '____yyyyо__',
+    '____oyoyо__',
+    '___oyoyо___',
+    '___oyoYо___',
+    '___________',
+];
+
+/* ── Compiler les sprites en ImageData (canvas offscreen) ── */
+function compileSprite(rows) {
+    const c = document.createElement('canvas');
+    c.width  = SW * PX;
+    c.height = SH * PX;
+    const ctx = c.getContext('2d');
+    rows.forEach((row, ry) => {
+        for (let rx = 0; rx < SW; rx++) {
+            const ch  = row[rx] || '_';
+            // Gérer les caractères cyrilliques utilisés par erreur comme 'о' → traiter comme 'o'
+            const key = ch === 'о' ? 'o' : ch;
+            const col = KEY[key];
+            if (!col) continue;
+            ctx.fillStyle = col;
+            ctx.fillRect(rx * PX, ry * PX, PX, PX);
+        }
+    });
+    return c;
+}
+
+/* Sprites compilés par rôle et direction */
+const SPRITES = {
+    medecin: {
+        // [direction][frame]  dir: 0=face 1=dos 2=droite 3=gauche
+        face:   [compileSprite(DOC_F0), compileSprite(DOC_F1), compileSprite(DOC_F2)],
+        dos:    [compileSprite(DOC_B0), compileSprite(DOC_B1), compileSprite(DOC_B1)],
+        droite: [compileSprite(DOC_R0), compileSprite(DOC_R1), compileSprite(DOC_R0)],
+        gauche: [compileSprite(DOC_L0), compileSprite(DOC_R1), compileSprite(DOC_L0)], // miroir approx
+    },
+    patient: {
+        face:   [compileSprite(PAT_F0), compileSprite(PAT_F1), compileSprite(PAT_F2)],
+        dos:    [compileSprite(PAT_B0), compileSprite(PAT_B1), compileSprite(PAT_B1)],
+        droite: [compileSprite(PAT_R0), compileSprite(PAT_F1), compileSprite(PAT_R0)],
+        gauche: [compileSprite(PAT_L0), compileSprite(PAT_F1), compileSprite(PAT_L0)],
+    },
+};
+
+/* ── Choisir la direction selon l'angle de déplacement ── */
+function angleToDir(angle) {
+    // atan2(dy,dx) : 0=droite, PI/2=bas(=dos car on voit le dos quand il s'éloigne)
+    const deg = ((angle * 180 / Math.PI) % 360 + 360) % 360;
+    if (deg >= 45  && deg < 135)  return 'dos';     // va vers le bas → on voit le dos
+    if (deg >= 135 && deg < 225)  return 'gauche';  // va vers la gauche
+    if (deg >= 225 && deg < 315)  return 'face';    // va vers le haut → face visible
+    return 'droite';                                  // va vers la droite
+}
+
+/* ══════════════════════════════════════════════════════════════
+   createFigure — injecte un <foreignObject> avec un <canvas>
+   dans le SVG, pour profiter du pixel art natif canvas
+══════════════════════════════════════════════════════════════ */
+function createFigure(svg, id, color, label) {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.id = `fig-${id}`;
+    g.style.pointerEvents = 'all';
+    g.style.cursor = 'pointer';
+
+    // Ombre au sol
+    const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+    shadow.setAttribute('rx', '8'); shadow.setAttribute('ry', '3');
+    shadow.setAttribute('fill', 'rgba(0,0,0,0.22)');
+    shadow.setAttribute('class', 'fig-shadow');
+
+    // foreignObject contenant le canvas du sprite
+    const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    fo.setAttribute('width',  SW * PX);
+    fo.setAttribute('height', SH * PX);
+    fo.setAttribute('class', 'fig-fo');
+    // Centrage : on décale de la moitié
+    fo.setAttribute('x', -(SW * PX) / 2);
+    fo.setAttribute('y', -(SH * PX));
+
+    const canvas = document.createElement('canvas');
+    canvas.width  = SW * PX;
+    canvas.height = SH * PX;
+    canvas.style.imageRendering = 'pixelated';
+    canvas.style.display = 'block';
+    canvas.setAttribute('class', 'fig-canvas');
+    fo.appendChild(canvas);
+
+    g.appendChild(shadow);
+    g.appendChild(fo);
+    svg.appendChild(g);
+    return g;
+}
+
+/* ── Mettre à jour le sprite (position + frame d'animation) ── */
+function updateFigureGeometry(g, cx, cy, angle, phase) {
+    const shadow = g.querySelector('.fig-shadow');
+    if (shadow) { shadow.setAttribute('cx', cx); shadow.setAttribute('cy', cy + 2); }
+
+    g.setAttribute('transform', `translate(${cx}, ${cy})`);
+
+    const fig = g._figData;
+    if (!fig) return;
+
+    const moving = fig.waiting <= 0;
+    const dir    = moving ? angleToDir(angle) : (fig.lastDir || 'face');
+    if (moving) fig.lastDir = dir;
+
+    const role   = fig.spriteRole || (fig.isMedecin ? 'medecin' : 'patient');
+    const frames = SPRITES[role][dir];
+    if (!frames) return;
+
+    // Cadence d'animation : change de frame toutes les ~0.4s de phase
+    const frameN = Math.floor(phase / 1.8) % frames.length;
+    const sprite = frames[frameN];
+
+    const canvas = g.querySelector('.fig-canvas');
+    if (!canvas || !sprite) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(sprite, 0, 0);
+}
+
+/* ── Choisir le prochain chemin — garantit l'animation infinie ── */
+function choosePath(fig) {
+    const { graph, adj, homeNode, isMedecin } = fig;
+    // Nœud courant sûr (fallback si pathIdx hors limites)
+    const curNodeId = fig.path[Math.min(fig.pathIdx, fig.path.length - 1)] || graph.nodes[0].id;
+
+    let targetId;
+
+    if (isMedecin) {
+        // Staff : nœud vraiment différent du courant
+        let tries = 0;
+        do { targetId = randNode(graph.nodes); tries++; }
+        while (targetId === curNodeId && tries < 15);
+    } else {
+        // Patient/civil : alterne entre balade et retour home
+        if (Math.random() < 0.45 && homeNode && homeNode !== curNodeId) {
+            targetId = homeNode;
+        } else {
+            // Marche aléatoire 2-5 sauts
+            let cur = curNodeId;
+            const steps = 2 + Math.floor(Math.random() * 4);
+            for (let i = 0; i < steps; i++) {
+                const nb = adj[cur] || [];
+                if (!nb.length) break;
+                cur = nb[Math.floor(Math.random() * nb.length)];
+            }
+            targetId = cur;
+            // Éviter cible == départ
+            if (targetId === curNodeId) {
+                const nb = adj[curNodeId] || [];
+                if (nb.length) targetId = nb[Math.floor(Math.random() * nb.length)];
+            }
+        }
+    }
+
+    const path = bfsPath(adj, curNodeId, targetId);
+    // Garantir longueur > 1 pour éviter les blocages
+    if (path.length <= 1) {
+        const nb = adj[curNodeId] || [];
+        if (nb.length) path.push(nb[Math.floor(Math.random() * nb.length)]);
+    }
+    fig.path    = path;
+    fig.pathIdx = 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ÉTAT DES PERSONNAGES
+══════════════════════════════════════════════════════════════ */
+const figures = {};
+let figSvgs   = {};
+let figIdCnt  = 0;
+
+/* ── Créer le SVG des bonhommes pour un étage ── */
+function initFigSvg(floor) {
+    // On récupère le zoom-content pour injecter dedans (scale ensemble)
+    const zc = document.getElementById(`zoom-content-${floor}`);
+    if (!zc) return;
+
+    // Trouver le plan-wrapper à l'intérieur
+    const wrap = document.getElementById(`wrap-${floor}`);
+    if (!wrap) return;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.id = `fig-svg-${floor}`;
+    svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible;';
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+    // Le viewBox sera mis à jour quand l'image charge
+    const img = document.getElementById(`img-${floor}`);
+    const setVB = () => {
+        const nw = img.naturalWidth  || 1080;
+        const nh = img.naturalHeight || 620;
+        svg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
+    };
+    if (img.complete && img.naturalWidth > 0) setVB();
+    else img.addEventListener('load', setVB);
+
+    wrap.appendChild(svg);
+    figSvgs[floor] = svg;
+    return svg;
+}
+
+/* ── Convertir % → coordonnées SVG ── */
+function pctToSvg(xPct, yPct, floor) {
+    const img = document.getElementById(`img-${floor}`);
+    const nw  = img.naturalWidth  || 1080;
+    const nh  = img.naturalHeight || 620;
+    return { x: xPct / 100 * nw, y: yPct / 100 * nh };
+}
+
+/* ── Spawner un personnage ── */
+
+const NOMS_DOC_H = ['Dr. Martin','Dr. Leroy','Dr. Simon','Dr. Bernard','Dr. Durand','Dr. Petit'];
+const NOMS_DOC_F = ['Dr. Moreau','Dr. Blanc','Dr. Fontaine','Dr. Laurent','Dr. Mercier','Dr. Lefebvre'];
+const NOMS_CIVIL = ['M. Dupont','Mme Garcia','M. Thomas','Mme Robert','M. Richard','Mme Rousseau','M. Vincent'];
+const NOMS_PAT   = ['Dupont J.','Garcia M.','Thomas A.','Robert C.','Richard L.','Blanc P.','Morel E.'];
+
+// spriteType : 'doc_h' | 'doc_f' | 'civil' | 'patient'
+// En attendant des sprites dédiés, on mappe sur les sprites existants :
+//   doc_h   → SPRITES.medecin (blouse blanche homme)
+//   doc_f   → SPRITES.patient (blouse colorée femme — réutilisé temporairement)
+//   civil   → SPRITES.medecin (couleur différente via canvas teinté)
+//   patient → SPRITES.patient
+function spawnFigure(floor, spriteType, roomId) {
+    const graph = GRAPH[floor];
+    if (!graph) return;
+
+    const adj = buildAdjacency(graph);
+    const id  = ++figIdCnt;
+    const svg = figSvgs[floor];
+    if (!svg) return;
+
+    const isStaff = spriteType === 'doc_h' || spriteType === 'doc_f';
+
+    let label, name;
+    if (spriteType === 'doc_h') {
+        label = 'Médecin'; name = NOMS_DOC_H[id % NOMS_DOC_H.length];
+    } else if (spriteType === 'doc_f') {
+        label = 'Médecin'; name = NOMS_DOC_F[id % NOMS_DOC_F.length];
+    } else if (spriteType === 'civil') {
+        label = 'Visiteur'; name = NOMS_CIVIL[id % NOMS_CIVIL.length];
+    } else {
+        label = 'Patient';
+        name  = roomId ? `${NOMS_PAT[id % NOMS_PAT.length]} (${roomId})` : NOMS_PAT[id % NOMS_PAT.length];
+    }
+
+    // Rôle interne pour les sprites existants
+    const spriteRole = (spriteType === 'doc_h' || spriteType === 'civil') ? 'medecin' : 'patient';
+
+    let startNodeId = (roomId && graph.roomExits[roomId])
+        ? graph.roomExits[roomId]
+        : randNode(graph.nodes);
+
+    const startNode = graph.nodes.find(n => n.id === startNodeId) || graph.nodes[0];
+    const pos = pctToSvg(startNode.xPct, startNode.yPct, floor);
+
+    const color = null; // non utilisé (sprites canvas)
+    const elem  = createFigure(svg, id, color, label);
+    elem.style.pointerEvents = 'all';
+
+    const fig = {
+        id, floor, elem, label, name, roomId,
+        spriteType, spriteRole,
+        x: pos.x, y: pos.y,
+        tx: pos.x, ty: pos.y,
+        path: [startNodeId], pathIdx: 0,
+        speed: isStaff ? (0.8 + Math.random() * 0.5) : (0.4 + Math.random() * 0.4),
+        phase: Math.random() * Math.PI * 2,
+        waiting: Math.random() * 1.0,
+        adj, graph,
+        homeNode: startNodeId,
+        isMedecin: isStaff,
+        lastAngle: Math.PI / 2,
+        lastDir: 'face',
+    };
+
+    elem._figData = fig;
+    figures[id]   = fig;
+
+    // Dessiner immédiatement le premier frame
+    updateFigureGeometry(elem, pos.x, pos.y, Math.PI / 2, 0);
+
+    // Tooltip
+    const ttEl = document.getElementById('fig-tooltip');
+    elem.addEventListener('mouseenter', () => {
+        document.getElementById('fig-tt-name').textContent = fig.name;
+        document.getElementById('fig-tt-role').textContent = fig.label + (fig.roomId ? ` · ${fig.roomId}` : '');
+        ttEl.classList.add('visible');
+    });
+    elem.addEventListener('mousemove', (e) => {
+        ttEl.style.left = (e.clientX + 12) + 'px';
+        ttEl.style.top  = (e.clientY - 30) + 'px';
+    });
+    elem.addEventListener('mouseleave', () => ttEl.classList.remove('visible'));
+
+    return fig;
+}
+
+/* ── Choisir le prochain chemin ── */
+function choosePath(fig) {
+    const { graph, adj, homeNode, isMedecin, roomId } = fig;
+    const curNodeId = fig.path[fig.pathIdx];
+
+    let targetId;
+
+    if (!isMedecin) {
+        // Patient : 60% du temps retourne près de sa chambre, sinon se balade
+        if (Math.random() < 0.6 && homeNode) {
+            targetId = homeNode;
+        } else {
+            // Balade courte : nœud voisin ou voisin du voisin
+            const nb1 = adj[curNodeId] || [];
+            if (nb1.length === 0) { targetId = curNodeId; }
+            else {
+                const pick1 = nb1[Math.floor(Math.random() * nb1.length)];
+                if (Math.random() < 0.5) {
+                    targetId = pick1;
+                } else {
+                    const nb2 = adj[pick1] || [];
+                    targetId = nb2.length ? nb2[Math.floor(Math.random() * nb2.length)] : pick1;
+                }
+            }
+        }
+    } else {
+        // Médecin : nœud aléatoire sur tout le graphe
+        targetId = randNode(graph.nodes);
+    }
+
+    const path = bfsPath(adj, curNodeId, targetId);
+    fig.path    = path;
+    fig.pathIdx = 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BOUCLE D'ANIMATION — infinie, pause minimale
+══════════════════════════════════════════════════════════════ */
+let lastTime = 0;
+
+function animateFigures(ts) {
+    const dt = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+
+    for (const id in figures) {
+        const fig = figures[id];
+
+        const floorEl = document.getElementById(`floor-${fig.floor}`);
+        if (!floorEl || !floorEl.classList.contains('active')) continue;
+
+        // Pause entre deux chemins (très courte : 0.1–0.5s)
+        if (fig.waiting > 0) {
+            fig.waiting -= dt;
+            fig.elem._figData = fig;
+            updateFigureGeometry(fig.elem, fig.x, fig.y, fig.lastAngle || 0, 0);
+            continue;
+        }
+
+        // Nœud cible courant
+        const curNodeId = fig.path[fig.pathIdx];
+        if (!curNodeId) { choosePath(fig); continue; }
+        const curNode = fig.graph.nodes.find(n => n.id === curNodeId);
+        if (!curNode)   { choosePath(fig); continue; }
+
+        const target = pctToSvg(curNode.xPct, curNode.yPct, fig.floor);
+        const dx = target.x - fig.x;
+        const dy = target.y - fig.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 1.2) {
+            fig.x = target.x;
+            fig.y = target.y;
+            fig.pathIdx++;
+
+            if (fig.pathIdx >= fig.path.length) {
+                // Fin du chemin : pause minimale puis nouveau chemin immédiatement
+                fig.waiting = 0.08 + Math.random() * 0.35;
+                choosePath(fig);
+            }
+        } else {
+            const step  = fig.speed * 28 * dt;
+            const ratio = Math.min(step / dist, 1);
+            fig.x += dx * ratio;
+            fig.y += dy * ratio;
+            fig.phase += dt * fig.speed * 5;
+
+            const angle   = Math.atan2(dy, dx);
+            fig.lastAngle = angle;
+            fig.elem._figData = fig;
+            updateFigureGeometry(fig.elem, fig.x, fig.y, angle, fig.phase);
+        }
+    }
+
+    requestAnimationFrame(animateFigures);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SYNCHRONISATION PATIENTS
+══════════════════════════════════════════════════════════════ */
+const patientFigures = {};
+
+function syncPatients() {
+    for (const bk in patientFigures) {
+        if (!state[bk]) {
+            const fig = figures[patientFigures[bk]];
+            if (fig) { fig.elem.remove(); delete figures[fig.id]; }
+            delete patientFigures[bk];
+        }
+    }
+    for (const bk in state) {
+        if (!state[bk] || !bk.includes('_lit')) continue;
+        if (patientFigures[bk]) continue;
+        const roomId  = bk.split('_lit')[0];
+        const floorRm = ROOMS.find(r => r.id === roomId);
+        if (!floorRm || !figSvgs[floorRm.floor]) continue;
+        const fig = spawnFigure(floorRm.floor, 'patient', roomId);
+        if (fig) { patientFigures[bk] = fig.id; choosePath(fig); }
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SPAWNER STAFF + CIVILS — 3 types distincts
+══════════════════════════════════════════════════════════════ */
+function spawnMedecins() {
+    [
+        { floor:1, type:'doc_h', n:2 },   // médecins hommes NV-1
+        { floor:1, type:'doc_f', n:2 },   // médecins femmes NV-1
+        { floor:1, type:'civil', n:2 },   // visiteurs NV-1
+        { floor:2, type:'doc_h', n:1 },
+        { floor:2, type:'doc_f', n:2 },
+        { floor:2, type:'civil', n:1 },
+    ].forEach(({ floor, type, n }) => {
+        if (!figSvgs[floor]) return;
+        for (let i = 0; i < n; i++) {
+            const fig = spawnFigure(floor, type, null);
+            if (fig) choosePath(fig);
+        }
+    });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BOUTON ON/OFF dans les onglets
+══════════════════════════════════════════════════════════════ */
+let figuresVisible = true;
+
+function addToggleButton() {
+    const tabs = document.querySelector('.tabs');
+    if (!tabs) return;
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn';
+    btn.id = 'toggle-figs';
+    btn.style.marginLeft = 'auto';
+    btn.style.color = '#22c55e';
+    btn.style.fontSize = '10px';
+    btn.textContent = '👥 Personnages ON';
+    btn.onclick = () => {
+        figuresVisible = !figuresVisible;
+        Object.values(figSvgs).forEach(svg => {
+            svg.style.display = figuresVisible ? '' : 'none';
+        });
+        btn.textContent = figuresVisible ? '👥 Personnages ON' : '👥 Personnages OFF';
+        btn.style.color  = figuresVisible ? '#22c55e' : '#475569';
+    };
+    tabs.appendChild(btn);
+}
+
+/* ── INIT ── */
+function initFigures() {
+    // Attendre que les zoom-content soient créés par le ZOOM MANAGER
+    // puis injecter les SVG de bonhommes dans les plan-wrappers
+    initFigSvg(1);
+    initFigSvg(2);
+    spawnMedecins();
+    syncPatients();
+    addToggleButton();
+    requestAnimationFrame(animateFigures);
+}
+
+/* ── Intercepter redrawAll pour re-syncer les patients ── */
+const _origRedrawAll = window.redrawAll || redrawAll;
+window.redrawAllWithFigs = function() {
+    _origRedrawAll();
+    syncPatients();
+};
+
+// Patch : après chaque saveState, re-syncer
+const _origSaveState = window.saveState;
+
+// On attend que tout soit prêt
+setTimeout(() => {
+    initFigures();
+    // Re-syncer quand l'état Firebase change
+    const _origListenCb = window._figListenPatched;
+    if (!_origListenCb) {
+        window._figListenPatched = true;
+        // Observer les changements d'état (Firebase ou local)
+        setInterval(() => syncPatients(), 3000);
+    }
+}, 800);
+
+})();
+</script>
+
 <style>
 /* ══════════════════════════════════════════════════════════════
    ZOOM — styles
@@ -1417,10 +2457,9 @@ window.addEventListener('DOMContentLoaded', () => {
         content.style.transform = `translate(${s.tx}px, ${s.ty}px) scale(${s.scale})`;
         showBadge(floor, s.scale);
 
-        /* ── SUPPRIMÉ : l'appel à fitOverlay/drawFloor qui causait le décalage ──
-           fitOverlay() recalculait la position du SVG dans un système de
-           coordonnées déjà transformé par scale() → offset croissant.
-           Désormais le SVG scale avec le zoom-content → zéro décalage. */
+        /* Curseur : grab si zoomé, default sinon */
+        const container = document.getElementById(`zoom-container-${floor}`);
+        if (container) container.style.cursor = s.scale > 1.01 ? 'grab' : 'default';
     }
 
     function clampTranslate(floor, container) {
@@ -1563,6 +2602,45 @@ window.addEventListener('DOMContentLoaded', () => {
             clampTranslate(floor, container);
             applyTransform(floor, false);
         }, { passive: false });
+
+        /* ── PAN SOURIS — clic gauche + glisser ── */
+        let mouseDown = false;
+        let mousePanX = 0, mousePanY = 0;
+        let mouseTxStart = 0, mouseTyStart = 0;
+
+        container.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;          // clic gauche uniquement
+            if (s.scale <= 1.01) return;          // inutile si pas zoomé
+            mouseDown = true;
+            mousePanX    = e.clientX;
+            mousePanY    = e.clientY;
+            mouseTxStart = s.tx;
+            mouseTyStart = s.ty;
+            container.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!mouseDown) return;
+            s.tx = mouseTxStart + (e.clientX - mousePanX);
+            s.ty = mouseTyStart + (e.clientY - mousePanY);
+            clampTranslate(floor, container);
+            applyTransform(floor, false);
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (!mouseDown) return;
+            mouseDown = false;
+            container.style.cursor = s.scale > 1.01 ? 'grab' : 'default';
+        });
+
+        /* Curseur grab quand zoomé */
+        container.addEventListener('mouseleave', () => {
+            if (mouseDown) {
+                mouseDown = false;
+                container.style.cursor = s.scale > 1.01 ? 'grab' : 'default';
+            }
+        });
     }
 
     function init() {
