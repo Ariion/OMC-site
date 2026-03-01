@@ -1340,118 +1340,111 @@ window.addEventListener('DOMContentLoaded', () => {
    Un personnage se déplace de node en node via les edges.
 ══════════════════════════════════════════════════════════════ */
 
+/* ══════════════════════════════════════════════════════════════
+   GRAPHE DE COULOIRS ET CHAMBRES
+   ══════════════════════════════════════════════════════════════ */
+
 const GRAPH = {
     1: {
         nodes: [
-            // Couloir principal horizontal (milieu)
-            { id:'c1',  xPct: 12,   yPct: 22  },
-            { id:'c2',  xPct: 20,   yPct: 22  },
-            { id:'c3',  xPct: 30,   yPct: 22  },
-            { id:'c4',  xPct: 40,   yPct: 22  },
-            { id:'c5',  xPct: 50,   yPct: 22  },
-            { id:'c6',  xPct: 60,   yPct: 22  },
-            { id:'c7',  xPct: 70,   yPct: 22  },
-            { id:'c8',  xPct: 80,   yPct: 22  },
-            { id:'c9',  xPct: 90,   yPct: 22  },
-            // Couloir vertical gauche (zone W100)
-            { id:'v1',  xPct: 12,   yPct: 30  },
-            { id:'v2',  xPct: 12,   yPct: 40  },
-            { id:'v3',  xPct: 12,   yPct: 50  },
-            { id:'v4',  xPct: 12,   yPct: 60  },
-            { id:'v5',  xPct: 12,   yPct: 68  },
-            // Couloir horizontal bas (zone W110-W113)
-            { id:'b1',  xPct: 12,   yPct: 75  },
-            { id:'b2',  xPct: 20,   yPct: 75  },
-            { id:'b3',  xPct: 28,   yPct: 75  },
-            { id:'b4',  xPct: 36,   yPct: 75  },
-            // Branche montante couloir central
-            { id:'m1',  xPct: 40,   yPct: 30  },
-            { id:'m2',  xPct: 40,   yPct: 40  },
-            { id:'m3',  xPct: 40,   yPct: 50  },
-            // Couloir droit
-            { id:'r1',  xPct: 55,   yPct: 30  },
-            { id:'r2',  xPct: 55,   yPct: 45  },
-            { id:'r3',  xPct: 70,   yPct: 30  },
-            { id:'r4',  xPct: 70,   yPct: 45  },
-            { id:'r5',  xPct: 80,   yPct: 30  },
-            { id:'r6',  xPct: 90,   yPct: 30  },
+            // Couloir horizontal principal (Haut)
+            { id:'c1', xPct: 14, yPct: 28 }, { id:'c2', xPct: 25, yPct: 28 }, { id:'c3', xPct: 34, yPct: 28 },
+            { id:'c4', xPct: 45, yPct: 28 }, { id:'c5', xPct: 55, yPct: 28 }, { id:'c6', xPct: 65, yPct: 28 },
+            { id:'c7', xPct: 75, yPct: 28 }, { id:'c8', xPct: 82, yPct: 28 }, { id:'c9', xPct: 92, yPct: 28 },
+            
+            // Couloir vertical gauche (devant W100)
+            { id:'v1', xPct: 14, yPct: 40 }, { id:'v2', xPct: 14, yPct: 52 }, { id:'v3', xPct: 14, yPct: 64 },
+            
+            // NOUVEAU : Points à l'intérieur de la W100
+            { id:'in_w100_1', xPct: 6, yPct: 35 }, { id:'in_w100_2', xPct: 6, yPct: 50 }, { id:'in_w100_3', xPct: 6, yPct: 60 },
+            
+            // Couloirs aile bas-gauche
+            { id:'v4', xPct: 14, yPct: 75 }, { id:'v5', xPct: 14, yPct: 85 },
+            { id:'in_w110', xPct: 18, yPct: 75 }, { id:'in_w111', xPct: 18, yPct: 85 },
+            { id:'b1', xPct: 24, yPct: 64 }, { id:'bm1', xPct: 24, yPct: 75 }, { id:'bm2', xPct: 24, yPct: 85 },
+            { id:'in_w112', xPct: 30, yPct: 75 }, { id:'in_w113', xPct: 30, yPct: 85 },
+            
+            // Couloir milieu (vers B1/A1)
+            { id:'b2', xPct: 34, yPct: 64 }, { id:'m1', xPct: 34, yPct: 50 }, { id:'m2', xPct: 34, yPct: 40 },
+            { id:'in_b1', xPct: 26, yPct: 50 }, { id:'in_a1', xPct: 42, yPct: 50 },
+            
+            // Aile droite (urgences)
+            { id:'rw1', xPct: 82, yPct: 40 }, { id:'rw2', xPct: 82, yPct: 55 }, { id:'rw3', xPct: 82, yPct: 70 },
+            { id:'in_rl1', xPct: 75, yPct: 40 }, { id:'in_rr1', xPct: 90, yPct: 40 }, 
+            { id:'in_rr2', xPct: 90, yPct: 55 }, { id:'in_rl2', xPct: 75, yPct: 70 }
         ],
         edges: [
-            // Couloir horizontal principal
-            ['c1','c2'],['c2','c3'],['c3','c4'],['c4','c5'],
-            ['c5','c6'],['c6','c7'],['c7','c8'],['c8','c9'],
-            // Vertical gauche
-            ['c1','v1'],['v1','v2'],['v2','v3'],['v3','v4'],['v4','v5'],['v5','b1'],
-            // Horizontal bas
-            ['b1','b2'],['b2','b3'],['b3','b4'],
-            // Branche centrale
-            ['c4','m1'],['m1','m2'],['m2','m3'],['m3','b2'],
-            // Couloir droit
-            ['c5','r1'],['r1','r2'],['c7','r3'],['r3','r4'],
-            ['c8','r5'],['c9','r6'],
-            // Connexions entre branches
-            ['r1','r3'],['r3','r5'],
+            // Lignes du couloir principal
+            ['c1','c2'],['c2','c3'],['c3','c4'],['c4','c5'],['c5','c6'],['c6','c7'],['c7','c8'],['c8','c9'],
+            ['c1','v1'],['v1','v2'],['v2','v3'],
+            
+            // Entrées dans la chambre W100
+            ['v1','in_w100_1'],['v2','in_w100_2'],['v3','in_w100_3'],
+            
+            // Connexions aile bas-gauche
+            ['v3','v4'],['v4','v5'],
+            ['v4','in_w110'],['v5','in_w111'],
+            ['v3','b1'],['b1','b2'],
+            ['b1','bm1'],['bm1','bm2'],
+            ['bm1','in_w112'],['bm2','in_w113'],
+            
+            // Connexions milieu
+            ['b2','m1'],['m1','m2'],['m2','c3'],
+            ['m1','in_b1'],['m1','in_a1'],
+            
+            // Connexions aile droite
+            ['c8','rw1'],['rw1','rw2'],['rw2','rw3'],
+            ['rw1','in_rl1'],['rw1','in_rr1'],['rw2','in_rr2'],['rw3','in_rl2']
         ],
-        // Waypoints où les patients sortent de leur chambre
+        // Les patients spawment/restent près de ces points à l'intérieur
         roomExits: {
-            'W100': 'v2',
-            'W110': 'b1',
-            'W111': 'b1',
-            'W112': 'b3',
-            'W113': 'b2',
-        },
+            'W100': 'in_w100_2',
+            'W110': 'in_w110',
+            'W111': 'in_w111',
+            'W112': 'in_w112',
+            'W113': 'in_w113'
+        }
     },
     2: {
         nodes: [
-            // Couloir principal horizontal
-            { id:'c1',  xPct: 10,   yPct: 22  },
-            { id:'c2',  xPct: 20,   yPct: 22  },
-            { id:'c3',  xPct: 30,   yPct: 22  },
-            { id:'c4',  xPct: 40,   yPct: 22  },
-            { id:'c5',  xPct: 50,   yPct: 22  },
-            { id:'c6',  xPct: 60,   yPct: 22  },
-            { id:'c7',  xPct: 70,   yPct: 22  },
-            { id:'c8',  xPct: 80,   yPct: 22  },
-            // Vertical gauche
-            { id:'v1',  xPct: 20,   yPct: 30  },
-            { id:'v2',  xPct: 20,   yPct: 40  },
-            { id:'v3',  xPct: 20,   yPct: 50  },
-            { id:'v4',  xPct: 20,   yPct: 60  },
-            { id:'v5',  xPct: 20,   yPct: 70  },
-            // Vertical milieu
-            { id:'vm1', xPct: 30,   yPct: 30  },
-            { id:'vm2', xPct: 30,   yPct: 40  },
-            { id:'vm3', xPct: 30,   yPct: 55  },
-            // Horizontal bas
-            { id:'b1',  xPct: 20,   yPct: 75  },
-            { id:'b2',  xPct: 30,   yPct: 75  },
-            { id:'b3',  xPct: 40,   yPct: 75  },
-            // Couloirs droits
-            { id:'r1',  xPct: 50,   yPct: 30  },
-            { id:'r2',  xPct: 60,   yPct: 30  },
-            { id:'r3',  xPct: 70,   yPct: 30  },
-            { id:'r4',  xPct: 80,   yPct: 30  },
-            { id:'r5',  xPct: 50,   yPct: 45  },
-            { id:'r6',  xPct: 60,   yPct: 45  },
+            // Couloirs formant la boucle gauche
+            { id:'lt1', xPct: 12, yPct: 35 }, { id:'lt2', xPct: 20, yPct: 32 }, { id:'lt3', xPct: 32, yPct: 34 },
+            { id:'lv1', xPct: 10, yPct: 45 }, { id:'lv2', xPct: 10, yPct: 60 }, { id:'lv3', xPct: 12, yPct: 75 },
+            { id:'lb1', xPct: 20, yPct: 80 },
+            { id:'rv2', xPct: 28, yPct: 65 }, { id:'rv1', xPct: 32, yPct: 50 },
+            
+            // Points directement à l'intérieur des chambres du 2e étage
+            { id:'in_w205', xPct: 15, yPct: 38 }, { id:'in_w204', xPct: 18, yPct: 50 }, { id:'in_w203', xPct: 18, yPct: 70 },
+            { id:'in_w200', xPct: 25, yPct: 38 }, { id:'in_w201', xPct: 25, yPct: 50 }, { id:'in_w202', xPct: 23, yPct: 65 },
+            
+            // Le long pont et l'aile droite
+            { id:'b1', xPct: 45, yPct: 34 }, { id:'b2', xPct: 60, yPct: 34 },
+            { id:'rz1', xPct: 60, yPct: 42 }, { id:'rz2', xPct: 70, yPct: 42 },
+            { id:'rz3', xPct: 75, yPct: 45 }, { id:'rz4', xPct: 65, yPct: 52 }
         ],
         edges: [
-            ['c1','c2'],['c2','c3'],['c3','c4'],['c4','c5'],['c5','c6'],['c6','c7'],['c7','c8'],
-            ['c2','v1'],['v1','v2'],['v2','v3'],['v3','v4'],['v4','v5'],['v5','b1'],
-            ['b1','b2'],['b2','b3'],
-            ['c3','vm1'],['vm1','vm2'],['vm2','vm3'],['vm3','b2'],
-            ['c5','r1'],['r1','r2'],['r2','r3'],['r3','r4'],
-            ['c6','r5'],['r5','r6'],
-            ['r1','r5'],
+            // Boucle principale
+            ['lt1','lt2'],['lt2','lt3'],
+            ['lt1','lv1'],['lv1','lv2'],['lv2','lv3'],['lv3','lb1'],
+            ['lb1','rv2'],['rv2','rv1'],['rv1','lt3'],
+            
+            // Entrées dans les chambres
+            ['lt1','in_w205'], ['lv2','in_w204'], ['lv3','in_w203'],
+            ['lt2','in_w200'], ['rv1','in_w201'], ['rv2','in_w202'],
+            
+            // Pont et droite
+            ['lt3','b1'],['b1','b2'],
+            ['b2','rz1'],['rz1','rz2'],['rz2','rz3'],['rz2','rz4']
         ],
         roomExits: {
-            'W200': 'v1',
-            'W201': 'v2',
-            'W202': 'vm2',
-            'W203': 'vm3',
-            'W204': 'v3',
-            'W205': 'v1',
-        },
-    },
+            'W200': 'in_w200',
+            'W201': 'in_w201',
+            'W202': 'in_w202',
+            'W203': 'in_w203',
+            'W204': 'in_w204',
+            'W205': 'in_w205'
+        }
+    }
 };
 
 /* ── Construire la liste d'adjacence ── */
@@ -1498,7 +1491,7 @@ function randNode(nodes) {
    Palette patient  : blouse verte, pantalon gris, peau beige, cheveux bruns
 ══════════════════════════════════════════════════════════════ */
 
-const PX = 3; // scale pixel art
+const PX = 1.5; // scale pixel art
 const SW = 11, SH = 16; // taille sprite naturelle
 
 // Couleurs
