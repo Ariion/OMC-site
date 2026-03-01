@@ -2282,8 +2282,7 @@ function addToggleButton() {
 
 /* ── INIT ── */
 function initFigures() {
-    // Attendre que les zoom-content soient créés par le ZOOM MANAGER
-    // puis injecter les SVG de bonhommes dans les plan-wrappers
+
     initFigSvg(1);
     initFigSvg(2);
     spawnMedecins();
@@ -2377,22 +2376,7 @@ setTimeout(() => {
 </style>
 
 <script>
-/* ══════════════════════════════════════════════════════════════
-   ZOOM MANAGER — Pinch + double-tap + molette + boutons +/-
 
-   CORRECTION DU BUG DE DÉCALAGE SVG :
-   Le problème d'origine : applyTransform() rappelait fitOverlay() +
-   drawFloor() après chaque zoom. Mais fitOverlay() utilise
-   getBoundingClientRect() sur l'image — qui retourne des coordonnées
-   ÉCRAN déjà affectées par le CSS transform du zoom-content.
-   Résultat : le SVG était repositionné dans un référentiel transformé
-   → décalage croissant à chaque zoom.
-
-   LA FIX : applyTransform() ne rappelle PLUS fitOverlay/drawFloor.
-   Le SVG est dessiné une seule fois au chargement (à scale=1).
-   Pendant le zoom, le zoom-content scale entier (image + SVG ensemble)
-   → aucun recalcul nécessaire, aucun décalage possible.
-   ══════════════════════════════════════════════════════════════ */
 (function() {
     const MIN_SCALE = 1;
     const MAX_SCALE = 5;
