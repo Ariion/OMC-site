@@ -890,10 +890,14 @@ function fillSince(inputId, isoString) {
    DESSIN SVG
    ══════════════════════════════════════════════════════════════ */
 
+
 function fitOverlay(floor) {
     const img     = document.getElementById(`img-${floor}`);
     const svg     = document.getElementById(`svg-${floor}`);
+    const figSvg  = document.getElementById(`fig-svg-${floor}`); // NOUVEAU: On cible aussi le calque des bonhommes
     const wrapper = document.getElementById(`wrap-${floor}`);
+
+    if (!img || !svg || !wrapper) return { nw: 1080, nh: 620 };
 
     const imgRect  = img.getBoundingClientRect();
     const wrapRect = wrapper.getBoundingClientRect();
@@ -903,6 +907,7 @@ function fitOverlay(floor) {
     const width  = imgRect.width;
     const height = imgRect.height;
 
+    // 1. On ajuste le calque des chambres (vert/rouge)
     svg.style.left   = left   + 'px';
     svg.style.top    = top    + 'px';
     svg.style.width  = width  + 'px';
@@ -912,6 +917,15 @@ function fitOverlay(floor) {
     const nh = img.naturalHeight || 620;
     svg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
     svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+    // 2. NOUVEAU: On ajuste EXACTEMENT pareil le calque des bonhommes !
+    if (figSvg) {
+        figSvg.style.left   = left   + 'px';
+        figSvg.style.top    = top    + 'px';
+        figSvg.style.width  = width  + 'px';
+        figSvg.style.height = height + 'px';
+        figSvg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
+    }
 
     return { nw, nh };
 }
@@ -1348,30 +1362,31 @@ const GRAPH = {
     1: {
         nodes: [
             // Couloir horizontal principal (Haut)
-            { id:'c1', xPct: 14, yPct: 28 }, { id:'c2', xPct: 25, yPct: 28 }, { id:'c3', xPct: 34, yPct: 28 },
-            { id:'c4', xPct: 45, yPct: 28 }, { id:'c5', xPct: 55, yPct: 28 }, { id:'c6', xPct: 65, yPct: 28 },
-            { id:'c7', xPct: 75, yPct: 28 }, { id:'c8', xPct: 82, yPct: 28 }, { id:'c9', xPct: 92, yPct: 28 },
+            { id:'c1', xPct: 13, yPct: 30 }, { id:'c2', xPct: 25, yPct: 30 }, { id:'c3', xPct: 29, yPct: 30 },
+            { id:'c4', xPct: 45, yPct: 30 }, { id:'c5', xPct: 55, yPct: 30 }, { id:'c6', xPct: 65, yPct: 30 },
+            { id:'c7', xPct: 75, yPct: 30 }, { id:'c8', xPct: 84, yPct: 30 }, { id:'c9', xPct: 92, yPct: 30 },
             
             // Couloir vertical gauche (devant W100)
-            { id:'v1', xPct: 14, yPct: 40 }, { id:'v2', xPct: 14, yPct: 52 }, { id:'v3', xPct: 14, yPct: 64 },
+            { id:'v1', xPct: 13, yPct: 35 }, { id:'v2', xPct: 13, yPct: 57 }, { id:'v3', xPct: 13, yPct: 65 },
             
             // NOUVEAU : Points à l'intérieur de la W100
-            { id:'in_w100_1', xPct: 6, yPct: 35 }, { id:'in_w100_2', xPct: 6, yPct: 50 }, { id:'in_w100_3', xPct: 6, yPct: 60 },
+            { id:'in_w100_1', xPct: 6, yPct: 35 }, { id:'in_w100_2', xPct: 6, yPct: 50 }, { id:'in_w100_3', xPct: 6, yPct: 57 },
             
             // Couloirs aile bas-gauche
-            { id:'v4', xPct: 14, yPct: 75 }, { id:'v5', xPct: 14, yPct: 85 },
-            { id:'in_w110', xPct: 18, yPct: 75 }, { id:'in_w111', xPct: 18, yPct: 85 },
-            { id:'b1', xPct: 24, yPct: 64 }, { id:'bm1', xPct: 24, yPct: 75 }, { id:'bm2', xPct: 24, yPct: 85 },
-            { id:'in_w112', xPct: 30, yPct: 75 }, { id:'in_w113', xPct: 30, yPct: 85 },
+            { id:'v4', xPct: 14, yPct: 70 }, { id:'v5', xPct: 14, yPct: 85 },
+            { id:'in_w110', xPct: 19, yPct: 77.5 }, { id:'in_w111', xPct: 18, yPct: 85 },
+            { id:'b1', xPct: 19, yPct: 65 }, { id:'b3', xPct: 19, yPct: 70 },
+             { id:'bm1', xPct: 24, yPct: 70 }, { id:'bm2', xPct: 24, yPct: 77.5 },
+            { id:'in_w112', xPct: 30, yPct: 75 }, { id:'in_w113', xPct: 24, yPct: 85 },
             
             // Couloir milieu (vers B1/A1)
-            { id:'b2', xPct: 34, yPct: 64 }, { id:'m1', xPct: 34, yPct: 50 }, { id:'m2', xPct: 34, yPct: 40 },
-            { id:'in_b1', xPct: 26, yPct: 50 }, { id:'in_a1', xPct: 42, yPct: 50 },
+            { id:'b2', xPct: 34, yPct: 65 }, { id:'m1', xPct: 29, yPct: 50 }, { id:'m2', xPct: 29, yPct: 40 }, 
+            { id:'in_b1', xPct: 20, yPct: 40 }, { id:'in_a1', xPct: 38, yPct: 40 },
             
             // Aile droite (urgences)
-            { id:'rw1', xPct: 82, yPct: 40 }, { id:'rw2', xPct: 82, yPct: 55 }, { id:'rw3', xPct: 82, yPct: 70 },
-            { id:'in_rl1', xPct: 75, yPct: 40 }, { id:'in_rr1', xPct: 90, yPct: 40 }, 
-            { id:'in_rr2', xPct: 90, yPct: 55 }, { id:'in_rl2', xPct: 75, yPct: 70 }
+            { id:'rw1', xPct: 84, yPct: 36 }, { id:'rw2', xPct: 84, yPct: 47 }, { id:'rw3', xPct: 84, yPct: 65 },
+            { id:'in_rl1', xPct: 75, yPct: 36 }, { id:'in_rr1', xPct: 90, yPct: 36 }, 
+            { id:'in_rr2', xPct: 90, yPct: 47 }, { id:'in_rl2', xPct: 75, yPct: 65 }
         ],
         edges: [
             // Lignes du couloir principal
@@ -1379,18 +1394,18 @@ const GRAPH = {
             ['c1','v1'],['v1','v2'],['v2','v3'],
             
             // Entrées dans la chambre W100
-            ['v1','in_w100_1'],['v2','in_w100_2'],['v3','in_w100_3'],
+            ['v1','in_w100_1'],['in_w100_1','in_w100_2'],['in_w100_2','in_w100_3'],['v2','in_w100_3'],
             
             // Connexions aile bas-gauche
-            ['v3','v4'],['v4','v5'],
-            ['v4','in_w110'],['v5','in_w111'],
-            ['v3','b1'],['b1','b2'],
-            ['b1','bm1'],['bm1','bm2'],
+            ['b3','v4'], ['in_w110','in_w111'],
+            ['b3','in_w110'],['v5','in_w111'],
+            ['v3','b1'],['b1','b2'], ['b1','b3'], 
+            ['b3','bm1'],['in_w110','bm2'],
             ['bm1','in_w112'],['bm2','in_w113'],
             
             // Connexions milieu
-            ['b2','m1'],['m1','m2'],['m2','c3'],
-            ['m1','in_b1'],['m1','in_a1'],
+            ['m1','m2'],['m2','c3'],
+            ['m2','in_b1'],['m2','in_a1'],
             
             // Connexions aile droite
             ['c8','rw1'],['rw1','rw2'],['rw2','rw3'],
@@ -1408,33 +1423,50 @@ const GRAPH = {
     2: {
         nodes: [
             // Couloirs formant la boucle gauche
-            { id:'lt1', xPct: 12, yPct: 35 }, { id:'lt2', xPct: 20, yPct: 32 }, { id:'lt3', xPct: 32, yPct: 34 },
-            { id:'lv1', xPct: 10, yPct: 45 }, { id:'lv2', xPct: 10, yPct: 60 }, { id:'lv3', xPct: 12, yPct: 75 },
-            { id:'lb1', xPct: 20, yPct: 80 },
-            { id:'rv2', xPct: 28, yPct: 65 }, { id:'rv1', xPct: 32, yPct: 50 },
+            { id:'lt1', xPct: 12, yPct: 30 }, 
+            { id:'lt2', xPct: 20, yPct: 29 }, 
+            { id:'lt3', xPct: 31, yPct: 29 },
+            { id:'lt4', xPct: 31, yPct: 36 },
+            { id:'lv0', xPct: 9, yPct: 35 },
+            { id:'lv1', xPct: 11, yPct: 40 }, 
+            { id:'lv2', xPct: 15, yPct: 57.5 }, 
+            { id:'lv3', xPct: 15, yPct: 78.5 },
+            { id:'lv4', xPct: 15, yPct: 74.5 },
+            { id:'lb1', xPct: 25, yPct: 78.5 },
+            { id:'rv2', xPct: 31, yPct: 62.5 }, 
+            { id:'rv1', xPct: 31, yPct: 56.5 },
             
             // Points directement à l'intérieur des chambres du 2e étage
-            { id:'in_w205', xPct: 15, yPct: 38 }, { id:'in_w204', xPct: 18, yPct: 50 }, { id:'in_w203', xPct: 18, yPct: 70 },
-            { id:'in_w200', xPct: 25, yPct: 38 }, { id:'in_w201', xPct: 25, yPct: 50 }, { id:'in_w202', xPct: 23, yPct: 65 },
+            { id:'in_w205', xPct: 18, yPct: 37 }, 
+            { id:'in_w204', xPct: 21, yPct: 57.5 }, 
+            { id:'in_w203', xPct: 21, yPct: 74.5 },
+            { id:'in_w200', xPct: 25, yPct: 36 }, 
+            { id:'in_w201', xPct: 25, yPct: 56.5 }, 
+            { id:'in_w202', xPct: 23, yPct: 62.5 },
             
             // Le long pont et l'aile droite
-            { id:'b1', xPct: 45, yPct: 34 }, { id:'b2', xPct: 60, yPct: 34 },
-            { id:'rz1', xPct: 60, yPct: 42 }, { id:'rz2', xPct: 70, yPct: 42 },
-            { id:'rz3', xPct: 75, yPct: 45 }, { id:'rz4', xPct: 65, yPct: 52 }
+            { id:'b1', xPct: 45, yPct: 35 }, 
+            { id:'b2', xPct: 60, yPct: 34 },
+            { id:'rz1', xPct: 62, yPct: 29 },
+            { id:'rz1.5', xPct: 72, yPct: 29 }, 
+            { id:'rz2', xPct: 72, yPct: 42 },
+            { id:'rz3', xPct: 78, yPct: 39 }, 
+            { id:'rz4', xPct: 68, yPct: 47 },
+            { id:'rz5', xPct: 69, yPct: 55 }
         ],
         edges: [
             // Boucle principale
             ['lt1','lt2'],['lt2','lt3'],
-            ['lt1','lv1'],['lv1','lv2'],['lv2','lv3'],['lv3','lb1'],
-            ['lb1','rv2'],['rv2','rv1'],['rv1','lt3'],
+            ['lt1','lv0'],['lv0','lv1'],['lv1','lv2'],['lv2','lv4'],['lv4','lv3'],['lv3','lb1'],
+            ['lb1','rv2'],['rv2','rv1'],['lt3','lt4'],['lt4','rv1'],
             
             // Entrées dans les chambres
-            ['lt1','in_w205'], ['lv2','in_w204'], ['lv3','in_w203'],
-            ['lt2','in_w200'], ['rv1','in_w201'], ['rv2','in_w202'],
+            ['lv1','in_w205'], ['lv2','in_w204'], ['lv4','in_w203'],
+            ['lt4','in_w200'], ['rv1','in_w201'], ['rv2','in_w202'],
             
             // Pont et droite
-            ['lt3','b1'],['b1','b2'],
-            ['b2','rz1'],['rz1','rz2'],['rz2','rz3'],['rz2','rz4']
+            ['lt4','b1'],['b1','b2'],
+            ['b2','rz1'],['rz1','rz1.5'],['rz1.5','rz2'],['rz2','rz3'],['rz2','rz4'],['rz4','rz5']
         ],
         roomExits: {
             'W200': 'in_w200',
@@ -1930,46 +1962,55 @@ function updateFigureGeometry(g, cx, cy, angle, phase) {
 }
 
 /* ── Choisir le prochain chemin — garantit l'animation infinie ── */
+/* ── Choisir le prochain chemin (CORRIGÉ ET SÉCURISÉ) ── */
 function choosePath(fig) {
-    const { graph, adj, homeNode, isMedecin } = fig;
-    // Nœud courant sûr (fallback si pathIdx hors limites)
-    const curNodeId = fig.path[Math.min(fig.pathIdx, fig.path.length - 1)] || graph.nodes[0].id;
+    const { graph, adj, homeNode, isMedecin, roomId } = fig;
+
+    // CORRECTION : On s'assure qu'il sait toujours où il est, même à la fin de son trajet
+    let curNodeId;
+    if (fig.path && fig.path.length > 0) {
+        curNodeId = fig.path[Math.min(fig.pathIdx, fig.path.length - 1)];
+    } else {
+        curNodeId = graph.nodes[0].id;
+    }
 
     let targetId;
 
-    if (isMedecin) {
-        // Staff : nœud vraiment différent du courant
-        let tries = 0;
-        do { targetId = randNode(graph.nodes); tries++; }
-        while (targetId === curNodeId && tries < 15);
-    } else {
-        // Patient/civil : alterne entre balade et retour home
-        if (Math.random() < 0.45 && homeNode && homeNode !== curNodeId) {
+    if (!isMedecin) {
+        // Patient : 60% du temps retourne près de sa chambre, sinon se balade
+        if (Math.random() < 0.6 && homeNode) {
             targetId = homeNode;
         } else {
-            // Marche aléatoire 2-5 sauts
-            let cur = curNodeId;
-            const steps = 2 + Math.floor(Math.random() * 4);
-            for (let i = 0; i < steps; i++) {
-                const nb = adj[cur] || [];
-                if (!nb.length) break;
-                cur = nb[Math.floor(Math.random() * nb.length)];
-            }
-            targetId = cur;
-            // Éviter cible == départ
-            if (targetId === curNodeId) {
-                const nb = adj[curNodeId] || [];
-                if (nb.length) targetId = nb[Math.floor(Math.random() * nb.length)];
+            // Balade courte : nœud voisin ou voisin du voisin
+            const nb1 = adj[curNodeId] || [];
+            if (nb1.length === 0) { targetId = curNodeId; }
+            else {
+                const pick1 = nb1[Math.floor(Math.random() * nb1.length)];
+                if (Math.random() < 0.5) {
+                    targetId = pick1;
+                } else {
+                    const nb2 = adj[pick1] || [];
+                    targetId = nb2.length ? nb2[Math.floor(Math.random() * nb2.length)] : pick1;
+                }
             }
         }
+    } else {
+        // Médecin : nœud aléatoire sur tout le graphe
+        let tries = 0;
+        do { 
+            targetId = randNode(graph.nodes); 
+            tries++; 
+        } while (targetId === curNodeId && tries < 10);
     }
 
     const path = bfsPath(adj, curNodeId, targetId);
-    // Garantir longueur > 1 pour éviter les blocages
+    
+    // Sécurité anti-blocage : s'il n'y a qu'un seul point, on le force à faire un pas
     if (path.length <= 1) {
         const nb = adj[curNodeId] || [];
         if (nb.length) path.push(nb[Math.floor(Math.random() * nb.length)]);
     }
+    
     fig.path    = path;
     fig.pathIdx = 0;
 }
@@ -2021,8 +2062,8 @@ function pctToSvg(xPct, yPct, floor) {
 
 /* ── Spawner un personnage ── */
 
-const NOMS_DOC_H = ['Dr. Martin','Dr. Leroy','Dr. Simon','Dr. Bernard','Dr. Durand','Dr. Petit'];
-const NOMS_DOC_F = ['Dr. Moreau','Dr. Blanc','Dr. Fontaine','Dr. Laurent','Dr. Mercier','Dr. Lefebvre'];
+const NOMS_DOC_H = ['Dr. Brunelle','Dr. Edderson','Dr. Menendez','Dr. Sanchez','Dr. Cruz','Dr. Powell','Dr. White','Dr. Pirely'];
+const NOMS_DOC_F = ['Dr. Greystone','Dr. Turner','Dr. Oliveira','Dr. White','Dr. Frinx'];
 const NOMS_CIVIL = ['M. Dupont','Mme Garcia','M. Thomas','Mme Robert','M. Richard','Mme Rousseau','M. Vincent'];
 const NOMS_PAT   = ['Dupont J.','Garcia M.','Thomas A.','Robert C.','Richard L.','Blanc P.','Morel E.'];
 
@@ -2228,16 +2269,16 @@ function syncPatients() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   SPAWNER STAFF + CIVILS — 3 types distincts
+   SPAWNER STAFF + CIVILS — 
 ══════════════════════════════════════════════════════════════ */
 function spawnMedecins() {
     [
-        { floor:1, type:'doc_h', n:2 },   // médecins hommes NV-1
-        { floor:1, type:'doc_f', n:2 },   // médecins femmes NV-1
-        { floor:1, type:'civil', n:2 },   // visiteurs NV-1
-        { floor:2, type:'doc_h', n:1 },
-        { floor:2, type:'doc_f', n:2 },
-        { floor:2, type:'civil', n:1 },
+        { floor:1, type:'doc_h', n:4 },   // Avant c'était 2, passé à 4
+        { floor:1, type:'doc_f', n:3 },   // Passé à 3
+        { floor:1, type:'civil', n:3 },   // Passé à 3
+        { floor:2, type:'doc_h', n:2 },   // Passé à 2
+        { floor:2, type:'doc_f', n:3 },   // Passé à 3
+        { floor:2, type:'civil', n:2 },   // Passé à 2
     ].forEach(({ floor, type, n }) => {
         if (!figSvgs[floor]) return;
         for (let i = 0; i < n; i++) {
@@ -2248,39 +2289,129 @@ function spawnMedecins() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   BOUTON ON/OFF dans les onglets
+   BOUTONS ON/OFF (Personnages et Calque Chemins)
 ══════════════════════════════════════════════════════════════ */
-let figuresVisible = true;
+let figuresVisible = localStorage.getItem('omc_figures_on') !== 'false';
+let debugGraphVisible = localStorage.getItem('omc_debug_on') === 'true';
+
+function drawDebugGraph(floor) {
+    const svg = document.getElementById(`fig-svg-${floor}`);
+    if (!svg) return;
+    
+    const existing = document.getElementById(`debug-graph-${floor}`);
+    if (existing) existing.remove();
+
+    if (!debugGraphVisible) return;
+
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.id = `debug-graph-${floor}`;
+    g.style.pointerEvents = 'none';
+
+    const graph = GRAPH[floor];
+    if (!graph) return;
+
+    graph.edges.forEach(([idA, idB]) => {
+        const nA = graph.nodes.find(n => n.id === idA);
+        const nB = graph.nodes.find(n => n.id === idB);
+        if (!nA || !nB) return;
+        
+        const pA = pctToSvg(nA.xPct, nA.yPct, floor);
+        const pB = pctToSvg(nB.xPct, nB.yPct, floor);
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', pA.x); line.setAttribute('y1', pA.y);
+        line.setAttribute('x2', pB.x); line.setAttribute('y2', pB.y);
+        line.setAttribute('stroke', 'rgba(255, 0, 255, 0.6)'); 
+        line.setAttribute('stroke-width', '4');
+        g.appendChild(line);
+    });
+
+    graph.nodes.forEach(n => {
+        const p = pctToSvg(n.xPct, n.yPct, floor);
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', p.x); circle.setAttribute('cy', p.y);
+        circle.setAttribute('r', '5');
+        circle.setAttribute('fill', '#ff00ff'); 
+        g.appendChild(circle);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', p.x); text.setAttribute('y', p.y - 8);
+        text.setAttribute('fill', 'white');
+        text.setAttribute('font-size', '11');
+        text.setAttribute('font-weight', 'bold');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('paint-order', 'stroke');
+        text.setAttribute('stroke', 'black');
+        text.setAttribute('stroke-width', '2');
+        text.textContent = n.id;
+        g.appendChild(text);
+    });
+
+    svg.appendChild(g);
+}
 
 function addToggleButton() {
     const tabs = document.querySelector('.tabs');
     if (!tabs) return;
+    
+    // Bouton Personnages
     const btn = document.createElement('button');
     btn.className = 'tab-btn';
-    btn.id = 'toggle-figs';
     btn.style.marginLeft = 'auto';
-    btn.style.color = '#22c55e';
-    btn.style.fontSize = '10px';
-    btn.textContent = '👥 Personnages ON';
+    // On applique le style initial basé sur la sauvegarde
+    btn.textContent = figuresVisible ? '👥 Personnages ON' : '👥 Personnages OFF';
+    btn.style.color  = figuresVisible ? '#22c55e' : '#475569';
+    
     btn.onclick = () => {
         figuresVisible = !figuresVisible;
+        localStorage.setItem('omc_figures_on', figuresVisible); // On sauvegarde le choix
         Object.values(figSvgs).forEach(svg => {
-            svg.style.display = figuresVisible ? '' : 'none';
+            const figs = svg.querySelectorAll('g[id^="fig-"]');
+            figs.forEach(f => f.style.display = figuresVisible ? '' : 'none');
         });
         btn.textContent = figuresVisible ? '👥 Personnages ON' : '👥 Personnages OFF';
         btn.style.color  = figuresVisible ? '#22c55e' : '#475569';
     };
     tabs.appendChild(btn);
+
+    // Bouton Debug Chemins
+    const btnDebug = document.createElement('button');
+    btnDebug.className = 'tab-btn';
+    // On applique le style initial basé sur la sauvegarde
+    btnDebug.textContent = debugGraphVisible ? '🛠️ Chemins ON' : '🛠️ Chemins OFF';
+    btnDebug.style.color = debugGraphVisible ? '#f0abfc' : '#475569';
+    
+    btnDebug.onclick = () => {
+        debugGraphVisible = !debugGraphVisible;
+        localStorage.setItem('omc_debug_on', debugGraphVisible); // On sauvegarde le choix
+        btnDebug.textContent = debugGraphVisible ? '🛠️ Chemins ON' : '🛠️ Chemins OFF';
+        btnDebug.style.color = debugGraphVisible ? '#f0abfc' : '#475569';
+        drawDebugGraph(1);
+        drawDebugGraph(2);
+    };
+    tabs.appendChild(btnDebug);
 }
 
 /* ── INIT ── */
 function initFigures() {
-
     initFigSvg(1);
     initFigSvg(2);
     spawnMedecins();
     syncPatients();
     addToggleButton();
+
+    // Au chargement, on applique l'état sauvegardé
+    if (!figuresVisible) {
+        Object.values(figSvgs).forEach(svg => {
+            const figs = svg.querySelectorAll('g[id^="fig-"]');
+            figs.forEach(f => f.style.display = 'none');
+        });
+    }
+    if (debugGraphVisible) {
+        drawDebugGraph(1);
+        drawDebugGraph(2);
+    }
+
     requestAnimationFrame(animateFigures);
 }
 
@@ -2291,10 +2422,7 @@ window.redrawAllWithFigs = function() {
     syncPatients();
 };
 
-// Patch : après chaque saveState, re-syncer
-const _origSaveState = window.saveState;
-
-// On attend que tout soit prêt
+// On attend que tout soit prêt pour lancer les personnages
 setTimeout(() => {
     initFigures();
     // Re-syncer quand l'état Firebase change
