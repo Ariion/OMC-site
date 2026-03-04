@@ -280,6 +280,16 @@
           L'image occupe tout l'espace en conservant son ratio.
           On utilise object-fit: contain pour ne pas la déformer.
         */
+
+        .map-container {
+            position: relative;
+            /* Ratio de base des images (1080/620). S'adapte à l'écran. */
+            aspect-ratio: 1080 / 620; 
+            max-width: 100%;
+            max-height: 100%;
+            /* Si l'écran est très large, c'est la hauteur qui limite. Si très haut, c'est la largeur. */
+        }
+
         .plan-img {
             display: block;
             max-width: 100%;
@@ -304,6 +314,19 @@
             pointer-events: none; /* les enfants auront pointer-events: all */
             overflow: visible;
         }
+
+        .plan-overlay, .fig-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important; /* Force la taille à 100% du map-container */
+            height: 100% !important;
+            z-index: 2;
+            pointer-events: none; 
+            overflow: visible;
+        }
+        
+        .fig-overlay { z-index: 5; } /* Bonhommes au-dessus des lits */
 
         .room-zone { cursor: pointer; }
         .room-zone .room-bg { transition: all 0.15s; }
@@ -633,24 +656,28 @@
 
         <div class="floor-view active" id="floor-1">
             <div class="plan-wrapper" id="wrap-1">
-                <img class="plan-img" src="assets/1er-etage.png" id="img-1" alt="NV-1">
-                <svg class="plan-overlay" id="svg-1" style="pointer-events:none;"></svg>
-                <div class="legend-bar">
-                    <div class="legend-item"><div class="leg-dot av"></div>Disponible</div>
-                    <div class="legend-item"><div class="leg-dot oc"></div>Occupé</div>
-                    <div class="legend-item"><div class="leg-dot sl"></div>Sélectionné</div>
-                </div>
+                <div class="map-container" id="map-cont-1">
+                    <img class="plan-img" src="assets/1er-etage.png" id="img-1" alt="NV-1">
+                    <svg class="plan-overlay" id="svg-1" style="pointer-events:none;"></svg>
+                    <div class="legend-bar">
+                        <div class="legend-item"><div class="leg-dot av"></div>Disponible</div>
+                        <div class="legend-item"><div class="leg-dot oc"></div>Occupé</div>
+                        <div class="legend-item"><div class="leg-dot sl"></div>Sélectionné</div>
+                    </div>
+                </div>    
             </div>
         </div>
 
         <div class="floor-view" id="floor-2">
             <div class="plan-wrapper" id="wrap-2">
+                <div class="map-container" id="map-cont-2">
                 <img class="plan-img" src="assets/2e-etage.png" id="img-2" alt="NV-2">
-                <svg class="plan-overlay" id="svg-2" style="pointer-events:none;"></svg>
-                <div class="legend-bar">
-                    <div class="legend-item"><div class="leg-dot av"></div>Disponible</div>
-                    <div class="legend-item"><div class="leg-dot oc"></div>Occupé</div>
-                    <div class="legend-item"><div class="leg-dot sl"></div>Sélectionné</div>
+                    <svg class="plan-overlay" id="svg-2" style="pointer-events:none;"></svg>
+                    <div class="legend-bar">
+                        <div class="legend-item"><div class="leg-dot av"></div>Disponible</div>
+                        <div class="legend-item"><div class="leg-dot oc"></div>Occupé</div>
+                        <div class="legend-item"><div class="leg-dot sl"></div>Sélectionné</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -894,43 +921,26 @@ function fillSince(inputId, isoString) {
 function fitOverlay(floor) {
     const img     = document.getElementById(`img-${floor}`);
     const svg     = document.getElementById(`svg-${floor}`);
-    const figSvg  = document.getElementById(`fig-svg-${floor}`); // NOUVEAU: On cible aussi le calque des bonhommes
-    const wrapper = document.getElementById(`wrap-${floor}`);
-
-    if (!img || !svg || !wrapper) return { nw: 1080, nh: 620 };
-
-    const imgRect  = img.getBoundingClientRect();
-    const wrapRect = wrapper.getBoundingClientRect();
-
-    const left   = imgRect.left   - wrapRect.left;
-    const top    = imgRect.top    - wrapRect.top;
-    const width  = imgRect.width;
-    const height = imgRect.height;
-
-    // 1. On ajuste le calque des chambres (vert/rouge)
-    svg.style.left   = left   + 'px';
-    svg.style.top    = top    + 'px';
-    svg.style.width  = width  + 'px';
-    svg.style.height = height + 'px';
-
+    const figSvg  = document.getElementById(`fig-svg-${floor}`);
+    
+    // On définit le ratio interne du SVG (ViewBox) basé sur les dimensions réelles de l'image
     const nw = img.naturalWidth  || 1080;
     const nh = img.naturalHeight || 620;
-    svg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-
-    // 2. NOUVEAU: On ajuste EXACTEMENT pareil le calque des bonhommes !
+    
+    if (svg) {
+        svg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    }
+    
     if (figSvg) {
-        figSvg.style.left   = left   + 'px';
-        figSvg.style.top    = top    + 'px';
-        figSvg.style.width  = width  + 'px';
-        figSvg.style.height = height + 'px';
         figSvg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
     }
 
+    // Le CSS gère maintenant le width/height/left/top à 100% du .map-container
     return { nw, nh };
 }
 
-function p(pct, total) { return pct / 100 * total; }
+function p(pct, total) { return (pct / 100) * total; }
 
 function bedStyle(key) {
     if (selectedBed && selectedBed.key === key)
@@ -2024,20 +2034,16 @@ let figIdCnt  = 0;
 
 /* ── Créer le SVG des bonhommes pour un étage ── */
 function initFigSvg(floor) {
-    // On récupère le zoom-content pour injecter dedans (scale ensemble)
-    const zc = document.getElementById(`zoom-content-${floor}`);
-    if (!zc) return;
-
-    // Trouver le plan-wrapper à l'intérieur
-    const wrap = document.getElementById(`wrap-${floor}`);
-    if (!wrap) return;
+    // Modifier l'injection pour viser le nouveau conteneur
+    const mapCont = document.getElementById(`map-cont-${floor}`);
+    if (!mapCont) return;
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.id = `fig-svg-${floor}`;
-    svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible;';
+    // Ajout de la classe CSS pour la taille 100%
+    svg.setAttribute('class', 'fig-overlay'); 
     svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
-    // Le viewBox sera mis à jour quand l'image charge
     const img = document.getElementById(`img-${floor}`);
     const setVB = () => {
         const nw = img.naturalWidth  || 1080;
@@ -2047,7 +2053,7 @@ function initFigSvg(floor) {
     if (img.complete && img.naturalWidth > 0) setVB();
     else img.addEventListener('load', setVB);
 
-    wrap.appendChild(svg);
+    mapCont.appendChild(svg);
     figSvgs[floor] = svg;
     return svg;
 }
@@ -2148,96 +2154,128 @@ function spawnFigure(floor, spriteType, roomId) {
     return fig;
 }
 
-/* ── Choisir le prochain chemin ── */
+/* ── Choisir le prochain chemin (SÉCURISÉ) ── */
 function choosePath(fig) {
-    const { graph, adj, homeNode, isMedecin, roomId } = fig;
-    const curNodeId = fig.path[fig.pathIdx];
+    try {
+        const { graph, adj, homeNode, isMedecin, roomId } = fig;
 
-    let targetId;
-
-    if (!isMedecin) {
-        // Patient : 60% du temps retourne près de sa chambre, sinon se balade
-        if (Math.random() < 0.6 && homeNode) {
-            targetId = homeNode;
+        // On s'assure qu'il sait toujours où il est
+        let curNodeId;
+        if (fig.path && fig.path.length > 0) {
+            curNodeId = fig.path[Math.min(fig.pathIdx, fig.path.length - 1)];
         } else {
-            // Balade courte : nœud voisin ou voisin du voisin
-            const nb1 = adj[curNodeId] || [];
-            if (nb1.length === 0) { targetId = curNodeId; }
-            else {
-                const pick1 = nb1[Math.floor(Math.random() * nb1.length)];
-                if (Math.random() < 0.5) {
-                    targetId = pick1;
-                } else {
-                    const nb2 = adj[pick1] || [];
-                    targetId = nb2.length ? nb2[Math.floor(Math.random() * nb2.length)] : pick1;
+            curNodeId = graph.nodes[0].id;
+        }
+
+        let targetId;
+
+        if (!isMedecin) {
+            // Patient : 60% du temps retourne près de sa chambre, sinon balade
+            if (Math.random() < 0.6 && homeNode) {
+                targetId = homeNode;
+            } else {
+                const nb1 = adj[curNodeId] || [];
+                if (nb1.length === 0) { targetId = curNodeId; }
+                else {
+                    const pick1 = nb1[Math.floor(Math.random() * nb1.length)];
+                    if (Math.random() < 0.5) {
+                        targetId = pick1;
+                    } else {
+                        const nb2 = adj[pick1] || [];
+                        targetId = nb2.length ? nb2[Math.floor(Math.random() * nb2.length)] : pick1;
+                    }
                 }
             }
+        } else {
+            // Médecin : nœud aléatoire (différent de l'actuel)
+            let tries = 0;
+            do { 
+                targetId = randNode(graph.nodes); 
+                tries++; 
+            } while (targetId === curNodeId && tries < 10);
         }
-    } else {
-        // Médecin : nœud aléatoire sur tout le graphe
-        targetId = randNode(graph.nodes);
-    }
 
-    const path = bfsPath(adj, curNodeId, targetId);
-    fig.path    = path;
-    fig.pathIdx = 0;
+        const path = bfsPath(adj, curNodeId, targetId);
+        
+        // Sécurité anti-blocage
+        if (path.length <= 1) {
+            const nb = adj[curNodeId] || [];
+            if (nb.length) path.push(nb[Math.floor(Math.random() * nb.length)]);
+        }
+        
+        fig.path    = path;
+        fig.pathIdx = 0;
+
+    } catch (e) {
+        // Fallback absolu : si le graphe est mal lu, on le remet au début
+        fig.path = [fig.graph.nodes[0].id];
+        fig.pathIdx = 0;
+    }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   BOUCLE D'ANIMATION — infinie, pause minimale
+   BOUCLE D'ANIMATION — infinie, pause minimale, ANTI-CRASH
 ══════════════════════════════════════════════════════════════ */
-let lastTime = 0;
+let lastTime = performance.now();
 
 function animateFigures(ts) {
-    const dt = Math.min((ts - lastTime) / 1000, 0.05);
+    // Calcul du temps écoulé, hyper-sécurisé (jamais négatif, max 0.05s)
+    const dt = Math.max(0, Math.min((ts - lastTime) / 1000, 0.05));
     lastTime = ts;
 
     for (const id in figures) {
-        const fig = figures[id];
+        // Le fameux "Bouclier anti-crash" :
+        try {
+            const fig = figures[id];
 
-        const floorEl = document.getElementById(`floor-${fig.floor}`);
-        if (!floorEl || !floorEl.classList.contains('active')) continue;
+            const floorEl = document.getElementById(`floor-${fig.floor}`);
+            if (!floorEl || !floorEl.classList.contains('active')) continue;
 
-        // Pause entre deux chemins (très courte : 0.1–0.5s)
-        if (fig.waiting > 0) {
-            fig.waiting -= dt;
-            fig.elem._figData = fig;
-            updateFigureGeometry(fig.elem, fig.x, fig.y, fig.lastAngle || 0, 0);
-            continue;
-        }
-
-        // Nœud cible courant
-        const curNodeId = fig.path[fig.pathIdx];
-        if (!curNodeId) { choosePath(fig); continue; }
-        const curNode = fig.graph.nodes.find(n => n.id === curNodeId);
-        if (!curNode)   { choosePath(fig); continue; }
-
-        const target = pctToSvg(curNode.xPct, curNode.yPct, fig.floor);
-        const dx = target.x - fig.x;
-        const dy = target.y - fig.y;
-        const dist = Math.hypot(dx, dy);
-
-        if (dist < 1.2) {
-            fig.x = target.x;
-            fig.y = target.y;
-            fig.pathIdx++;
-
-            if (fig.pathIdx >= fig.path.length) {
-                // Fin du chemin : pause minimale puis nouveau chemin immédiatement
-                fig.waiting = 0.08 + Math.random() * 0.35;
-                choosePath(fig);
+            // Pause entre deux chemins
+            if (fig.waiting > 0) {
+                fig.waiting -= dt;
+                fig.elem._figData = fig;
+                updateFigureGeometry(fig.elem, fig.x, fig.y, fig.lastAngle || 0, 0);
+                continue;
             }
-        } else {
-            const step  = fig.speed * 28 * dt;
-            const ratio = Math.min(step / dist, 1);
-            fig.x += dx * ratio;
-            fig.y += dy * ratio;
-            fig.phase += dt * fig.speed * 5;
 
-            const angle   = Math.atan2(dy, dx);
-            fig.lastAngle = angle;
-            fig.elem._figData = fig;
-            updateFigureGeometry(fig.elem, fig.x, fig.y, angle, fig.phase);
+            const curNodeId = fig.path[fig.pathIdx];
+            if (!curNodeId) { choosePath(fig); continue; }
+            
+            const curNode = fig.graph.nodes.find(n => n.id === curNodeId);
+            if (!curNode)   { choosePath(fig); continue; }
+
+            const target = pctToSvg(curNode.xPct, curNode.yPct, fig.floor);
+            const dx = target.x - fig.x;
+            const dy = target.y - fig.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < 1.2) {
+                fig.x = target.x;
+                fig.y = target.y;
+                fig.pathIdx++;
+
+                if (fig.pathIdx >= fig.path.length) {
+                    // Fin du chemin : petite pause et on repart
+                    fig.waiting = 0.1 + Math.random() * 0.4;
+                    choosePath(fig);
+                }
+            } else {
+                const step  = fig.speed * 28 * dt;
+                const ratio = Math.min(step / dist, 1);
+                fig.x += dx * ratio;
+                fig.y += dy * ratio;
+                fig.phase += dt * fig.speed * 5; 
+
+                const angle   = Math.atan2(dy, dx);
+                fig.lastAngle = angle;
+                fig.elem._figData = fig;
+                updateFigureGeometry(fig.elem, fig.x, fig.y, angle, fig.phase);
+            }
+        } catch (err) {
+            // Si une erreur grave survient sur CE personnage, on répare au lieu de tout planter
+            console.warn("Recalibrage du personnage :", id);
+            if (figures[id]) choosePath(figures[id]);
         }
     }
 
