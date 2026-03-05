@@ -18,12 +18,32 @@
             --border: #1e3a5f;
         }
 
-        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+        html, body { min-height: 100vh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
         body { overflow-y: auto; overflow-x: hidden; }
+
+        /* MODE CLAIR */
+        body.light-mode { background: #e8edf3; color: #0f172a; }
+        body.light-mode .topbar { background: #dde4ed; border-color: #c2ccd9; }
+        body.light-mode .card { background: #ffffff; border-color: #c2ccd9; }
+        body.light-mode .slot-row { background: #f1f5f9; border-color: #c2ccd9; }
+        body.light-mode .slot-row:focus-within { background: #dbeafe; border-color: #93c5fd; }
+        body.light-mode .sn { color: #0f172a; }
+        body.light-mode .sn::placeholder { color: #94a3b8; }
+        body.light-mode .sadd { color: #94a3b8; border-color: #c2ccd9; }
+        body.light-mode .sadd:hover { border-color: var(--accent); color: var(--accent); }
+        body.light-mode .acd { background: #f1f5f9; border-color: #c2ccd9; }
+        body.light-mode .aci { color: #0f172a; border-color: #e2e8f0; }
+        body.light-mode .sect-lbl { color: #64748b; }
+        body.light-mode .sect-lbl::after { background: #c2ccd9; }
+        body.light-mode #clock { color: #0284c7; }
+        body.light-mode .title { color: #0f172a; }
+        body.light-mode #last-save { color: #64748b; }
+        body.light-mode .btn-r { border-color: #c2ccd9; color: #64748b; }
+        body.light-mode .vsep { background: #c2ccd9; }
 
         /* ── TOPBAR ── */
         .topbar {
-            position: sticky; top: 0; z-index: 50;
+            position: sticky; top: 0; z-index: 100;
             background: var(--bg); border-bottom: 2px solid var(--border);
             height: 52px; padding: 0 24px;
             display: flex; align-items: center; gap: 12px;
@@ -34,8 +54,8 @@
         .title { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; white-space: nowrap; }
         .title em { color: var(--accent); font-style: normal; }
         #clock { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
-        .tr    { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-        #last-save { font-size: .72rem; color: var(--dim); white-space: nowrap; }
+        .tr    { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        #last-save { font-size: .7rem; color: var(--dim); white-space: nowrap; }
         .btn   { padding: 5px 13px; border-radius: 6px; font-size: .75rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; cursor: pointer; transition: all .15s; white-space: nowrap; }
         .btn-r { background: transparent; border: 1px solid var(--border); color: var(--dim); }
         .btn-r:hover { border-color: #f87171; color: #f87171; }
@@ -43,12 +63,13 @@
         .btn-s:hover { background: #0ea5e9; }
         .btn-d { background: #5865f2; border: none; color: white; }
         .btn-d:hover { background: #4752c4; }
+        .btn-t { background: transparent; border: 1px solid var(--border); color: var(--dim); }
+        .btn-t:hover { border-color: var(--accent); color: var(--accent); }
 
         /* ── PAGE ── */
-        .page  { padding: 36px 24px 72px; display: flex; flex-direction: column; align-items: center; }
-        .inner { width: 100%; max-width: 1160px; }
+        .page  { padding: 28px 24px 72px; display: flex; flex-direction: column; align-items: center; }
+        .inner { width: 100%; max-width: 1200px; }
 
-        /* ── SECTION ── */
         .sect { margin-bottom: 28px; }
         .sect-lbl {
             font-family: 'Rajdhani', sans-serif; font-size: .72rem; font-weight: 700;
@@ -57,107 +78,118 @@
         }
         .sect-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-        /* ── GRILLE 5 COLONNES ── */
+        /* ── GRILLE ── */
         .ugrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
 
-        /* ── CARD ── (même look que calculatrice.html) */
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        /* ── CARD ── */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: visible; }
 
-        /* Header coloré — même style que .ch dans calculatrice */
+        /* Headers couleurs — même style calculatrice (rgba transparent) */
         .ch {
-            padding: 11px 16px;
+            padding: 11px 16px; border-radius: 10px 10px 0 0;
             font-family: 'Rajdhani', sans-serif; font-size: .82rem; font-weight: 700;
             letter-spacing: 2px; text-transform: uppercase;
             display: flex; align-items: center; justify-content: space-between;
         }
-        /* Couleurs identiques au Google Sheets */
-        .ch-a1 { background: rgba(59,130,246,.12);  color: #60a5fa;  border-bottom: 2px solid rgba(59,130,246,.25); }
-        .ch-a2 { background: rgba(239,68,68,.12);   color: #f87171;  border-bottom: 2px solid rgba(239,68,68,.25); }
-        .ch-a3 { background: rgba(34,197,94,.12);   color: #4ade80;  border-bottom: 2px solid rgba(34,197,94,.25); }
-        .ch-a4 { background: rgba(139,92,246,.12);  color: #c084fc;  border-bottom: 2px solid rgba(139,92,246,.25); }
-        .ch-a5 { background: rgba(249,115,22,.12);  color: #fb923c;  border-bottom: 2px solid rgba(249,115,22,.25); }
-        .ch-a6 { background: rgba(219,39,119,.12);  color: #f472b6;  border-bottom: 2px solid rgba(219,39,119,.25); }
-        .ch-bob  { background: rgba(202,138,4,.12);  color: #facc15;  border-bottom: 2px solid rgba(202,138,4,.25); }
-        .ch-cen  { background: rgba(124,58,237,.12); color: #a78bfa;  border-bottom: 2px solid rgba(124,58,237,.25); }
-        .ch-rdv  { background: rgba(71,85,105,.15);  color: #94a3b8;  border-bottom: 2px solid rgba(71,85,105,.3); }
-        .ch-form { background: rgba(217,119,6,.12);  color: #fbbf24;  border-bottom: 2px solid rgba(217,119,6,.25); }
+        .ch-a1 { background: rgba(59,130,246,.12);  color: #60a5fa;  border-bottom: 2px solid rgba(59,130,246,.3); }
+        .ch-a2 { background: rgba(239,68,68,.12);   color: #f87171;  border-bottom: 2px solid rgba(239,68,68,.3); }
+        .ch-a3 { background: rgba(34,197,94,.12);   color: #4ade80;  border-bottom: 2px solid rgba(34,197,94,.3); }
+        .ch-a4 { background: rgba(139,92,246,.12);  color: #c084fc;  border-bottom: 2px solid rgba(139,92,246,.3); }
+        .ch-a5 { background: rgba(249,115,22,.12);  color: #fb923c;  border-bottom: 2px solid rgba(249,115,22,.3); }
+        .ch-a6 { background: rgba(219,39,119,.12);  color: #f472b6;  border-bottom: 2px solid rgba(219,39,119,.3); }
+        .ch-bob  { background: rgba(202,138,4,.12);  color: #facc15;  border-bottom: 2px solid rgba(202,138,4,.3); }
+        .ch-cen  { background: rgba(124,58,237,.12); color: #a78bfa;  border-bottom: 2px solid rgba(124,58,237,.3); }
+        .ch-rdv  { background: rgba(71,85,105,.15);  color: #94a3b8;  border-bottom: 2px solid rgba(71,85,105,.35); }
+        .ch-form { background: rgba(217,119,6,.12);  color: #fbbf24;  border-bottom: 2px solid rgba(217,119,6,.3); }
 
-        /* Select statut — pill dans le header */
+        /* Select statut unité */
         .st-sel {
-            font-family: 'Inter', sans-serif; font-size: .62rem; font-weight: 700;
-            padding: 2px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,.15);
-            cursor: pointer; outline: none; background: rgba(0,0,0,.3); color: inherit;
-            min-width: 64px; text-align: center; transition: background .15s;
+            font-family: 'Inter', sans-serif; font-size: .63rem; font-weight: 700;
+            padding: 2px 8px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,.15);
+            cursor: pointer; outline: none;
+            background: rgba(0,0,0,.3); color: inherit;
+            min-width: 72px; text-align: center;
         }
-        .st-sel:hover { background: rgba(0,0,0,.45); }
         .st-sel option { background: #112240; color: white; }
 
-        /* ── LIGNES MEMBRES — même style que label.item dans calculatrice ── */
+        /* ── LIGNES MEMBRES ── */
         .slot-row {
             display: flex; align-items: center;
-            padding: 8px 16px; gap: 10px;
-            border-bottom: 1px solid rgba(30,58,95,.35);
-            transition: background .12s;
+            padding: 8px 16px; gap: 8px;
+            border-bottom: 1px solid rgba(30,58,95,.4);
+            position: relative;
         }
-        .slot-row:last-child { border-bottom: none; }
-        .slot-row:hover { background: rgba(255,255,255,.025); }
+        .slot-row:last-of-type { border-bottom: none; }
+        .slot-row:hover { background: rgba(255,255,255,.02); }
         .slot-row:focus-within { background: rgba(56,189,248,.04); }
 
-        /* Input nom */
+        /* Nom — input pleine largeur */
         .sn {
             flex: 1; border: none; background: transparent;
             color: var(--text); font-family: 'Inter', sans-serif;
             font-size: .83rem; font-weight: 500; outline: none; min-width: 0;
+            cursor: pointer;
         }
-        .sn::placeholder { color: #334155; }
-        .sn:focus { color: #fff; }
+        .sn::placeholder { color: #334155; font-style: italic; }
+        .sn:focus { color: #fff; cursor: text; }
 
-        /* Bouton supprimer */
+        /* Supprimer */
         .sdel {
             background: none; border: none; color: #334155;
-            cursor: pointer; font-size: .75rem; padding: 1px 3px;
-            border-radius: 3px; line-height: 1; transition: color .15s; flex-shrink: 0;
+            cursor: pointer; font-size: .75rem; padding: 2px 4px;
+            border-radius: 3px; transition: color .15s; flex-shrink: 0;
         }
         .sdel:hover { color: #f87171; }
 
-        /* Bouton ajouter — même style que "Ajouter" dans les cards */
+        /* Statut inline (RDV) */
+        .rdv-st {
+            font-size: .63rem; font-weight: 700;
+            padding: 2px 8px; border-radius: 20px;
+            border: none; cursor: pointer; outline: none; flex-shrink: 0;
+        }
+        .rdv-st.occupe { background: rgba(239,68,68,.15); color: #f87171; }
+        .rdv-st.libre  { background: rgba(34,197,94,.15);  color: #4ade80; }
+        .rdv-st.pause  { background: rgba(251,191,36,.15); color: #fbbf24; }
+        .rdv-st option { background: #112240; color: white; }
+
+        /* Ajouter */
         .sadd {
             display: flex; align-items: center; justify-content: center;
-            width: calc(100% - 32px); margin: 6px 16px 10px;
-            padding: 6px 0; border-radius: 6px;
-            border: 1px dashed rgba(30,58,95,.7); background: transparent;
-            color: #334155; font-size: .73rem; font-family: 'Inter', sans-serif;
+            width: calc(100% - 32px); margin: 6px 16px 12px;
+            padding: 5px 0; border-radius: 6px;
+            border: 1px dashed rgba(30,58,95,.8); background: transparent;
+            color: #334155; font-size: .72rem; font-family: 'Inter', sans-serif;
             cursor: pointer; transition: all .15s;
         }
         .sadd:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* Statut RDV inline */
-        .rdv-st {
-            font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;
-            border: none; cursor: pointer; outline: none; flex-shrink: 0;
-            background: rgba(239,68,68,.12); color: #f87171;
-            font-family: 'Inter', sans-serif;
-        }
-        .rdv-st option { background: #112240; color: white; }
-
         /* ── AUTOCOMPLETE ── */
-        .acw { position: relative; flex: 1; min-width: 0; }
+        .acw { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; }
         .acd {
-            position: absolute; top: calc(100% + 6px); left: -16px;
+            position: absolute; top: calc(100% + 8px); left: 0;
             background: #1a2e4a; border: 1px solid var(--border);
-            border-radius: 8px; z-index: 200; max-height: 160px; overflow-y: auto;
-            box-shadow: 0 8px 24px rgba(0,0,0,.5); display: none; min-width: 190px;
+            border-radius: 8px; z-index: 9999;
+            max-height: 200px; overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,.6);
+            display: none; min-width: 220px; width: 100%;
         }
         .aci {
-            padding: 7px 14px; font-size: .8rem; color: var(--text);
-            cursor: pointer; border-bottom: 1px solid rgba(30,58,95,.4);
+            padding: 8px 14px; font-size: .82rem; color: var(--text);
+            cursor: pointer; border-bottom: 1px solid rgba(30,58,95,.5);
+            display: flex; align-items: center; justify-content: space-between;
             transition: background .1s;
         }
         .aci:last-child { border-bottom: none; }
         .aci:hover, .aci.hl { background: var(--accent); color: #0a192f; }
+        .aci-stat { font-size: .65rem; font-weight: 700; padding: 1px 6px; border-radius: 8px; }
+        .aci-dispo  { background: rgba(34,197,94,.2); color: #4ade80; }
+        .aci-occupe { background: rgba(239,68,68,.2); color: #f87171; }
+        .aci-absent { background: rgba(100,116,139,.2); color: #94a3b8; }
+        .aci:hover .aci-stat, .aci.hl .aci-stat { background: rgba(0,0,0,.2); color: inherit; }
 
         /* ── TOAST ── */
-        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #0a192f; font-weight: 700; font-family: 'Rajdhani', sans-serif; font-size: .9rem; letter-spacing: 1px; padding: 10px 20px; border-radius: 7px; transform: translateY(60px); opacity: 0; transition: all .25s; z-index: 999; pointer-events: none; }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #0a192f; font-weight: 700; font-family: 'Rajdhani', sans-serif; font-size: .9rem; letter-spacing: 1px; padding: 10px 20px; border-radius: 7px; transform: translateY(60px); opacity: 0; transition: all .25s; z-index: 9999; pointer-events: none; }
         .toast.on  { transform: translateY(0); opacity: 1; }
         .toast.err { background: #f87171; color: white; }
 
@@ -175,6 +207,7 @@
     <div id="clock">--:--:--</div>
     <div class="tr">
         <span id="last-save"></span>
+        <button class="btn btn-t" id="theme-btn" onclick="toggleTheme()">🌓 <span id="theme-text">Mode clair</span></button>
         <button class="btn btn-s" onclick="sauvegarder()">💾 Sauvegarder</button>
         <button class="btn btn-d" onclick="envoyerDiscord()">📨 Discord</button>
         <button class="btn btn-r" onclick="reinitialiser()">↺ Reset</button>
@@ -212,12 +245,20 @@ const app = initializeApp({
 const db = getFirestore(app);
 const HOOK = 'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG';
 
-const EMPLOYES = [
+// ── EMPLOYÉS avec statut individuel ──
+const EMPLOYES_BASE = [
     "Alejandro Sanchez","Anna White","Diana Coin","Ford D.Powell",
     "Gabriella Turner","Gregor Moss","León White","Logan Edderson",
     "Louis Brunelle","Lyrae Greystone","Nezy Frinx","Raül Menendes",
     "Tino Cruz","Tony Pirely","Valentina Oliviera"
 ];
+
+// État des statuts des employés (global, persisté Firebase)
+let employes_statuts = {}; // { "Nom Prenom": "dispo"|"occupe"|"absent" }
+
+function getStatutEmploye(nom) {
+    return employes_statuts[nom] || 'dispo';
+}
 
 const CFG_TOP = [
     { id:'ambu1',  lbl:'Ambu 1',    cls:'ch-a1',  sts:['','Libre','Occupé','Pause'] },
@@ -227,11 +268,11 @@ const CFG_TOP = [
     { id:'cen',    lbl:'Centrale',  cls:'ch-cen', sts:['','Station','Libre','Occupé'] },
 ];
 const CFG_BOT = [
-    { id:'ambu4',  lbl:'Ambu 4',      cls:'ch-a4',   sts:['','Libre','Occupé','Pause'] },
-    { id:'ambu5',  lbl:'Ambu 5',      cls:'ch-a5',   sts:['','Libre','Occupé','Pause'] },
-    { id:'ambu6',  lbl:'Ambu 6',      cls:'ch-a6',   sts:['','Libre','Occupé','Pause'] },
-    { id:'rdv',    lbl:'Rendez-vous', cls:'ch-rdv',  sts: null },
-    { id:'form',   lbl:'Formation',   cls:'ch-form', sts:['','En cours','Terminée'] },
+    { id:'ambu4',  lbl:'Ambu 4',      cls:'ch-a4',  sts:['','Libre','Occupé','Pause'] },
+    { id:'ambu5',  lbl:'Ambu 5',      cls:'ch-a5',  sts:['','Libre','Occupé','Pause'] },
+    { id:'ambu6',  lbl:'Ambu 6',      cls:'ch-a6',  sts:['','Libre','Occupé','Pause'] },
+    { id:'rdv',    lbl:'Rendez-vous', cls:'ch-rdv', sts: null },
+    { id:'form',   lbl:'Formation',   cls:'ch-form',sts:['','En cours','Terminée'] },
 ];
 const ALL = [...CFG_TOP, ...CFG_BOT];
 
@@ -248,10 +289,24 @@ function initState() {
 
 /* ── HORLOGE ── */
 ;(function tick() {
-    const n = new Date(), p = x => String(x).padStart(2,'0');
-    const el = document.getElementById('clock');
-    if (el) el.textContent = `${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
-    setTimeout(tick, 1000);
+    const n=new Date(), p=x=>String(x).padStart(2,'0');
+    const el=document.getElementById('clock');
+    if(el) el.textContent=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+    setTimeout(tick,1000);
+})();
+
+/* ── THÈME ── */
+window.toggleTheme = function() {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    localStorage.setItem('omc-theme', isLight ? 'light' : 'dark');
+    document.getElementById('theme-text').textContent = isLight ? 'Mode sombre' : 'Mode clair';
+};
+(function(){
+    if(localStorage.getItem('omc-theme') === 'light'){
+        document.body.classList.add('light-mode');
+        document.getElementById('theme-text').textContent = 'Mode sombre';
+    }
 })();
 
 /* ── RENDER ── */
@@ -270,17 +325,16 @@ function buildCard(u) {
     const s = state[u.id] || { status:'', slots:['',''] };
     const card = mk('div','card');
 
-    /* ── Header ── */
-    const hdr = mk('div', 'ch ' + u.cls);
+    // Header
+    const hdr = mk('div','ch '+u.cls);
     hdr.appendChild(document.createTextNode(u.lbl));
-
     if (u.sts) {
         const sel = mk('select','st-sel');
-        sel.id = 'st-' + u.id;
+        sel.id = 'st-'+u.id;
         u.sts.forEach(v => {
             const o = document.createElement('option');
-            o.value = v; o.textContent = v || '—';
-            if (v === (s.status || '')) o.selected = true;
+            o.value=v; o.textContent=v||'—';
+            if(v===(s.status||'')) o.selected=true;
             sel.appendChild(o);
         });
         sel.onchange = () => { state[u.id].status = sel.value; };
@@ -288,22 +342,22 @@ function buildCard(u) {
     }
     card.appendChild(hdr);
 
-    /* ── Slots ── */
+    // Slots
     const body = mk('div');
-    body.id = 'slots-' + u.id;
+    body.id = 'slots-'+u.id;
 
     if (u.id === 'rdv') {
-        (s.slots || []).forEach((r, i) => body.appendChild(buildRdvRow(i, r)));
+        (s.slots||[]).forEach((r,i) => body.appendChild(buildRdvRow(i, r)));
     } else {
-        (s.slots || []).forEach((nom, i) => body.appendChild(buildRow(u.id, i, nom)));
+        (s.slots||[]).forEach((nom,i) => body.appendChild(buildRow(u.id, i, nom)));
     }
     card.appendChild(body);
 
-    /* ── Ajouter ── */
+    // Bouton ajouter
     const add = mk('button','sadd');
     add.textContent = '+ Ajouter un membre';
     add.onclick = () => {
-        if (u.id === 'rdv') state.rdv.slots.push({ nom:'', stat:'Occupé' });
+        if(u.id==='rdv') state.rdv.slots.push({nom:'',stat:'Occupé'});
         else state[u.id].slots.push('');
         renderAll();
     };
@@ -311,68 +365,89 @@ function buildCard(u) {
     return card;
 }
 
+/* ── ROW standard ── */
 function buildRow(uid, idx, nom) {
     const row = mk('div','slot-row');
     const acw = mk('div','acw');
     const inp = mk('input','sn');
-    inp.type = 'text'; inp.value = nom || ''; inp.placeholder = '— Libre —'; inp.autocomplete = 'off';
+    inp.type='text'; inp.value=nom||''; inp.placeholder='— Libre —'; inp.autocomplete='off';
     const drop = mk('div','acd');
 
-    const onSel = v => { state[uid].slots[idx] = v; inp.value = v; drop.style.display = 'none'; };
-    inp.oninput  = () => { state[uid].slots[idx] = inp.value; showAC(inp, drop, onSel); };
+    const onSel = v => { state[uid].slots[idx]=v; inp.value=v; drop.style.display='none'; };
+    inp.oninput  = () => { state[uid].slots[idx]=inp.value; showAC(inp, drop, onSel); };
     inp.onfocus  = () => showAC(inp, drop, onSel);
-    inp.onblur   = () => setTimeout(() => drop.style.display='none', 180);
+    inp.onblur   = () => setTimeout(()=>drop.style.display='none', 200);
     inp.onkeydown = e => navAC(e, drop);
 
     acw.appendChild(inp); acw.appendChild(drop);
 
-    const del = mk('button','sdel'); del.textContent = '✕'; del.title = 'Retirer';
-    del.onclick = () => { state[uid].slots.splice(idx, 1); renderAll(); };
-
+    const del = mk('button','sdel'); del.textContent='✕'; del.title='Retirer';
+    del.onclick = () => { state[uid].slots.splice(idx,1); renderAll(); };
     row.appendChild(acw); row.appendChild(del);
     return row;
 }
 
+/* ── ROW rendez-vous (avec statut par slot) ── */
 function buildRdvRow(idx, r) {
     const row = mk('div','slot-row');
     const acw = mk('div','acw');
     const inp = mk('input','sn');
-    inp.type = 'text'; inp.value = r.nom || ''; inp.placeholder = '— Nom —'; inp.autocomplete = 'off';
+    inp.type='text'; inp.value=r.nom||''; inp.placeholder='— Nom du patient —'; inp.autocomplete='off';
     const drop = mk('div','acd');
 
-    const onSel = v => { state.rdv.slots[idx].nom = v; inp.value = v; drop.style.display = 'none'; };
-    inp.oninput  = () => { state.rdv.slots[idx].nom = inp.value; showAC(inp, drop, onSel); };
+    const onSel = v => { state.rdv.slots[idx].nom=v; inp.value=v; drop.style.display='none'; };
+    inp.oninput  = () => { state.rdv.slots[idx].nom=inp.value; showAC(inp, drop, onSel); };
     inp.onfocus  = () => showAC(inp, drop, onSel);
-    inp.onblur   = () => setTimeout(() => drop.style.display='none', 180);
+    inp.onblur   = () => setTimeout(()=>drop.style.display='none', 200);
     inp.onkeydown = e => navAC(e, drop);
-
     acw.appendChild(inp); acw.appendChild(drop);
 
-    const sel = mk('select','rdv-st');
+    // Statut par slot RDV
+    const sel = mk('select','rdv-st '+rdvStatCls(r.stat));
     ['Occupé','Libre','Pause'].forEach(v => {
-        const o = document.createElement('option');
-        o.value = v; o.textContent = v;
-        if (v === r.stat) o.selected = true;
+        const o=document.createElement('option');
+        o.value=v; o.textContent=v;
+        if(v===r.stat) o.selected=true;
         sel.appendChild(o);
     });
-    sel.onchange = () => { state.rdv.slots[idx].stat = sel.value; };
+    sel.onchange = () => {
+        state.rdv.slots[idx].stat = sel.value;
+        sel.className = 'rdv-st '+rdvStatCls(sel.value);
+    };
 
-    const del = mk('button','sdel'); del.textContent = '✕'; del.title = 'Retirer';
-    del.onclick = () => { state.rdv.slots.splice(idx, 1); renderAll(); };
-
+    const del = mk('button','sdel'); del.textContent='✕'; del.title='Retirer';
+    del.onclick = () => { state.rdv.slots.splice(idx,1); renderAll(); };
     row.appendChild(acw); row.appendChild(sel); row.appendChild(del);
     return row;
 }
 
-/* ── AUTOCOMPLETE ── */
+function rdvStatCls(v) {
+    if(v==='Libre') return 'libre';
+    if(v==='Pause') return 'pause';
+    return 'occupe';
+}
+
+/* ── AUTOCOMPLETE avec statuts employés ── */
 function showAC(inp, drop, onSel) {
     const val = inp.value.toLowerCase().trim();
-    const list = val.length < 1 ? EMPLOYES : EMPLOYES.filter(e => e.toLowerCase().includes(val));
-    if (!list.length) { drop.style.display = 'none'; return; }
+    const list = val.length < 1
+        ? EMPLOYES_BASE
+        : EMPLOYES_BASE.filter(e => e.toLowerCase().includes(val));
+
+    if (!list.length) { drop.style.display='none'; return; }
     drop.innerHTML = '';
     list.forEach(e => {
+        const stat = getStatutEmploye(e);
         const item = mk('div','aci');
-        item.textContent = e;
+
+        const nameSpan = mk('span');
+        nameSpan.textContent = e;
+
+        const statBadge = mk('span','aci-stat aci-'+stat);
+        statBadge.textContent = stat==='dispo' ? 'Disponible' : stat==='occupe' ? 'Occupé' : 'Absent';
+
+        item.appendChild(nameSpan);
+        item.appendChild(statBadge);
         item.onmousedown = () => onSel(e);
         drop.appendChild(item);
     });
@@ -383,25 +458,25 @@ function navAC(e, drop) {
     const items = [...drop.querySelectorAll('.aci')];
     let hl = drop.querySelector('.aci.hl');
     const idx = hl ? items.indexOf(hl) : -1;
-    if (e.key === 'ArrowDown')  { e.preventDefault(); items.forEach(i=>i.classList.remove('hl')); items[idx+1 < items.length ? idx+1 : 0]?.classList.add('hl'); }
-    else if (e.key === 'ArrowUp')    { e.preventDefault(); items.forEach(i=>i.classList.remove('hl')); items[idx-1 >= 0 ? idx-1 : items.length-1]?.classList.add('hl'); }
-    else if (e.key === 'Enter')  { e.preventDefault(); drop.querySelector('.aci.hl')?.dispatchEvent(new MouseEvent('mousedown')); }
-    else if (e.key === 'Escape') { drop.style.display='none'; }
+    if(e.key==='ArrowDown'){ e.preventDefault(); items.forEach(i=>i.classList.remove('hl')); items[idx+1<items.length?idx+1:0]?.classList.add('hl'); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); items.forEach(i=>i.classList.remove('hl')); items[idx-1>=0?idx-1:items.length-1]?.classList.add('hl'); }
+    else if(e.key==='Enter'){ e.preventDefault(); drop.querySelector('.aci.hl')?.dispatchEvent(new MouseEvent('mousedown')); }
+    else if(e.key==='Escape') drop.style.display='none';
 }
 
 /* ── SYNC DOM → state ── */
 function syncDOM() {
     ALL.forEach(u => {
-        const sel = document.getElementById('st-' + u.id);
-        if (sel) state[u.id].status = sel.value;
+        const sel = document.getElementById('st-'+u.id);
+        if(sel) state[u.id].status = sel.value;
         const inps = [...document.querySelectorAll(`#slots-${u.id} .sn`)];
-        if (u.id === 'rdv') {
-            inps.forEach((inp, i) => { if (state.rdv.slots[i]) state.rdv.slots[i].nom = inp.value.trim(); });
+        if(u.id==='rdv'){
+            inps.forEach((inp,i) => { if(state.rdv.slots[i]) state.rdv.slots[i].nom=inp.value.trim(); });
             [...document.querySelectorAll(`#slots-${u.id} .rdv-st`)].forEach((s,i) => {
-                if (state.rdv.slots[i]) state.rdv.slots[i].stat = s.value;
+                if(state.rdv.slots[i]) state.rdv.slots[i].stat=s.value;
             });
         } else {
-            inps.forEach((inp, i) => { state[u.id].slots[i] = inp.value.trim(); });
+            inps.forEach((inp,i) => { state[u.id].slots[i]=inp.value.trim(); });
         }
     });
 }
@@ -410,59 +485,64 @@ function syncDOM() {
 window.sauvegarder = async function() {
     syncDOM();
     try {
-        await setDoc(doc(db,"dispatch","current"), { state: JSON.stringify(state), ts: Date.now() });
+        await setDoc(doc(db,"dispatch","current"), {
+            state: JSON.stringify(state),
+            employes_statuts: JSON.stringify(employes_statuts),
+            ts: Date.now()
+        });
         toast('✔ Sauvegardé !');
         document.getElementById('last-save').textContent = `Sauvegardé à ${new Date().toLocaleTimeString('fr-FR')}`;
     } catch(e) { toast('✗ Erreur Firebase', true); }
 };
 
 onSnapshot(doc(db,"dispatch","current"), snap => {
-    if (!snap.exists()) return;
+    if(!snap.exists()) return;
     try {
-        state = JSON.parse(snap.data().state);
+        const data = snap.data();
+        state = JSON.parse(data.state);
+        if(data.employes_statuts) employes_statuts = JSON.parse(data.employes_statuts);
         renderAll();
-        const ts = snap.data().ts;
-        if (ts) document.getElementById('last-save').textContent =
-            `Sauvegardé à ${new Date(ts).toLocaleTimeString('fr-FR')}`;
-    } catch(e) { console.error(e); }
+        if(data.ts) document.getElementById('last-save').textContent =
+            `Sauvegardé à ${new Date(data.ts).toLocaleTimeString('fr-FR')}`;
+    } catch(e){ console.error(e); }
 });
 
 window.reinitialiser = function() {
-    if (!confirm('Réinitialiser tout le dispatch ?')) return;
+    if(!confirm('Réinitialiser tout le dispatch ?')) return;
     initState(); renderAll(); toast('Réinitialisé');
 };
 
 /* ── DISCORD ── */
 window.envoyerDiscord = async function() {
     syncDOM();
-    const EMO = { Libre:'🟢', Occupé:'🔴', Station:'🔵', Pause:'🟡', 'En cours':'🟠', Terminée:'✅', '':`⚪` };
-    const NOMS = { ambu1:'Ambu 1', ambu2:'Ambu 2', ambu3:'Ambu 3', ambu4:'Ambu 4', ambu5:'Ambu 5', ambu6:'Ambu 6', bob:'Bobologie', cen:'Centrale', rdv:'Rendez-vous', form:'Formation' };
+    const EMO = {Libre:'🟢',Occupé:'🔴',Station:'🔵',Pause:'🟡','En cours':'🟠',Terminée:'✅','':`⚪`};
+    const NOMS = {ambu1:'Ambu 1',ambu2:'Ambu 2',ambu3:'Ambu 3',ambu4:'Ambu 4',ambu5:'Ambu 5',ambu6:'Ambu 6',bob:'Bobologie',cen:'Centrale',rdv:'Rendez-vous',form:'Formation'};
     let msg = `🏥 **DISPATCH — OCEAN MEDICAL CENTER**\n⏰ ${new Date().toLocaleString('fr-FR')}\n${'━'.repeat(30)}\n\n`;
     ALL.forEach(u => {
         const s = state[u.id];
-        if (u.id === 'rdv') {
-            const actifs = (s.slots||[]).filter(r => r.nom.trim());
-            if (actifs.length) { msg += `**📅 Rendez-vous**\n`; actifs.forEach(r => msg += `  • ${r.nom} — ${r.stat}\n`); msg += '\n'; }
+        if(u.id==='rdv'){
+            const actifs = (s.slots||[]).filter(r=>r.nom.trim());
+            if(actifs.length){ msg+=`**📅 Rendez-vous**\n`; actifs.forEach(r=>msg+=`  • ${r.nom} — ${r.stat}\n`); msg+='\n'; }
         } else {
-            const membres = (s.slots||[]).filter(m => m);
-            msg += `**${EMO[s.status]||'⚪'} ${NOMS[u.id]}**${s.status ? ` — ${s.status}` : ''}\n`;
-            membres.length ? membres.forEach(m => msg += `  • ${m}\n`) : (msg += `  *(Libre)*\n`);
-            msg += '\n';
+            const membres = (s.slots||[]).filter(m=>m);
+            msg+=`**${EMO[s.status]||'⚪'} ${NOMS[u.id]}**${s.status?` — ${s.status}`:''}\n`;
+            membres.length?membres.forEach(m=>msg+=`  • ${m}\n`):msg+=`  *(Vide)*\n`;
+            msg+='\n';
         }
     });
     msg += '━'.repeat(30);
     try {
-        const r = await fetch(HOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username:'Dispatch OMC', content: msg }) });
-        r.ok ? toast('✔ Envoyé sur Discord !') : toast('✗ Erreur Discord', true);
-    } catch { toast('✗ Erreur réseau', true); }
+        const r = await fetch(HOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Dispatch OMC',content:msg})});
+        r.ok?toast('✔ Envoyé sur Discord !'):toast('✗ Erreur Discord',true);
+    } catch { toast('✗ Erreur réseau',true); }
 };
 
 /* ── HELPERS ── */
-function mk(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
-function toast(msg, err=false) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'toast on' + (err?' err':'');
-    setTimeout(() => t.className='toast', 3000);
+function mk(tag,cls){ const e=document.createElement(tag); if(cls) e.className=cls; return e; }
+function toast(msg,err=false){
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.className='toast on'+(err?' err':'');
+    setTimeout(()=>t.className='toast',3000);
 }
 
 /* ── INIT ── */
