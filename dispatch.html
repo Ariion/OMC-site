@@ -3,955 +3,471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMC — Dispatch Central</title>
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="patch-daltonien.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>OMC — Dispatch</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap');
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #080f1e;
-            color: #e2e8f0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:     #0a192f;
+            --card:   #112240;
+            --accent: #38bdf8;
+            --text:   #ccd6f6;
+            --dim:    #8892b0;
+            --border: #1e3a5f;
         }
+
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+        body { overflow-y: auto; overflow-x: hidden; }
 
         /* ── TOPBAR ── */
         .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 24px;
-            background: #0a1324;
-            border-bottom: 2px solid #1e3a5f;
-            flex-shrink: 0;
-            gap: 16px;
+            position: sticky; top: 0; z-index: 50;
+            background: var(--bg); border-bottom: 2px solid var(--border);
+            height: 52px; padding: 0 24px;
+            display: flex; align-items: center; gap: 12px;
         }
-        .topbar-left { display: flex; align-items: center; gap: 14px; }
-        .topbar-logo { height: 36px; }
-        .topbar-title {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
-            color: white;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-        .topbar-subtitle {
-            font-size: 10px;
-            color: #64748b;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-        .topbar-right { display: flex; align-items: center; gap: 10px; }
-        .back-link {
-            color: #38bdf8;
-            text-decoration: none;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            padding: 5px 10px;
-            border: 1px solid #1e3a5f;
-            border-radius: 4px;
-            transition: 0.2s;
-        }
-        .back-link:hover { background: #1e3a5f; }
+        .back  { color: var(--accent); text-decoration: none; font-size: .78rem; font-weight: 700; white-space: nowrap; }
+        .back:hover { opacity: .65; }
+        .vsep  { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+        .title { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; white-space: nowrap; }
+        .title em { color: var(--accent); font-style: normal; }
+        #clock { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
+        .tr    { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+        #last-save { font-size: .72rem; color: var(--dim); white-space: nowrap; }
+        .btn   { padding: 5px 13px; border-radius: 6px; font-size: .75rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; cursor: pointer; transition: all .15s; white-space: nowrap; }
+        .btn-r { background: transparent; border: 1px solid var(--border); color: var(--dim); }
+        .btn-r:hover { border-color: #f87171; color: #f87171; }
+        .btn-s { background: var(--accent); border: none; color: #0a192f; }
+        .btn-s:hover { background: #0ea5e9; }
+        .btn-d { background: #5865f2; border: none; color: white; }
+        .btn-d:hover { background: #4752c4; }
 
-        /* HORLOGE LIVE */
-        #live-clock {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 20px;
-            font-weight: 600;
-            color: #38bdf8;
-            letter-spacing: 2px;
-            background: #0f172a;
-            padding: 4px 14px;
-            border-radius: 6px;
-            border: 1px solid #1e3a5f;
-        }
-        #live-date {
-            font-size: 10px;
-            color: #64748b;
-            text-align: center;
-            margin-top: 1px;
-        }
+        /* ── PAGE ── */
+        .page  { padding: 36px 24px 72px; display: flex; flex-direction: column; align-items: center; }
+        .inner { width: 100%; max-width: 1160px; }
 
-        /* BADGE TITRE PAGE */
-        .page-badge {
-            background: #38bdf8;
-            color: #0a1324;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 12px;
-            letter-spacing: 2px;
-            padding: 4px 12px;
-            border-radius: 20px;
+        /* ── SECTION ── */
+        .sect { margin-bottom: 28px; }
+        .sect-lbl {
+            font-family: 'Rajdhani', sans-serif; font-size: .72rem; font-weight: 700;
+            letter-spacing: 3px; text-transform: uppercase; color: var(--dim);
+            display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
         }
+        .sect-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-        /* ── CONTENU PRINCIPAL ── */
-        .dispatch-wrapper {
-            flex: 1;
-            padding: 20px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            overflow-y: auto;
-        }
+        /* ── GRILLE 5 COLONNES ── */
+        .ugrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
 
-        /* ── SECTION TITRE ── */
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-        .section-label {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 3px;
-            color: #64748b;
-            text-transform: uppercase;
-        }
-        .section-line {
-            flex: 1;
-            height: 1px;
-            background: #1e293b;
-        }
+        /* ── CARD ── (même look que calculatrice.html) */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
 
-        /* ── GRILLE DES UNITÉS ── */
-        .units-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 14px;
+        /* Header coloré — même style que .ch dans calculatrice */
+        .ch {
+            padding: 11px 16px;
+            font-family: 'Rajdhani', sans-serif; font-size: .82rem; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase;
+            display: flex; align-items: center; justify-content: space-between;
         }
+        /* Couleurs identiques au Google Sheets */
+        .ch-a1 { background: rgba(59,130,246,.12);  color: #60a5fa;  border-bottom: 2px solid rgba(59,130,246,.25); }
+        .ch-a2 { background: rgba(239,68,68,.12);   color: #f87171;  border-bottom: 2px solid rgba(239,68,68,.25); }
+        .ch-a3 { background: rgba(34,197,94,.12);   color: #4ade80;  border-bottom: 2px solid rgba(34,197,94,.25); }
+        .ch-a4 { background: rgba(139,92,246,.12);  color: #c084fc;  border-bottom: 2px solid rgba(139,92,246,.25); }
+        .ch-a5 { background: rgba(249,115,22,.12);  color: #fb923c;  border-bottom: 2px solid rgba(249,115,22,.25); }
+        .ch-a6 { background: rgba(219,39,119,.12);  color: #f472b6;  border-bottom: 2px solid rgba(219,39,119,.25); }
+        .ch-bob  { background: rgba(202,138,4,.12);  color: #facc15;  border-bottom: 2px solid rgba(202,138,4,.25); }
+        .ch-cen  { background: rgba(124,58,237,.12); color: #a78bfa;  border-bottom: 2px solid rgba(124,58,237,.25); }
+        .ch-rdv  { background: rgba(71,85,105,.15);  color: #94a3b8;  border-bottom: 2px solid rgba(71,85,105,.3); }
+        .ch-form { background: rgba(217,119,6,.12);  color: #fbbf24;  border-bottom: 2px solid rgba(217,119,6,.25); }
 
-        /* ── CARTE UNITÉ ── */
-        .unit-card {
-            background: #0d1b2e;
-            border: 1px solid #1e3a5f;
-            border-radius: 10px;
-            overflow: hidden;
-            transition: box-shadow 0.2s;
+        /* Select statut — pill dans le header */
+        .st-sel {
+            font-family: 'Inter', sans-serif; font-size: .62rem; font-weight: 700;
+            padding: 2px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,.15);
+            cursor: pointer; outline: none; background: rgba(0,0,0,.3); color: inherit;
+            min-width: 64px; text-align: center; transition: background .15s;
         }
-        .unit-card:hover { box-shadow: 0 4px 20px rgba(56,189,248,0.08); }
+        .st-sel:hover { background: rgba(0,0,0,.45); }
+        .st-sel option { background: #112240; color: white; }
 
-        .unit-header {
-            padding: 8px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: white;
+        /* ── LIGNES MEMBRES — même style que label.item dans calculatrice ── */
+        .slot-row {
+            display: flex; align-items: center;
+            padding: 8px 16px; gap: 10px;
+            border-bottom: 1px solid rgba(30,58,95,.35);
+            transition: background .12s;
         }
+        .slot-row:last-child { border-bottom: none; }
+        .slot-row:hover { background: rgba(255,255,255,.025); }
+        .slot-row:focus-within { background: rgba(56,189,248,.04); }
 
-        /* Couleurs unités (identiques au Sheets) */
-        .unit-ambu1  { background: #3b82f6; }
-        .unit-ambu2  { background: #ef4444; }
-        .unit-ambu3  { background: #22c55e; }
-        .unit-ambu4  { background: #8b5cf6; }
-        .unit-ambu5  { background: #f97316; }
-        .unit-ambu6  { background: #ec4899; }
-        .unit-bob    { background: #eab308; color: #0a1324 !important; }
-        .unit-bob .unit-header { color: #0a1324; }
-        .unit-centrale { background: #a855f7; }
-        .unit-rdv    { background: #64748b; }
-        .unit-formation { background: #f59e0b; color: #0a1324 !important; }
-        .unit-formation .unit-header { color: #0a1324; }
+        /* Input nom */
+        .sn {
+            flex: 1; border: none; background: transparent;
+            color: var(--text); font-family: 'Inter', sans-serif;
+            font-size: .83rem; font-weight: 500; outline: none; min-width: 0;
+        }
+        .sn::placeholder { color: #334155; }
+        .sn:focus { color: #fff; }
 
-        /* BADGE STATUT */
-        .status-badge {
+        /* Bouton supprimer */
+        .sdel {
+            background: none; border: none; color: #334155;
+            cursor: pointer; font-size: .75rem; padding: 1px 3px;
+            border-radius: 3px; line-height: 1; transition: color .15s; flex-shrink: 0;
+        }
+        .sdel:hover { color: #f87171; }
+
+        /* Bouton ajouter — même style que "Ajouter" dans les cards */
+        .sadd {
+            display: flex; align-items: center; justify-content: center;
+            width: calc(100% - 32px); margin: 6px 16px 10px;
+            padding: 6px 0; border-radius: 6px;
+            border: 1px dashed rgba(30,58,95,.7); background: transparent;
+            color: #334155; font-size: .73rem; font-family: 'Inter', sans-serif;
+            cursor: pointer; transition: all .15s;
+        }
+        .sadd:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* Statut RDV inline */
+        .rdv-st {
+            font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+            border: none; cursor: pointer; outline: none; flex-shrink: 0;
+            background: rgba(239,68,68,.12); color: #f87171;
             font-family: 'Inter', sans-serif;
-            font-size: 10px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 10px;
-            letter-spacing: 0;
         }
-        .status-libre    { background: #d1fae5; color: #065f46; }
-        .status-occupe   { background: #fee2e2; color: #991b1b; }
-        .status-station  { background: #dbeafe; color: #1e3a8a; }
-        .status-pause    { background: #fef3c7; color: #92400e; }
+        .rdv-st option { background: #112240; color: white; }
 
-        /* SLOTS MEMBRES */
-        .unit-slots { padding: 10px 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+        /* ── AUTOCOMPLETE ── */
+        .acw { position: relative; flex: 1; min-width: 0; }
+        .acd {
+            position: absolute; top: calc(100% + 6px); left: -16px;
+            background: #1a2e4a; border: 1px solid var(--border);
+            border-radius: 8px; z-index: 200; max-height: 160px; overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,.5); display: none; min-width: 190px;
+        }
+        .aci {
+            padding: 7px 14px; font-size: .8rem; color: var(--text);
+            cursor: pointer; border-bottom: 1px solid rgba(30,58,95,.4);
+            transition: background .1s;
+        }
+        .aci:last-child { border-bottom: none; }
+        .aci:hover, .aci.hl { background: var(--accent); color: #0a192f; }
 
-        .slot {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: #111f35;
-            border: 1px solid #1e3a5f;
-            border-radius: 6px;
-            padding: 5px 8px;
-            min-height: 32px;
-        }
-        .slot-name {
-            flex: 1;
-            font-size: 12px;
-            font-weight: 500;
-            color: #e2e8f0;
-            cursor: pointer;
-            padding: 2px 4px;
-            border-radius: 3px;
-            border: none;
-            background: transparent;
-            width: 100%;
-            outline: none;
-        }
-        .slot-name:focus {
-            background: #1e3a5f;
-            color: white;
-        }
+        /* ── TOAST ── */
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #0a192f; font-weight: 700; font-family: 'Rajdhani', sans-serif; font-size: .9rem; letter-spacing: 1px; padding: 10px 20px; border-radius: 7px; transform: translateY(60px); opacity: 0; transition: all .25s; z-index: 999; pointer-events: none; }
+        .toast.on  { transform: translateY(0); opacity: 1; }
+        .toast.err { background: #f87171; color: white; }
 
-        /* SELECT STATUT dans la carte */
-        .slot-status {
-            font-size: 10px;
-            font-weight: 600;
-            padding: 2px 6px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            outline: none;
-            min-width: 64px;
-            text-align: center;
-            background: #1e3a5f;
-            color: #94a3b8;
-        }
-
-        /* ── SECTION BAS (RDV + FORMATION) ── */
-        .bottom-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        /* ── ZONE RDV ── */
-        .rdv-card {
-            background: #0d1b2e;
-            border: 1px solid #1e3a5f;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .rdv-header {
-            background: #475569;
-            padding: 8px 14px;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 15px;
-            font-weight: 700;
-            color: white;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .rdv-slots { padding: 10px; display: flex; flex-direction: column; gap: 6px; }
-        .rdv-slot {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #111f35;
-            border: 1px solid #1e3a5f;
-            border-radius: 6px;
-            padding: 5px 10px;
-            min-height: 32px;
-        }
-        .rdv-name {
-            flex: 1;
-            font-size: 12px;
-            color: #e2e8f0;
-            cursor: pointer;
-            padding: 2px 4px;
-            border-radius: 3px;
-            border: none;
-            background: transparent;
-            outline: none;
-            width: 100%;
-        }
-        .rdv-name:focus { background: #1e3a5f; color: white; }
-
-        .rdv-status-cell {
-            min-width: 80px;
-        }
-        .rdv-status {
-            font-size: 10px;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            outline: none;
-            width: 100%;
-            background: #fca5a5;
-            color: #7f1d1d;
-        }
-
-        /* ── BOUTONS ACTIONS ── */
-        .actions-bar {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .btn-action {
-            padding: 9px 18px;
-            border-radius: 6px;
-            border: none;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-reset  { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
-        .btn-reset:hover  { background: #334155; color: white; }
-        .btn-save   { background: #38bdf8; color: #0a1324; font-weight: 700; }
-        .btn-save:hover   { background: #0ea5e9; }
-        .btn-discord { background: #5865f2; color: white; }
-        .btn-discord:hover { background: #4752c4; }
-
-        /* AUTOCOMPLETE DROPDOWN */
-        .ac-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0; right: 0;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 0 0 6px 6px;
-            z-index: 999;
-            max-height: 160px;
-            overflow-y: auto;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-            display: none;
-        }
-        .ac-item {
-            padding: 7px 12px;
-            font-size: 12px;
-            color: #e2e8f0;
-            cursor: pointer;
-            border-bottom: 1px solid #334155;
-            transition: background 0.1s;
-        }
-        .ac-item:hover, .ac-item.selected { background: #38bdf8; color: #0a1324; }
-
-        /* WRAPPER RELATIF pour autocomplete */
-        .slot-wrapper { position: relative; flex: 1; }
-
-        /* TOAST */
-        #toast {
-            position: fixed;
-            bottom: 24px; right: 24px;
-            background: #22c55e;
-            color: white;
-            font-weight: 600;
-            font-size: 13px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: 0.3s;
-            z-index: 9999;
-            pointer-events: none;
-        }
-        #toast.show { opacity: 1; transform: translateY(0); }
-        #toast.error { background: #ef4444; }
-
-        /* LIGNE VIDE ajoutable */
-        .add-slot-btn {
-            font-size: 11px;
-            color: #475569;
-            background: transparent;
-            border: 1px dashed #334155;
-            border-radius: 6px;
-            padding: 4px 10px;
-            cursor: pointer;
-            text-align: center;
-            width: 100%;
-            transition: 0.2s;
-        }
-        .add-slot-btn:hover { border-color: #38bdf8; color: #38bdf8; }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0a1324; }
-        ::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 3px; }
-
-        /* MODE CLAIR */
-        body.light-mode { background: #e8edf3; color: #0f172a; }
-        body.light-mode .unit-card { background: white; border-color: #cbd5e1; }
-        body.light-mode .slot { background: #f1f5f9; border-color: #cbd5e1; }
-        body.light-mode .slot-name { color: #0f172a; }
-        body.light-mode .slot-name:focus { background: #dbeafe; }
-        body.light-mode .rdv-card { background: white; border-color: #cbd5e1; }
-        body.light-mode .rdv-slot { background: #f1f5f9; border-color: #cbd5e1; }
-        body.light-mode .topbar { background: #1e3a5f; }
-        body.light-mode #live-clock { background: #0f172a; }
+        @media (max-width: 1100px) { .ugrid { grid-template-columns: repeat(3,1fr); } }
+        @media (max-width: 650px)  { .ugrid { grid-template-columns: repeat(2,1fr); } }
     </style>
 </head>
-<body class="labo-body">
+<body>
 
-<!-- TOPBAR -->
 <div class="topbar">
-    <div class="topbar-left">
-        <img src="assets/logo_omc.png" alt="OMC" class="topbar-logo">
-        <div>
-            <div class="topbar-title">DISPATCH — CENTRALE</div>
-            <div class="topbar-subtitle">Ocean Medical Center · Los Santos</div>
-        </div>
-        <div class="page-badge">EN DIRECT</div>
-    </div>
-    <div class="topbar-right">
-        <div>
-            <div id="live-clock">--:--:--</div>
-            <div id="live-date">-- --- ----</div>
-        </div>
-        <button onclick="toggleTheme()" style="background:#1e293b;border:1px solid #334155;color:white;cursor:pointer;padding:5px 10px;border-radius:4px;font-size:11px;display:flex;align-items:center;gap:5px;">
-            🌓 <span id="theme-text">Mode clair</span>
-        </button>
-        <a href="index.html" class="back-link">← PORTAIL</a>
+    <a href="index.html" class="back">← RETOUR</a>
+    <div class="vsep"></div>
+    <div class="title"><em>OMC</em> — DISPATCH CENTRAL</div>
+    <div class="vsep"></div>
+    <div id="clock">--:--:--</div>
+    <div class="tr">
+        <span id="last-save"></span>
+        <button class="btn btn-s" onclick="sauvegarder()">💾 Sauvegarder</button>
+        <button class="btn btn-d" onclick="envoyerDiscord()">📨 Discord</button>
+        <button class="btn btn-r" onclick="reinitialiser()">↺ Reset</button>
     </div>
 </div>
 
-<!-- CONTENU -->
-<div class="dispatch-wrapper">
+<div class="page"><div class="inner">
 
-    <!-- BARRE D'ACTIONS -->
-    <div class="actions-bar">
-        <button class="btn-action btn-save" onclick="sauvegarder()">💾 SAUVEGARDER</button>
-        <button class="btn-action btn-reset" onclick="reinitialiser()">🔄 RÉINITIALISER</button>
-        <button class="btn-action btn-discord" onclick="envoyerDiscord()">📨 ENVOYER SUR DISCORD</button>
-        <span id="last-save" style="font-size:11px;color:#475569;margin-left:auto;"></span>
+    <div class="sect">
+        <div class="sect-lbl">Unités actives</div>
+        <div class="ugrid" id="g-top"></div>
     </div>
 
-    <!-- SECTION HAUT : Ambu 1-3 + Bobologie + Centrale -->
-    <div>
-        <div class="section-header">
-            <span class="section-label">Unités Actives</span>
-            <div class="section-line"></div>
-        </div>
-        <div class="units-grid" id="top-grid">
-            <!-- Ambu 1 -->
-            <div class="unit-card">
-                <div class="unit-header unit-ambu1">
-                    Ambu 1
-                    <select class="status-badge" id="status-ambu1" onchange="updateCardStatus('ambu1')">
-                        <option value="">—</option>
-                        <option value="libre">Libre</option>
-                        <option value="occupe">Occupé</option>
-                        <option value="pause">Pause</option>
-                    </select>
-                </div>
-                <div class="unit-slots" id="slots-ambu1"></div>
-                <div style="padding:0 10px 10px;"><button class="add-slot-btn" onclick="ajouterSlot('ambu1')">+ Ajouter</button></div>
-            </div>
-            <!-- Ambu 2 -->
-            <div class="unit-card">
-                <div class="unit-header unit-ambu2">
-                    Ambu 2
-                    <select class="status-badge" id="status-ambu2" onchange="updateCardStatus('ambu2')">
-                        <option value="">—</option>
-                        <option value="libre">Libre</option>
-                        <option value="occupe">Occupé</option>
-                        <option value="pause">Pause</option>
-                    </select>
-                </div>
-                <div class="unit-slots" id="slots-ambu2"></div>
-                <div style="padding:0 10px 10px;"><button class="add-slot-btn" onclick="ajouterSlot('ambu2')">+ Ajouter</button></div>
-            </div>
-            <!-- Ambu 3 -->
-            <div class="unit-card">
-                <div class="unit-header unit-ambu3">
-                    Ambu 3
-                    <select class="status-badge" id="status-ambu3" onchange="updateCardStatus('ambu3')">
-                        <option value="">—</option>
-                        <option value="libre">Libre</option>
-                        <option value="occupe">Occupé</option>
-                        <option value="pause">Pause</option>
-                    </select>
-                </div>
-                <div class="unit-slots" id="slots-ambu3"></div>
-                <div style="padding:0 10px 10px;"><button class="add-slot-btn" onclick="ajouterSlot('ambu3')">+ Ajouter</button></div>
-            </div>
-            <!-- Bobologie -->
-            <div class="unit-card">
-                <div class="unit-header unit-bob">
-                    Bobologie
-                    <select class="status-badge" id="status-bob" onchange="updateCardStatus('bob')" style="color:#0a1324;">
-                        <option value="">—</option>
-                        <option value="libre">Libre</option>
-                        <option value="occupe">Occupé</option>
-                        <option value="pause">Pause</option>
-                    </select>
-                </div>
-                <div class="unit-slots" id="slots-bob"></div>
-                <div style="padding:0 10px 10px;"><button class="add-slot-btn" onclick="ajouterSlot('bob')">+ Ajouter</button></div>
-            </div>
-            <!-- Centrale -->
-            <div class="unit-card">
-                <div class="unit-header unit-centrale">
-                    Centrale
-                    <select class="status-badge" id="status-centrale" onchange="updateCardStatus('centrale')">
-                        <option value="">—</option>
-                        <option value="station">Station</option>
-                        <option value="libre">Libre</option>
-                        <option value="occupe">Occupé</option>
-                    </select>
-                </div>
-                <div class="unit-slots" id="slots-centrale"></div>
-                <div style="padding:0 10px 10px;"><button class="add-slot-btn" onclick="ajouterSlot('centrale')">+ Ajouter</button></div>
-            </div>
-        </div>
+    <div class="sect">
+        <div class="sect-lbl">Unités secondaires &amp; services</div>
+        <div class="ugrid" id="g-bot"></div>
     </div>
 
-    <!-- SECTION BAS : Ambu 4-6 + RDV + Formation -->
-    <div>
-        <div class="section-header">
-            <span class="section-label">Unités Secondaires</span>
-            <div class="section-line"></div>
-        </div>
-        <div class="units-grid" id="bottom-units-grid">
-            <!-- Ambu 4 -->
-            <div class="unit-card">
-                <div class="unit-header unit-ambu4">
-                    Ambu 4
-                    <select class="status-badge" id="status-ambu4" onchange="updateCardStatus('ambu4')">
-                        <option value="">—</option>
-                        <option value="libre">Libre</option>
-                        <option value="occupe">Occupé</option>
-                        <option value="pause">Pause</option>
-                    </select>
-                </div>
-                <div class="unit-slots" id="slots-ambu4"></div>
-                <div style="padding:0 10px 10px;"><button class="add-slot-btn" onclick="ajouterSlot('ambu4')">+ Ajouter</button></div>
-            </div>
-            <!-- Ambu 5 -->
-            <div class="unit-card">
-                <div class="unit-header unit-ambu5">
-                    Ambu 5
-                    <select class="status-badge" id="status-ambu5" onchange="updateCardStatus('ambu5')">
-                        <option value="">—</option>
-                        <option value="libre">Libre</option>
-                        <option value="occupe">Occupé</option>
-                        <option value="pause">Pause</option>
-                    </select>
-                </div>
-                <div class="unit-slots" id="slots-ambu5"></div>
-                <div style="padding:0 10px 10px;"><button class="add-slot-btn" onclick="ajouterSlot('ambu5')">+ Ajouter</button></div>
-            </div>
-            <!-- Ambu 6 -->
-            <div class="unit-card">
-                <div class="unit-header unit-ambu6">
-                    Ambu 6
-                    <select class="status-badge" id="status-ambu6" onchange="updateCardStatus('ambu6')">
-                        <option value="">—</option>
-                        <option value="libre">Libre</option>
-                        <option value="occupe">Occupé</option>
-                        <option value="pause">Pause</option>
-                    </select>
-                </div>
-                <div class="unit-slots" id="slots-ambu6"></div>
-                <div style="padding:0 10px 10px;"><button class="add-slot-btn" onclick="ajouterSlot('ambu6')">+ Ajouter</button></div>
-            </div>
+</div></div>
 
-            <!-- RENDEZ-VOUS -->
-            <div class="unit-card">
-                <div class="unit-header" style="background:#475569;">
-                    Rendez-vous
-                </div>
-                <div class="unit-slots" id="slots-rdv"></div>
-                <div style="padding:0 10px 10px;"><button class="add-slot-btn" onclick="ajouterSlotRdv()">+ Ajouter</button></div>
-            </div>
-
-            <!-- FORMATION -->
-            <div class="unit-card">
-                <div class="unit-header unit-formation">
-                    Formation
-                </div>
-                <div class="unit-slots" id="slots-formation"></div>
-                <div style="padding:0 10px 10px;"><button class="add-slot-btn" onclick="ajouterSlot('formation')">+ Ajouter</button></div>
-            </div>
-        </div>
-    </div>
-
-</div><!-- fin dispatch-wrapper -->
-
-<!-- TOAST -->
-<div id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script type="module">
-// ── IMPORT FIREBASE ──
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyCkrm6_s49SIHQkBBL-s0o1k2MZKW37Smc",
-    authDomain: "ocean-medical-center.firebaseapp.com",
-    projectId: "ocean-medical-center",
-    storageBucket: "ocean-medical-center.firebasestorage.app",
-    messagingSenderId: "789656238322",
-    appId: "1:789656238322:web:42a95fb132ab3b5eda786b"
-};
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-const DISPATCH_DOC = "dispatch/current";
+const app = initializeApp({
+    apiKey:"AIzaSyCkrm6_s49SIHQkBBL-s0o1k2MZKW37Smc",
+    authDomain:"ocean-medical-center.firebaseapp.com",
+    projectId:"ocean-medical-center",
+    storageBucket:"ocean-medical-center.firebasestorage.app",
+    messagingSenderId:"789656238322",
+    appId:"1:789656238322:web:42a95fb132ab3b5eda786b"
+});
+const db = getFirestore(app);
+const HOOK = 'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG';
 
-// ── CONSTANTES ──
-const UNITS = ['ambu1','ambu2','ambu3','ambu4','ambu5','ambu6','bob','centrale','formation'];
-const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG';
-const UNIT_COLORS = {
-    ambu1:'#3b82f6', ambu2:'#ef4444', ambu3:'#22c55e',
-    ambu4:'#8b5cf6', ambu5:'#f97316', ambu6:'#ec4899',
-    bob:'#eab308', centrale:'#a855f7', formation:'#f59e0b', rdv:'#475569'
-};
-
-// ── LISTE DES EMPLOYÉS (depuis la liste dropdown du Sheets) ──
 const EMPLOYES = [
-    "Louis Brunelle", "Lyrae Greystone", "Gabriella Turner",
-    "Logan Edderson", "Raül Menendes", "Alejandro Sanchez",
-    "Diana Coin", "Tony Pirely", "Anna White", "Léon White",
-    "Valentina Oliviera", "Tino Cruz", "Nezy Frinx",
-    "Ford D.Powell", "Gregor Moss"
+    "Alejandro Sanchez","Anna White","Diana Coin","Ford D.Powell",
+    "Gabriella Turner","Gregor Moss","León White","Logan Edderson",
+    "Louis Brunelle","Lyrae Greystone","Nezy Frinx","Raül Menendes",
+    "Tino Cruz","Tony Pirely","Valentina Oliviera"
 ];
 
-// ── ÉTAT LOCAL ──
-let state = {
-    units: {},
-    rdv: []
-};
+const CFG_TOP = [
+    { id:'ambu1',  lbl:'Ambu 1',    cls:'ch-a1',  sts:['','Libre','Occupé','Pause'] },
+    { id:'ambu2',  lbl:'Ambu 2',    cls:'ch-a2',  sts:['','Libre','Occupé','Pause'] },
+    { id:'ambu3',  lbl:'Ambu 3',    cls:'ch-a3',  sts:['','Libre','Occupé','Pause'] },
+    { id:'bob',    lbl:'Bobologie', cls:'ch-bob', sts:['','Libre','Occupé','Pause'] },
+    { id:'cen',    lbl:'Centrale',  cls:'ch-cen', sts:['','Station','Libre','Occupé'] },
+];
+const CFG_BOT = [
+    { id:'ambu4',  lbl:'Ambu 4',      cls:'ch-a4',   sts:['','Libre','Occupé','Pause'] },
+    { id:'ambu5',  lbl:'Ambu 5',      cls:'ch-a5',   sts:['','Libre','Occupé','Pause'] },
+    { id:'ambu6',  lbl:'Ambu 6',      cls:'ch-a6',   sts:['','Libre','Occupé','Pause'] },
+    { id:'rdv',    lbl:'Rendez-vous', cls:'ch-rdv',  sts: null },
+    { id:'form',   lbl:'Formation',   cls:'ch-form', sts:['','En cours','Terminée'] },
+];
+const ALL = [...CFG_TOP, ...CFG_BOT];
 
-// Initialise l'état par défaut
+let state = {};
+
 function initState() {
-    UNITS.forEach(u => {
-        state.units[u] = { status: '', membres: ['',''] };
+    state = {};
+    ALL.forEach(u => {
+        state[u.id] = u.id === 'rdv'
+            ? { slots: [{ nom:'', stat:'Occupé' }] }
+            : { status:'', slots: ['',''] };
     });
-    state.rdv = [{ nom: '', status: 'Occupé' }];
 }
 
-// ── HORLOGE ──
-function startClock() {
-    function tick() {
-        const now = new Date();
-        const h = String(now.getHours()).padStart(2,'0');
-        const m = String(now.getMinutes()).padStart(2,'0');
-        const s = String(now.getSeconds()).padStart(2,'0');
-        const el = document.getElementById('live-clock');
-        if (el) el.textContent = `${h}:${m}:${s}`;
-        const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-        const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-        const dateEl = document.getElementById('live-date');
-        if (dateEl) dateEl.textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-    }
-    tick(); setInterval(tick, 1000);
-}
+/* ── HORLOGE ── */
+;(function tick() {
+    const n = new Date(), p = x => String(x).padStart(2,'0');
+    const el = document.getElementById('clock');
+    if (el) el.textContent = `${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+    setTimeout(tick, 1000);
+})();
 
-// ── RENDER ──
+/* ── RENDER ── */
 function renderAll() {
-    UNITS.forEach(u => renderUnit(u));
-    renderRdv();
+    renderGrid('g-top', CFG_TOP);
+    renderGrid('g-bot', CFG_BOT);
 }
 
-function renderUnit(unit) {
-    const container = document.getElementById(`slots-${unit}`);
-    if (!container) return;
-
-    const u = state.units[unit] || { status:'', membres:['',''] };
-    container.innerHTML = '';
-
-    // Statut select
-    const sel = document.getElementById(`status-${unit}`);
-    if (sel) sel.value = u.status || '';
-
-    // Membres
-    (u.membres || []).forEach((nom, idx) => {
-        const div = document.createElement('div');
-        div.className = 'slot';
-        div.innerHTML = `
-            <div class="slot-wrapper" style="position:relative;flex:1;">
-                <input class="slot-name" type="text" value="${escHtml(nom)}"
-                    placeholder="— Libre —"
-                    data-unit="${unit}" data-idx="${idx}"
-                    autocomplete="off"
-                    oninput="handleInput(this)"
-                    onfocus="showAC(this)"
-                    onblur="hideAC(this)">
-                <div class="ac-dropdown" id="ac-${unit}-${idx}"></div>
-            </div>
-            <button onclick="retirerMembre('${unit}',${idx})" title="Retirer"
-                style="background:none;border:none;color:#475569;cursor:pointer;font-size:14px;padding:2px 4px;">✕</button>
-        `;
-        container.appendChild(div);
-    });
+function renderGrid(id, cfg) {
+    const g = document.getElementById(id);
+    g.innerHTML = '';
+    cfg.forEach(u => g.appendChild(buildCard(u)));
 }
 
-function renderRdv() {
-    const container = document.getElementById('slots-rdv');
-    if (!container) return;
-    container.innerHTML = '';
-    (state.rdv || []).forEach((r, idx) => {
-        const div = document.createElement('div');
-        div.className = 'slot';
-        div.innerHTML = `
-            <div class="slot-wrapper" style="position:relative;flex:1;">
-                <input class="slot-name" type="text" value="${escHtml(r.nom)}"
-                    placeholder="— Nom —"
-                    data-rdv="${idx}"
-                    autocomplete="off"
-                    oninput="handleInputRdv(this)"
-                    onfocus="showACRdv(this)"
-                    onblur="hideAC(this)">
-                <div class="ac-dropdown" id="ac-rdv-${idx}"></div>
-            </div>
-            <select onchange="updateRdvStatus(${idx}, this.value)"
-                style="font-size:10px;font-weight:600;padding:2px 6px;border-radius:10px;border:none;cursor:pointer;background:#fca5a5;color:#7f1d1d;min-width:70px;">
-                <option value="Occupé" ${r.status==='Occupé'?'selected':''}>Occupé</option>
-                <option value="Libre"  ${r.status==='Libre'?'selected':''}>Libre</option>
-                <option value="Pause"  ${r.status==='Pause'?'selected':''}>Pause</option>
-            </select>
-            <button onclick="retirerRdv(${idx})"
-                style="background:none;border:none;color:#475569;cursor:pointer;font-size:14px;padding:2px 4px;">✕</button>
-        `;
-        container.appendChild(div);
-    });
-}
+function buildCard(u) {
+    const s = state[u.id] || { status:'', slots:['',''] };
+    const card = mk('div','card');
 
-// ── AUTOCOMPLETE ──
-window.handleInput = function(input) {
-    const unit = input.dataset.unit;
-    const idx  = parseInt(input.dataset.idx);
-    state.units[unit].membres[idx] = input.value;
-    showAC(input);
-};
+    /* ── Header ── */
+    const hdr = mk('div', 'ch ' + u.cls);
+    hdr.appendChild(document.createTextNode(u.lbl));
 
-window.showAC = function(input) {
-    const unit = input.dataset.unit;
-    const idx  = parseInt(input.dataset.idx);
-    const id   = `ac-${unit}-${idx}`;
-    const dropdown = document.getElementById(id);
-    if (!dropdown) return;
-    const val = input.value.toLowerCase();
-    const matches = EMPLOYES.filter(e => e.toLowerCase().includes(val) && e !== '');
-    if (matches.length === 0 || val.length < 1) { dropdown.style.display='none'; return; }
-    dropdown.innerHTML = matches.map(e =>
-        `<div class="ac-item" onmousedown="selectAC('${unit}',${idx},'${escJs(e)}')">${e}</div>`
-    ).join('');
-    dropdown.style.display = 'block';
-};
-
-window.hideAC = function(input) {
-    setTimeout(() => {
-        const unit = input.dataset.unit || 'rdv';
-        const idx  = parseInt(input.dataset.idx ?? input.dataset.rdv ?? 0);
-        const isRdv = input.dataset.rdv !== undefined;
-        const id = isRdv ? `ac-rdv-${idx}` : `ac-${unit}-${idx}`;
-        const d = document.getElementById(id);
-        if (d) d.style.display='none';
-    }, 200);
-};
-
-window.selectAC = function(unit, idx, nom) {
-    state.units[unit].membres[idx] = nom;
-    renderUnit(unit);
-};
-
-window.handleInputRdv = function(input) {
-    const idx = parseInt(input.dataset.rdv);
-    state.rdv[idx].nom = input.value;
-    showACRdv(input);
-};
-
-window.showACRdv = function(input) {
-    const idx = parseInt(input.dataset.rdv);
-    const dropdown = document.getElementById(`ac-rdv-${idx}`);
-    if (!dropdown) return;
-    const val = input.value.toLowerCase();
-    const matches = EMPLOYES.filter(e => e.toLowerCase().includes(val));
-    if (matches.length === 0 || val.length < 1) { dropdown.style.display='none'; return; }
-    dropdown.innerHTML = matches.map(e =>
-        `<div class="ac-item" onmousedown="selectACRdv(${idx},'${escJs(e)}')">${e}</div>`
-    ).join('');
-    dropdown.style.display = 'block';
-};
-
-window.selectACRdv = function(idx, nom) {
-    state.rdv[idx].nom = nom;
-    renderRdv();
-};
-
-// ── ACTIONS ──
-window.ajouterSlot = function(unit) {
-    state.units[unit].membres.push('');
-    renderUnit(unit);
-};
-
-window.ajouterSlotRdv = function() {
-    state.rdv.push({ nom:'', status:'Occupé' });
-    renderRdv();
-};
-
-window.retirerMembre = function(unit, idx) {
-    state.units[unit].membres.splice(idx, 1);
-    renderUnit(unit);
-};
-
-window.retirerRdv = function(idx) {
-    state.rdv.splice(idx, 1);
-    renderRdv();
-};
-
-window.updateCardStatus = function(unit) {
-    const sel = document.getElementById(`status-${unit}`);
-    if (sel) state.units[unit].status = sel.value;
-};
-
-window.updateRdvStatus = function(idx, val) {
-    state.rdv[idx].status = val;
-};
-
-// ── SAUVEGARDE FIREBASE ──
-window.sauvegarder = async function() {
-    // Lire les valeurs actuelles des inputs
-    syncFromDOM();
-    try {
-        await setDoc(doc(db, "dispatch", "current"), { state: JSON.stringify(state), ts: Date.now() });
-        showToast('✓ Dispatch sauvegardé !');
-        document.getElementById('last-save').textContent = `Dernière sauvegarde : ${new Date().toLocaleTimeString('fr-FR')}`;
-    } catch(e) {
-        console.error(e);
-        showToast('✗ Erreur Firebase', true);
-    }
-};
-
-function syncFromDOM() {
-    // Sync membres depuis les inputs
-    UNITS.forEach(unit => {
-        const inputs = document.querySelectorAll(`[data-unit="${unit}"]`);
-        state.units[unit].membres = Array.from(inputs).map(i => i.value.trim());
-        const sel = document.getElementById(`status-${unit}`);
-        if (sel) state.units[unit].status = sel.value;
-    });
-    // Sync RDV
-    const rdvInputs = document.querySelectorAll('[data-rdv]');
-    rdvInputs.forEach(i => {
-        const idx = parseInt(i.dataset.rdv);
-        if (state.rdv[idx]) state.rdv[idx].nom = i.value.trim();
-    });
-}
-
-// ── ÉCOUTE FIREBASE EN TEMPS RÉEL ──
-onSnapshot(doc(db, "dispatch", "current"), (snap) => {
-    if (snap.exists()) {
-        try {
-            const saved = JSON.parse(snap.data().state);
-            state = saved;
-            renderAll();
-            const ts = snap.data().ts;
-            if (ts) {
-                document.getElementById('last-save').textContent =
-                    `Dernière sauvegarde : ${new Date(ts).toLocaleTimeString('fr-FR')}`;
-            }
-        } catch(e) { console.error('Parse error', e); }
-    }
-});
-
-// ── RÉINITIALISER ──
-window.reinitialiser = function() {
-    if (!confirm('Réinitialiser tout le dispatch ? Cette action est irréversible.')) return;
-    initState();
-    renderAll();
-    showToast('Dispatch réinitialisé');
-};
-
-// ── DISCORD ──
-window.envoyerDiscord = async function() {
-    syncFromDOM();
-    const UNIT_NAMES = {
-        ambu1:'Ambu 1', ambu2:'Ambu 2', ambu3:'Ambu 3',
-        ambu4:'Ambu 4', ambu5:'Ambu 5', ambu6:'Ambu 6',
-        bob:'Bobologie', centrale:'Centrale', formation:'Formation'
-    };
-    const STATUS_EMOJI = { libre:'🟢', occupe:'🔴', station:'🔵', pause:'🟡', '':'⚪' };
-
-    let msg = `🏥 **DISPATCH — OCEAN MEDICAL CENTER**\n`;
-    msg += `⏰ ${new Date().toLocaleString('fr-FR')}\n`;
-    msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-
-    UNITS.forEach(u => {
-        const unit = state.units[u];
-        const membres = (unit.membres || []).filter(m => m.trim() !== '');
-        const emoji = STATUS_EMOJI[unit.status] || '⚪';
-        const statusLabel = unit.status ? unit.status.toUpperCase() : '—';
-        msg += `**${emoji} ${UNIT_NAMES[u]}** — ${statusLabel}\n`;
-        if (membres.length > 0) {
-            membres.forEach(m => { msg += `  • ${m}\n`; });
-        } else {
-            msg += `  *(Vide)*\n`;
-        }
-        msg += '\n';
-    });
-
-    const rdvActifs = (state.rdv || []).filter(r => r.nom.trim() !== '');
-    if (rdvActifs.length > 0) {
-        msg += `**📅 RENDEZ-VOUS**\n`;
-        rdvActifs.forEach(r => { msg += `  • ${r.nom} — ${r.status}\n`; });
-    }
-
-    msg += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-
-    try {
-        const res = await fetch(DISCORD_WEBHOOK, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: 'Dispatch OMC', content: msg })
+    if (u.sts) {
+        const sel = mk('select','st-sel');
+        sel.id = 'st-' + u.id;
+        u.sts.forEach(v => {
+            const o = document.createElement('option');
+            o.value = v; o.textContent = v || '—';
+            if (v === (s.status || '')) o.selected = true;
+            sel.appendChild(o);
         });
-        if (res.ok) showToast('✓ Envoyé sur Discord !');
-        else throw new Error();
-    } catch(e) {
-        showToast('✗ Erreur Discord', true);
+        sel.onchange = () => { state[u.id].status = sel.value; };
+        hdr.appendChild(sel);
     }
-};
+    card.appendChild(hdr);
 
-// ── UTILS ──
-function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-function escJs(s)   { return (s||'').replace(/'/g,"\\'"); }
+    /* ── Slots ── */
+    const body = mk('div');
+    body.id = 'slots-' + u.id;
 
-function showToast(msg, isError = false) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = isError ? 'show error' : 'show';
-    setTimeout(() => t.className = '', 3000);
+    if (u.id === 'rdv') {
+        (s.slots || []).forEach((r, i) => body.appendChild(buildRdvRow(i, r)));
+    } else {
+        (s.slots || []).forEach((nom, i) => body.appendChild(buildRow(u.id, i, nom)));
+    }
+    card.appendChild(body);
+
+    /* ── Ajouter ── */
+    const add = mk('button','sadd');
+    add.textContent = '+ Ajouter un membre';
+    add.onclick = () => {
+        if (u.id === 'rdv') state.rdv.slots.push({ nom:'', stat:'Occupé' });
+        else state[u.id].slots.push('');
+        renderAll();
+    };
+    card.appendChild(add);
+    return card;
 }
 
-// ── THÈME ──
-window.toggleTheme = function() {
-    document.body.classList.toggle('light-mode');
-    const isLight = document.body.classList.contains('light-mode');
-    localStorage.setItem('omc-theme', isLight ? 'light' : 'dark');
-    const btn = document.getElementById('theme-text');
-    if (btn) btn.textContent = isLight ? 'Mode sombre' : 'Mode clair';
+function buildRow(uid, idx, nom) {
+    const row = mk('div','slot-row');
+    const acw = mk('div','acw');
+    const inp = mk('input','sn');
+    inp.type = 'text'; inp.value = nom || ''; inp.placeholder = '— Libre —'; inp.autocomplete = 'off';
+    const drop = mk('div','acd');
+
+    const onSel = v => { state[uid].slots[idx] = v; inp.value = v; drop.style.display = 'none'; };
+    inp.oninput  = () => { state[uid].slots[idx] = inp.value; showAC(inp, drop, onSel); };
+    inp.onfocus  = () => showAC(inp, drop, onSel);
+    inp.onblur   = () => setTimeout(() => drop.style.display='none', 180);
+    inp.onkeydown = e => navAC(e, drop);
+
+    acw.appendChild(inp); acw.appendChild(drop);
+
+    const del = mk('button','sdel'); del.textContent = '✕'; del.title = 'Retirer';
+    del.onclick = () => { state[uid].slots.splice(idx, 1); renderAll(); };
+
+    row.appendChild(acw); row.appendChild(del);
+    return row;
+}
+
+function buildRdvRow(idx, r) {
+    const row = mk('div','slot-row');
+    const acw = mk('div','acw');
+    const inp = mk('input','sn');
+    inp.type = 'text'; inp.value = r.nom || ''; inp.placeholder = '— Nom —'; inp.autocomplete = 'off';
+    const drop = mk('div','acd');
+
+    const onSel = v => { state.rdv.slots[idx].nom = v; inp.value = v; drop.style.display = 'none'; };
+    inp.oninput  = () => { state.rdv.slots[idx].nom = inp.value; showAC(inp, drop, onSel); };
+    inp.onfocus  = () => showAC(inp, drop, onSel);
+    inp.onblur   = () => setTimeout(() => drop.style.display='none', 180);
+    inp.onkeydown = e => navAC(e, drop);
+
+    acw.appendChild(inp); acw.appendChild(drop);
+
+    const sel = mk('select','rdv-st');
+    ['Occupé','Libre','Pause'].forEach(v => {
+        const o = document.createElement('option');
+        o.value = v; o.textContent = v;
+        if (v === r.stat) o.selected = true;
+        sel.appendChild(o);
+    });
+    sel.onchange = () => { state.rdv.slots[idx].stat = sel.value; };
+
+    const del = mk('button','sdel'); del.textContent = '✕'; del.title = 'Retirer';
+    del.onclick = () => { state.rdv.slots.splice(idx, 1); renderAll(); };
+
+    row.appendChild(acw); row.appendChild(sel); row.appendChild(del);
+    return row;
+}
+
+/* ── AUTOCOMPLETE ── */
+function showAC(inp, drop, onSel) {
+    const val = inp.value.toLowerCase().trim();
+    const list = val.length < 1 ? EMPLOYES : EMPLOYES.filter(e => e.toLowerCase().includes(val));
+    if (!list.length) { drop.style.display = 'none'; return; }
+    drop.innerHTML = '';
+    list.forEach(e => {
+        const item = mk('div','aci');
+        item.textContent = e;
+        item.onmousedown = () => onSel(e);
+        drop.appendChild(item);
+    });
+    drop.style.display = 'block';
+}
+
+function navAC(e, drop) {
+    const items = [...drop.querySelectorAll('.aci')];
+    let hl = drop.querySelector('.aci.hl');
+    const idx = hl ? items.indexOf(hl) : -1;
+    if (e.key === 'ArrowDown')  { e.preventDefault(); items.forEach(i=>i.classList.remove('hl')); items[idx+1 < items.length ? idx+1 : 0]?.classList.add('hl'); }
+    else if (e.key === 'ArrowUp')    { e.preventDefault(); items.forEach(i=>i.classList.remove('hl')); items[idx-1 >= 0 ? idx-1 : items.length-1]?.classList.add('hl'); }
+    else if (e.key === 'Enter')  { e.preventDefault(); drop.querySelector('.aci.hl')?.dispatchEvent(new MouseEvent('mousedown')); }
+    else if (e.key === 'Escape') { drop.style.display='none'; }
+}
+
+/* ── SYNC DOM → state ── */
+function syncDOM() {
+    ALL.forEach(u => {
+        const sel = document.getElementById('st-' + u.id);
+        if (sel) state[u.id].status = sel.value;
+        const inps = [...document.querySelectorAll(`#slots-${u.id} .sn`)];
+        if (u.id === 'rdv') {
+            inps.forEach((inp, i) => { if (state.rdv.slots[i]) state.rdv.slots[i].nom = inp.value.trim(); });
+            [...document.querySelectorAll(`#slots-${u.id} .rdv-st`)].forEach((s,i) => {
+                if (state.rdv.slots[i]) state.rdv.slots[i].stat = s.value;
+            });
+        } else {
+            inps.forEach((inp, i) => { state[u.id].slots[i] = inp.value.trim(); });
+        }
+    });
+}
+
+/* ── FIREBASE ── */
+window.sauvegarder = async function() {
+    syncDOM();
+    try {
+        await setDoc(doc(db,"dispatch","current"), { state: JSON.stringify(state), ts: Date.now() });
+        toast('✔ Sauvegardé !');
+        document.getElementById('last-save').textContent = `Sauvegardé à ${new Date().toLocaleTimeString('fr-FR')}`;
+    } catch(e) { toast('✗ Erreur Firebase', true); }
 };
 
-// ── INIT ──
-document.addEventListener('DOMContentLoaded', () => {
-    // Thème sauvegardé
-    if (localStorage.getItem('omc-theme') === 'light') {
-        document.body.classList.add('light-mode');
-        const btn = document.getElementById('theme-text');
-        if (btn) btn.textContent = 'Mode sombre';
-    }
-    startClock();
-    initState();
-    renderAll();
+onSnapshot(doc(db,"dispatch","current"), snap => {
+    if (!snap.exists()) return;
+    try {
+        state = JSON.parse(snap.data().state);
+        renderAll();
+        const ts = snap.data().ts;
+        if (ts) document.getElementById('last-save').textContent =
+            `Sauvegardé à ${new Date(ts).toLocaleTimeString('fr-FR')}`;
+    } catch(e) { console.error(e); }
 });
+
+window.reinitialiser = function() {
+    if (!confirm('Réinitialiser tout le dispatch ?')) return;
+    initState(); renderAll(); toast('Réinitialisé');
+};
+
+/* ── DISCORD ── */
+window.envoyerDiscord = async function() {
+    syncDOM();
+    const EMO = { Libre:'🟢', Occupé:'🔴', Station:'🔵', Pause:'🟡', 'En cours':'🟠', Terminée:'✅', '':`⚪` };
+    const NOMS = { ambu1:'Ambu 1', ambu2:'Ambu 2', ambu3:'Ambu 3', ambu4:'Ambu 4', ambu5:'Ambu 5', ambu6:'Ambu 6', bob:'Bobologie', cen:'Centrale', rdv:'Rendez-vous', form:'Formation' };
+    let msg = `🏥 **DISPATCH — OCEAN MEDICAL CENTER**\n⏰ ${new Date().toLocaleString('fr-FR')}\n${'━'.repeat(30)}\n\n`;
+    ALL.forEach(u => {
+        const s = state[u.id];
+        if (u.id === 'rdv') {
+            const actifs = (s.slots||[]).filter(r => r.nom.trim());
+            if (actifs.length) { msg += `**📅 Rendez-vous**\n`; actifs.forEach(r => msg += `  • ${r.nom} — ${r.stat}\n`); msg += '\n'; }
+        } else {
+            const membres = (s.slots||[]).filter(m => m);
+            msg += `**${EMO[s.status]||'⚪'} ${NOMS[u.id]}**${s.status ? ` — ${s.status}` : ''}\n`;
+            membres.length ? membres.forEach(m => msg += `  • ${m}\n`) : (msg += `  *(Libre)*\n`);
+            msg += '\n';
+        }
+    });
+    msg += '━'.repeat(30);
+    try {
+        const r = await fetch(HOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username:'Dispatch OMC', content: msg }) });
+        r.ok ? toast('✔ Envoyé sur Discord !') : toast('✗ Erreur Discord', true);
+    } catch { toast('✗ Erreur réseau', true); }
+};
+
+/* ── HELPERS ── */
+function mk(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
+function toast(msg, err=false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast on' + (err?' err':'');
+    setTimeout(() => t.className='toast', 3000);
+}
+
+/* ── INIT ── */
+initState();
+renderAll();
 </script>
 </body>
 </html>
