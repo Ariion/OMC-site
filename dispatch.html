@@ -51,7 +51,11 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 .ugrid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
 
 /* CARD */
-.card{background:var(--card);border:1px solid var(--bord);border-radius:10px;overflow:hidden}
+.card{background:var(--card);border:1px solid var(--bord);border-radius:10px;overflow:hidden;transition:transform .15s,box-shadow .15s,opacity .15s}
+.card.dragging{opacity:.45;transform:scale(.97);box-shadow:0 0 0 2px var(--accent)}
+.card.drag-over{box-shadow:0 0 0 3px var(--accent);transform:scale(1.02)}
+.ch{cursor:grab}
+.ch:active{cursor:grabbing}
 .ch{padding:11px 16px;font-family:'Rajdhani',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
 .u-a1{background:rgba(59,130,246,.12);color:#60a5fa;border-bottom:2px solid rgba(59,130,246,.3)}
 .u-a2{background:rgba(239,68,68,.12);color:#f87171;border-bottom:2px solid rgba(239,68,68,.3)}
@@ -209,6 +213,136 @@ if (localStorage.getItem('omc-theme') === 'light') {
 // ══════════════════════════════════════════
 //  RENDER
 // ══════════════════════════════════════════
+// ══════════════════════════════════════════
+//  DRAG & DROP — swap de cartes
+// ══════════════════════════════════════════
+var dragSrcId = null;  // id de l'unité en cours de drag
+
+function activerDrag(cardEl, uid) {
+  // ── SOURIS ──
+  cardEl.setAttribute('draggable', 'true');
+
+  cardEl.addEventListener('dragstart', function(e) {
+    dragSrcId = uid;
+    cardEl.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', uid);
+  });
+
+  cardEl.addEventListener('dragend', function() {
+    dragSrcId = null;
+    cardEl.classList.remove('dragging');
+    document.querySelectorAll('.card').forEach(function(c){ c.classList.remove('drag-over'); });
+  });
+
+  cardEl.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragSrcId && dragSrcId !== uid) cardEl.classList.add('drag-over');
+  });
+
+  cardEl.addEventListener('dragleave', function() {
+    cardEl.classList.remove('drag-over');
+  });
+
+  cardEl.addEventListener('drop', function(e) {
+    e.preventDefault();
+    cardEl.classList.remove('drag-over');
+    var srcId = e.dataTransfer.getData('text/plain') || dragSrcId;
+    if (!srcId || srcId === uid) return;
+    swapUnits(srcId, uid);
+  });
+
+  // ── TACTILE (mobile) ──
+  var touchStartX, touchStartY, clone, moved;
+
+  cardEl.addEventListener('touchstart', function(e) {
+    var header = cardEl.querySelector('.ch');
+    if (!e.target.closest('.ch')) return; // drag seulement depuis le header
+    moved = false;
+    dragSrcId = uid;
+    var t = e.touches[0];
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+
+    // Créer un fantôme visuel
+    clone = cardEl.cloneNode(true);
+    clone.style.cssText = 'position:fixed;z-index:9999;opacity:.8;pointer-events:none;width:'+cardEl.offsetWidth+'px;transform:scale(1.04);box-shadow:0 8px 32px rgba(0,0,0,.6);border:2px solid var(--accent);border-radius:10px;';
+    clone.style.left = (t.clientX - cardEl.offsetWidth/2) + 'px';
+    clone.style.top  = (t.clientY - 30) + 'px';
+    document.body.appendChild(clone);
+    cardEl.style.opacity = '.4';
+  }, {passive:true});
+
+  cardEl.addEventListener('touchmove', function(e) {
+    if (!dragSrcId || dragSrcId !== uid) return;
+    moved = true;
+    var t = e.touches[0];
+    if (clone) {
+      clone.style.left = (t.clientX - parseInt(clone.style.width)/2) + 'px';
+      clone.style.top  = (t.clientY - 30) + 'px';
+    }
+    // Highlight la carte sous le doigt
+    document.querySelectorAll('.card').forEach(function(c){ c.classList.remove('drag-over'); });
+    var el = document.elementFromPoint(t.clientX, t.clientY);
+    if (el) {
+      var target = el.closest('.card');
+      if (target && target !== cardEl) target.classList.add('drag-over');
+    }
+    e.preventDefault();
+  }, {passive:false});
+
+  cardEl.addEventListener('touchend', function(e) {
+    if (!dragSrcId || dragSrcId !== uid) return;
+    if (clone) { clone.remove(); clone = null; }
+    cardEl.style.opacity = '';
+    document.querySelectorAll('.card').forEach(function(c){ c.classList.remove('drag-over'); });
+
+    if (!moved) { dragSrcId = null; return; }
+
+    var t = e.changedTouches[0];
+    var el = document.elementFromPoint(t.clientX, t.clientY);
+    if (el) {
+      var target = el.closest('.card');
+      if (target && target !== cardEl) {
+        var targetId = target.getAttribute('data-uid');
+        if (targetId) swapUnits(uid, targetId);
+      }
+    }
+    dragSrcId = null;
+  }, {passive:true});
+}
+
+function swapUnits(idA, idB) {
+  // On échange uniquement les POSITIONS dans les grilles
+  // En permutant les éléments DOM directement — plus simple et sans bug
+  var cardA = document.querySelector('.card[data-uid="'+idA+'"]');
+  var cardB = document.querySelector('.card[data-uid="'+idB+'"]');
+  if (!cardA || !cardB) return;
+
+  var parentA = cardA.parentNode;
+  var parentB = cardB.parentNode;
+  var nextA   = cardA.nextSibling;
+  var nextB   = cardB.nextSibling;
+
+  // Swap DOM
+  if (nextA === cardB) {
+    parentA.insertBefore(cardB, cardA);
+  } else if (nextB === cardA) {
+    parentB.insertBefore(cardA, cardB);
+  } else {
+    parentA.insertBefore(cardB, nextA);
+    parentB.insertBefore(cardA, nextB);
+  }
+
+  // Re-activer le drag sur les cartes échangées (data-uid inchangé)
+  // Rien à faire — les event listeners sont déjà attachés
+
+  var lblA = cardA.querySelector('.ch span') ? cardA.querySelector('.ch span').textContent : idA;
+  var lblB = cardB.querySelector('.ch span') ? cardB.querySelector('.ch span').textContent : idB;
+  toast('🔄 ' + lblA + ' ↔ ' + lblB);
+}
+
 function renderAll() {
   var gTop = document.getElementById('g-top');
   var gBot = document.getElementById('g-bot');
@@ -267,12 +401,15 @@ function buildCard(u) {
     add.addEventListener('click', function() {
       if (uid === 'rdv') state.rdv.slots.push({nom:'', stat:'Occupé'});
       else state[uid].slots.push('');
-      // Reconstruire juste cette carte
       var newCard = buildCard(CFG.find(function(c){ return c.id===uid; }));
       card.parentNode.replaceChild(newCard, card);
     });
   })(u.id, body);
   card.appendChild(add);
+
+  // — Drag & drop —
+  card.setAttribute('data-uid', u.id);
+  activerDrag(card, u.id);
 
   return card;
 }
@@ -401,11 +538,39 @@ function rdvCls(v) {
 // ══════════════════════════════════════════
 //  AUTOCOMPLETE
 // ══════════════════════════════════════════
+// Retourne la liste des employés déjà assignés dans le dispatch (sauf dans le slot courant)
+function getAssignes(slotActuel) {
+  var assignes = {};
+  CFG.forEach(function(u) {
+    var s = state[u.id];
+    if (!s) return;
+    if (u.id === 'rdv') {
+      (s.slots||[]).forEach(function(r) {
+        var nom = (r.nom||'').trim();
+        if (nom && nom !== slotActuel) assignes[nom] = true;
+      });
+    } else {
+      (s.slots||[]).forEach(function(nom) {
+        nom = (nom||'').trim();
+        if (nom && nom !== slotActuel) assignes[nom] = true;
+      });
+    }
+  });
+  return assignes;
+}
+
 function showDrop(drop, valeur, onChoix) {
   var val = (valeur || '').toLowerCase().trim();
-  var liste = val.length === 0
-    ? EMPLOYES.slice()
-    : EMPLOYES.filter(function(e){ return e.toLowerCase().indexOf(val) >= 0; });
+  // Exclure les employés déjà assignés ailleurs (sauf la valeur actuelle du slot)
+  var assignes = getAssignes(valeur.trim());
+
+  var liste = EMPLOYES.filter(function(e) {
+    // Exclure si déjà assigné ailleurs
+    if (assignes[e]) return false;
+    // Filtrer par la saisie
+    if (val.length > 0 && e.toLowerCase().indexOf(val) === -1) return false;
+    return true;
+  });
 
   if (!liste.length) { drop.style.display = 'none'; return; }
 
@@ -414,9 +579,8 @@ function showDrop(drop, valeur, onChoix) {
     var item = el('div','aci');
     var nom  = el('span'); nom.textContent = e;
 
-    var stat  = empStatuts[e] || 'dispo';
-    var badge = el('span','aci-b b-'+stat);
-    badge.textContent = stat==='dispo' ? '✓ Disponible' : stat==='occ' ? '● Occupé' : '✗ Absent';
+    var badge = el('span','aci-b b-dispo');
+    badge.textContent = '✓ Disponible';
 
     item.appendChild(nom);
     item.appendChild(badge);

@@ -1,13 +1,24 @@
 /* ============================================================
-   DOSSIERS.JS — VERSION SYNCHRONISÉE FIREBASE
+   DOSSIERS.JS — VERSION CORRIGÉE
    ============================================================ */
 
 console.log("✅ Dossiers.js chargé !");
 
+const RESERVED_IDS = ['ETAT_DES_CHAMBRES_COMPLET']; // IDs à exclure de la liste patients
+
 // --- 1. FONCTION DE CHARGEMENT PRINCIPALE ---
 window.chargerPatients = function() {
-    // Récupère les données depuis le cache de global.js
-    const liste = window.getPatientsDB ? window.getPatientsDB() : [];
+    const tous = window.getPatientsDB ? window.getPatientsDB() : [];
+
+    // Filtrer les documents réservés (chambres, etc.) et les entrées sans nom
+    const liste = tous.filter(p => 
+        p && 
+        p.nom && 
+        typeof p.nom === 'string' && 
+        p.nom.trim() !== '' &&
+        !RESERVED_IDS.includes(p.id)
+    );
+
     window.patientsLocaux = liste;
 
     const grid = document.getElementById('patients-grid');
@@ -24,39 +35,56 @@ window.chargerPatients = function() {
     
     if (emptyState) emptyState.style.display = "none";
 
-    // On trie par nom et on affiche
-    [...liste].sort((a, b) => a.nom.localeCompare(b.nom)).forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'patient-card';
+    // Tri par nom (sécurisé)
+    [...liste]
+        .sort((a, b) => (a.nom || '').localeCompare(b.nom || ''))
+        .forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'patient-card';
 
-        const initiales = p.nom
-            ? p.nom.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
-            : "?";
-        const nbDocs = (p.historique || []).length;
+            const initiales = p.nom
+                ? p.nom.trim().split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+                : "?";
+            const nbDocs = (p.historique || []).length;
 
-        card.innerHTML = `
-            <div class="p-tag">${p.groupe || '?'}</div>
-            <div class="p-avatar">${initiales}</div>
-            <div class="p-name">${p.nom}</div>
-            <div class="p-info">📅 ${formatDate(p.naissance)}</div>
-            <div class="p-info">💼 ${p.job || 'Civil'}</div>
-            ${nbDocs > 0 ? `<div class="p-info" style="color:#64ffda;font-size:10px;margin-top:5px;">📄 ${nbDocs} document(s)</div>` : ''}
-        `;
-        card.onclick = () => window.ouvrirPanelEdition(p);
-        grid.appendChild(card);
-    });
+            card.innerHTML = `
+                <div class="p-tag">${p.groupe || '?'}</div>
+                <div class="p-avatar">${initiales}</div>
+                <div class="p-name">${p.nom}</div>
+                <div class="p-info">📅 ${formatDate(p.naissance)}</div>
+                <div class="p-info">💼 ${p.job || 'Civil'}</div>
+                ${nbDocs > 0 ? `<div class="p-info" style="color:#64ffda;font-size:10px;margin-top:5px;">📄 ${nbDocs} document(s)</div>` : ''}
+            `;
+            card.onclick = () => window.ouvrirPanelEdition(p);
+            grid.appendChild(card);
+        });
 
     updateStats(liste);
-}
+};
 
-// --- 2. DÉCLENCHEUR AUTOMATIQUE ---
-// Si Firebase a déjà fini de charger avant que le script ne lise, on force un check
+// --- 2. DÉCLENCHEUR DE SECOURS ---
+// Si Firebase répond avant que window.chargerPatients soit défini,
+// global.js ne peut pas l'appeler. On force un rappel au chargement.
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        if (window.patientsLocaux && window.patientsLocaux.length === 0) {
+    // Tentative immédiate
+    if (window.getPatientsDB && window.getPatientsDB().length > 0) {
+        window.chargerPatients();
+        return;
+    }
+    // Fallback : réessayer toutes les 500ms pendant 10 secondes max
+    let attempts = 0;
+    const interval = setInterval(() => {
+        attempts++;
+        const liste = window.getPatientsDB ? window.getPatientsDB() : [];
+        if (liste.length > 0) {
+            clearInterval(interval);
+            window.chargerPatients();
+        } else if (attempts >= 20) {
+            // Après 10s, afficher quand même (peut-être vraiment vide)
+            clearInterval(interval);
             window.chargerPatients();
         }
-    }, 1500);
+    }, 500);
 });
 
 /* ============================================================
@@ -70,13 +98,13 @@ window.ouvrirPanelEdition = function(p) {
 
     document.getElementById('edit-original-name').value = p.id || p.nom;
     document.getElementById('edit-nom').value = p.nom;
-    document.getElementById('edit-ddn').value = p.naissance;
-    document.getElementById('edit-groupe').value = p.groupe;
-    document.getElementById('edit-job').value = p.job;
+    document.getElementById('edit-ddn').value = p.naissance || '';
+    document.getElementById('edit-groupe').value = p.groupe || 'En attente';
+    document.getElementById('edit-job').value = p.job || '';
     document.getElementById('edit-notes').value = p.notes || "";
 
     _afficherHistorique(p);
-}
+};
 
 function _afficherHistorique(p) {
     const histDiv = document.getElementById('edit-historique');
@@ -90,8 +118,6 @@ function _afficherHistorique(p) {
 
     p.historique.forEach((h, index) => {
         const dateH = h.date ? new Date(h.date).toLocaleDateString('fr-FR') : '??/??';
-        
-        // Nettoyage de l'objet pour le passer en paramètre safely
         const hData = JSON.stringify(h).replace(/"/g, '&quot;');
 
         histDiv.innerHTML += `
@@ -114,7 +140,7 @@ function _afficherHistorique(p) {
    ============================================================ */
 
 window.creerPatient = async function() {
-    const nom = document.getElementById('new-nom').value;
+    const nom = document.getElementById('new-nom').value.trim();
     if (!nom) return alert("Le nom est obligatoire !");
 
     const newP = {
@@ -128,11 +154,13 @@ window.creerPatient = async function() {
     };
 
     const success = await window.savePatientToDB(newP);
-    if(success) {
+    if (success) {
         document.getElementById('new-nom').value = "";
+        document.getElementById('new-ddn').value = "";
+        document.getElementById('new-notes').value = "";
         alert("✅ Patient créé !");
     }
-}
+};
 
 window.sauvegarderEdition = async function() {
     const id = document.getElementById('edit-original-name').value;
@@ -152,21 +180,30 @@ window.sauvegarderEdition = async function() {
     await window.savePatientToDB(updatedP);
     window.fermerTout();
     alert("✅ Dossier mis à jour !");
-}
+};
+
+window.supprimerPatient = async function() {
+    const id = document.getElementById('edit-original-name').value;
+    if (!confirm("Supprimer définitivement ce dossier ?")) return;
+    const p = window.patientsLocaux.find(p => (p.id === id || p.nom === id));
+    if (!p || !p.id) return alert("Patient introuvable");
+    if (window.deletePatientFromDB) {
+        await window.deletePatientFromDB(p.id);
+    }
+    window.fermerTout();
+};
 
 window.fermerTout = function() {
     document.getElementById('panel-edition').style.display = 'none';
     document.getElementById('sidebar-stats').style.display = 'block';
     document.getElementById('panel-creation').style.display = 'block';
-}
+};
 
 /* ============================================================
    VISUALISEUR & NAVIGATION
    ============================================================ */
 
-// --- Ouvre le document et prépare le bouton Modifier dans la popup ---
 window.voirDocument = function(hData) {
-    // Correction du bug de parsing : on vérifie si c'est déjà un objet ou du texte
     const h = typeof hData === 'string' ? JSON.parse(hData.replace(/&quot;/g, '"')) : hData;
     
     const modal = document.getElementById('modal-document');
@@ -175,8 +212,10 @@ window.voirDocument = function(hData) {
     if (modal && img) {
         img.src = h.url || '';
         document.getElementById('doc-viewer-type').innerText = h.type || 'Document';
-        
-        // --- CONFIGURATION DU BOUTON MODIFIER DANS LA POPUP ---
+        document.getElementById('doc-viewer-date').innerText = h.date ? new Date(h.date).toLocaleDateString('fr-FR') : '—';
+        document.getElementById('doc-viewer-details').innerText = h.details || '—';
+        document.getElementById('doc-viewer-url').value = h.url || '';
+
         const btnMod = document.getElementById('doc-viewer-modifier-popup'); 
         if (btnMod) {
             if (h.pageSource) {
@@ -188,21 +227,26 @@ window.voirDocument = function(hData) {
         }
         modal.style.display = 'flex';
     }
-}
+};
 
-// --- Fonction qui restaure les données ---
+window.fermerVisualiseur = function() {
+    const modal = document.getElementById('modal-document');
+    if (modal) modal.style.display = 'none';
+};
+
+window.copierLienDoc = function() {
+    const url = document.getElementById('doc-viewer-url').value;
+    if (url) navigator.clipboard.writeText(url).then(() => alert("Lien copié !"));
+};
+
 window.ouvrirPourModifier = function(h) {
     if (!h.pageSource) return alert("Source inconnue");
-
-    // On stocke les données du formulaire dans la "boîte aux lettres" locale
     if (h.formData) {
         localStorage.setItem('edit_snapshot', JSON.stringify(h.formData));
     }
-
-    // On ouvre le lien avec le nom du patient
     const nomPatient = document.getElementById('edit-nom')?.value || h.nomPatient || '';
     window.open(`${h.pageSource}?mode=edit&patient=${encodeURIComponent(nomPatient)}`, '_blank');
-}
+};
 
 window.filtrerPatients = function() {
     const term = document.getElementById('search-input').value.toLowerCase();
@@ -210,11 +254,20 @@ window.filtrerPatients = function() {
         const name = card.querySelector('.p-name').innerText.toLowerCase();
         card.style.display = name.includes(term) ? "block" : "none";
     });
-}
+};
 
 function updateStats(liste) {
     const totalEl = document.getElementById('stat-total');
     if (totalEl) totalEl.innerText = liste.length;
+
+    // Dernier ajout
+    const lastEl = document.getElementById('stat-last');
+    if (lastEl && liste.length > 0) {
+        const sorted = [...liste].sort((a, b) => 
+            new Date(b.dateCreation || 0) - new Date(a.dateCreation || 0)
+        );
+        lastEl.innerText = sorted[0]?.nom || '-';
+    }
 }
 
 function formatDate(s) {
