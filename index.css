@@ -130,3 +130,12 @@ h1 {
     .menu-grid { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
     .portal-container { padding: 40px 20px; }
 }
+
+/* =====================================================
+   FIX MODULE CHAMBRES — Espace pour ne pas masquer les cartes
+   Le module chambres est position:fixed en bas (~160px ouvert)
+   On ajoute un padding-bottom suffisant sur le conteneur
+   ===================================================== */
+.portal-container {
+    padding-bottom: 200px !important;
+}
