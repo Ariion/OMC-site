@@ -4,15 +4,30 @@
 ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
+/* =====================================================
+   OVERRIDE GLOBAL.CSS — Le portail a besoin de scroller
+   global.css met body { overflow: hidden; height: 100vh }
+   On écrase ça ici pour le portail uniquement
+   ===================================================== */
+html {
+    height: auto !important;
+    overflow-y: auto !important;
+}
+
+body.portal-body {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
+}
+
 /* --- CONFIGURATION DU PORTAIL --- */
 .portal-body {
     background-color: #0a192f;
     display: flex;
     justify-content: center;
-    align-items: center;        /* centré verticalement */
+    align-items: flex-start;
     min-height: 100vh;
-    height: 100%;
-    overflow-y: auto;
+    padding-bottom: 40px;
     margin: 0;
     font-family: 'Segoe UI', Roboto, sans-serif;
 }
@@ -21,7 +36,7 @@
     text-align: center;
     width: 100%;
     max-width: 1400px;
-    padding: 60px 60px;         /* marges latérales généreuses */
+    padding: 60px 60px;
     box-sizing: border-box;
 }
 
@@ -61,7 +76,7 @@ h1 {
 .menu-card {
     background: #ffffff !important;
     border-radius: 14px;
-    padding: 42px 20px 36px;    /* plus de hauteur */
+    padding: 42px 20px 36px;
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -79,7 +94,7 @@ h1 {
 }
 
 .card-icon {
-    font-size: 2.8rem;          /* icône plus grande */
+    font-size: 2.8rem;
     margin-bottom: 14px;
 }
 
