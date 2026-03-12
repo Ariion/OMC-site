@@ -193,3 +193,94 @@ window.closePopup = function() {
     const popup = document.getElementById('image-popup');
     if (popup) popup.style.display = 'none';
 };
+
+/* ----------------------------------------------------------
+   CARTE DE GROUPE SANGUIN — popup dédiée
+   Capture #document-carte, affiche popup-carte
+---------------------------------------------------------- */
+function _showCartePopup(url) {
+    const img    = document.getElementById('carte-img-result');
+    const input  = document.getElementById('carte-direct-link');
+    const popup  = document.getElementById('carte-popup');
+    const content = popup ? popup.querySelector('.popup-content') : null;
+
+    if (img)   { img.src = url; img.style.cssText = 'width:100%;height:auto;display:block;border-radius:8px;'; }
+    if (input) input.value = url;
+    if (content) {
+        content.style.width    = '90vw';
+        content.style.maxWidth = '600px';
+        content.style.height   = 'auto';
+    }
+    if (popup) popup.style.display = 'flex';
+}
+
+window.genererCarteGroupe = async function(btn) {
+    const originalText = btn ? btn.innerText : '';
+    if (btn) { btn.disabled = true; btn.innerText = '⏳ CAPTURE...'; }
+
+    try {
+        const el = document.getElementById('document-carte');
+        if (!el) throw new Error('#document-carte introuvable');
+
+        const blob = await _captureToBlob(el, 0.95);
+        if (btn) btn.innerText = '⏳ HÉBERGEMENT...';
+
+        const url = await _uploadImgBB(blob);
+        _showCartePopup(url);
+
+    } catch(e) {
+        console.error('genererCarteGroupe :', e);
+        alert('❌ Erreur : ' + e.message);
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerText = originalText || '🖼️ GÉNÉRER CARTE'; }
+    }
+};
+
+window.envoyerCarteDiscord = async function(btn) {
+    const cfg = window.OMC_CONFIG || {};
+    if (!cfg.webhook) { alert('❌ webhook Discord manquant.'); return; }
+
+    const originalText = btn ? btn.innerText : '';
+    if (btn) { btn.disabled = true; btn.innerText = '⏳ ENVOI...'; }
+
+    try {
+        const el = document.getElementById('document-carte');
+        if (!el) throw new Error('#document-carte introuvable');
+
+        const blob = await _captureToBlob(el, 0.95);
+        const nom  = _getNomPatient(cfg.nomPatientId);
+        const fd   = new FormData();
+        fd.append('payload_json', JSON.stringify({
+            username:    'Intranet OMC',
+            thread_name: `💳 CARTE DE GROUPE — ${nom} (${new Date().toLocaleDateString('fr-FR')})`,
+            content:     `💳 **Carte de groupe sanguin**\n👤 ${nom}`
+        }));
+        fd.append('file', blob, `carte_groupe_${nom}.jpg`);
+
+        const res = await fetch(cfg.webhook + '?wait=true', { method: 'POST', body: fd });
+        if (res.ok) {
+            if (btn) btn.innerText = '✅ ENVOYÉ !';
+            setTimeout(() => { if (btn) { btn.innerText = originalText; btn.disabled = false; } }, 3000);
+        } else {
+            let err = {}; try { err = await res.json(); } catch(e2) {}
+            throw new Error(err.message || 'HTTP ' + res.status);
+        }
+    } catch(e) {
+        console.error('envoyerCarteDiscord :', e);
+        alert('❌ Erreur Discord : ' + e.message);
+        if (btn) { btn.innerText = 'RÉESSAYER'; btn.disabled = false; }
+    }
+};
+
+window.copierCarteLien = function() {
+    const el = document.getElementById('carte-direct-link');
+    if (!el) return;
+    navigator.clipboard.writeText(el.value)
+        .then(() => alert('✅ Lien copié !'))
+        .catch(() => { el.select(); document.execCommand('copy'); alert('✅ Lien copié !'); });
+};
+
+window.fermerCartePopup = function() {
+    const popup = document.getElementById('carte-popup');
+    if (popup) popup.style.display = 'none';
+};
