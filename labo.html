@@ -115,6 +115,38 @@
                     </button>
                 </div>
 
+<!-- GROUPAGE SANGUIN -->
+<div class="scenario-bloc" style="border-color: #b45309; background: #1a1005;">
+    <div class="scenario-bloc-title" style="color: #fbbf24;">🩸 GROUPAGE SANGUIN</div>
+    <div class="scenario-card" style="border-color: #78350f; background: #0f0a02;">
+        <div class="scenario-card-title" style="color: #d97706;">
+            🔬 ABO — RHÉSUS — RAI
+        </div>
+        <div style="font-size:10px; color:#94a3b8; margin-bottom:8px; font-style:italic; line-height:1.5;">
+            Groupe · Rhésus · Compatibilité transfusionnelle
+        </div>
+        <div style="font-size:10px; color:#92400e; margin-bottom:8px; padding:6px 8px;
+                    background:#1c1005; border:1px solid #78350f; border-radius:4px;">
+            💡 Sélectionnez un groupe sanguin ou laissez vide pour un tirage aléatoire
+        </div>
+        <button type="button"
+                onclick="lancerGroupageSanguin()"
+                class="btn-scenario"
+                style="background:#1c1005; border-color:#f59e0b; color:#fbbf24; width:100%; margin-bottom:8px;">
+            🩸 GÉNÉRER GROUPAGE
+        </button>
+        <button type="button"
+                onclick="envoyerCarteGroupeSanguin(this)"
+                style="width:100%; padding:8px; background:#7c2d12; border:1px solid #f59e0b;
+                       border-radius:4px; color:#fbbf24; font-size:11px; font-weight:bold;
+                       cursor:pointer; letter-spacing:1px;">
+            💳 ENVOYER CARTE DE GROUPE
+        </button>
+    </div>
+</div>
+
+
+
                 <!-- URGENCES -->
                 <div class="scenario-bloc">
                     <div class="scenario-bloc-title">🚨 URGENCES — SCÉNARIOS CLINIQUES</div>
@@ -342,8 +374,173 @@
         document.addEventListener('click', e => { if (!e.target.closest('[id="patientPrenom"]') && !e.target.closest('#ac-list-labo')) list.style.display = 'none'; });
     });
     </script>
+
+    <script>
+function envoyerCarteGroupeSanguin(btn) {
+    const nom    = document.getElementById('d-nom')?.innerText || 'Inconnu';
+    const ddn    = document.getElementById('d-ddn')?.innerText || '—';
+    const groupe = document.getElementById('d-groupe')?.innerText || '—';
+    const date   = new Date().toLocaleDateString('fr-FR');
+
+    if (groupe === '...' || groupe === '—') {
+        alert('⚠️ Aucun groupe sanguin défini. Générez d\'abord le groupage.');
+        return;
+    }
+
+    // Compatibilité
+    const receveur = {
+        "A+":["A+","A-","O+","O-"],"A-":["A-","O-"],
+        "B+":["B+","B-","O+","O-"],"B-":["B-","O-"],
+        "AB+":["A+","A-","B+","B-","AB+","AB-","O+","O-"],"AB-":["A-","B-","AB-","O-"],
+        "O+":["O+","O-"],"O-":["O-"]
+    };
+    const donneur = {
+        "A+":["A+","AB+"],"A-":["A+","A-","AB+","AB-"],
+        "B+":["B+","AB+"],"B-":["B+","B-","AB+","AB-"],
+        "AB+":["AB+"],"AB-":["AB+","AB-"],
+        "O+":["A+","B+","AB+","O+"],"O-":["A+","A-","B+","B-","AB+","AB-","O+","O-"]
+    };
+
+    const peutRecevoir = receveur[groupe]?.join(', ') || '—';
+    const peutDonner   = donneur[groupe]?.join(', ')  || '—';
+
+    const message = {
+        username: "OMC — Laboratoire",
+        avatar_url: "https://i.imgur.com/xxxxxxx.png",
+        embeds: [{
+            title: "💳 CARTE DE GROUPE SANGUIN",
+            color: 0xf59e0b,
+            fields: [
+                { name: "🏥 Établissement", value: "Ocean Medical Center", inline: true },
+                { name: "📅 Date d'émission", value: date, inline: true },
+                { name: "\u200b", value: "\u200b", inline: false },
+                { name: "👤 Patient", value: `**${nom}**`, inline: true },
+                { name: "🎂 Date de naissance", value: ddn, inline: true },
+                { name: "\u200b", value: "\u200b", inline: false },
+                { name: "🩸 Groupe sanguin", value: `# ${groupe}`, inline: false },
+                { name: "✅ Peut recevoir", value: peutRecevoir, inline: true },
+                { name: "➡️ Peut donner à", value: peutDonner, inline: true },
+                { name: "\u200b", value: "\u200b", inline: false },
+                { name: "⚕️ Validé par", value: "Ocean Medical Center — Service de Biologie", inline: false }
+            ],
+            footer: { text: "OMC — Carte officielle de groupe sanguin" },
+            timestamp: new Date().toISOString()
+        }]
+    };
+
+    btn.disabled = true;
+    btn.textContent = "⏳ Envoi...";
+
+    fetch(OMC_CONFIG.webhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(message)
+    })
+    .then(r => {
+        if (r.ok) {
+            btn.textContent = "✅ Carte envoyée !";
+            btn.style.background = "#14532d";
+        } else {
+            btn.textContent = "❌ Erreur";
+        }
+    })
+    .catch(() => { btn.textContent = "❌ Erreur réseau"; })
+    .finally(() => { setTimeout(() => { btn.disabled = false; btn.textContent = "💳 ENVOYER CARTE DE GROUPE"; btn.style.background = "#7c2d12"; }, 3000); });
+}
+</script>
+
+
+
     <script src="generation.js"></script>
     <script type="module" src="global.js"></script>
     <script type="module" src="labo.js"></script>
+
+    <!-- ═══ DOCUMENT CARTE DE GROUPE (capture html2canvas) ═══ -->
+<div id="document-carte" style="
+    position: fixed;
+    left: -9999px;
+    top: 0;
+    width: 500px;
+    background: white;
+    padding: 40px;
+    font-family: 'Arial', sans-serif;
+    box-sizing: border-box;
+    border-radius: 12px;
+">
+    <!-- EN-TÊTE -->
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #1e3a5f; padding-bottom:16px; margin-bottom:24px;">
+        <div>
+            <div style="font-size:18px; font-weight:900; color:#1e3a5f; letter-spacing:2px;">OCEAN MEDICAL CENTER</div>
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">Service de Biologie — Banque du Sang</div>
+        </div>
+        <div style="background:#1e3a5f; color:white; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:bold; letter-spacing:1px;">
+            CARTE OFFICIELLE
+        </div>
+    </div>
+
+    <!-- TITRE -->
+    <div style="text-align:center; margin-bottom:24px;">
+        <div style="font-size:13px; letter-spacing:3px; color:#64748b; text-transform:uppercase; margin-bottom:6px;">Carte de Groupe Sanguin</div>
+        <div id="carte-groupe-affiche" style="font-size:72px; font-weight:900; color:#dc2626; line-height:1;">A+</div>
+        <div id="carte-compatibilite-label" style="font-size:11px; color:#64748b; margin-top:6px; font-style:italic;"></div>
+    </div>
+
+    <!-- INFOS PATIENT -->
+    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:20px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div>
+                <div style="font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">Nom du patient</div>
+                <div id="carte-nom" style="font-size:13px; font-weight:700; color:#1e293b;">—</div>
+            </div>
+            <div>
+                <div style="font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">Date de naissance</div>
+                <div id="carte-ddn" style="font-size:13px; font-weight:700; color:#1e293b;">—</div>
+            </div>
+            <div>
+                <div style="font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">RAI</div>
+                <div id="carte-rai" style="font-size:12px; font-weight:600; color:#1e293b;">—</div>
+            </div>
+            <div>
+                <div style="font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">Date du groupage</div>
+                <div id="carte-date" style="font-size:12px; font-weight:600; color:#1e293b;">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMPATIBILITÉ -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px;">
+            <div style="font-size:9px; color:#16a34a; text-transform:uppercase; letter-spacing:1px; font-weight:bold; margin-bottom:6px;">✅ Peut recevoir</div>
+            <div id="carte-receveur" style="font-size:11px; color:#1e293b; line-height:1.6;">—</div>
+        </div>
+        <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px;">
+            <div style="font-size:9px; color:#2563eb; text-transform:uppercase; letter-spacing:1px; font-weight:bold; margin-bottom:6px;">➡️ Peut donner à</div>
+            <div id="carte-donneur" style="font-size:11px; color:#1e293b; line-height:1.6;">—</div>
+        </div>
+    </div>
+
+    <!-- PIED DE PAGE -->
+    <div style="border-top:1px solid #e2e8f0; padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:9px; color:#94a3b8; font-style:italic;">Document officiel OMC — Ne pas falsifier</div>
+        <div id="carte-medecin" style="font-size:9px; color:#64748b; font-weight:bold;">Dr. —</div>
+    </div>
+</div>
+
+<!-- ═══ POPUP CARTE DE GROUPE ═══ -->
+<div id="carte-popup" class="popup-overlay" style="display:none;">
+    <div class="popup-content" style="max-width:600px; width:90vw;">
+        <h3 style="margin-bottom:12px;">💳 Carte de Groupe Sanguin</h3>
+        <input type="text" id="carte-direct-link" readonly onclick="this.select()" style="width:100%; margin-bottom:10px;">
+        <div class="popup-buttons" style="margin-bottom:12px;">
+            <button onclick="copierCarteLien()" class="btn-copy">Copier le lien</button>
+            <button onclick="envoyerCarteDiscord(this)" class="btn-discord" style="padding:8px 16px;">Envoyer Discord</button>
+            <button onclick="fermerCartePopup()" class="btn-close">Fermer</button>
+        </div>
+        <img id="carte-img-result" src="" style="width:100%; height:auto; border-radius:8px; display:block;">
+    </div>
+</div>
+
+
+
 </body>
 </html>
