@@ -521,10 +521,7 @@ window.lancerGroupageSanguin = function() {
     const gc = document.getElementById('carte-groupe-affiche');
     if (gc) gc.style.color = groupe.includes('-') ? '#1e3a5f' : '#dc2626';
 
-    // ── Ouvrir popup après génération ──
-    if (typeof genererCarteGroupe === 'function') {
-        genererCarteGroupe(null);
-    }
+    
 
     window.resetSeulementBio(false);
 
