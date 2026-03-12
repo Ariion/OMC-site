@@ -463,11 +463,11 @@ window.lancerGroupageSanguin = function() {
         // ── Remplir le document-carte ──
     const sel = document.getElementById('patientBlood');
     const groupes = ["A+","A-","B+","B-","AB+","AB-","O+","O-"];
-    let groupe = sel?.value || '';
-    if (!groupe || groupe === "") groupe = groupes[Math.floor(Math.random() * groupes.length)];
+    let groupe = groupes[Math.floor(Math.random() * groupes.length)];
     const abo = groupe.replace('+','').replace('-','');  // ← ajouter
     const rhPos = groupe.includes('+');                  // ← ajouter
     if (sel) sel.value = groupe;
+
 
     if (window.up) window.up('d-groupe', groupe);
 
