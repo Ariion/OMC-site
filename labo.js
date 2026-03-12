@@ -7,78 +7,78 @@
 // 1. BASE DE DONNÉES MÉDICALE COMPLÈTE
 // ==========================================
 const database = {
-    "HÉMATOLOGIE — Analyse du Sang": [
-        { id: "gb",      label: "Leucocytes (globules blancs — défense)",  unit: "G/L",   norm: "4.0 - 10.0" },
-        { id: "gr",      label: "Globules Rouges (transport oxygène)",      unit: "T/L",   norm: "4.5 - 5.5" },
-        { id: "hb",      label: "Hémoglobine (taux d'oxygène dans le sang)",unit: "g/dL",  norm: "13.0 - 17.0" },
-        { id: "ht",      label: "Hématocrite (% de sang = globules rouges)",unit: "%",     norm: "40 - 52" },
-        { id: "pla",     label: "Plaquettes (cicatrisation / coagulation)", unit: "G/L",   norm: "150 - 400" },
-        { id: "vgm",     label: "VGM (taille des globules rouges)",         unit: "fL",    norm: "80 - 100" },
-        { id: "tcmh",    label: "TCMH (teneur en hémoglobine / globule)",   unit: "pg",    norm: "27 - 32" },
-        { id: "poly_n",  label: "Polynucléaires (soldats anti-infection)",  unit: "%",     norm: "40 - 75" },
-        { id: "lympho",  label: "Lymphocytes (mémoire immunitaire)",        unit: "%",     norm: "20 - 45" }
+    "HÉMATOLOGIE (NFS)": [
+        { id: "gb",      label: "Leucocytes",      unit: "G/L",   norm: "4.0 - 10.0" },
+        { id: "gr",      label: "Globules Rouges",  unit: "T/L",   norm: "4.5 - 5.5" },
+        { id: "hb",      label: "Hémoglobine",      unit: "g/dL",  norm: "13.0 - 17.0" },
+        { id: "ht",      label: "Hématocrite",       unit: "%",     norm: "40 - 52" },
+        { id: "pla",     label: "Plaquettes",        unit: "G/L",   norm: "150 - 400" },
+        { id: "vgm",     label: "VGM",               unit: "fL",    norm: "80 - 100" },
+        { id: "tcmh",    label: "TCMH",              unit: "pg",    norm: "27 - 32" },
+        { id: "poly_n",  label: "Polynucléaires",    unit: "%",     norm: "40 - 75" },
+        { id: "lympho",  label: "Lymphocytes",       unit: "%",     norm: "20 - 45" }
     ],
-    "COAGULATION — Capacité à Stopper le Saignement": [
-        { id: "tp",      label: "TP — Taux de Prothrombine (vitesse de coag.)",  unit: "%",   norm: "70 - 100" },
-        { id: "inr",     label: "INR (risque hémorragique — 1 = normal)",         unit: "-",   norm: "0.8 - 1.2" },
-        { id: "tca",     label: "TCA (temps pour former un caillot)",             unit: "sec", norm: "24 - 38" },
-        { id: "fibri",   label: "Fibrinogène (protéine clé du caillot sanguin)",  unit: "g/L", norm: "2.0 - 4.0" }
+    "COAGULATION": [
+        { id: "tp",      label: "Taux Prothrombine", unit: "%",     norm: "70 - 100" },
+        { id: "inr",     label: "INR",               unit: "-",     norm: "0.8 - 1.2" },
+        { id: "tca",     label: "TCA",               unit: "sec",   norm: "24 - 38" },
+        { id: "fibri",   label: "Fibrinogène",       unit: "g/L",   norm: "2.0 - 4.0" }
     ],
-    "BIOCHIMIE — Métabolisme & Organes": [
-        { id: "gly",     label: "Glycémie (taux de sucre dans le sang)",          unit: "g/L",   norm: "0.70 - 1.10" },
-        { id: "ceton",   label: "Cétonémie (corps cétoniques — signe de diabète)",unit: "mmol/L",norm: "0 - 0.6" },
-        { id: "uree",    label: "Urée (déchet filtré par les reins)",             unit: "g/L",   norm: "0.15 - 0.45" },
-        { id: "crea",    label: "Créatinine (état des reins)",                    unit: "mg/L",  norm: "7.0 - 12.0" },
-        { id: "crp",     label: "CRP (marqueur d'inflammation / infection)",      unit: "mg/L",  norm: "0 - 5.0" },
-        { id: "cpk",     label: "CPK (destruction musculaire — écrasement)",      unit: "UI/L",  norm: "30 - 200" }
+    "BIOCHIMIE MÉTABOLIQUE": [
+        { id: "gly",     label: "Glycémie (Jeun)",   unit: "g/L",   norm: "0.70 - 1.10" },
+        { id: "ceton",   label: "Cétonémie",         unit: "mmol/L",norm: "0 - 0.6" },
+        { id: "uree",    label: "Urée",              unit: "g/L",   norm: "0.15 - 0.45" },
+        { id: "crea",    label: "Créatinine",        unit: "mg/L",  norm: "7.0 - 12.0" },
+        { id: "crp",     label: "CRP",               unit: "mg/L",  norm: "0 - 5.0" },
+        { id: "cpk",     label: "CPK (Créatine PK)", unit: "UI/L",  norm: "30 - 200" }
     ],
-    "IONOGRAMME — Sels Minéraux du Sang": [
-        { id: "na",      label: "Sodium / Na+ (équilibre eau-sel)",               unit: "mmol/L",norm: "135 - 145" },
-        { id: "k",       label: "Potassium / K+ (rythme cardiaque ⚠️)",           unit: "mmol/L",norm: "3.5 - 5.0" },
-        { id: "cl",      label: "Chlore / Cl- (équilibre acide-base)",            unit: "mmol/L",norm: "95 - 105" },
-        { id: "ca",      label: "Calcium (os, nerfs, muscles)",                   unit: "mg/L",  norm: "85 - 105" }
+    "IONOGRAMME": [
+        { id: "na",      label: "Sodium (Na+)",      unit: "mmol/L",norm: "135 - 145" },
+        { id: "k",       label: "Potassium (K+)",    unit: "mmol/L",norm: "3.5 - 5.0" },
+        { id: "cl",      label: "Chlore (Cl-)",      unit: "mmol/L",norm: "95 - 105" },
+        { id: "ca",      label: "Calcium",            unit: "mg/L",  norm: "85 - 105" }
     ],
-    "BILAN RÉNAL — Analyse des Urines": [
-        { id: "prot_u",  label: "Protéinurie (protéines dans les urines — anormal)",unit: "g/24h", norm: "< 0.15" },
-        { id: "hem_u",   label: "Hématurie (sang dans les urines)",                 unit: "ER/mL", norm: "< 5" },
-        { id: "leu_u",   label: "Leucocyturie (globules blancs dans les urines)",   unit: "EB/mL", norm: "< 10" }
+    "BILAN RÉNAL": [
+        { id: "prot_u",  label: "Protéinurie",       unit: "g/24h", norm: "< 0.15" },
+        { id: "hem_u",   label: "Hématurie",         unit: "ER/mL", norm: "< 5" },
+        { id: "leu_u",   label: "Leucocyturie",      unit: "EB/mL", norm: "< 10" }
     ],
-    "BILAN HÉPATIQUE — État du Foie": [
-        { id: "asat",    label: "ASAT / TGO (enzyme hépatique — lésion foie/muscle)",unit: "UI/L", norm: "0 - 35" },
-        { id: "alat",    label: "ALAT / TGP (enzyme spécifique du foie)",            unit: "UI/L", norm: "0 - 45" },
-        { id: "ggt",     label: "Gamma-GT (alcool / médicaments / foie)",            unit: "UI/L", norm: "0 - 55" },
-        { id: "bili_t",  label: "Bilirubine (déchet biliaire — jaunisse si élevé)",  unit: "mg/L", norm: "0 - 12" }
+    "BILAN HÉPATIQUE": [
+        { id: "asat",    label: "ASAT (TGO)",        unit: "UI/L",  norm: "0 - 35" },
+        { id: "alat",    label: "ALAT (TGP)",        unit: "UI/L",  norm: "0 - 45" },
+        { id: "ggt",     label: "Gamma-GT",          unit: "UI/L",  norm: "0 - 55" },
+        { id: "bili_t",  label: "Bilirubine Tot.",   unit: "mg/L",  norm: "0 - 12" }
     ],
-    "MARQUEURS CARDIAQUES — Cœur & Transfusion": [
-        { id: "tropo",   label: "Troponine I (lésion cardiaque — infarctus)",         unit: "ng/L",  norm: "0 - 15" },
-        { id: "bnp",     label: "BNP (insuffisance cardiaque — cœur fatigué)",        unit: "pg/mL", norm: "0 - 100" },
-        { id: "rai",     label: "RAI (anticorps anti-sang étranger — avant transfusion)",unit: "-",  norm: "Négatif" }
+    "MARQUEURS CARDIAQUES": [
+        { id: "tropo",   label: "Troponine I",       unit: "ng/L",  norm: "0 - 15" },
+        { id: "bnp",     label: "BNP",               unit: "pg/mL", norm: "0 - 100" },
+        { id: "rai",     label: "RAI (Ags irrég.)",  unit: "-",     norm: "Négatif" }
     ],
-    "GAZ DU SANG — Respiration & Acidité": [
-        { id: "ph",      label: "pH Artériel (acidité du sang — 7.40 = normal)",      unit: "",      norm: "7.38 - 7.42" },
-        { id: "pco2",    label: "PCO2 (CO2 dans le sang — respiration)",              unit: "mmHg",  norm: "35 - 45" },
-        { id: "po2",     label: "PO2 (oxygène dans le sang)",                         unit: "mmHg",  norm: "80 - 100" },
-        { id: "lact",    label: "Lactates (manque d'oxygène dans les tissus — choc)", unit: "mmol/L",norm: "0.5 - 2.0" }
+    "GAZ DU SANG": [
+        { id: "ph",      label: "pH Artériel",       unit: "",      norm: "7.38 - 7.42" },
+        { id: "pco2",    label: "PCO2",              unit: "mmHg",  norm: "35 - 45" },
+        { id: "po2",     label: "PO2",               unit: "mmHg",  norm: "80 - 100" },
+        { id: "lact",    label: "Lactates",          unit: "mmol/L",norm: "0.5 - 2.0" }
     ],
-    "TOXICOLOGIE SANGUINE — Substances dans le Sang": [
-        { id: "alc",     label: "Alcoolémie (taux d'alcool dans le sang)",            unit: "g/L",   norm: "0 - 0.10" },
-        { id: "parace",  label: "Paracétamol (Doliprane — toxique si surdosé)",       unit: "mg/L",  norm: "< 10" },
-        { id: "lithium", label: "Lithium (médicament psychiatrique)",                 unit: "mmol/L",norm: "0.6 - 1.2" }
+    "TOXICOLOGIE SANGUINE": [
+        { id: "alc",     label: "Alcoolémie",        unit: "g/L",   norm: "0 - 0.10" },
+        { id: "parace",  label: "Paracétamol",       unit: "mg/L",  norm: "< 10" },
+        { id: "lithium", label: "Lithium",           unit: "mmol/L",norm: "0.6 - 1.2" }
     ],
-    "TOXICOLOGIE URINAIRE — Dépistage de Drogues": [
-        { id: "thc",     label: "Cannabis / THC",     unit: "-", norm: "Négatif" },
-        { id: "coc",     label: "Cocaïne",            unit: "-", norm: "Négatif" },
-        { id: "amp",     label: "Amphétamines / Speed",unit: "-", norm: "Négatif" },
-        { id: "benzo",   label: "Benzodiazépines (Valium, Xanax...)", unit: "-", norm: "Négatif" },
-        { id: "opio",    label: "Opioïdes (Héroïne, Morphine...)",    unit: "-", norm: "Négatif" }
+    "TOXICOLOGIE URINAIRE": [
+        { id: "thc",     label: "Cannabis (THC)",    unit: "-",     norm: "Négatif" },
+        { id: "coc",     label: "Cocaïne",           unit: "-",     norm: "Négatif" },
+        { id: "amp",     label: "Amphétamines",      unit: "-",     norm: "Négatif" },
+        { id: "benzo",   label: "Benzodiazépines",   unit: "-",     norm: "Négatif" },
+        { id: "opio",    label: "Opioïdes",          unit: "-",     norm: "Négatif" }
     ],
-    "HORMONES & FERTILITÉ": [
-        { id: "tsh",     label: "TSH (hormone thyroïde — métabolisme)",               unit: "mUI/L", norm: "0.4 - 4.0" },
-        { id: "hcg",     label: "Bêta-HCG (hormone de grossesse)",                   unit: "mUI/mL",norm: "< 5" },
-        { id: "amh",     label: "AMH (réserve d'ovules — fertilité féminine)",        unit: "ng/mL", norm: "2.0 - 6.8" },
-        { id: "fsh",     label: "FSH (hormone stimulant les ovaires/testicules)",     unit: "UI/L",  norm: "3.5 - 12.5" },
-        { id: "lh",      label: "LH (déclenche l'ovulation / production testostérone)",unit: "UI/L", norm: "2.4 - 12.6" },
-        { id: "prolac",  label: "Prolactine (hormone de lactation)",                  unit: "ng/mL", norm: "4.8 - 23.3" }
+    "ENDOCRINOLOGIE & FERTILITÉ": [
+        { id: "tsh",     label: "TSH",               unit: "mUI/L", norm: "0.4 - 4.0" },
+        { id: "hcg",     label: "Bêta-HCG",          unit: "mUI/mL",norm: "< 5" },
+        { id: "amh",     label: "AMH (Réserve)",     unit: "ng/mL", norm: "2.0 - 6.8" },
+        { id: "fsh",     label: "FSH",               unit: "UI/L",  norm: "3.5 - 12.5" },
+        { id: "lh",      label: "LH",                unit: "UI/L",  norm: "2.4 - 12.6" },
+        { id: "prolac",  label: "Prolactine",        unit: "ng/mL", norm: "4.8 - 23.3" }
     ]
 };
 
@@ -163,61 +163,61 @@ window.lancerTrauma = function() {
     const operation   = document.getElementById('chk-operation')?.checked;
 
     // NFS — hémorragie
-    set('hb',  (15.0 - 8.0 * f).toFixed(1),    'HÉMATOLOGIE — Analyse du Sang');
-    set('gr',  (5.0  - 2.5 * f).toFixed(2),    'HÉMATOLOGIE — Analyse du Sang');
-    set('ht',  (45   - 20  * f).toFixed(0),    'HÉMATOLOGIE — Analyse du Sang');
-    set('gb',  (7.0  + 8.0 * f).toFixed(1),    'HÉMATOLOGIE — Analyse du Sang');
-    set('pla', (280  - 180 * f).toFixed(0),    'HÉMATOLOGIE — Analyse du Sang');
+    set('hb',  (15.0 - 8.0 * f).toFixed(1),    'HÉMATOLOGIE (NFS)');
+    set('gr',  (5.0  - 2.5 * f).toFixed(2),    'HÉMATOLOGIE (NFS)');
+    set('ht',  (45   - 20  * f).toFixed(0),    'HÉMATOLOGIE (NFS)');
+    set('gb',  (7.0  + 8.0 * f).toFixed(1),    'HÉMATOLOGIE (NFS)');
+    set('pla', (280  - 180 * f).toFixed(0),    'HÉMATOLOGIE (NFS)');
 
     // Coagulation
-    set('tp',    (95  - 55 * f).toFixed(0),  'COAGULATION — Capacité à Stopper le Saignement');
-    set('inr',   (1.0 + 3.0 * f).toFixed(1), 'COAGULATION — Capacité à Stopper le Saignement');
-    set('tca',   (30  + 40 * f).toFixed(0),  'COAGULATION — Capacité à Stopper le Saignement');
-    set('fibri', (3.5 - 2.5 * f).toFixed(1), 'COAGULATION — Capacité à Stopper le Saignement');
+    set('tp',    (95  - 55 * f).toFixed(0),  'COAGULATION');
+    set('inr',   (1.0 + 3.0 * f).toFixed(1), 'COAGULATION');
+    set('tca',   (30  + 40 * f).toFixed(0),  'COAGULATION');
+    set('fibri', (3.5 - 2.5 * f).toFixed(1), 'COAGULATION');
 
     // Gaz du sang — acidose
-    set('ph',   (7.40 - 0.18 * f).toFixed(2), 'GAZ DU SANG — Respiration & Acidité');
-    set('pco2', (40   + 5   * f).toFixed(0),  'GAZ DU SANG — Respiration & Acidité');
-    set('lact', (1.0  + 9.0 * f).toFixed(1),  'GAZ DU SANG — Respiration & Acidité');
+    set('ph',   (7.40 - 0.18 * f).toFixed(2), 'GAZ DU SANG');
+    set('pco2', (40   + 5   * f).toFixed(0),  'GAZ DU SANG');
+    set('lact', (1.0  + 9.0 * f).toFixed(1),  'GAZ DU SANG');
 
     // Ionogramme
-    set('na', (140 - 8  * f).toFixed(0), 'IONOGRAMME — Sels Minéraux du Sang');
-    set('k',  (4.0 + 2.0 * f).toFixed(1), 'IONOGRAMME — Sels Minéraux du Sang');
+    set('na', (140 - 8  * f).toFixed(0), 'IONOGRAMME');
+    set('k',  (4.0 + 2.0 * f).toFixed(1), 'IONOGRAMME');
 
     // Rénal
-    set('uree', (0.30 + 0.80 * f).toFixed(2), 'BIOCHIMIE — Métabolisme & Organes');
-    set('crea', (9.0  + 15  * f).toFixed(1),  'BIOCHIMIE — Métabolisme & Organes');
+    set('uree', (0.30 + 0.80 * f).toFixed(2), 'BIOCHIMIE MÉTABOLIQUE');
+    set('crea', (9.0  + 15  * f).toFixed(1),  'BIOCHIMIE MÉTABOLIQUE');
 
     // Écrasement → CPK très élevée
     if (ecrasement) {
-        set('cpk', (200 + Math.round(15000 * f)).toString(), 'BIOCHIMIE — Métabolisme & Organes');
+        set('cpk', (200 + Math.round(15000 * f)).toString(), 'BIOCHIMIE MÉTABOLIQUE');
     }
 
     // Thoracique → Troponine
     if (thoracique) {
-        set('tropo', (15 + Math.round(2000 * f)).toString(), 'MARQUEURS CARDIAQUES — Cœur & Transfusion');
+        set('tropo', (15 + Math.round(2000 * f)).toString(), 'MARQUEURS CARDIAQUES');
     }
 
     // Opération → Groupe + RAI
     if (operation) {
-        set('rai', 'Négatif', 'MARQUEURS CARDIAQUES — Cœur & Transfusion');
+        set('rai', 'Négatif', 'MARQUEURS CARDIAQUES');
     }
 
-    const sev = grav >= 8 ? 'CRITIQUE' : grav >= 5 ? 'GRAVE' : 'MODÉRÉ';
+    const sev = grav >= 8 ? 'CRITIQUE' : grav >= 5 ? 'MODÉRÉ-SÉVÈRE' : 'MODÉRÉ';
     let extras = [];
-    if (ecrasement)  extras.push("- CPK très élevée → destruction musculaire importante (écrasement). Risque de blocage des reins.");
-    if (thoracique)  extras.push("- Troponine élevée → le cœur a été touché par le choc. Surveillance cardiaque requise.");
-    if (operation)   extras.push("- Test de compatibilité transfusionnelle (RAI) : négatif. Transfusion possible si besoin.");
+    if (ecrasement)  extras.push("- CPK massivement élevée → rhabdomyolyse traumatique. Risque d'insuffisance rénale aiguë.");
+    if (thoracique)  extras.push("- Troponine élevée → contusion myocardique à surveiller. ECG requis.");
+    if (operation)   extras.push("- RAI négatif. Patient éligible à la transfusion en urgence.");
 
     fusionnerConclusion(
         `TRAUMATISME — ÉTAT ${sev}.\n\n` +
-        `SAIGNEMENT INTERNE :\n- Manque de sang ${grav >= 7 ? 'sévère' : 'modéré'} détecté (Hémoglobine : ${(15.0 - 8.0*f).toFixed(1)} g/dL — norme : 13-17).\n` +
-        `- Plaquettes basses (${(280-180*f).toFixed(0)} G/L) → le corps a du mal à stopper le saignement.\n\n` +
-        `CAPACITÉ À COAGULER :\n- Tests de coagulation perturbés → le sang coagule mal, risque de saignement continu.\n\n` +
-        `ACIDITÉ DU SANG (Gaz du sang) :\n- pH ${(7.40-0.18*f).toFixed(2)} → ${grav >= 7 ? 'le sang est trop acide, signe d\'urgence vitale' : 'légère acidité, à surveiller'}.\n\n` +
-        `APPORT EN OXYGÈNE :\n- Lactates ${(1.0+9.0*f).toFixed(1)} mmol/L → ${grav >= 7 ? 'les organes manquent d\'oxygène (choc hémorragique)' : 'légère souffrance tissulaire'}.\n\n` +
+        `TROUBLES HÉMORRAGIQUES :\n- Anémie ${grav >= 7 ? 'sévère' : 'modérée'} (Hb ${(15.0 - 8.0*f).toFixed(1)} g/dL).\n` +
+        `- Thrombopénie (Plaquettes ${(280-180*f).toFixed(0)} G/L).\n\n` +
+        `COAGULATION :\n- TP abaissé, INR élevé → coagulopathie de consommation.\n\n` +
+        `GAZ DU SANG :\n- ${grav >= 7 ? 'Acidose métabolique sévère' : 'Acidose métabolique débutante'} (pH ${(7.40-0.18*f).toFixed(2)}).\n\n` +
+        `CHOC HÉMORRAGIQUE :\n- Lactatémie ${(1.0+9.0*f).toFixed(1)} mmol/L → ${grav >= 7 ? 'choc installé, urgence vitale' : 'hypoperfusion tissulaire'}.\n\n` +
         (extras.length ? extras.join('\n') + '\n\n' : '') +
-        `À FAIRE : ${grav >= 7 ? 'Transfusion sanguine en urgence. Intervention chirurgicale pour stopper l\'hémorragie.' : 'Perfusion (remplissage), surveillance constante des constantes vitales.'}`
+        `CONDUITE : ${grav >= 7 ? 'Transfusion massive en urgence. Contrôle hémorragique chirurgical.' : 'Remplissage vasculaire, surveillance rapprochée.'}`
     );
 };
 
@@ -229,40 +229,40 @@ window.lancerPlaieBalle = function() {
     const sexe = document.getElementById('patientSex')?.value;
 
     // NFS
-    set('hb',  (15.0 - 9.0 * f).toFixed(1), 'HÉMATOLOGIE — Analyse du Sang');
-    set('gr',  (5.0  - 2.8 * f).toFixed(2), 'HÉMATOLOGIE — Analyse du Sang');
-    set('pla', (270  - 170 * f).toFixed(0), 'HÉMATOLOGIE — Analyse du Sang');
-    set('gb',  (8.0  + 10  * f).toFixed(1), 'HÉMATOLOGIE — Analyse du Sang');
+    set('hb',  (15.0 - 9.0 * f).toFixed(1), 'HÉMATOLOGIE (NFS)');
+    set('gr',  (5.0  - 2.8 * f).toFixed(2), 'HÉMATOLOGIE (NFS)');
+    set('pla', (270  - 170 * f).toFixed(0), 'HÉMATOLOGIE (NFS)');
+    set('gb',  (8.0  + 10  * f).toFixed(1), 'HÉMATOLOGIE (NFS)');
 
     // Coagulation
-    set('tp',    (95  - 60 * f).toFixed(0),  'COAGULATION — Capacité à Stopper le Saignement');
-    set('inr',   (1.0 + 4.0 * f).toFixed(1), 'COAGULATION — Capacité à Stopper le Saignement');
-    set('tca',   (30  + 50 * f).toFixed(0),  'COAGULATION — Capacité à Stopper le Saignement');
-    set('fibri', (3.5 - 3.0 * f).toFixed(1), 'COAGULATION — Capacité à Stopper le Saignement');
+    set('tp',    (95  - 60 * f).toFixed(0),  'COAGULATION');
+    set('inr',   (1.0 + 4.0 * f).toFixed(1), 'COAGULATION');
+    set('tca',   (30  + 50 * f).toFixed(0),  'COAGULATION');
+    set('fibri', (3.5 - 3.0 * f).toFixed(1), 'COAGULATION');
 
     // Bilan transfusionnel
-    set('rai', 'Négatif', 'MARQUEURS CARDIAQUES — Cœur & Transfusion');
+    set('rai', 'Négatif', 'MARQUEURS CARDIAQUES');
 
     // Facteurs de gravité
-    set('ph',   (7.40 - 0.20 * f).toFixed(2), 'GAZ DU SANG — Respiration & Acidité');
-    set('lact', (1.0  + 11   * f).toFixed(1), 'GAZ DU SANG — Respiration & Acidité');
+    set('ph',   (7.40 - 0.20 * f).toFixed(2), 'GAZ DU SANG');
+    set('lact', (1.0  + 11   * f).toFixed(1), 'GAZ DU SANG');
 
     // Grossesse si femme
     if (sexe === 'F') {
         const enceinte = Math.random() > 0.85;
         const hcgVal = enceinte ? Math.floor(Math.random() * 3000 + 50) : Math.floor(Math.random() * 4);
-        set('hcg', hcgVal.toString(), 'HORMONES & FERTILITÉ');
+        set('hcg', hcgVal.toString(), 'ENDOCRINOLOGIE & FERTILITÉ');
     }
 
     fusionnerConclusion(
         `PLAIE PAR BALLE — ÉTAT ${grav >= 8 ? 'CRITIQUE' : grav >= 5 ? 'GRAVE' : 'MODÉRÉ'}.\n\n` +
-        `PERTE DE SANG :\n- Manque de sang ${grav >= 7 ? 'sévère' : 'important'} (Hémoglobine : ${(15.0-9.0*f).toFixed(1)} g/dL).\n` +
-        `- Plaquettes basses et coagulation perturbée → le sang ne coagule plus correctement.\n\n` +
-        `COMPATIBILITÉ POUR TRANSFUSION :\n- Test de compatibilité (RAI) : négatif → transfusion sanguine ${grav >= 7 ? 'urgente' : 'possible si besoin'}.\n\n` +
-        `ÉTAT GÉNÉRAL :\n- Lactates ${(1.0+11*f).toFixed(1)} mmol/L → ${grav >= 7 ? 'choc hémorragique : les organes manquent de sang' : 'début de manque d\'oxygène dans les tissus'}.\n` +
-        `- pH sanguin ${(7.40-0.20*f).toFixed(2)} → ${grav >= 7 ? 'sang trop acide, situation critique' : 'légère acidité compensée'}.\n\n` +
-        (sexe === 'F' ? `TEST DE GROSSESSE (HCG) : réalisé systématiquement chez les femmes en âge de procréer.\n\n` : '') +
-        `À FAIRE : Chirurgie d'urgence pour stopper le saignement. ${grav >= 7 ? 'Transfusion massive à initier immédiatement.' : 'Surveiller l\'évolution et préparer une transfusion.'}`
+        `HÉMORRAGIE :\n- Anémie aiguë (Hb ${(15.0-9.0*f).toFixed(1)} g/dL), thrombopénie.\n` +
+        `- Coagulopathie traumatique : TP ${(95-60*f).toFixed(0)}%, INR ${(1.0+4.0*f).toFixed(1)}.\n\n` +
+        `BILAN TRANSFUSIONNEL :\n- RAI négatif. Transfusion ${grav >= 7 ? 'urgente requise' : 'à envisager'}.\n\n` +
+        `GRAVITÉ :\n- Lactates ${(1.0+11*f).toFixed(1)} mmol/L → ${grav >= 7 ? 'choc hémorragique avéré' : 'hypoperfusion débutante'}.\n` +
+        `- pH ${(7.40-0.20*f).toFixed(2)} → ${grav >= 7 ? 'acidose sévère, triade létale' : 'acidose compensée'}.\n\n` +
+        (sexe === 'F' ? `BÊTA-HCG : Dosé systématiquement (patiente en âge de procréer).\n\n` : '') +
+        `CONDUITE : Damage control chirurgical. Protocole de transfusion massive si lactates > 4.`
     );
 };
 
@@ -274,53 +274,53 @@ window.lancerOverdose = function() {
     const sexe = document.getElementById('patientSex')?.value;
 
     // NFS
-    set('gb',  (7.0 + 5.0 * f).toFixed(1), 'HÉMATOLOGIE — Analyse du Sang');
-    set('hb',  (14  - 4.0 * f).toFixed(1), 'HÉMATOLOGIE — Analyse du Sang');
-    set('pla', (250 - 100 * f).toFixed(0), 'HÉMATOLOGIE — Analyse du Sang');
+    set('gb',  (7.0 + 5.0 * f).toFixed(1), 'HÉMATOLOGIE (NFS)');
+    set('hb',  (14  - 4.0 * f).toFixed(1), 'HÉMATOLOGIE (NFS)');
+    set('pla', (250 - 100 * f).toFixed(0), 'HÉMATOLOGIE (NFS)');
 
     // Ionogramme
-    set('na', (140 - 10 * f).toFixed(0), 'IONOGRAMME — Sels Minéraux du Sang');
-    set('k',  (4.0 + 1.5 * f).toFixed(1), 'IONOGRAMME — Sels Minéraux du Sang');
+    set('na', (140 - 10 * f).toFixed(0), 'IONOGRAMME');
+    set('k',  (4.0 + 1.5 * f).toFixed(1), 'IONOGRAMME');
 
     // Glycémie
-    set('gly', (0.90 - 0.30 * f).toFixed(2), 'BIOCHIMIE — Métabolisme & Organes');
+    set('gly', (0.90 - 0.30 * f).toFixed(2), 'BIOCHIMIE MÉTABOLIQUE');
 
     // Rénal
-    set('uree', (0.30 + 0.60 * f).toFixed(2), 'BIOCHIMIE — Métabolisme & Organes');
-    set('crea', (9.0  + 20   * f).toFixed(1), 'BIOCHIMIE — Métabolisme & Organes');
+    set('uree', (0.30 + 0.60 * f).toFixed(2), 'BIOCHIMIE MÉTABOLIQUE');
+    set('crea', (9.0  + 20   * f).toFixed(1), 'BIOCHIMIE MÉTABOLIQUE');
 
     // Hépatique
-    set('asat', (25 + Math.round(800 * f)).toString(), 'BILAN HÉPATIQUE — État du Foie');
-    set('alat', (30 + Math.round(600 * f)).toString(), 'BILAN HÉPATIQUE — État du Foie');
+    set('asat', (25 + Math.round(800 * f)).toString(), 'BILAN HÉPATIQUE');
+    set('alat', (30 + Math.round(600 * f)).toString(), 'BILAN HÉPATIQUE');
 
     // Toxique selon gravité
-    set('parace', (f > 0.5 ? (Math.round(50 + 200 * f)).toString() : '< 10'), 'TOXICOLOGIE SANGUINE — Substances dans le Sang');
-    set('alc',    (f * 3.5).toFixed(2), 'TOXICOLOGIE SANGUINE — Substances dans le Sang');
+    set('parace', (f > 0.5 ? (Math.round(50 + 200 * f)).toString() : '< 10'), 'TOXICOLOGIE SANGUINE');
+    set('alc',    (f * 3.5).toFixed(2), 'TOXICOLOGIE SANGUINE');
 
     // Urinaire
     const tox = ['thc','coc','amp','benzo','opio'];
     const nb = Math.ceil(f * 3);
-    shuffle(tox).slice(0, nb).forEach(t => set(t, 'POSITIF', 'TOXICOLOGIE URINAIRE — Dépistage de Drogues'));
+    shuffle(tox).slice(0, nb).forEach(t => set(t, 'POSITIF', 'TOXICOLOGIE URINAIRE'));
 
     // Gaz du sang
-    set('ph',   (7.40 - 0.25 * f).toFixed(2), 'GAZ DU SANG — Respiration & Acidité');
-    set('lact', (0.8  + 6    * f).toFixed(1), 'GAZ DU SANG — Respiration & Acidité');
+    set('ph',   (7.40 - 0.25 * f).toFixed(2), 'GAZ DU SANG');
+    set('lact', (0.8  + 6    * f).toFixed(1), 'GAZ DU SANG');
 
     // HCG femme
     if (sexe === 'F') {
         const hcgVal = Math.random() > 0.9 ? Math.floor(Math.random()*2000+50) : Math.floor(Math.random()*4);
-        set('hcg', hcgVal.toString(), 'HORMONES & FERTILITÉ');
+        set('hcg', hcgVal.toString(), 'ENDOCRINOLOGIE & FERTILITÉ');
     }
 
     fusionnerConclusion(
         `INTOXICATION AIGUË — ÉTAT ${grav >= 8 ? 'CRITIQUE' : grav >= 5 ? 'GRAVE' : 'MODÉRÉ'}.\n\n` +
-        `ANALYSE DU SANG :\n- ${grav >= 6 ? 'Manque de plaquettes et globules rouges (anémie)' : 'Légères perturbations de la formule sanguine'}.\n` +
-        `- Sels minéraux déséquilibrés. Taux de sucre bas.\n\n` +
-        `ÉTAT DES REINS :\n- Créatinine ${(9+20*f).toFixed(1)} mg/L → ${grav >= 7 ? 'les reins sont en train de lâcher (insuffisance rénale aiguë)' : 'les reins commencent à souffrir'}.\n\n` +
-        `ÉTAT DU FOIE :\n- Enzymes hépatiques ${grav >= 6 ? 'très' : 'modérément'} élevées → le foie est endommagé par les substances ingérées.\n\n` +
-        `SUBSTANCES DÉTECTÉES :\n- Dosage du Paracétamol et de l'alcool effectué dans le sang.\n- Dépistage urinaire : ${nb} substance(s) détectée(s).\n\n` +
-        (sexe === 'F' ? `TEST DE GROSSESSE (HCG) : réalisé systématiquement.\n\n` : '') +
-        `À FAIRE : Traitement selon les substances. Surveiller foie et reins en continu. ${grav >= 8 ? 'Réanimation nécessaire.' : ''}`
+        `BILAN GÉNÉRAL :\n- NFS : ${grav >= 6 ? 'Thrombopénie et anémie' : 'Légères perturbations hématologiques'}.\n` +
+        `- Ionogramme perturbé. Hypoglycémie relative.\n\n` +
+        `BILAN RÉNAL :\n- Créatinine ${(9+20*f).toFixed(1)} mg/L → ${grav >= 7 ? 'insuffisance rénale aiguë' : 'atteinte rénale débutante'}.\n\n` +
+        `BILAN HÉPATIQUE :\n- ASAT/ALAT ${grav >= 6 ? 'très' : 'modérément'} élevées → cytolyse hépatique.\n\n` +
+        `TOXICOLOGIE :\n- Paracétamol plasmatique, bilan alcoolémie effectués.\n- Screening urinaire positif (${nb} substance(s)).\n\n` +
+        (sexe === 'F' ? `BÊTA-HCG : Dosé systématiquement.\n\n` : '') +
+        `CONDUITE : Antidotes selon substances. Surveillance hépatique et rénale rapprochée. ${grav >= 8 ? 'USI requis.' : ''}`
     );
 };
 
@@ -331,33 +331,33 @@ window.lancerDiabete = function() {
     const f = (grav - 1) / 9;
 
     // Glycémie +++
-    set('gly',   (1.10 + 5.0 * f).toFixed(2), 'BIOCHIMIE — Métabolisme & Organes');
-    set('ceton', (0.3  + 8.0 * f).toFixed(1), 'BIOCHIMIE — Métabolisme & Organes');
+    set('gly',   (1.10 + 5.0 * f).toFixed(2), 'BIOCHIMIE MÉTABOLIQUE');
+    set('ceton', (0.3  + 8.0 * f).toFixed(1), 'BIOCHIMIE MÉTABOLIQUE');
 
     // Ionogramme
-    set('k',  (4.0 + 2.5 * f).toFixed(1), 'IONOGRAMME — Sels Minéraux du Sang');
-    set('na', (140 - 6   * f).toFixed(0), 'IONOGRAMME — Sels Minéraux du Sang');
+    set('k',  (4.0 + 2.5 * f).toFixed(1), 'IONOGRAMME');
+    set('na', (140 - 6   * f).toFixed(0), 'IONOGRAMME');
 
     // Rénal (déshydratation)
-    set('uree', (0.30 + 0.80 * f).toFixed(2), 'BIOCHIMIE — Métabolisme & Organes');
-    set('crea', (9.0  + 12   * f).toFixed(1), 'BIOCHIMIE — Métabolisme & Organes');
+    set('uree', (0.30 + 0.80 * f).toFixed(2), 'BIOCHIMIE MÉTABOLIQUE');
+    set('crea', (9.0  + 12   * f).toFixed(1), 'BIOCHIMIE MÉTABOLIQUE');
 
     // Gaz du sang si céto-acidose
     if (grav >= 5) {
-        set('ph',   (7.40 - 0.20 * f).toFixed(2), 'GAZ DU SANG — Respiration & Acidité');
-        set('pco2', (40   - 12   * f).toFixed(0), 'GAZ DU SANG — Respiration & Acidité');
-        set('lact', (1.0  + 3.0  * f).toFixed(1), 'GAZ DU SANG — Respiration & Acidité');
+        set('ph',   (7.40 - 0.20 * f).toFixed(2), 'GAZ DU SANG');
+        set('pco2', (40   - 12   * f).toFixed(0), 'GAZ DU SANG');
+        set('lact', (1.0  + 3.0  * f).toFixed(1), 'GAZ DU SANG');
     }
 
     const cetose = parseFloat((0.3 + 8.0 * f).toFixed(1)) > 0.6;
     fusionnerConclusion(
-        `CRISE DIABÉTIQUE — ${grav >= 8 ? 'COMA SUCRÉ (ACIDO-CÉTOSIQUE)' : grav >= 5 ? 'ACIDOCÉTOSE (SUCRE + CORPS CÉTONIQUES)' : 'HYPERGLYCÉMIE SIMPLE (TROP DE SUCRE)'}.\n\n` +
-        `TAUX DE SUCRE : ${(1.10+5.0*f).toFixed(2)} g/L → ${grav >= 7 ? 'dangereusement élevé' : 'trop élevé'}. Norme : 0.70 - 1.10 g/L.\n\n` +
-        `CORPS CÉTONIQUES : ${(0.3+8.0*f).toFixed(1)} mmol/L → ${cetose ? '⚠️ Présents ! Le corps brûle ses graisses faute de sucre utilisable (signe de diabète décompensé).' : 'Taux limite, à surveiller'}.\n\n` +
-        `POTASSIUM (K+) : ${(4.0+2.5*f).toFixed(1)} mmol/L → ${grav >= 7 ? '⚠️ TROP ÉLEVÉ — risque d\'arrêt cardiaque. Électrocardiogramme immédiat requis !' : 'légèrement élevé, à surveiller'}.\n\n` +
-        `REINS : ${grav >= 6 ? 'Les reins souffrent de la déshydratation liée au diabète.' : 'Légère hausse de la créatinine — reins légèrement sollicités.'}\n\n` +
-        (grav >= 5 ? `ACIDITÉ DU SANG : pH ${(7.40-0.20*f).toFixed(2)} → sang trop acide. Le corps essaie de compenser (respiration rapide).\n\n` : '') +
-        `À FAIRE : Injection d'insuline, hydratation en urgence, surveillance du potassium. ${grav >= 8 ? 'Hospitalisation en réanimation.' : ''}`
+        `DÉCOMPENSATION DIABÉTIQUE — ${grav >= 8 ? 'COMA ACIDO-CÉTOSIQUE' : grav >= 5 ? 'ACIDOCÉTOSE' : 'HYPERGLYCÉMIE SIMPLE'}.\n\n` +
+        `GLYCÉMIE : ${(1.10+5.0*f).toFixed(2)} g/L — hyperglycémie ${grav >= 7 ? 'maligne' : 'sévère'}.\n\n` +
+        `CÉTONÉMIE : ${(0.3+8.0*f).toFixed(1)} mmol/L → ${cetose ? 'cétose confirmée ⚠️' : 'limite normale'}.\n\n` +
+        `IONOGRAMME :\n- K+ ${(4.0+2.5*f).toFixed(1)} mmol/L → ${grav >= 7 ? 'HYPERKALIÉMIE URGENTE — ECG requis immédiatement' : 'surveillance ionique'}.\n\n` +
+        `RÉNAL :\n- ${grav >= 6 ? 'Insuffisance rénale fonctionnelle par déshydratation' : 'Légère élévation de la créatinine'}.\n\n` +
+        (grav >= 5 ? `GAZ DU SANG :\n- pH ${(7.40-0.20*f).toFixed(2)} — acidose métabolique. PCO2 basse (hyperventilation compensatrice).\n\n` : '') +
+        `CONDUITE : Insulinothérapie IV, réhydratation, correction ionique. ${grav >= 8 ? 'Réanimation immédiate.' : ''}`
     );
 };
 
@@ -368,35 +368,35 @@ window.lancerRenale = function() {
     const f = (grav - 1) / 9;
 
     // NFS — anémie si chronique
-    set('hb',  (14 - 6.0 * f).toFixed(1), 'HÉMATOLOGIE — Analyse du Sang');
-    set('gr',  (5.0 - 2.0 * f).toFixed(2), 'HÉMATOLOGIE — Analyse du Sang');
+    set('hb',  (14 - 6.0 * f).toFixed(1), 'HÉMATOLOGIE (NFS)');
+    set('gr',  (5.0 - 2.0 * f).toFixed(2), 'HÉMATOLOGIE (NFS)');
 
     // Urée / Créatinine +++
-    set('uree', (0.30 + 2.0 * f).toFixed(2), 'BIOCHIMIE — Métabolisme & Organes');
-    set('crea', (9.0  + 80  * f).toFixed(1), 'BIOCHIMIE — Métabolisme & Organes');
+    set('uree', (0.30 + 2.0 * f).toFixed(2), 'BIOCHIMIE MÉTABOLIQUE');
+    set('crea', (9.0  + 80  * f).toFixed(1), 'BIOCHIMIE MÉTABOLIQUE');
 
     // Ionogramme
-    set('k',  (4.0 + 3.0 * f).toFixed(1), 'IONOGRAMME — Sels Minéraux du Sang');
-    set('na', (140 - 10  * f).toFixed(0), 'IONOGRAMME — Sels Minéraux du Sang');
+    set('k',  (4.0 + 3.0 * f).toFixed(1), 'IONOGRAMME');
+    set('na', (140 - 10  * f).toFixed(0), 'IONOGRAMME');
 
     // Gaz du sang — acidose métabolique
-    set('ph',   (7.40 - 0.15 * f).toFixed(2), 'GAZ DU SANG — Respiration & Acidité');
-    set('pco2', (40   - 8   * f).toFixed(0), 'GAZ DU SANG — Respiration & Acidité');
+    set('ph',   (7.40 - 0.15 * f).toFixed(2), 'GAZ DU SANG');
+    set('pco2', (40   - 8   * f).toFixed(0), 'GAZ DU SANG');
 
     // Examen urinaire
-    set('prot_u', (0.05 + 3.0 * f).toFixed(2), 'BILAN RÉNAL — Analyse des Urines');
-    set('hem_u',  grav >= 5 ? (Math.round(5 + 50 * f)).toString() : '< 5', 'BILAN RÉNAL — Analyse des Urines');
-    set('leu_u',  grav >= 6 ? (Math.round(10 + 80 * f)).toString() : '< 10', 'BILAN RÉNAL — Analyse des Urines');
+    set('prot_u', (0.05 + 3.0 * f).toFixed(2), 'BILAN RÉNAL');
+    set('hem_u',  grav >= 5 ? (Math.round(5 + 50 * f)).toString() : '< 5', 'BILAN RÉNAL');
+    set('leu_u',  grav >= 6 ? (Math.round(10 + 80 * f)).toString() : '< 10', 'BILAN RÉNAL');
 
     const chronic = grav >= 6;
     fusionnerConclusion(
-        `INSUFFISANCE RÉNALE ${chronic ? 'CHRONIQUE (LES REINS LÂCHENT PROGRESSIVEMENT)' : 'AIGUË (LES REINS BLOQUENT SOUDAINEMENT)'} — STADE ${grav >= 8 ? 'TERMINAL' : grav >= 5 ? 'SÉVÈRE' : 'MODÉRÉ'}.\n\n` +
-        `GLOBULES ROUGES :\n- Hémoglobine ${(14-6*f).toFixed(1)} g/dL → ${grav >= 6 ? 'les reins ne produisent plus assez d\'érythropoïétine (hormone = fabrication du sang)' : 'légère anémie'}.\n\n` +
-        `ÉTAT DES REINS :\n- Urée ${(0.30+2.0*f).toFixed(2)} g/L + Créatinine ${(9+80*f).toFixed(1)} mg/L → ${grav >= 7 ? 'les reins ne filtrent presque plus. Dialyse à envisager.' : 'filtration rénale fortement réduite'}.\n\n` +
-        `POTASSIUM (K+) : ${(4.0+3.0*f).toFixed(1)} mmol/L → ${grav >= 7 ? '⚠️ TROP ÉLEVÉ — risque d\'arrêt cardiaque. Traitement immédiat !' : 'à surveiller de près'}.\n\n` +
-        `ACIDITÉ DU SANG : pH ${(7.40-0.15*f).toFixed(2)} → le sang s'acidifie car les reins n'éliminent plus les déchets acides.\n\n` +
-        `ANALYSE DES URINES :\n- Présence ${grav >= 5 ? 'de sang et de globules blancs' : 'de protéines'} dans les urines — signe de lésion rénale.\n\n` +
-        `À FAIRE : Protéger les reins, corriger le potassium. ${grav >= 8 ? 'Discussion urgente pour mise sous dialyse.' : ''}`
+        `INSUFFISANCE RÉNALE ${chronic ? 'CHRONIQUE DÉCOMPENSÉE' : 'AIGUË'} — STADE ${grav >= 8 ? 'TERMINAL' : grav >= 5 ? 'SÉVÈRE' : 'MODÉRÉ'}.\n\n` +
+        `BILAN GÉNÉRAL :\n- Anémie ${grav >= 6 ? 'sévère (anémie rénale)' : 'modérée'} : Hb ${(14-6*f).toFixed(1)} g/dL.\n\n` +
+        `FONCTION RÉNALE :\n- Urée ${(0.30+2.0*f).toFixed(2)} g/L — Créatinine ${(9+80*f).toFixed(1)} mg/L → ${grav >= 7 ? 'DFG effondré, dialyse à discuter' : 'altération sévère'}.\n\n` +
+        `IONOGRAMME :\n- K+ ${(4.0+3.0*f).toFixed(1)} mmol/L → ${grav >= 7 ? '⚠️ HYPERKALIÉMIE URGENTE — ECG, résines échangeuses' : 'à surveiller'}.\n\n` +
+        `GAZ DU SANG :\n- pH ${(7.40-0.15*f).toFixed(2)} — acidose métabolique par rétention d'acides.\n\n` +
+        `EXAMEN URINAIRE :\n- Protéinurie ${(0.05+3.0*f).toFixed(2)} g/24h, ${grav >= 5 ? 'hématurie et leucocyturie présentes' : 'sédiment urinaire actif'}.\n\n` +
+        `CONDUITE : Néphroprotection, correction ionique. ${grav >= 8 ? 'Discussion dialyse en urgence.' : ''}`
     );
 };
 
@@ -408,7 +408,7 @@ window.lancerTestGrossesse = function() {
 
     const enceinte = Math.random() > 0.3;
     const hcg = enceinte ? Math.floor(Math.random()*5000+100) : Math.floor(Math.random()*4);
-    set('hcg', hcg.toString(), 'HORMONES & FERTILITÉ');
+    set('hcg', hcg.toString(), 'ENDOCRINOLOGIE & FERTILITÉ');
 
     let sa = 4;
     if (hcg > 500) sa = 5;
@@ -416,8 +416,8 @@ window.lancerTestGrossesse = function() {
     if (hcg > 10000) sa = 8;
 
     fusionnerConclusion(enceinte
-        ? `TEST DE GROSSESSE : POSITIF ✓\n\nHormone de grossesse (Bêta-HCG) : ${hcg} mUI/mL → grossesse confirmée biologiquement.\nÂge de grossesse estimé : environ ${sa} semaines.\n\nÀ FAIRE : Échographie pour confirmer la localisation et la date exacte.`
-        : `TEST DE GROSSESSE : NÉGATIF\n\nHormone de grossesse (Bêta-HCG) : indétectable (< 5 mUI/mL).\n\nAucune grossesse détectée à ce jour.`
+        ? `TEST DE GROSSESSE : POSITIF ✓\n\nBêta-HCG : ${hcg} mUI/mL → Grossesse biochimique confirmée.\nTerme estimé : ${sa} SA.\n\nRECOMMANDATION : Échographie de datation requise.`
+        : `TEST DE GROSSESSE : NÉGATIF\n\nBêta-HCG : < 5 mUI/mL (indétectable).\n\nPas de grossesse détectée à ce jour.`
     );
 };
 
@@ -430,12 +430,12 @@ window.lancerFertilite = function() {
     const fertile = Math.random() > 0.3;
     const amh = fertile ? (Math.random()*2+2).toFixed(2) : (Math.random()*0.8+0.1).toFixed(2);
     const fsh = fertile ? (Math.random()*4+4).toFixed(1)  : (Math.random()*5+10).toFixed(1);
-    set('amh', amh, 'HORMONES & FERTILITÉ');
-    set('fsh', fsh, 'HORMONES & FERTILITÉ');
+    set('amh', amh, 'ENDOCRINOLOGIE & FERTILITÉ');
+    set('fsh', fsh, 'ENDOCRINOLOGIE & FERTILITÉ');
 
     fusionnerConclusion(fertile
-        ? `BILAN FERTILITÉ : BONNE RÉSERVE OVARIENNE ✓\n\nAMH (stock d'ovules) : ${amh} ng/mL ✓\nFSH (hormone de stimulation) : ${fsh} UI/L ✓\n\nLes ovaires fonctionnent bien. La fertilité naturelle est bonne.`
-        : `BILAN FERTILITÉ : RÉSERVE OVARIENNE FAIBLE ⚠️\n\nAMH (stock d'ovules) bas : ${amh} ng/mL\nFSH (hormone de stimulation) élevée : ${fsh} UI/L — signe que les ovaires peinent.\n\nLe stock d'ovules est réduit. Consultation chez un spécialiste recommandée.`
+        ? `BILAN FERTILITÉ : RÉSERVE OVARIENNE SATISFAISANTE.\n\nAMH : ${amh} ng/mL ✓\nFSH : ${fsh} UI/L ✓\n\nPotentiel de fertilité optimal.`
+        : `BILAN FERTILITÉ : RÉSERVE DIMINUÉE.\n\nAMH basse : ${amh} ng/mL\nFSH élevée : ${fsh} UI/L\n\nLe stock d'ovules est réduit. Consultation spécialisée recommandée.`
     );
 };
 
@@ -448,16 +448,139 @@ window.lancerSterilite = function() {
     const rand = Math.random();
     let texte;
     if (rand < 0.2) {
-        texte = `ANALYSE DU SPERME (SPERMOGRAMME) : STÉRILITÉ CONFIRMÉE.\n\nConcentration : 0 M/mL — Aucun spermatozoïde trouvé dans l'éjaculat (azoospermie).\nMobilité : 0%.\n\nRÉSULTAT : Le patient est stérile. Des examens complémentaires sont nécessaires pour en trouver la cause (production nulle ou blocage).`;
+        texte = `SPERMOGRAMME : AZOOSPERMIE.\n\nConcentration : 0 M/mL — Absence totale de spermatozoïdes.\nMobilité : 0%.\n\nVERDICT : Stérilité d'origine sécrétoire ou obstructive. Bilan hormonal complémentaire requis.`;
     } else if (rand < 0.5) {
         const conc = Math.floor(Math.random()*10+2);
-        texte = `ANALYSE DU SPERME (SPERMOGRAMME) : FERTILITÉ RÉDUITE.\n\nConcentration : ${conc} M/mL (faible — norme > 15 M/mL).\nMobilité : réduite.\n\nLe patient n'est pas stérile mais sa fertilité est diminuée. Une conception naturelle reste possible mais difficile.`;
+        texte = `SPERMOGRAMME : HYPOFERTILITÉ MASCULINE.\n\nConcentration : ${conc} M/mL (Faible — norme > 15).\nMobilité : Réduite.\n\nOligospermie confirmée. Conception spontanée difficile.`;
     } else {
         const conc = Math.floor(Math.random()*60+20);
-        texte = `ANALYSE DU SPERME (SPERMOGRAMME) : RÉSULTATS NORMAUX ✓\n\nConcentration : ${conc} M/mL ✓\nMobilité : excellente.\n\nAucun problème de fertilité détecté. Les paramètres sont dans les normes.`;
+        texte = `SPERMOGRAMME : PARAMÈTRES NORMAUX.\n\nConcentration : ${conc} M/mL ✓\nMobilité : Excellente.\n\nAucune stérilité détectée.`;
     }
     fusionnerConclusion(texte);
 };
+
+window.lancerGroupageSanguin = function() {
+        // ── Remplir le document-carte ──
+    const nom    = document.getElementById('d-nom')?.innerText || '—';
+    const ddn    = document.getElementById('d-ddn')?.innerText || '—';
+    const medecin = document.getElementById('d-sig')?.innerText || '—';
+    const dateAujourdhui = new Date().toLocaleDateString('fr-FR');
+
+    const receveurTable = {
+        "A+":  ["A+","A-","O+","O-"],
+        "A-":  ["A-","O-"],
+        "B+":  ["B+","B-","O+","O-"],
+        "B-":  ["B-","O-"],
+        "AB+": ["A+","A-","B+","B-","AB+","AB-","O+","O-"],
+        "AB-": ["A-","B-","AB-","O-"],
+        "O+":  ["O+","O-"],
+        "O-":  ["O-"]
+    };
+    const donneurTable = {
+        "A+":  ["A+","AB+"],
+        "A-":  ["A+","A-","AB+","AB-"],
+        "B+":  ["B+","AB+"],
+        "B-":  ["B+","B-","AB+","AB-"],
+        "AB+": ["AB+"],
+        "AB-": ["AB+","AB-"],
+        "O+":  ["A+","B+","AB+","O+"],
+        "O-":  ["A+","A-","B+","B-","AB+","AB-","O+","O-"]
+    };
+
+    const labelSpecial = groupe === 'O-' ? '⭐ Donneur Universel'
+                       : groupe === 'AB+' ? '⭐ Receveur Universel' : '';
+
+    const _set = (id, val) => { const e = document.getElementById(id); if(e) e.innerText = val; };
+    _set('carte-groupe-affiche',      groupe);
+    _set('carte-compatibilite-label', labelSpecial);
+    _set('carte-nom',                 nom);
+    _set('carte-ddn',                 ddn);
+    _set('carte-rai',                 raiTexte);
+    _set('carte-date',                dateAujourdhui);
+    _set('carte-receveur',            (receveurTable[groupe] || []).join(', '));
+    _set('carte-donneur',             (donneurTable[groupe] || []).join(', '));
+    _set('carte-medecin',             `Dr. ${medecin}`);
+
+    // Couleur groupe selon Rh
+    const gc = document.getElementById('carte-groupe-affiche');
+    if (gc) gc.style.color = groupe.includes('-') ? '#1e3a5f' : '#dc2626';
+
+    // ── Ouvrir popup après génération ──
+    if (typeof genererCarteGroupe === 'function') {
+        genererCarteGroupe(null);
+    }
+
+    window.resetSeulementBio(false);
+
+    const sel = document.getElementById('patientBlood');
+    const groupes = ["A+","A-","B+","B-","AB+","AB-","O+","O-"];
+    let groupe = sel?.value || groupes[Math.floor(Math.random() * groupes.length)];
+    if (!groupe || groupe === "") groupe = groupes[Math.floor(Math.random() * groupes.length)];
+
+    const abo = groupe.replace('+','').replace('-','');
+    const rhPos = groupe.includes('+');
+
+    // Mise à jour du sélecteur et du document
+    if (sel) sel.value = groupe;
+    if (window.up) window.up('d-groupe', groupe);
+
+    // ── Compatibilité transfusionnelle ──
+    const receveur = {
+        "A+":  ["A+","A-","O+","O-"],
+        "A-":  ["A-","O-"],
+        "B+":  ["B+","B-","O+","O-"],
+        "B-":  ["B-","O-"],
+        "AB+": ["A+","A-","B+","B-","AB+","AB-","O+","O-"],
+        "AB-": ["A-","B-","AB-","O-"],
+        "O+":  ["O+","O-"],
+        "O-":  ["O-"]
+    };
+    const donneur = {
+        "A+":  ["A+","AB+"],
+        "A-":  ["A+","A-","AB+","AB-"],
+        "B+":  ["B+","AB+"],
+        "B-":  ["B+","B-","AB+","AB-"],
+        "AB+": ["AB+"],
+        "AB-": ["AB+","AB-"],
+        "O+":  ["A+","B+","AB+","O+"],
+        "O-":  ["A+","A-","B+","B-","AB+","AB-","O+","O-"]
+    };
+
+    // ── RAI aléatoire (5% positif) ──
+    const raiPositif = Math.random() < 0.05;
+    const raiTexte = raiPositif
+        ? "POSITIF ⚠️ — Anticorps irréguliers détectés"
+        : "NÉGATIF — Aucun anticorps irrégulier détecté";
+
+    // ── Rhésus ──
+    const rhesusTexte = rhPos
+        ? "POSITIF (+) — Antigène D présent sur les globules rouges"
+        : "NÉGATIF (−) — Antigène D absent. Risque d'allo-immunisation si exposition à du sang RH+";
+
+    // ── Conclusion ──
+    const concl =
+`GROUPAGE SANGUIN — RÉSULTAT VALIDÉ
+
+▶ GROUPE SANGUIN : ${groupe}
+
+RHÉSUS : ${rhesusTexte}
+
+RAI (Recherche d'Agglutinines Irrégulières) : ${raiTexte}
+
+COMPATIBILITÉ TRANSFUSIONNELLE :
+  → Peut recevoir : ${receveur[groupe].join(', ')}
+  → Peut donner à : ${donneur[groupe].join(', ')}
+
+CONCLUSION : ${raiPositif
+    ? "Anticorps irréguliers détectés — Épreuve de compatibilité obligatoire avant toute transfusion. Contacter le médecin référent."
+    : "Aucune contre-indication transfusionnelle détectée. Patient transfusable selon les protocoles standards."}
+
+Carte de groupe sanguin à remettre au patient.`;
+
+    fusionnerConclusion(concl);
+};
+
+
 
 // ==========================================
 // 4. MODULE IST — POPUP COMPLÈTE
@@ -492,7 +615,7 @@ window.ouvrirModuleIST = function() {
 
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
                     <div>
-                        <label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;">Nb de partenaires différents (3 dernières semaines)</label>
+                        <label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;">Partenaires (3 dernières semaines)</label>
                         <select id="ist-partenaires" style="width:100%;background:#0a1324;border:1px solid #334155;color:white;padding:8px;border-radius:4px;font-size:12px;">
                             <option value="0">0 — Aucun</option>
                             <option value="1">1 partenaire</option>
@@ -502,11 +625,11 @@ window.ouvrirModuleIST = function() {
                         </select>
                     </div>
                     <div>
-                        <label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;">Dernier rapport sans préservatif</label>
+                        <label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;">Dernier rapport non protégé</label>
                         <select id="ist-protection" style="width:100%;background:#0a1324;border:1px solid #334155;color:white;padding:8px;border-radius:4px;font-size:12px;">
-                            <option value="jamais">Toujours protégé(e)</option>
+                            <option value="jamais">Jamais (protégé)</option>
                             <option value="recent">Il y a moins de 72h</option>
-                            <option value="semaine">Il y a environ 1 semaine</option>
+                            <option value="semaine">Il y a 1 semaine</option>
                             <option value="mois">Il y a plus d'1 mois</option>
                         </select>
                     </div>
@@ -514,17 +637,17 @@ window.ouvrirModuleIST = function() {
 
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
                     <div>
-                        <label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;">Symptômes remarqués</label>
+                        <label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;">Symptômes signalés</label>
                         <select id="ist-symptomes" style="width:100%;background:#0a1324;border:1px solid #334155;color:white;padding:8px;border-radius:4px;font-size:12px;">
                             <option value="aucun">Aucun symptôme</option>
-                            <option value="brulures">Brûlures ou douleurs en urinant</option>
+                            <option value="brulures">Brûlures/douleurs</option>
                             <option value="ecoulement">Écoulement inhabituel</option>
-                            <option value="lesions">Plaies ou boutons sur les parties génitales</option>
-                            <option value="multiples">Plusieurs symptômes à la fois</option>
+                            <option value="lesions">Lésions/ulcérations</option>
+                            <option value="multiples">Symptômes multiples</option>
                         </select>
                     </div>
                     <div>
-                        <label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;">Déjà eu une IST ?</label>
+                        <label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;">Antécédent d'IST</label>
                         <select id="ist-antecedent" style="width:100%;background:#0a1324;border:1px solid #334155;color:white;padding:8px;border-radius:4px;font-size:12px;">
                             <option value="non">Non</option>
                             <option value="oui">Oui</option>
@@ -534,11 +657,11 @@ window.ouvrirModuleIST = function() {
                 </div>
 
                 <div>
-                    <label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;">Consommation de drogues injectables (seringues) ?</label>
+                    <label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:4px;">Usage de drogues IV ou substances</label>
                     <select id="ist-drogues" style="width:100%;background:#0a1324;border:1px solid #334155;color:white;padding:8px;border-radius:4px;font-size:12px;">
                         <option value="non">Non</option>
-                        <option value="oui">Oui — utilise des seringues (parfois partagées)</option>
-                        <option value="substances">Oui — drogues mais sans seringues</option>
+                        <option value="oui">Oui — usage de seringues partagées</option>
+                        <option value="substances">Oui — substances sans seringue</option>
                     </select>
                 </div>
             </div>
@@ -639,10 +762,10 @@ window.genererResultatsIST = function() {
     // Conclusion
     const concDiv = document.getElementById('ist-conclusion');
     if (nbPositifs === 0) {
-        _istConclusion = `Aucune infection sexuellement transmissible détectée ce jour.\n\nCONSEIL : Un dépistage régulier est recommandé tous les 3 à 6 mois selon le nombre de partenaires.${protection === 'recent' ? '\n\n⚠️ Rapport non protégé récent (moins de 72h) — Parler au médecin de la possibilité d\'un traitement préventif (PEP).' : ''}`;
+        _istConclusion = `Bilan IST complet NÉGATIF. Aucune infection sexuellement transmissible détectée ce jour.\n\nRECOMMANDATION : Dépistage régulier recommandé tous les 3 à 6 mois selon l'activité sexuelle.${protection === 'recent' ? '\n\nNB : Rapport non protégé récent (< 72h) — Discussion PrEP/PEP possible.' : ''}`;
         concDiv.style.cssText = 'margin-top:12px;padding:12px;border-radius:6px;font-size:12px;line-height:1.6;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#86efac;';
     } else {
-        _istConclusion = `⚠️ ${nbPositifs} infection(s) sexuellement transmissible(s) détectée(s).\n\nUne prise en charge médicale immédiate est nécessaire.\nLe ou les partenaires doivent également être dépistés et traités.\nCertaines infections (VIH, syphilis) sont à déclarer obligatoirement aux autorités sanitaires.`;
+        _istConclusion = `BILAN IST : ${nbPositifs} infection(s) détectée(s).\n\nPrise en charge immédiate requise. Traitement adapté à initier selon les résultats.\nDépistage et traitement du/des partenaire(s) nécessaire.\nDeclaration obligatoire pour VIH et syphilis si positifs.`;
         concDiv.style.cssText = 'margin-top:12px;padding:12px;border-radius:6px;font-size:12px;line-height:1.6;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5;';
     }
     concDiv.textContent = _istConclusion;
