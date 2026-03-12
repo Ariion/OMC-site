@@ -461,6 +461,22 @@ window.lancerSterilite = function() {
 
 window.lancerGroupageSanguin = function() {
         // ── Remplir le document-carte ──
+    const sel = document.getElementById('patientBlood');
+    const groupes = ["A+","A-","B+","B-","AB+","AB-","O+","O-"];
+    let groupe = sel?.value || '';
+    if (!groupe || groupe === "") groupe = groupes[Math.floor(Math.random() * groupes.length)];
+    const abo = groupe.replace('+','').replace('-','');  // ← ajouter
+    const rhPos = groupe.includes('+');                  // ← ajouter
+    if (sel) sel.value = groupe;
+
+    if (window.up) window.up('d-groupe', groupe);
+
+    // ── RAI aléatoire (5% positif) ──
+    const raiPositif = Math.random() < 0.05;
+    const raiTexte = raiPositif
+        ? "POSITIF ⚠️ — Anticorps irréguliers détectés"
+        : "NÉGATIF — Aucun anticorps irrégulier détecté";
+
     const nom    = document.getElementById('d-nom')?.innerText || '—';
     const ddn    = document.getElementById('d-ddn')?.innerText || '—';
     const medecin = document.getElementById('d-sig')?.innerText || '—';
@@ -512,17 +528,7 @@ window.lancerGroupageSanguin = function() {
 
     window.resetSeulementBio(false);
 
-    const sel = document.getElementById('patientBlood');
-    const groupes = ["A+","A-","B+","B-","AB+","AB-","O+","O-"];
-    let groupe = sel?.value || groupes[Math.floor(Math.random() * groupes.length)];
-    if (!groupe || groupe === "") groupe = groupes[Math.floor(Math.random() * groupes.length)];
-
-    const abo = groupe.replace('+','').replace('-','');
-    const rhPos = groupe.includes('+');
-
-    // Mise à jour du sélecteur et du document
-    if (sel) sel.value = groupe;
-    if (window.up) window.up('d-groupe', groupe);
+    
 
     // ── Compatibilité transfusionnelle ──
     const receveur = {
@@ -546,12 +552,7 @@ window.lancerGroupageSanguin = function() {
         "O-":  ["A+","A-","B+","B-","AB+","AB-","O+","O-"]
     };
 
-    // ── RAI aléatoire (5% positif) ──
-    const raiPositif = Math.random() < 0.05;
-    const raiTexte = raiPositif
-        ? "POSITIF ⚠️ — Anticorps irréguliers détectés"
-        : "NÉGATIF — Aucun anticorps irrégulier détecté";
-
+    
     // ── Rhésus ──
     const rhesusTexte = rhPos
         ? "POSITIF (+) — Antigène D présent sur les globules rouges"
