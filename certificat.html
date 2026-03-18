@@ -26,6 +26,80 @@
         .autocomplete-item strong { display:block; font-size:13px; }
         .autocomplete-item small  { color:#94a3b8; font-size:11px; }
         .autocomplete-item:hover small { color:#e0f2fe; }
+
+        /* ── Arrêt de travail ── */
+        .arret-dates-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .arret-dates-row .form-group { margin-bottom: 0; }
+        .arret-jours-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .arret-jours-row input {
+            width: 70px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .arret-jours-row span {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+        .sep-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #475569;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-top: 1px solid #1e293b;
+            padding-top: 9px;
+            margin-bottom: 10px;
+        }
+
+        /* ── Document : blocs arrêt / rdv ── */
+        .doc-letter-block {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px 25px;
+            background: #fff;
+            grid-column: span 2;
+            line-height: 1.9;
+            font-size: 14px;
+            color: #1e293b;
+            white-space: pre-wrap;
+        }
+
+        .doc-arret-badge {
+            display: inline-block;
+            background: #fee2e2;
+            color: #b91c1c;
+            font-weight: 800;
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
+
+        .doc-rdv-badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-weight: 800;
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body class="labo-body">
@@ -47,6 +121,8 @@
                     <option value="PPA Civil">Capacité examen PPA — Civil</option>
                     <option value="PPA Professionnel">Capacité examen PPA — Professionnel</option>
                     <option value="Divers">Divers / Texte Libre</option>
+                    <option value="Arrêt de travail"> Arrêt de travail</option>
+                    <option value="Rendez-vous médical"> Rendez-vous médical</option>
                 </select>
             </div>
 
@@ -75,11 +151,13 @@
                 <input type="date" oninput="upDate('d-date', this.value)">
             </div>
 
+            <!-- ── Entreprise (Aptitude pro) ── -->
             <div class="form-group" id="side-entreprise-block">
                 <label>Entreprise</label>
                 <input type="text" id="f-entreprise" oninput="updateCertif()">
             </div>
 
+            <!-- ── Conclusion (certificats classiques) ── -->
             <div class="form-group" id="side-concl-block">
                 <label>Conclusion médicale</label>
                 <div class="radio-nav-classic">
@@ -110,12 +188,66 @@
                 </select>
             </div>
 
+            <!-- ── Divers ── -->
             <div class="form-group" id="side-divers-block" style="display:none;">
                 <label>Texte Libre</label>
                 <textarea id="f-divers" rows="6" oninput="updateCertif()" style="width:100%;background:#121c2f;border:1px solid #1e293b;color:white;padding:10px;"></textarea>
             </div>
 
-            <!-- ══ OBSERVATIONS COMPLÉMENTAIRES ══ -->
+            <!-- ══════════════════════════════════
+                 ARRÊT DE TRAVAIL
+            ══════════════════════════════════ -->
+            <div id="side-arret-block" style="display:none;">
+                <div class="sep-label">🏥 Arrêt de travail</div>
+
+                <div class="arret-dates-row">
+                    <div class="form-group">
+                        <label>Du (début)</label>
+                        <input type="date" id="f-arret-debut" oninput="calcDureeArret()">
+                    </div>
+                    <div class="form-group">
+                        <label>Au (fin)</label>
+                        <input type="date" id="f-arret-fin" oninput="calcDureeArret()">
+                    </div>
+                </div>
+
+                <div class="arret-jours-row">
+                    <label style="color:#94a3b8;font-size:10px;font-weight:700;text-transform:uppercase;white-space:nowrap;">Ou nombre de jours :</label>
+                    <input type="number" id="f-arret-jours" min="1" placeholder="0" oninput="calcFinArret()"
+                        style="background:#121c2f;border:1px solid #1e293b;color:white;border-radius:4px;padding:6px 8px;">
+                    <span>jour(s)</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Motif médical <span style="color:#475569;font-weight:400;">(optionnel)</span></label>
+                    <input type="text" id="f-arret-motif" placeholder="Ex : Fracture, post-op..." oninput="updateCertif()">
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════
+                 RENDEZ-VOUS MÉDICAL
+            ══════════════════════════════════ -->
+            <div id="side-rdv-block" style="display:none;">
+                <div class="sep-label">📅 Rendez-vous médical</div>
+
+                <div class="arret-dates-row">
+                    <div class="form-group">
+                        <label>Date du RDV</label>
+                        <input type="date" id="f-rdv-date" oninput="updateCertif()">
+                    </div>
+                    <div class="form-group">
+                        <label>Heure</label>
+                        <input type="time" id="f-rdv-heure" oninput="updateCertif()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Motif de consultation</label>
+                    <input type="text" id="f-rdv-motif" placeholder="Ex : Consultation de suivi..." oninput="updateCertif()">
+                </div>
+            </div>
+
+            <!-- ── Observations complémentaires ── -->
             <div class="form-group" style="border-top:1px solid #334155;padding-top:14px;margin-top:5px;">
                 <label>Observations complémentaires</label>
                 <textarea id="f-observations" rows="4" oninput="updateCertif()"
@@ -162,7 +294,19 @@
                         <div id="d-divers-text" class="cert-val" style="white-space:pre-wrap;font-size:14px;">...</div>
                     </div>
 
-                    <!-- ══ OBSERVATIONS COMPLÉMENTAIRES dans le document ══ -->
+                    <!-- ── ARRÊT DE TRAVAIL dans le document ── -->
+                    <div id="doc-arret-block" style="grid-column:span 2;display:none;">
+                        <div class="doc-arret-badge">⛔ Arrêt de travail</div>
+                        <div id="d-arret-text" class="doc-letter-block">...</div>
+                    </div>
+
+                    <!-- ── RENDEZ-VOUS MÉDICAL dans le document ── -->
+                    <div id="doc-rdv-block" style="grid-column:span 2;display:none;">
+                        <div class="doc-rdv-badge">📅 Attestation de rendez-vous</div>
+                        <div id="d-rdv-text" class="doc-letter-block">...</div>
+                    </div>
+
+                    <!-- ── OBSERVATIONS COMPLÉMENTAIRES dans le document ── -->
                     <div class="cert-box" id="doc-observations-block"
                          style="grid-column:span 2;display:none;">
                         <label>Observations complémentaires</label>
@@ -275,8 +419,35 @@
         nomPatientId: 'patientName',
         typeDoc:      'Certificat Médical',
         pageSource:   'certificat.html',
-        getThreadName: () => `📝 ${document.getElementById('d-titre-doc')?.innerText||'Certificat'} - ${document.getElementById('d-nom')?.innerText||'Inconnu'}`,
-        getContent:    () => `📜 **Nouveau Rapport Médical**\n👤 Patient : ${document.getElementById('d-nom')?.innerText||'Inconnu'}\n📋 Type : ${document.getElementById('d-titre-doc')?.innerText||'Certificat'}`
+        getThreadName: () => {
+            const type = document.getElementById('f-type')?.value || 'Certificat';
+            const nom  = document.getElementById('d-nom')?.innerText || 'Inconnu';
+            const icons = {
+                'Arrêt de travail':    '🏥',
+                'Rendez-vous médical': '📅',
+            };
+            const icon = icons[type] || '📝';
+            return `${icon} ${document.getElementById('d-titre-doc')?.innerText || type} — ${nom}`;
+        },
+        getContent: () => {
+            const type = document.getElementById('f-type')?.value || 'Certificat';
+            const nom  = document.getElementById('d-nom')?.innerText || 'Inconnu';
+            if (type === 'Arrêt de travail') {
+                const debut = document.getElementById('f-arret-debut')?.value;
+                const fin   = document.getElementById('f-arret-fin')?.value;
+                const jours = document.getElementById('f-arret-jours')?.value;
+                const fmtFR = v => v ? new Date(v).toLocaleDateString('fr-FR') : '...';
+                return `🏥 **Arrêt de Travail**\n👤 Patient : ${nom}\n📅 Du ${fmtFR(debut)} au ${fmtFR(fin)}${jours ? ` (${jours} jour${jours>1?'s':''})` : ''}`;
+            }
+            if (type === 'Rendez-vous médical') {
+                const date  = document.getElementById('f-rdv-date')?.value;
+                const heure = document.getElementById('f-rdv-heure')?.value || '';
+                const motif = document.getElementById('f-rdv-motif')?.value || '';
+                const fmtFR = v => v ? new Date(v).toLocaleDateString('fr-FR') : '...';
+                return `📅 **Attestation de Rendez-vous Médical**\n👤 Patient : ${nom}\n🗓️ Le ${fmtFR(date)}${heure ? ' à ' + heure : ''}${motif ? '\n🩺 Motif : ' + motif : ''}`;
+            }
+            return `📜 **Nouveau Rapport Médical**\n👤 Patient : ${nom}\n📋 Type : ${document.getElementById('d-titre-doc')?.innerText || type}`;
+        }
     };
     </script>
 

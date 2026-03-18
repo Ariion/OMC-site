@@ -1,6 +1,6 @@
 // ══════════════════════════════════════════════════════════════
 //  certificat.js — OMC Medical Center
-//  + bloc observations complémentaires (texte libre)
+//  + arrêt de travail + rendez-vous médical
 // ══════════════════════════════════════════════════════════════
 
 function toggleMotifs() {
@@ -12,24 +12,71 @@ function toggleMotifs() {
     updateCertif();
 }
 
+/* ── Calcul durée arrêt de travail ── */
+function calcDureeArret() {
+    const debut = document.getElementById('f-arret-debut')?.value;
+    const fin   = document.getElementById('f-arret-fin')?.value;
+    if (!debut || !fin) return;
+    const d1 = new Date(debut);
+    const d2 = new Date(fin);
+    const diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+    const el = document.getElementById('f-arret-jours');
+    if (el && diff >= 0) el.value = diff + 1; // inclus les deux bornes
+    updateCertif();
+}
+
+function calcFinArret() {
+    const debut = document.getElementById('f-arret-debut')?.value;
+    const jours = parseInt(document.getElementById('f-arret-jours')?.value);
+    if (!debut || !jours || jours < 1) return;
+    const d1  = new Date(debut);
+    d1.setDate(d1.getDate() + jours - 1);
+    const pad = n => String(n).padStart(2, '0');
+    const fin = `${d1.getFullYear()}-${pad(d1.getMonth()+1)}-${pad(d1.getDate())}`;
+    const el  = document.getElementById('f-arret-fin');
+    if (el) el.value = fin;
+    updateCertif();
+}
+
+function fmtDateFR(val) {
+    if (!val) return '...';
+    const d = new Date(val);
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
 function updateCertif() {
     const type = document.getElementById('f-type').value;
 
-    document.getElementById('side-entreprise-block').style.display = (type === "Aptitude professionnelle") ? "block" : "none";
-    document.getElementById('doc-entreprise-block').style.display  = (type === "Aptitude professionnelle") ? "block" : "none";
-    document.getElementById('side-concl-block').style.display      = (type !== "Divers") ? "block" : "none";
-    document.getElementById('doc-concl-block').style.display       = (type !== "Divers") ? "block" : "none";
-    document.getElementById('side-divers-block').style.display     = (type === "Divers") ? "block" : "none";
-    document.getElementById('doc-divers-block').style.display      = (type === "Divers") ? "block" : "none";
+    /* ── Visibilité des blocs sidebar ── */
+    const showEntreprise = type === "Aptitude professionnelle";
+    const showConcl      = !["Divers", "Arrêt de travail", "Rendez-vous médical"].includes(type);
+    const showDivers     = type === "Divers";
+    const showArret      = type === "Arrêt de travail";
+    const showRdv        = type === "Rendez-vous médical";
 
+    document.getElementById('side-entreprise-block').style.display = showEntreprise ? "block" : "none";
+    document.getElementById('doc-entreprise-block').style.display  = showEntreprise ? "block" : "none";
+    document.getElementById('side-concl-block').style.display      = showConcl      ? "block" : "none";
+    document.getElementById('doc-concl-block').style.display       = showConcl      ? "block" : "none";
+    document.getElementById('side-divers-block').style.display     = showDivers     ? "block" : "none";
+    document.getElementById('doc-divers-block').style.display      = showDivers     ? "block" : "none";
+    document.getElementById('side-arret-block').style.display      = showArret      ? "block" : "none";
+    document.getElementById('doc-arret-block').style.display       = showArret      ? "block" : "none";
+    document.getElementById('side-rdv-block').style.display        = showRdv        ? "block" : "none";
+    document.getElementById('doc-rdv-block').style.display         = showRdv        ? "block" : "none";
+
+    /* ── Titre du document ── */
     const titres = {
         "Aptitude professionnelle": "CERTIFICAT D'APTITUDE PROFESSIONNELLE",
         "PPA Civil":                "CERTIFICAT DE CAPACITÉ À PASSER L'EXAMEN DU PPA — CIVIL",
         "PPA Professionnel":        "CERTIFICAT DE CAPACITÉ À PASSER L'EXAMEN DU PPA — PROFESSIONNEL",
-        "Divers":                   "CERTIFICAT — DIVERS"
+        "Divers":                   "CERTIFICAT — DIVERS",
+        "Arrêt de travail":         "ARRÊT DE TRAVAIL",
+        "Rendez-vous médical":      "ATTESTATION DE RENDEZ-VOUS MÉDICAL",
     };
     document.getElementById('d-titre-doc').innerText = titres[type] || "CERTIFICAT MÉDICAL";
 
+    /* ── Nom patient ── */
     const prenomRaw = document.getElementById('patientPrenom')?.value.trim() || '';
     const nomRaw    = document.getElementById('patientNom')?.value.trim()    || '';
     const prenom    = typeof formatPrenom === 'function' ? formatPrenom(prenomRaw) : prenomRaw;
@@ -39,18 +86,23 @@ function updateCertif() {
     const hiddenName = document.getElementById('patientName');
     if (hiddenName) hiddenName.value = fullName;
 
+    /* ── Date naissance ── */
     const birthInput = document.getElementById('patientBirth');
     if (birthInput && birthInput.value)
         document.getElementById('d-naiss').innerText = new Date(birthInput.value).toLocaleDateString('fr-FR');
     else
         document.getElementById('d-naiss').innerText = '...';
 
+    /* ── Entreprise ── */
     const entreprise = document.getElementById('f-entreprise');
     if (entreprise) document.getElementById('d-entreprise').innerText = entreprise.value || '...';
 
-    document.getElementById('d-sig').innerText = document.getElementById('f-medecin').value || 'DOCTEUR';
+    /* ── Signature ── */
+    const medecin = document.getElementById('f-medecin').value || 'DOCTEUR';
+    document.getElementById('d-sig').innerText = medecin;
 
-    if (type !== "Divers") {
+    /* ── Conclusion (certificats classiques) ── */
+    if (showConcl) {
         const c = document.querySelector('input[name="concl"]:checked').value;
         let texteFinal = "";
         if (c === "Apte")    texteFinal = "Apte — Aucune contre-indication clinique.";
@@ -62,11 +114,45 @@ function updateCertif() {
             texteFinal = "Inapte" + (motif ? ` — ${motif}` : ".");
         }
         document.getElementById('d-concl').innerText = texteFinal;
-    } else {
+    }
+
+    /* ── Divers ── */
+    if (showDivers) {
         document.getElementById('d-divers-text').innerText = document.getElementById('f-divers').value || '...';
     }
 
-    // ── Observations complémentaires ──
+    /* ── Arrêt de travail ── */
+    if (showArret) {
+        const debut  = document.getElementById('f-arret-debut')?.value;
+        const fin    = document.getElementById('f-arret-fin')?.value;
+        const jours  = document.getElementById('f-arret-jours')?.value;
+        const motif  = document.getElementById('f-arret-motif')?.value || '';
+
+        const debutFR = fmtDateFR(debut);
+        const finFR   = fmtDateFR(fin);
+        const duree   = jours ? `${jours} jour${jours > 1 ? 's' : ''}` : '...';
+
+        const texte = `Je soussigné(e), Docteur ${medecin}, Service de l'Ocean Medical Center, certifie avoir examiné ce jour le patient ${fullName || '...'} et prescris un arrêt de travail d'une durée de ${duree}, du ${debutFR} au ${finFR} inclus.${motif ? `\n\nMotif médical : ${motif}` : ''}\n\nLe patient est invité à se représenter à la fin de cette période si nécessaire.`;
+
+        document.getElementById('d-arret-text').innerText = texte;
+    }
+
+    /* ── Rendez-vous médical ── */
+    if (showRdv) {
+        const dateRdv  = document.getElementById('f-rdv-date')?.value;
+        const heureRdv = document.getElementById('f-rdv-heure')?.value || '...';
+        const motifRdv = document.getElementById('f-rdv-motif')?.value || '';
+
+        const dateFR = dateRdv
+            ? new Date(dateRdv).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
+            : '...';
+
+        const texte = `Je soussigné(e), Docteur ${medecin}, Service de l'Ocean Medical Center, certifie avoir reçu ce jour en rendez-vous médical le patient ${fullName || '...'}, le ${dateFR} à ${heureRdv}.${motifRdv ? `\n\nMotif de consultation : ${motifRdv}` : ''}`;
+
+        document.getElementById('d-rdv-text').innerText = texte;
+    }
+
+    /* ── Observations complémentaires ── */
     const obs     = document.getElementById('f-observations')?.value.trim() || '';
     const docObs  = document.getElementById('doc-observations-block');
     const docObsT = document.getElementById('d-observations-text');
