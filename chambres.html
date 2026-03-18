@@ -260,12 +260,6 @@
         .floor-view { display: none; width: 100%; height: 100%; position: relative; }
         .floor-view.active { display: block; }
 
-        /* 
-          La clé du responsive SVG :
-          L'image et le SVG overlay sont dans un div relatif.
-          Le SVG utilise preserveAspectRatio pour s'aligner exactement
-          sur l'image, quelle que soit la taille d'écran.
-        */
         .plan-wrapper {
             position: relative;
             width: 100%;
@@ -276,18 +270,11 @@
             overflow: hidden;
         }
 
-        /* 
-          L'image occupe tout l'espace en conservant son ratio.
-          On utilise object-fit: contain pour ne pas la déformer.
-        */
-
         .map-container {
             position: relative;
-            /* Ratio de base des images (1080/620). S'adapte à l'écran. */
             aspect-ratio: 1080 / 620; 
             max-width: 100%;
             max-height: 100%;
-            /* Si l'écran est très large, c'est la hauteur qui limite. Si très haut, c'est la largeur. */
         }
 
         .plan-img {
@@ -303,15 +290,10 @@
             z-index: 1;
         }
 
-        /*
-          Le SVG overlay est positionné en absolu et couvre exactement
-          la zone de l'image rendue (pas juste le conteneur).
-          On le dimensionne via JS pour qu'il corresponde pixel-perfect.
-        */
         .plan-overlay {
             position: absolute;
             z-index: 2;
-            pointer-events: none; /* les enfants auront pointer-events: all */
+            pointer-events: none;
             overflow: visible;
         }
 
@@ -319,14 +301,14 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100% !important; /* Force la taille à 100% du map-container */
+            width: 100% !important;
             height: 100% !important;
             z-index: 2;
             pointer-events: none; 
             overflow: visible;
         }
         
-        .fig-overlay { z-index: 5; } /* Bonhommes au-dessus des lits */
+        .fig-overlay { z-index: 5; }
 
         .room-zone { cursor: pointer; }
         .room-zone .room-bg { transition: all 0.15s; }
@@ -410,11 +392,10 @@
         @media (max-width: 768px) {
             body { flex-direction: column; height: 100dvh; overflow: hidden; }
 
-            .sidebar { display: none; } /* cachée, remplacée par la modale */
+            .sidebar { display: none; }
 
             .main { flex: 1; min-height: 0; }
 
-            /* Modale patient sur mobile */
             .mobile-panel {
                 position: fixed;
                 bottom: 0; left: 0; right: 0;
@@ -539,7 +520,6 @@
                 text-transform: uppercase;
             }
 
-            /* Bandeau stats compact en haut sur mobile */
             .mobile-stats {
                 display: flex !important;
                 gap: 0;
@@ -559,7 +539,6 @@
             .mobile-stat .v { font-size: 16px; font-weight: 900; line-height: 1; }
             .mobile-stat .l { font-size: 8px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
 
-            /* Légende compacte sur mobile */
             .legend-bar {
                 top: 6px; right: 6px;
                 padding: 4px 8px;
@@ -569,11 +548,9 @@
             .legend-item { font-size: 9px; gap: 4px; }
             .leg-dot { width: 8px; height: 8px; }
 
-            /* Bouton Now mobile */
             .btn-now { height: 36px; font-size: 11px; }
         }
 
-        /* Desktop : cacher le bandeau mobile */
         .mobile-stats { display: none; }
         .mobile-panel { display: none; }
 
@@ -620,7 +597,6 @@
     </div>
     <div class="form-group"><label>Médecin référent</label><input type="text" id="in-medecin" placeholder="Dr. ..."></div>
 
-    <!-- ── NOUVEAU : heure d'admission manuelle ── -->
     <div class="form-group">
         <label>Date &amp; heure d'admission</label>
         <div class="time-row">
@@ -705,7 +681,6 @@
             </select>
         </div>
         <div><label>Médecin référent</label><input type="text" id="m-medecin" placeholder="Dr. ..."></div>
-        <!-- ── NOUVEAU : heure d'admission mobile ── -->
         <div>
             <label>Date &amp; heure d'admission</label>
             <div class="time-row" style="margin-top:3px;">
@@ -739,12 +714,10 @@
 const ROOMS = [
 
     /* ─── ÉTAGE 1 ─── */
-    // W100 : la grande salle à gauche avec le couloir vertical "W100"
     {
         id: 'W100', floor: 1, lits: 11,
         zone: { xPct: 1, yPct: 26, wPct: 10, hPct: 42 },
         litsPos: [
-            // Colonne gauche 6 lits
         /* 1 */   { xPct: 2, yPct: 30 }, 
         /* 2 */   { xPct: 6, yPct: 30 },
         /* 3 */   { xPct: 9, yPct: 30 }, 
@@ -758,8 +731,6 @@ const ROOMS = [
         /* 11 */   { xPct: 10, yPct: 64 },
         ]
     },
-
-    // W110 : rangée haute gauche du groupe bas-gauche
     {
         id: 'W110', floor: 1, lits: 2,
         zone: { xPct: 10, yPct: 68, wPct: 7, hPct: 10.2 },
@@ -768,8 +739,6 @@ const ROOMS = [
             { xPct: 12.3, yPct: 75.5 },
         ]
     },
-
-    // W111 : rangée basse gauche du groupe bas-gauche
     {
         id: 'W111', floor: 1, lits: 2,
         zone: { xPct: 10, yPct: 79, wPct: 9.7, hPct: 13 },
@@ -778,8 +747,6 @@ const ROOMS = [
             { xPct: 18.5, yPct: 88.8 },
         ]
     },
-
-    // W112 : à droite de W110 (rangée haute)
     {
         id: 'W112', floor: 1, lits: 2,
         zone: { xPct: 21, yPct: 68, wPct: 13, hPct: 16 },
@@ -789,8 +756,6 @@ const ROOMS = [
             { xPct: 31.2, yPct: 79.2 },
         ]
     },
-
-    // W113 : à droite de W111 (rangée basse)
     {
         id: 'W113', floor: 1, lits: 3,
         zone: { xPct: 20, yPct: 75, wPct: 12, hPct: 16.5 },
@@ -803,7 +768,6 @@ const ROOMS = [
     },
 
     /* ─── ÉTAGE 2 ─── */
-    // W200 : grande pièce haut, juste à gauche de l'escalier (LEVEL2)
     {
         id: 'W200', floor: 2, lits: 2,
         zone: { xPct: 21.5, yPct: 31.5, wPct: 7, hPct: 13 },
@@ -813,8 +777,6 @@ const ROOMS = [
             { xPct: 26, yPct: 34 },
         ]
     },
-
-    // W201 : pièce en dessous de W200, milieu gauche
     {
         id: 'W201', floor: 2, lits: 2,
         zone: { xPct: 22.5, yPct: 45, wPct: 6.7, hPct: 14 },
@@ -823,8 +785,6 @@ const ROOMS = [
             { xPct: 24, yPct: 56 },
         ]
     },
-
-    // W202 : pièce à droite, à côté du corridor DOWN
     {
         id: 'W202', floor: 2, lits: 2,
         zone: { xPct: 16.5, yPct: 59, wPct: 13, hPct: 11 },
@@ -834,8 +794,6 @@ const ROOMS = [
             { xPct: 25, yPct: 65 },
         ]
     },
-
-    // W203 : petite pièce sous W202
     {
         id: 'W203', floor: 2, lits: 1,
         zone: { xPct: 16.5, yPct: 65, wPct: 9.5, hPct: 11.5 },
@@ -844,8 +802,6 @@ const ROOMS = [
             { xPct: 22, yPct: 72 },
         ]
     },
-
-    // W204 : 3e rangée sur l'aile gauche
     {
         id: 'W204', floor: 2, lits: 1,
         zone: { xPct: 16.5, yPct: 45, wPct: 6, hPct: 14 },
@@ -853,8 +809,6 @@ const ROOMS = [
             { xPct: 21, yPct: 52 },
         ]
     },
-
-    // W205 : dernière rangée, la plus basse
     {
         id: 'W205', floor: 2, lits: 2,
         zone: { xPct: 11.5, yPct: 31.5, wPct: 11, hPct: 13.2 },
@@ -897,14 +851,12 @@ function setNow(inputId) {
     el.value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
 }
 
-/* Lit la valeur du champ heure → ISO string (ou now si vide) */
 function sinceFromInput(inputId) {
     const el = document.getElementById(inputId);
     if (el && el.value) return new Date(el.value).toISOString();
     return new Date().toISOString();
 }
 
-/* Remplit un champ datetime-local depuis un ISO string */
 function fillSince(inputId, isoString) {
     const el = document.getElementById(inputId);
     if (!el || !isoString) { if (el) el.value = ''; return; }
@@ -914,16 +866,99 @@ function fillSince(inputId, isoString) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   DESSIN SVG
+   DISCORD — NOTIFICATIONS CHAMBRES
    ══════════════════════════════════════════════════════════════ */
 
+const DISCORD_WEBHOOK_CHAMBRES = 'https://discord.com/api/webhooks/1483837858052833312/TH4H_AfRuiVPY3tjKsj-Fhn70r697MGSzmZm7M2mc4LVVZxZwbY6bHVBOi9rDvaTS92B';
+
+function fmtDateDiscord(isoString) {
+    if (!isoString) return '—';
+    return new Date(isoString).toLocaleString('fr-FR', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+    });
+}
+
+function fmtDureeSejourDepuis(isoString) {
+    if (!isoString) return '—';
+    const debut = new Date(isoString);
+    const maintenant = new Date();
+    const diffMs = maintenant - debut;
+    if (diffMs < 0) return '—';
+    const totalMin = Math.floor(diffMs / 60000);
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    if (h === 0) return `${m} min`;
+    if (m === 0) return `${h}h`;
+    return `${h}h${String(m).padStart(2, '0')}`;
+}
+
+async function notifierDiscordAdmission(roomId, litNum, patient) {
+    try {
+        const embed = {
+            title: `🟢  ADMISSION — ${roomId} / Lit ${litNum}`,
+            color: 0x22c55e,
+            fields: [
+                { name: '👤 Patient',            value: `${patient.prenom} ${patient.nom}`,  inline: true  },
+                { name: '🏥 Chambre',            value: `${roomId} — Lit ${litNum}`,          inline: true  },
+                { name: '\u200b',                value: '\u200b',                              inline: false },
+                { name: '🩺 Motif',              value: patient.motif   || '—',               inline: false },
+                { name: '⏱️ Durée estimée',      value: patient.duree   || '—',               inline: true  },
+                { name: '👨‍⚕️ Médecin référent',  value: patient.medecin || '—',               inline: true  },
+                { name: '🕐 Admis le',           value: fmtDateDiscord(patient.since),        inline: false },
+            ],
+            footer: { text: 'Ocean Medical Center — Gestion des chambres' },
+            timestamp: new Date().toISOString()
+        };
+        await fetch(DISCORD_WEBHOOK_CHAMBRES, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: '🏥 OMC Chambres', embeds: [embed] })
+        });
+    } catch(e) {
+        console.warn('Discord admission :', e);
+    }
+}
+
+async function notifierDiscordLiberation(roomId, litNum, patient) {
+    try {
+        const embed = {
+            title: `🔴  LIBÉRATION — ${roomId} / Lit ${litNum}`,
+            color: 0xef4444,
+            fields: [
+                { name: '👤 Patient',             value: `${patient.prenom} ${patient.nom}`,  inline: true  },
+                { name: '🏥 Chambre',             value: `${roomId} — Lit ${litNum}`,          inline: true  },
+                { name: '\u200b',                 value: '\u200b',                              inline: false },
+                { name: '🩺 Motif de séjour',     value: patient.motif   || '—',               inline: false },
+                { name: '⏱️ Durée estimée',       value: patient.duree   || '—',               inline: true  },
+                { name: '👨‍⚕️ Médecin référent',   value: patient.medecin || '—',               inline: true  },
+                { name: '\u200b',                 value: '\u200b',                              inline: false },
+                { name: '🕐 Admis le',            value: fmtDateDiscord(patient.since),        inline: true  },
+                { name: '⏳ Durée réelle séjour', value: fmtDureeSejourDepuis(patient.since),  inline: true  },
+                { name: '🚪 Libéré le',           value: fmtDateDiscord(new Date().toISOString()), inline: false },
+            ],
+            footer: { text: 'Ocean Medical Center — Gestion des chambres' },
+            timestamp: new Date().toISOString()
+        };
+        await fetch(DISCORD_WEBHOOK_CHAMBRES, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: '🏥 OMC Chambres', embeds: [embed] })
+        });
+    } catch(e) {
+        console.warn('Discord libération :', e);
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DESSIN SVG
+   ══════════════════════════════════════════════════════════════ */
 
 function fitOverlay(floor) {
     const img     = document.getElementById(`img-${floor}`);
     const svg     = document.getElementById(`svg-${floor}`);
     const figSvg  = document.getElementById(`fig-svg-${floor}`);
     
-    // On définit le ratio interne du SVG (ViewBox) basé sur les dimensions réelles de l'image
     const nw = img.naturalWidth  || 1080;
     const nh = img.naturalHeight || 620;
     
@@ -936,7 +971,6 @@ function fitOverlay(floor) {
         figSvg.setAttribute('viewBox', `0 0 ${nw} ${nh}`);
     }
 
-    // Le CSS gère maintenant le width/height/left/top à 100% du .map-container
     return { nw, nh };
 }
 
@@ -1138,7 +1172,7 @@ function getFormValues() {
         motif:   getVal(pfx+'motif'),
         duree:   getVal(pfx+'duree'),
         medecin: getVal(pfx+'medecin'),
-        since:   sinceFromInput(pfx+'since'),  // ← heure manuelle ou now
+        since:   sinceFromInput(pfx+'since'),
     };
 }
 
@@ -1151,6 +1185,7 @@ async function assignerLit() {
     state[key] = { prenom, nom, motif, duree, medecin, since };
     
     await saveState();
+    notifierDiscordAdmission(roomId, litNum, state[key]); // ← Discord automatique
     showToast(`✅ ${prenom} ${nom} — ${roomId} Lit ${litNum}`);
 }
 
@@ -1163,6 +1198,7 @@ async function libererLit() {
     delete state[key];
     
     await saveState();
+    notifierDiscordLiberation(roomId, litNum, p); // ← Discord automatique
     showToast(`🔓 ${p.prenom} ${p.nom} — ${roomId} Lit ${litNum} libéré`);
     if (window.innerWidth <= 768) closeMobilePanel();
 }
@@ -1303,12 +1339,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <!-- ══════════════════════════════════════════════════════════════
      BONHOMMES ANIMÉS — SVG par-dessus le plan
-     Médecins (blanc/bleu) patrouillent les couloirs.
-     Patients (orange) partent de leur chambre et se baladent.
-     Tous restent dans les waypoints de couloirs définis en %.
      ══════════════════════════════════════════════════════════════ -->
 <style>
-/* Tooltip bonhomme */
 .fig-tooltip {
     position: fixed;
     z-index: 99998;
@@ -1337,91 +1369,42 @@ window.addEventListener('DOMContentLoaded', () => {
 <script>
 /* ══════════════════════════════════════════════════════════════
    SYSTÈME DE BONHOMMES ANIMÉS
-   ══════════════════════════════════════════════════════════════
-
-   Architecture :
-   - Un <svg> de bonhommes séparé est superposé au plan-overlay existant
-   - Il scale avec le zoom-content comme le SVG principal
-   - Les positions sont en % des dims naturelles de l'image (même repère que ROOMS)
-   - requestAnimationFrame anime le déplacement pas-à-pas vers le prochain waypoint
-   - Quand un bonhomme arrive, il attend un peu puis choisit un nouveau waypoint
-
-   Waypoints = nœuds du graphe de couloirs, définis à la main en %
-   On connecte les nœuds proches pour former un réseau navigable.
-══════════════════════════════════════════════════════════════ */
-(function() {
-
-/* ── NOMS ── */
-
-/* ══════════════════════════════════════════════════════════════
-   GRAPHE DE COULOIRS — coords en % (xPct, yPct) des dims naturelles
-   NV-1 : image ≈ 1080×620  →  les % correspondent aux zones visibles
-   NV-2 : même repère
-
-   On définit :
-     nodes  : liste de points {id, xPct, yPct}
-     edges  : connexions entre nodes [idA, idB]
-   Un personnage se déplace de node en node via les edges.
-══════════════════════════════════════════════════════════════ */
-
-/* ══════════════════════════════════════════════════════════════
-   GRAPHE DE COULOIRS ET CHAMBRES
    ══════════════════════════════════════════════════════════════ */
+(function() {
 
 const GRAPH = {
     1: {
         nodes: [
-            // Couloir horizontal principal (Haut)
             { id:'c1', xPct: 13, yPct: 30 }, { id:'c2', xPct: 25, yPct: 30 }, { id:'c3', xPct: 29, yPct: 30 },
             { id:'c4', xPct: 45, yPct: 30 }, { id:'c5', xPct: 55, yPct: 30 }, { id:'c6', xPct: 65, yPct: 30 },
             { id:'c7', xPct: 75, yPct: 30 }, { id:'c8', xPct: 84, yPct: 30 }, { id:'c9', xPct: 92, yPct: 30 },
-            
-            // Couloir vertical gauche (devant W100)
             { id:'v1', xPct: 13, yPct: 35 }, { id:'v2', xPct: 13, yPct: 57 }, { id:'v3', xPct: 13, yPct: 65 },
-            
-            // NOUVEAU : Points à l'intérieur de la W100
             { id:'in_w100_1', xPct: 6, yPct: 35 }, { id:'in_w100_2', xPct: 6, yPct: 50 }, { id:'in_w100_3', xPct: 6, yPct: 57 },
-            
-            // Couloirs aile bas-gauche
             { id:'v4', xPct: 14, yPct: 70 }, { id:'v5', xPct: 14, yPct: 85 },
             { id:'in_w110', xPct: 19, yPct: 77.5 }, { id:'in_w111', xPct: 18, yPct: 85 },
             { id:'b1', xPct: 19, yPct: 65 }, { id:'b3', xPct: 19, yPct: 70 },
              { id:'bm1', xPct: 24, yPct: 70 }, { id:'bm2', xPct: 24, yPct: 77.5 },
             { id:'in_w112', xPct: 30, yPct: 75 }, { id:'in_w113', xPct: 24, yPct: 85 },
-            
-            // Couloir milieu (vers B1/A1)
             { id:'b2', xPct: 34, yPct: 65 }, { id:'m1', xPct: 29, yPct: 50 }, { id:'m2', xPct: 29, yPct: 40 }, 
             { id:'in_b1', xPct: 20, yPct: 40 }, { id:'in_a1', xPct: 38, yPct: 40 },
-            
-            // Aile droite (urgences)
             { id:'rw1', xPct: 84, yPct: 36 }, { id:'rw2', xPct: 84, yPct: 47 }, { id:'rw3', xPct: 84, yPct: 65 },
             { id:'in_rl1', xPct: 75, yPct: 36 }, { id:'in_rr1', xPct: 90, yPct: 36 }, 
             { id:'in_rr2', xPct: 90, yPct: 47 }, { id:'in_rl2', xPct: 75, yPct: 65 }
         ],
         edges: [
-            // Lignes du couloir principal
             ['c1','c2'],['c2','c3'],['c3','c4'],['c4','c5'],['c5','c6'],['c6','c7'],['c7','c8'],['c8','c9'],
             ['c1','v1'],['v1','v2'],['v2','v3'],
-            
-            // Entrées dans la chambre W100
             ['v1','in_w100_1'],['in_w100_1','in_w100_2'],['in_w100_2','in_w100_3'],['v2','in_w100_3'],
-            
-            // Connexions aile bas-gauche
             ['b3','v4'], ['in_w110','in_w111'],
             ['b3','in_w110'],['v5','in_w111'],
             ['v3','b1'],['b1','b2'], ['b1','b3'], 
             ['b3','bm1'],['in_w110','bm2'],
             ['bm1','in_w112'],['bm2','in_w113'],
-            
-            // Connexions milieu
             ['m1','m2'],['m2','c3'],
             ['m2','in_b1'],['m2','in_a1'],
-            
-            // Connexions aile droite
             ['c8','rw1'],['rw1','rw2'],['rw2','rw3'],
             ['rw1','in_rl1'],['rw1','in_rr1'],['rw2','in_rr2'],['rw3','in_rl2']
         ],
-        // Les patients spawment/restent près de ces points à l'intérieur
         roomExits: {
             'W100': 'in_w100_2',
             'W110': 'in_w110',
@@ -1432,7 +1415,6 @@ const GRAPH = {
     },
     2: {
         nodes: [
-            // Couloirs formant la boucle gauche
             { id:'lt1', xPct: 12, yPct: 30 }, 
             { id:'lt2', xPct: 20, yPct: 29 }, 
             { id:'lt3', xPct: 31, yPct: 29 },
@@ -1445,16 +1427,12 @@ const GRAPH = {
             { id:'lb1', xPct: 25, yPct: 78.5 },
             { id:'rv2', xPct: 31, yPct: 62.5 }, 
             { id:'rv1', xPct: 31, yPct: 56.5 },
-            
-            // Points directement à l'intérieur des chambres du 2e étage
             { id:'in_w205', xPct: 18, yPct: 37 }, 
             { id:'in_w204', xPct: 21, yPct: 57.5 }, 
             { id:'in_w203', xPct: 21, yPct: 74.5 },
             { id:'in_w200', xPct: 25, yPct: 36 }, 
             { id:'in_w201', xPct: 25, yPct: 56.5 }, 
             { id:'in_w202', xPct: 23, yPct: 62.5 },
-            
-            // Le long pont et l'aile droite
             { id:'b1', xPct: 45, yPct: 35 }, 
             { id:'b2', xPct: 60, yPct: 34 },
             { id:'rz1', xPct: 62, yPct: 29 },
@@ -1465,16 +1443,11 @@ const GRAPH = {
             { id:'rz5', xPct: 69, yPct: 55 }
         ],
         edges: [
-            // Boucle principale
             ['lt1','lt2'],['lt2','lt3'],
             ['lt1','lv0'],['lv0','lv1'],['lv1','lv2'],['lv2','lv4'],['lv4','lv3'],['lv3','lb1'],
             ['lb1','rv2'],['rv2','rv1'],['lt3','lt4'],['lt4','rv1'],
-            
-            // Entrées dans les chambres
             ['lv1','in_w205'], ['lv2','in_w204'], ['lv4','in_w203'],
             ['lt4','in_w200'], ['rv1','in_w201'], ['rv2','in_w202'],
-            
-            // Pont et droite
             ['lt4','b1'],['b1','b2'],
             ['b2','rz1'],['rz1','rz1.5'],['rz1.5','rz2'],['rz2','rz3'],['rz2','rz4'],['rz4','rz5']
         ],
@@ -1489,7 +1462,6 @@ const GRAPH = {
     }
 };
 
-/* ── Construire la liste d'adjacence ── */
 function buildAdjacency(graph) {
     const adj = {};
     graph.nodes.forEach(n => { adj[n.id] = []; });
@@ -1500,7 +1472,6 @@ function buildAdjacency(graph) {
     return adj;
 }
 
-/* ── BFS : chemin le plus court entre deux nodes ── */
 function bfsPath(adj, start, end) {
     if (start === end) return [start];
     const visited = new Set([start]);
@@ -1516,29 +1487,18 @@ function bfsPath(adj, start, end) {
             }
         }
     }
-    return [start]; // fallback
+    return [start];
 }
 
-/* ── Nœud aléatoire ── */
 function randNode(nodes) {
     return nodes[Math.floor(Math.random() * nodes.length)].id;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SPRITES PIXEL ART — dessinés pixel par pixel sur <canvas>
-   Chaque sprite = grille 11×16 px, scale ×3 = 33×48 px affiché
-   4 directions × 3 frames de marche = 12 frames par personnage
+const PX = 1.5;
+const SW = 11, SH = 16;
 
-   Palette médecin : blouse blanche, pantalon teal, peau beige, bonnet blanc + croix rouge
-   Palette patient  : blouse verte, pantalon gris, peau beige, cheveux bruns
-══════════════════════════════════════════════════════════════ */
-
-const PX = 1.5; // scale pixel art
-const SW = 11, SH = 16; // taille sprite naturelle
-
-// Couleurs
 const C = {
-    _:    null,           // transparent
+    _:    null,
     skin: '#D4956A',
     hair: '#7B4F2E',
     eye:  '#1a1a2e',
@@ -1555,34 +1515,29 @@ const C = {
     shd:  'rgba(0,0,0,0.18)',
 };
 
-/* ── Sprite data : tableau de strings 11 chars, 1 char = 1 pixel ── */
-// Clé de décodage : voir C ci-dessus
 const KEY = { '_':C._, 's':C.skin, 'h':C.hair, 'e':C.eye, 'W':C.wht, 'w':C.wht2,
               'R':C.red, 't':C.teal, 'T':C.tel2, 'g':C.grn, 'G':C.grn2,
               'y':C.grey, 'Y':C.gry2, 'o':C.outl };
 
-/* Médecin — vue de face, frame 0 (debout) */
 const DOC_F0 = [
-//  0123456789A
-    '____oWo____',  // 0  bonnet haut
-    '___oWWWo___',  // 1
-    '__osssso___',  // 2  tête
-    '__oseseo___',  // 3  yeux
-    '__oWsWso___',  // 4  masque/bouche
-    '__oWWWWo___',  // 5  col blouse
-    '_oWWoWWWo__',  // 6  épaules
-    '_oWWWWWWo__',  // 7  torse
-    '_oWWWWWWo__',  // 8
-    '_otWWWWto__',  // 9  bas blouse
-    '_oTtttToo__',  // 10 ceinture
-    '_otttttto__',  // 11 pantalon
-    '__otototo__',  // 12
-    '__otototo__',  // 13
-    '__oTooToo__',  // 14 chaussures
-    '___________',  // 15
+    '____oWo____',
+    '___oWWWo___',
+    '__osssso___',
+    '__oseseo___',
+    '__oWsWso___',
+    '__oWWWWo___',
+    '_oWWoWWWo__',
+    '_oWWWWWWo__',
+    '_oWWWWWWo__',
+    '_otWWWWto__',
+    '_oTtttToo__',
+    '_otttttto__',
+    '__otototo__',
+    '__otototo__',
+    '__oTooToo__',
+    '___________',
 ];
 
-/* Médecin — vue de face, frame 1 (jambe gauche avancée) */
 const DOC_F1 = [
     '____oWo____',
     '___oWWWo___',
@@ -1602,7 +1557,6 @@ const DOC_F1 = [
     '___________',
 ];
 
-/* Médecin — vue de face, frame 2 (jambe droite avancée) */
 const DOC_F2 = [
     '____oWo____',
     '___oWWWo___',
@@ -1622,7 +1576,6 @@ const DOC_F2 = [
     '___________',
 ];
 
-/* Médecin — vue de dos, frame 0 */
 const DOC_B0 = [
     '___oWWo____',
     '__oWWWWo___',
@@ -1642,7 +1595,6 @@ const DOC_B0 = [
     '___________',
 ];
 
-/* Médecin — vue de dos, frame 1 */
 const DOC_B1 = [
     '___oWWo____',
     '__oWWWWo___',
@@ -1662,7 +1614,6 @@ const DOC_B1 = [
     '___________',
 ];
 
-/* Médecin — vue droite, frame 0 */
 const DOC_R0 = [
     '____oWWo___',
     '___oWWWwo__',
@@ -1682,7 +1633,6 @@ const DOC_R0 = [
     '___________',
 ];
 
-/* Médecin — vue droite, frame 1 (marche) */
 const DOC_R1 = [
     '____oWWo___',
     '___oWWWwo__',
@@ -1702,7 +1652,6 @@ const DOC_R1 = [
     '___________',
 ];
 
-/* Médecin — vue gauche, frame 0 */
 const DOC_L0 = [
     '___oWWo____',
     '__owWWWo___',
@@ -1722,14 +1671,13 @@ const DOC_L0 = [
     '___________',
 ];
 
-/* ── Patient — vue face, frames ── */
 const PAT_F0 = [
-    '___ohhhо___',  // cheveux
+    '___ohhhо___',
     '__ohhhhhо__',
     '__ossssso__',
     '__oseseso__',
     '__ossssso__',
-    '__ogsgsgo__',  // col vert
+    '__ogsgsgo__',
     '_oggoggggo_',
     '_ogggggggo_',
     '_ogggggggo_',
@@ -1856,7 +1804,6 @@ const PAT_L0 = [
     '___________',
 ];
 
-/* ── Compiler les sprites en ImageData (canvas offscreen) ── */
 function compileSprite(rows) {
     const c = document.createElement('canvas');
     c.width  = SW * PX;
@@ -1865,7 +1812,6 @@ function compileSprite(rows) {
     rows.forEach((row, ry) => {
         for (let rx = 0; rx < SW; rx++) {
             const ch  = row[rx] || '_';
-            // Gérer les caractères cyrilliques utilisés par erreur comme 'о' → traiter comme 'o'
             const key = ch === 'о' ? 'o' : ch;
             const col = KEY[key];
             if (!col) continue;
@@ -1876,14 +1822,12 @@ function compileSprite(rows) {
     return c;
 }
 
-/* Sprites compilés par rôle et direction */
 const SPRITES = {
     medecin: {
-        // [direction][frame]  dir: 0=face 1=dos 2=droite 3=gauche
         face:   [compileSprite(DOC_F0), compileSprite(DOC_F1), compileSprite(DOC_F2)],
         dos:    [compileSprite(DOC_B0), compileSprite(DOC_B1), compileSprite(DOC_B1)],
         droite: [compileSprite(DOC_R0), compileSprite(DOC_R1), compileSprite(DOC_R0)],
-        gauche: [compileSprite(DOC_L0), compileSprite(DOC_R1), compileSprite(DOC_L0)], // miroir approx
+        gauche: [compileSprite(DOC_L0), compileSprite(DOC_R1), compileSprite(DOC_L0)],
     },
     patient: {
         face:   [compileSprite(PAT_F0), compileSprite(PAT_F1), compileSprite(PAT_F2)],
@@ -1893,38 +1837,29 @@ const SPRITES = {
     },
 };
 
-/* ── Choisir la direction selon l'angle de déplacement ── */
 function angleToDir(angle) {
-    // atan2(dy,dx) : 0=droite, PI/2=bas(=dos car on voit le dos quand il s'éloigne)
     const deg = ((angle * 180 / Math.PI) % 360 + 360) % 360;
-    if (deg >= 45  && deg < 135)  return 'dos';     // va vers le bas → on voit le dos
-    if (deg >= 135 && deg < 225)  return 'gauche';  // va vers la gauche
-    if (deg >= 225 && deg < 315)  return 'face';    // va vers le haut → face visible
-    return 'droite';                                  // va vers la droite
+    if (deg >= 45  && deg < 135)  return 'dos';
+    if (deg >= 135 && deg < 225)  return 'gauche';
+    if (deg >= 225 && deg < 315)  return 'face';
+    return 'droite';
 }
 
-/* ══════════════════════════════════════════════════════════════
-   createFigure — injecte un <foreignObject> avec un <canvas>
-   dans le SVG, pour profiter du pixel art natif canvas
-══════════════════════════════════════════════════════════════ */
 function createFigure(svg, id, color, label) {
     const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     g.id = `fig-${id}`;
     g.style.pointerEvents = 'all';
     g.style.cursor = 'pointer';
 
-    // Ombre au sol
     const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
     shadow.setAttribute('rx', '8'); shadow.setAttribute('ry', '3');
     shadow.setAttribute('fill', 'rgba(0,0,0,0.22)');
     shadow.setAttribute('class', 'fig-shadow');
 
-    // foreignObject contenant le canvas du sprite
     const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
     fo.setAttribute('width',  SW * PX);
     fo.setAttribute('height', SH * PX);
     fo.setAttribute('class', 'fig-fo');
-    // Centrage : on décale de la moitié
     fo.setAttribute('x', -(SW * PX) / 2);
     fo.setAttribute('y', -(SH * PX));
 
@@ -1942,7 +1877,6 @@ function createFigure(svg, id, color, label) {
     return g;
 }
 
-/* ── Mettre à jour le sprite (position + frame d'animation) ── */
 function updateFigureGeometry(g, cx, cy, angle, phase) {
     const shadow = g.querySelector('.fig-shadow');
     if (shadow) { shadow.setAttribute('cx', cx); shadow.setAttribute('cy', cy + 2); }
@@ -1960,7 +1894,6 @@ function updateFigureGeometry(g, cx, cy, angle, phase) {
     const frames = SPRITES[role][dir];
     if (!frames) return;
 
-    // Cadence d'animation : change de frame toutes les ~0.4s de phase
     const frameN = Math.floor(phase / 1.8) % frames.length;
     const sprite = frames[frameN];
 
@@ -1971,76 +1904,16 @@ function updateFigureGeometry(g, cx, cy, angle, phase) {
     ctx.drawImage(sprite, 0, 0);
 }
 
-/* ── Choisir le prochain chemin — garantit l'animation infinie ── */
-/* ── Choisir le prochain chemin (CORRIGÉ ET SÉCURISÉ) ── */
-function choosePath(fig) {
-    const { graph, adj, homeNode, isMedecin, roomId } = fig;
-
-    // CORRECTION : On s'assure qu'il sait toujours où il est, même à la fin de son trajet
-    let curNodeId;
-    if (fig.path && fig.path.length > 0) {
-        curNodeId = fig.path[Math.min(fig.pathIdx, fig.path.length - 1)];
-    } else {
-        curNodeId = graph.nodes[0].id;
-    }
-
-    let targetId;
-
-    if (!isMedecin) {
-        // Patient : 60% du temps retourne près de sa chambre, sinon se balade
-        if (Math.random() < 0.6 && homeNode) {
-            targetId = homeNode;
-        } else {
-            // Balade courte : nœud voisin ou voisin du voisin
-            const nb1 = adj[curNodeId] || [];
-            if (nb1.length === 0) { targetId = curNodeId; }
-            else {
-                const pick1 = nb1[Math.floor(Math.random() * nb1.length)];
-                if (Math.random() < 0.5) {
-                    targetId = pick1;
-                } else {
-                    const nb2 = adj[pick1] || [];
-                    targetId = nb2.length ? nb2[Math.floor(Math.random() * nb2.length)] : pick1;
-                }
-            }
-        }
-    } else {
-        // Médecin : nœud aléatoire sur tout le graphe
-        let tries = 0;
-        do { 
-            targetId = randNode(graph.nodes); 
-            tries++; 
-        } while (targetId === curNodeId && tries < 10);
-    }
-
-    const path = bfsPath(adj, curNodeId, targetId);
-    
-    // Sécurité anti-blocage : s'il n'y a qu'un seul point, on le force à faire un pas
-    if (path.length <= 1) {
-        const nb = adj[curNodeId] || [];
-        if (nb.length) path.push(nb[Math.floor(Math.random() * nb.length)]);
-    }
-    
-    fig.path    = path;
-    fig.pathIdx = 0;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   ÉTAT DES PERSONNAGES
-══════════════════════════════════════════════════════════════ */
 const figures = {};
 let figSvgs   = {};
 let figIdCnt  = 0;
 
-/* ── Créer le SVG des bonhommes pour un étage ── */
 function initFigSvg(floor) {
-    // Modifier l'injection pour viser le nouveau conteneur
     const mapCont = document.getElementById(`map-cont-${floor}`);
     if (!mapCont) return;
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.id = `fig-svg-${floor}`;
-    // Ajout de la classe CSS pour la taille 100%
     svg.setAttribute('class', 'fig-overlay'); 
     svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
@@ -2058,7 +1931,6 @@ function initFigSvg(floor) {
     return svg;
 }
 
-/* ── Convertir % → coordonnées SVG ── */
 function pctToSvg(xPct, yPct, floor) {
     const img = document.getElementById(`img-${floor}`);
     const nw  = img.naturalWidth  || 1080;
@@ -2066,19 +1938,11 @@ function pctToSvg(xPct, yPct, floor) {
     return { x: xPct / 100 * nw, y: yPct / 100 * nh };
 }
 
-/* ── Spawner un personnage ── */
-
 const NOMS_DOC_H = ['Dr. Brunelle','Dr. Edderson','Dr. Menendez','Dr. Sanchez','Dr. Cruz','Dr. Powell','Dr. White','Dr. Pirely'];
 const NOMS_DOC_F = ['Dr. Greystone','Dr. Turner','Dr. Oliveira','Dr. White','Dr. Frinx'];
 const NOMS_CIVIL = ['M. Dupont','Mme Garcia','M. Thomas','Mme Robert','M. Richard','Mme Rousseau','M. Vincent'];
 const NOMS_PAT   = ['Dupont J.','Garcia M.','Thomas A.','Robert C.','Richard L.','Blanc P.','Morel E.'];
 
-// spriteType : 'doc_h' | 'doc_f' | 'civil' | 'patient'
-// En attendant des sprites dédiés, on mappe sur les sprites existants :
-//   doc_h   → SPRITES.medecin (blouse blanche homme)
-//   doc_f   → SPRITES.patient (blouse colorée femme — réutilisé temporairement)
-//   civil   → SPRITES.medecin (couleur différente via canvas teinté)
-//   patient → SPRITES.patient
 function spawnFigure(floor, spriteType, roomId) {
     const graph = GRAPH[floor];
     if (!graph) return;
@@ -2102,7 +1966,6 @@ function spawnFigure(floor, spriteType, roomId) {
         name  = roomId ? `${NOMS_PAT[id % NOMS_PAT.length]} (${roomId})` : NOMS_PAT[id % NOMS_PAT.length];
     }
 
-    // Rôle interne pour les sprites existants
     const spriteRole = (spriteType === 'doc_h' || spriteType === 'civil') ? 'medecin' : 'patient';
 
     let startNodeId = (roomId && graph.roomExits[roomId])
@@ -2112,8 +1975,7 @@ function spawnFigure(floor, spriteType, roomId) {
     const startNode = graph.nodes.find(n => n.id === startNodeId) || graph.nodes[0];
     const pos = pctToSvg(startNode.xPct, startNode.yPct, floor);
 
-    const color = null; // non utilisé (sprites canvas)
-    const elem  = createFigure(svg, id, color, label);
+    const elem  = createFigure(svg, id, null, label);
     elem.style.pointerEvents = 'all';
 
     const fig = {
@@ -2135,10 +1997,8 @@ function spawnFigure(floor, spriteType, roomId) {
     elem._figData = fig;
     figures[id]   = fig;
 
-    // Dessiner immédiatement le premier frame
     updateFigureGeometry(elem, pos.x, pos.y, Math.PI / 2, 0);
 
-    // Tooltip
     const ttEl = document.getElementById('fig-tooltip');
     elem.addEventListener('mouseenter', () => {
         document.getElementById('fig-tt-name').textContent = fig.name;
@@ -2154,12 +2014,10 @@ function spawnFigure(floor, spriteType, roomId) {
     return fig;
 }
 
-/* ── Choisir le prochain chemin (SÉCURISÉ) ── */
 function choosePath(fig) {
     try {
-        const { graph, adj, homeNode, isMedecin, roomId } = fig;
+        const { graph, adj, homeNode, isMedecin } = fig;
 
-        // On s'assure qu'il sait toujours où il est
         let curNodeId;
         if (fig.path && fig.path.length > 0) {
             curNodeId = fig.path[Math.min(fig.pathIdx, fig.path.length - 1)];
@@ -2170,7 +2028,6 @@ function choosePath(fig) {
         let targetId;
 
         if (!isMedecin) {
-            // Patient : 60% du temps retourne près de sa chambre, sinon balade
             if (Math.random() < 0.6 && homeNode) {
                 targetId = homeNode;
             } else {
@@ -2187,7 +2044,6 @@ function choosePath(fig) {
                 }
             }
         } else {
-            // Médecin : nœud aléatoire (différent de l'actuel)
             let tries = 0;
             do { 
                 targetId = randNode(graph.nodes); 
@@ -2197,7 +2053,6 @@ function choosePath(fig) {
 
         const path = bfsPath(adj, curNodeId, targetId);
         
-        // Sécurité anti-blocage
         if (path.length <= 1) {
             const nb = adj[curNodeId] || [];
             if (nb.length) path.push(nb[Math.floor(Math.random() * nb.length)]);
@@ -2207,31 +2062,24 @@ function choosePath(fig) {
         fig.pathIdx = 0;
 
     } catch (e) {
-        // Fallback absolu : si le graphe est mal lu, on le remet au début
         fig.path = [fig.graph.nodes[0].id];
         fig.pathIdx = 0;
     }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   BOUCLE D'ANIMATION — infinie, pause minimale, ANTI-CRASH
-══════════════════════════════════════════════════════════════ */
 let lastTime = performance.now();
 
 function animateFigures(ts) {
-    // Calcul du temps écoulé, hyper-sécurisé (jamais négatif, max 0.05s)
     const dt = Math.max(0, Math.min((ts - lastTime) / 1000, 0.05));
     lastTime = ts;
 
     for (const id in figures) {
-        // Le fameux "Bouclier anti-crash" :
         try {
             const fig = figures[id];
 
             const floorEl = document.getElementById(`floor-${fig.floor}`);
             if (!floorEl || !floorEl.classList.contains('active')) continue;
 
-            // Pause entre deux chemins
             if (fig.waiting > 0) {
                 fig.waiting -= dt;
                 fig.elem._figData = fig;
@@ -2256,7 +2104,6 @@ function animateFigures(ts) {
                 fig.pathIdx++;
 
                 if (fig.pathIdx >= fig.path.length) {
-                    // Fin du chemin : petite pause et on repart
                     fig.waiting = 0.1 + Math.random() * 0.4;
                     choosePath(fig);
                 }
@@ -2273,7 +2120,6 @@ function animateFigures(ts) {
                 updateFigureGeometry(fig.elem, fig.x, fig.y, angle, fig.phase);
             }
         } catch (err) {
-            // Si une erreur grave survient sur CE personnage, on répare au lieu de tout planter
             console.warn("Recalibrage du personnage :", id);
             if (figures[id]) choosePath(figures[id]);
         }
@@ -2282,9 +2128,6 @@ function animateFigures(ts) {
     requestAnimationFrame(animateFigures);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SYNCHRONISATION PATIENTS
-══════════════════════════════════════════════════════════════ */
 const patientFigures = {};
 
 function syncPatients() {
@@ -2306,17 +2149,14 @@ function syncPatients() {
     }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SPAWNER STAFF + CIVILS — 
-══════════════════════════════════════════════════════════════ */
 function spawnMedecins() {
     [
-        { floor:1, type:'doc_h', n:4 },   // Avant c'était 2, passé à 4
-        { floor:1, type:'doc_f', n:3 },   // Passé à 3
-        { floor:1, type:'civil', n:3 },   // Passé à 3
-        { floor:2, type:'doc_h', n:2 },   // Passé à 2
-        { floor:2, type:'doc_f', n:3 },   // Passé à 3
-        { floor:2, type:'civil', n:2 },   // Passé à 2
+        { floor:1, type:'doc_h', n:4 },
+        { floor:1, type:'doc_f', n:3 },
+        { floor:1, type:'civil', n:3 },
+        { floor:2, type:'doc_h', n:2 },
+        { floor:2, type:'doc_f', n:3 },
+        { floor:2, type:'civil', n:2 },
     ].forEach(({ floor, type, n }) => {
         if (!figSvgs[floor]) return;
         for (let i = 0; i < n; i++) {
@@ -2326,9 +2166,6 @@ function spawnMedecins() {
     });
 }
 
-/* ══════════════════════════════════════════════════════════════
-   BOUTONS ON/OFF (Personnages et Calque Chemins)
-══════════════════════════════════════════════════════════════ */
 let figuresVisible = localStorage.getItem('omc_figures_on') !== 'false';
 let debugGraphVisible = localStorage.getItem('omc_debug_on') === 'true';
 
@@ -2392,17 +2229,15 @@ function addToggleButton() {
     const tabs = document.querySelector('.tabs');
     if (!tabs) return;
     
-    // Bouton Personnages
     const btn = document.createElement('button');
     btn.className = 'tab-btn';
     btn.style.marginLeft = 'auto';
-    // On applique le style initial basé sur la sauvegarde
     btn.textContent = figuresVisible ? '👥 Personnages ON' : '👥 Personnages OFF';
     btn.style.color  = figuresVisible ? '#22c55e' : '#475569';
     
     btn.onclick = () => {
         figuresVisible = !figuresVisible;
-        localStorage.setItem('omc_figures_on', figuresVisible); // On sauvegarde le choix
+        localStorage.setItem('omc_figures_on', figuresVisible);
         Object.values(figSvgs).forEach(svg => {
             const figs = svg.querySelectorAll('g[id^="fig-"]');
             figs.forEach(f => f.style.display = figuresVisible ? '' : 'none');
@@ -2412,16 +2247,14 @@ function addToggleButton() {
     };
     tabs.appendChild(btn);
 
-    // Bouton Debug Chemins
     const btnDebug = document.createElement('button');
     btnDebug.className = 'tab-btn';
-    // On applique le style initial basé sur la sauvegarde
     btnDebug.textContent = debugGraphVisible ? '🛠️ Chemins ON' : '🛠️ Chemins OFF';
     btnDebug.style.color = debugGraphVisible ? '#f0abfc' : '#475569';
     
     btnDebug.onclick = () => {
         debugGraphVisible = !debugGraphVisible;
-        localStorage.setItem('omc_debug_on', debugGraphVisible); // On sauvegarde le choix
+        localStorage.setItem('omc_debug_on', debugGraphVisible);
         btnDebug.textContent = debugGraphVisible ? '🛠️ Chemins ON' : '🛠️ Chemins OFF';
         btnDebug.style.color = debugGraphVisible ? '#f0abfc' : '#475569';
         drawDebugGraph(1);
@@ -2430,7 +2263,6 @@ function addToggleButton() {
     tabs.appendChild(btnDebug);
 }
 
-/* ── INIT ── */
 function initFigures() {
     initFigSvg(1);
     initFigSvg(2);
@@ -2438,7 +2270,6 @@ function initFigures() {
     syncPatients();
     addToggleButton();
 
-    // Au chargement, on applique l'état sauvegardé
     if (!figuresVisible) {
         Object.values(figSvgs).forEach(svg => {
             const figs = svg.querySelectorAll('g[id^="fig-"]');
@@ -2453,21 +2284,17 @@ function initFigures() {
     requestAnimationFrame(animateFigures);
 }
 
-/* ── Intercepter redrawAll pour re-syncer les patients ── */
 const _origRedrawAll = window.redrawAll || redrawAll;
 window.redrawAllWithFigs = function() {
     _origRedrawAll();
     syncPatients();
 };
 
-// On attend que tout soit prêt pour lancer les personnages
 setTimeout(() => {
     initFigures();
-    // Re-syncer quand l'état Firebase change
     const _origListenCb = window._figListenPatched;
     if (!_origListenCb) {
         window._figListenPatched = true;
-        // Observer les changements d'état (Firebase ou local)
         setInterval(() => syncPatients(), 3000);
     }
 }, 800);
@@ -2476,10 +2303,6 @@ setTimeout(() => {
 </script>
 
 <style>
-/* ══════════════════════════════════════════════════════════════
-   ZOOM — styles
-   ══════════════════════════════════════════════════════════════ */
-
 .zoom-controls {
     position: absolute;
     bottom: 10px;
@@ -2587,7 +2410,6 @@ setTimeout(() => {
         bindGestures(floor, zoomContainer, zoomContent);
     }
 
-    /* ── Applique le transform — NE RAPPELLE PAS fitOverlay/drawFloor ── */
     function applyTransform(floor, animated) {
         const content = document.getElementById(`zoom-content-${floor}`);
         if (!content) return;
@@ -2600,7 +2422,6 @@ setTimeout(() => {
         content.style.transform = `translate(${s.tx}px, ${s.ty}px) scale(${s.scale})`;
         showBadge(floor, s.scale);
 
-        /* Curseur : grab si zoomé, default sinon */
         const container = document.getElementById(`zoom-container-${floor}`);
         if (container) container.style.cursor = s.scale > 1.01 ? 'grab' : 'default';
     }
@@ -2731,7 +2552,6 @@ setTimeout(() => {
             touches = Array.from(e.touches);
         });
 
-        /* ── MOLETTE SOURIS — zoom centré sur le curseur ── */
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
             const rect     = container.getBoundingClientRect();
@@ -2746,14 +2566,13 @@ setTimeout(() => {
             applyTransform(floor, false);
         }, { passive: false });
 
-        /* ── PAN SOURIS — clic gauche + glisser ── */
         let mouseDown = false;
         let mousePanX = 0, mousePanY = 0;
         let mouseTxStart = 0, mouseTyStart = 0;
 
         container.addEventListener('mousedown', (e) => {
-            if (e.button !== 0) return;          // clic gauche uniquement
-            if (s.scale <= 1.01) return;          // inutile si pas zoomé
+            if (e.button !== 0) return;
+            if (s.scale <= 1.01) return;
             mouseDown = true;
             mousePanX    = e.clientX;
             mousePanY    = e.clientY;
@@ -2777,7 +2596,6 @@ setTimeout(() => {
             container.style.cursor = s.scale > 1.01 ? 'grab' : 'default';
         });
 
-        /* Curseur grab quand zoomé */
         container.addEventListener('mouseleave', () => {
             if (mouseDown) {
                 mouseDown = false;
