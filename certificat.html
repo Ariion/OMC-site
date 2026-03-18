@@ -194,35 +194,50 @@
                 <textarea id="f-divers" rows="6" oninput="updateCertif()" style="width:100%;background:#121c2f;border:1px solid #1e293b;color:white;padding:10px;"></textarea>
             </div>
 
-            <!-- ── Service + Genre (arrêt / rdv) ── -->
+            <!-- ── Médecin + Fonction + Genre (arrêt / rdv) ── -->
             <div id="side-service-genre-block" style="display:none;">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:0;">
-                    <div class="form-group">
-                        <label>Genre du patient</label>
-                        <select id="f-genre" onchange="updateCertif()">
-                            <option value="m">Le patient (M.)</option>
-                            <option value="f">La patiente (Mme)</option>
-                        </select>
+                <div class="sep-label" style="border-top:1px solid #1e293b;padding-top:9px;margin-bottom:10px;">Informations médecin</div>
+
+                <!-- Prénom + NOM médecin → génère Dr. Prénom NOM -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Prénom médecin</label>
+                        <input type="text" id="f-med-prenom" placeholder="Louis" oninput="buildMedecinLabel()">
                     </div>
-                    <div class="form-group">
-                        <label>Service / Fonction</label>
-                        <div style="position:relative;">
-                            <input type="text" id="f-service" value="l'Ocean Medical Center"
-                                placeholder="Ex : Psychologue..." oninput="updateCertif()"
-                                autocomplete="off" list="service-suggestions">
-                            <datalist id="service-suggestions">
-                                <option value="l'Ocean Medical Center">
-                                <option value="Médecine générale">
-                                <option value="Psychologie clinique">
-                                <option value="Soins infirmiers">
-                                <option value="Chirurgie">
-                                <option value="Urgences">
-                                <option value="Psychiatrie">
-                                <option value="Cardiologie">
-                                <option value="Radiologie">
-                            </datalist>
-                        </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>NOM médecin</label>
+                        <input type="text" id="f-med-nom" placeholder="BRUNELLE" oninput="buildMedecinLabel()">
                     </div>
+                </div>
+
+                <!-- Fonction du médecin -->
+                <div class="form-group">
+                    <label>Fonction / Titre</label>
+                    <input type="text" id="f-fonction" placeholder="Ex : Directeur, Psychologue..."
+                        oninput="updateCertif()" autocomplete="off" list="fonction-suggestions">
+                    <datalist id="fonction-suggestions">
+                        <option value="Directeur">
+                        <option value="Directrice">
+                        <option value="Médecin généraliste">
+                        <option value="Psychologue">
+                        <option value="Psychiatre">
+                        <option value="Chirurgien">
+                        <option value="Infirmier">
+                        <option value="Infirmière">
+                        <option value="Aide-soignant">
+                        <option value="Aide-soignante">
+                        <option value="Cardiologue">
+                        <option value="Urgentiste">
+                    </datalist>
+                </div>
+
+                <!-- Genre du patient -->
+                <div class="form-group">
+                    <label>Genre du patient</label>
+                    <select id="f-genre" onchange="updateCertif()">
+                        <option value="m">Le patient (M.)</option>
+                        <option value="f">La patiente (Mme)</option>
+                    </select>
                 </div>
             </div>
 

@@ -12,7 +12,22 @@ function toggleMotifs() {
     updateCertif();
 }
 
-/* ── Calcul durée arrêt de travail ── */
+/* ── Construit le label Dr. Prénom NOM et met à jour ── */
+function buildMedecinLabel() {
+    const prenom = document.getElementById('f-med-prenom')?.value.trim() || '';
+    const nom    = document.getElementById('f-med-nom')?.value.trim().toUpperCase() || '';
+    const label  = [prenom, nom].filter(Boolean).join(' ');
+
+    // Synchronise aussi le champ médecin signataire si vide ou déjà auto
+    const champSig = document.getElementById('f-medecin');
+    if (champSig && (!champSig.value || champSig._autoFilled)) {
+        champSig.value    = label ? `Dr. ${label}` : '';
+        champSig._autoFilled = true;
+    }
+    updateCertif();
+}
+
+
 function calcDureeArret() {
     const debut = document.getElementById('f-arret-debut')?.value;
     const fin   = document.getElementById('f-arret-fin')?.value;
@@ -125,18 +140,25 @@ function updateCertif() {
 
     /* ── Arrêt de travail ── */
     if (showArret) {
-        const debut   = document.getElementById('f-arret-debut')?.value;
-        const fin     = document.getElementById('f-arret-fin')?.value;
-        const jours   = document.getElementById('f-arret-jours')?.value;
-        const motif   = document.getElementById('f-arret-motif')?.value || '';
-        const service = document.getElementById('f-service')?.value || "l'Ocean Medical Center";
-        const genre   = document.getElementById('f-genre')?.value || 'm';
-        const lePatient  = genre === 'f' ? 'la patiente' : 'le patient';
-        const debutFR = fmtDateFR(debut);
-        const finFR   = fmtDateFR(fin);
-        const duree   = jours ? `${jours} jour${jours > 1 ? 's' : ''}` : '...';
+        const debut    = document.getElementById('f-arret-debut')?.value;
+        const fin      = document.getElementById('f-arret-fin')?.value;
+        const jours    = document.getElementById('f-arret-jours')?.value;
+        const motif    = document.getElementById('f-arret-motif')?.value || '';
+        const genre    = document.getElementById('f-genre')?.value || 'm';
+        const fonction = document.getElementById('f-fonction')?.value.trim() || 'Médecin';
 
-        const texte = `Je soussigné(e), Docteur ${medecin}, Service de ${service}, certifie avoir examiné ce jour ${lePatient} ${fullName || '...'} et prescris un arrêt de travail d'une durée de ${duree}, du ${debutFR} au ${finFR} inclus.${motif ? `\n\nMotif médical : ${motif}` : ''}\n\nLe patient est invité à se représenter à la fin de cette période si nécessaire.`;
+        // Nom du médecin spécifique au bloc
+        const medPrenom = document.getElementById('f-med-prenom')?.value.trim() || '';
+        const medNom    = document.getElementById('f-med-nom')?.value.trim().toUpperCase() || '';
+        const medLabel  = [medPrenom, medNom].filter(Boolean).join(' ');
+        const drLabel   = medLabel ? `Dr. ${medLabel}` : (medecin || 'DOCTEUR');
+
+        const lePatient = genre === 'f' ? 'la patiente' : 'le patient';
+        const debutFR   = fmtDateFR(debut);
+        const finFR     = fmtDateFR(fin);
+        const duree     = jours ? `${jours} jour${parseInt(jours) > 1 ? 's' : ''}` : '...';
+
+        const texte = `Je soussigné(e), ${drLabel}, ${fonction} de l'Ocean Medical Center, certifie avoir examiné ce jour ${lePatient} ${fullName || '...'} et prescris un arrêt de travail d'une durée de ${duree}, du ${debutFR} au ${finFR} inclus.${motif ? `\n\nMotif médical : ${motif}` : ''}\n\nLe patient est invité à se représenter à la fin de cette période si nécessaire.`;
 
         const el = document.getElementById('d-arret-text');
         if (el && !el._userEdited) el.innerText = texte;
@@ -147,15 +169,21 @@ function updateCertif() {
         const dateRdv  = document.getElementById('f-rdv-date')?.value;
         const heureRdv = document.getElementById('f-rdv-heure')?.value || '...';
         const motifRdv = document.getElementById('f-rdv-motif')?.value || '';
-        const service  = document.getElementById('f-service')?.value || "l'Ocean Medical Center";
         const genre    = document.getElementById('f-genre')?.value || 'm';
-        const lePatient   = genre === 'f' ? 'la patiente' : 'le patient';
+        const fonction = document.getElementById('f-fonction')?.value.trim() || 'Médecin';
+
+        const medPrenom = document.getElementById('f-med-prenom')?.value.trim() || '';
+        const medNom    = document.getElementById('f-med-nom')?.value.trim().toUpperCase() || '';
+        const medLabel  = [medPrenom, medNom].filter(Boolean).join(' ');
+        const drLabel   = medLabel ? `Dr. ${medLabel}` : (medecin || 'DOCTEUR');
+
+        const lePatient = genre === 'f' ? 'la patiente' : 'le patient';
 
         const dateFR = dateRdv
             ? new Date(dateRdv).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
             : '...';
 
-        const texte = `Je soussigné(e), Docteur ${medecin}, Service de ${service}, certifie avoir reçu ce jour en rendez-vous médical ${lePatient} ${fullName || '...'}, le ${dateFR} à ${heureRdv}.${motifRdv ? `\n\nMotif de consultation : ${motifRdv}` : ''}`;
+        const texte = `Je soussigné(e), ${drLabel}, ${fonction} de l'Ocean Medical Center, certifie avoir reçu ce jour en rendez-vous médical ${lePatient} ${fullName || '...'}, le ${dateFR} à ${heureRdv}.${motifRdv ? `\n\nMotif de consultation : ${motifRdv}` : ''}`;
 
         const el = document.getElementById('d-rdv-text');
         if (el && !el._userEdited) el.innerText = texte;
@@ -201,19 +229,22 @@ window.onload = function() {
         const el = document.getElementById(id);
         if (!el) return;
         el.addEventListener('input', () => { el._userEdited = true; });
-        // Bouton reset : double-clic remet le texte auto
         el.addEventListener('dblclick', () => {
             if (el._userEdited) {
                 el._userEdited = false;
                 updateCertif();
-                // Petit flash visuel pour signaler la réinitialisation
                 el.style.background = '#f0fdf4';
                 setTimeout(() => { el.style.background = ''; }, 600);
             }
         });
-        // Tip visuel au survol
         el.setAttribute('title', 'Cliquez pour modifier · Double-clic pour réinitialiser le texte auto');
     });
+
+    /* ── Si l'utilisateur tape dans le champ signataire, désactive l'auto-fill ── */
+    const champSig = document.getElementById('f-medecin');
+    if (champSig) {
+        champSig.addEventListener('input', () => { champSig._autoFilled = false; });
+    }
 
     if (isEdit) {
         const data = JSON.parse(localStorage.getItem('edit_snapshot'));
