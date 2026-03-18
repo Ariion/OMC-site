@@ -158,7 +158,7 @@ function updateCertif() {
         const finFR     = fmtDateFR(fin);
         const duree     = jours ? `${jours} jour${parseInt(jours) > 1 ? 's' : ''}` : '...';
 
-        const texte = `Je soussigné(e), ${drLabel}, ${fonction} de l'Ocean Medical Center, certifie avoir examiné ce jour ${lePatient} ${fullName || '...'} et prescris un arrêt de travail d'une durée de ${duree}, du ${debutFR} au ${finFR} inclus.${motif ? `\n\nMotif médical : ${motif}` : ''}\n\nLe patient est invité à se représenter à la fin de cette période si nécessaire.`;
+        const texte = `Je soussigné(e), ${drLabel}, ${fonction} de l'Ocean Medical Center, certifie avoir examiné ce jour ${lePatient} ${fullName || '...'} et prescris un arrêt de travail d'une durée de ${duree}, du ${debutFR} au ${finFR} inclus.${motif ? `\n\nMotif médical : ${motif}` : ''}\n\n ${lePatient} est invité à se représenter à la fin de cette période si nécessaire.`;
 
         const el = document.getElementById('d-arret-text');
         if (el && !el._userEdited) el.innerText = texte;
