@@ -121,8 +121,8 @@
                     <option value="PPA Civil">Capacité examen PPA — Civil</option>
                     <option value="PPA Professionnel">Capacité examen PPA — Professionnel</option>
                     <option value="Divers">Divers / Texte Libre</option>
-                    <option value="Arrêt de travail"> Arrêt de travail</option>
-                    <option value="Rendez-vous médical"> Rendez-vous médical</option>
+                    <option value="Arrêt de travail">Arrêt de travail</option>
+                    <option value="Rendez-vous médical">Rendez-vous médical</option>
                 </select>
             </div>
 
@@ -192,6 +192,38 @@
             <div class="form-group" id="side-divers-block" style="display:none;">
                 <label>Texte Libre</label>
                 <textarea id="f-divers" rows="6" oninput="updateCertif()" style="width:100%;background:#121c2f;border:1px solid #1e293b;color:white;padding:10px;"></textarea>
+            </div>
+
+            <!-- ── Service + Genre (arrêt / rdv) ── -->
+            <div id="side-service-genre-block" style="display:none;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:0;">
+                    <div class="form-group">
+                        <label>Genre du patient</label>
+                        <select id="f-genre" onchange="updateCertif()">
+                            <option value="m">Le patient (M.)</option>
+                            <option value="f">La patiente (Mme)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Service / Fonction</label>
+                        <div style="position:relative;">
+                            <input type="text" id="f-service" value="l'Ocean Medical Center"
+                                placeholder="Ex : Psychologue..." oninput="updateCertif()"
+                                autocomplete="off" list="service-suggestions">
+                            <datalist id="service-suggestions">
+                                <option value="l'Ocean Medical Center">
+                                <option value="Médecine générale">
+                                <option value="Psychologie clinique">
+                                <option value="Soins infirmiers">
+                                <option value="Chirurgie">
+                                <option value="Urgences">
+                                <option value="Psychiatrie">
+                                <option value="Cardiologie">
+                                <option value="Radiologie">
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- ══════════════════════════════════
@@ -296,14 +328,22 @@
 
                     <!-- ── ARRÊT DE TRAVAIL dans le document ── -->
                     <div id="doc-arret-block" style="grid-column:span 2;display:none;">
-                        <div class="doc-arret-badge">⛔ Arrêt de travail</div>
-                        <div id="d-arret-text" class="doc-letter-block">...</div>
+                        <div class="doc-arret-badge">Arrêt de travail</div>
+                        <div id="d-arret-text" class="doc-letter-block"
+                             contenteditable="true"
+                             spellcheck="false"
+                             style="outline:none;cursor:text;"
+                             title="Cliquez pour modifier le texte">...</div>
                     </div>
 
                     <!-- ── RENDEZ-VOUS MÉDICAL dans le document ── -->
                     <div id="doc-rdv-block" style="grid-column:span 2;display:none;">
-                        <div class="doc-rdv-badge">📅 Attestation de rendez-vous</div>
-                        <div id="d-rdv-text" class="doc-letter-block">...</div>
+                        <div class="doc-rdv-badge">Attestation de rendez-vous</div>
+                        <div id="d-rdv-text" class="doc-letter-block"
+                             contenteditable="true"
+                             spellcheck="false"
+                             style="outline:none;cursor:text;"
+                             title="Cliquez pour modifier le texte">...</div>
                     </div>
 
                     <!-- ── OBSERVATIONS COMPLÉMENTAIRES dans le document ── -->
