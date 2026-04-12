@@ -612,7 +612,7 @@ window.lancerTestADN = function() {
         interp = `Aucune similitude génétique. Lien biologique formellement exclu.`;
     } 
     else if (rng < 0.65) {
-        statut = "DEMI-LIEN"; col = "#0284c7"; // PASSÉ EN BLEU 🔵
+        statut = "DEMI-LIEN"; col = "#0284c7"; // Bleu OMC
         matchP = (seededRandom(seedValue + "p") * 10 + 42).toFixed(2); 
         interp = `Lien au 2ème degré confirmé. Les sujets partagent exactement un (1) parent biologique en commun.`;
     } 
@@ -623,8 +623,15 @@ window.lancerTestADN = function() {
     }
 
     const nomsLocus = ["D3S1358", "vWA", "D16S539", "TH01", "TPOX", "CSF1PO", "D7S820", "D13S317"];
+    
+    // Ajout des précisions entre parenthèses directement dans l'en-tête du tableau
     let tabHTML = `<table style="width:100%; border-collapse: collapse; font-size: 10px; margin: 0 0 4px 0;">
-        <tr style="background: #0a192f; color: white;"><th style="padding: 3px; text-align: left;">LOCUS</th><th style="text-align: center;">A</th><th style="text-align: center;">B</th><th style="text-align: center;">RÉSULTAT</th></tr>`;
+        <tr style="background: #0a192f; color: white;">
+            <th style="padding: 3px; text-align: left;">LOCUS <span style="font-size:8px; font-weight:normal; color:#cbd5e1;">(Marqueur)</span></th>
+            <th style="text-align: center;">A <span style="font-size:8px; font-weight:normal; color:#cbd5e1;">(Allèles)</span></th>
+            <th style="text-align: center;">B <span style="font-size:8px; font-weight:normal; color:#cbd5e1;">(Allèles)</span></th>
+            <th style="text-align: center;">RÉSULTAT</th>
+        </tr>`;
 
     nomsLocus.forEach((locus) => {
         let vA1 = Math.floor(seededRandom(seedValue + locus + "1") * 15 + 10);
@@ -652,17 +659,15 @@ window.lancerTestADN = function() {
             ${tabHTML}
             
             <div style="margin-top: 4px; padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid ${col}; border-radius: 4px; display: flex; align-items: center; gap: 12px;">
-                <div style="text-align: center; padding-right: 12px; border-right: 1px solid #cbd5e1; min-width: 70px;">
-                    <span style="font-size: 8px; font-weight: 900; color: #64748b; letter-spacing: 1px;">RÉSULTAT</span><br>
-                    <b style="font-size: 13px; color: ${col};">${statut}</b>
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding-right: 12px; border-right: 1px solid #cbd5e1; min-width: 80px;">
+                    <span style="font-size: 8px; font-weight: 900; color: #64748b; letter-spacing: 1px; margin-bottom: 0px;">RÉSULTAT</span>
+                    <b style="font-size: 13px; color: ${col}; line-height: 1; margin-top: -1px;">${statut}</b>
                 </div>
                 <div style="font-size: 10px; line-height: 1.3;">
                     <b style="font-size: 11px; color: #0f172a;">Probabilité : ${matchP}%</b><br>
                     <span style="color: #475569;">${interp}</span>
                 </div>
             </div>
-            
-            <p style="font-size: 8px; color: #94a3b8; margin: 4px 0 0 0; font-style: italic;">* Locus: emplacement du marqueur | Allèles: caractéristiques héritées (Père/Mère).</p>
         `;
     }
 };
