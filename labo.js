@@ -578,7 +578,31 @@ Carte de groupe sanguin à remettre au patient.`;
     fusionnerConclusion(concl);
 };
 
+/* ── TEST ADN / PARENTÉ ── */
+window.lancerTestADN = function() {
+    window.resetSeulementBio(false);
+    
+    // On simule une analyse de 16 marqueurs génétiques (standard US)
+    const proba = Math.random();
+    let resultatText = "";
+    let conclusion = "";
 
+    if (proba > 0.5) { // 50% de chance qu'ils soient frères/soeurs en RP
+        const score = (Math.random() * 5 + 94).toFixed(2); // Score entre 94% et 99%
+        resultatText = `Analyse comparative des locus : MATCH CONFIRMÉ\nIndice de fraternité : ${score}%`;
+        conclusion = `EXPERTISE ADN : LIEN DE PARENTÉ ÉTABLI\n\nL'analyse comparative des profils génétiques entre les deux sujets révèle une correspondance sur 15 des 16 marqueurs testés.\n\nLa probabilité de fraternité est de ${score}%. Ce résultat est considéré comme une preuve biologique de parenté au premier degré.`;
+    } else {
+        resultatText = `Analyse comparative des locus : AUCUN MATCH`;
+        conclusion = `EXPERTISE ADN : LIEN DE PARENTÉ NON ÉTABLI\n\nL'analyse des profils génétiques ne montre aucune correspondance significative au-delà des variations aléatoires de la population.\n\nLa probabilité de lien biologique est inférieure à 0.01%. Les sujets ne partagent pas de patrimoine génétique commun direct.`;
+    }
+
+    // On remplit la conclusion
+    fusionnerConclusion(conclusion);
+    
+    // Optionnel : Tu peux mettre une valeur bidon dans une case "Toxicologie" 
+    // ou "Endocrino" pour que le rapport ne soit pas vide
+    set('rai', 'ANALYSE ADN EFFECTUÉE', 'MARQUEURS CARDIAQUES'); 
+};
 
 // ==========================================
 // 4. MODULE IST — POPUP COMPLÈTE
