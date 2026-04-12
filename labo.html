@@ -106,19 +106,27 @@
                     </div>
                 </div>
 
-                
+
 
                 <div class="scenario-bloc" style="border-color: #10b98133; background: #061a14;">
-                    <div class="scenario-bloc-title" style="color: #34d399;">🧬 EXPERTISE GÉNÉTIQUE</div>
-                    <div style="display: flex; flex-direction: column; gap: 6px;">
-                        <button type="button" class="btn-special" style="background: linear-gradient(135deg,#059669,#064e3b); width:100%;" onclick="lancerTestADN()">
-                            🔬 LANCER TEST ADN (PARENTÉ)
-                        </button>
-                        <p style="font-size:9px; color:#64748b; font-style:italic; text-align:center;">
-                            Recherche de paternité, maternité ou fratrie.
-                        </p>
-                    </div>
-                </div>
+    <div class="scenario-bloc-title" style="color: #34d399;">🧬 EXPERTISE GÉNÉTIQUE</div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px;">
+        <label class="check-mini"><input type="radio" name="adn-type" value="Paternité"> Paternité</label>
+        <label class="check-mini"><input type="radio" name="adn-type" value="Fratrie" checked> Fratrie</label>
+        <label class="check-mini"><input type="radio" name="adn-type" value="Maternité"> Maternité</label>
+        <label class="check-mini"><input type="radio" name="adn-type" value="Cousinage"> Cousinage</label>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 8px;">
+        <label style="font-size: 9px; color: #34d399;">CODE UNIQUE DU TEST (Pour synchro)</label>
+        <input type="text" id="adn-seed" placeholder="Ex: 8892 ou NOM" style="background: #052e21; border-color: #064e3b;">
+    </div>
+
+    <button type="button" class="btn-special" style="background: linear-gradient(135deg,#059669,#064e3b); width:100%;" onclick="lancerTestADN()">
+        🔬 GÉNÉRER L'EXPERTISE
+    </button>
+</div>
 
 
                 <!-- IST -->
