@@ -586,64 +586,67 @@ window.lancerTestADN = function() {
     window.resetSeulementBio(false);
     const typeRecherche = document.querySelector('input[name="adn-type"]:checked')?.value || "Fratrie";
     let seedValue = document.getElementById('adn-seed').value;
+    
+    // Génération auto du code si vide
     if (!seedValue) {
         seedValue = Math.floor(Math.random() * 9000 + 1000).toString();
         document.getElementById('adn-seed').value = seedValue;
     }
 
     const rng = seededRandom(seedValue);
-    let statut = ""; let matchPercentage = 0; let interpretation = ""; let colorStatut = ""; let bgStatut = "";
+    let statut = ""; let matchP = 0; let interp = ""; let col = ""; let bg = "";
     
     if (rng < 0.45) {
-        statut = "NÉGATIF"; colorStatut = "#991b1b"; bgStatut = "#fee2e2";
-        matchPercentage = (seededRandom(seedValue + "p") * 0.1).toFixed(2);
-        interpretation = `Aucune similitude. Lien direct formellement exclu.`;
+        statut = "NÉGATIF"; col = "#991b1b"; bg = "#fee2e2";
+        matchP = (seededRandom(seedValue + "p") * 0.1).toFixed(2);
+        interp = `Aucune similitude. Lien direct formellement exclu.`;
     } else if (rng < 0.65) {
-        statut = "PARTIEL"; colorStatut = "#92400e"; bgStatut = "#fef3c7";
-        matchPercentage = (seededRandom(seedValue + "p") * 10 + 25).toFixed(2);
-        interpretation = `Lien au 2nd degré probable (ex: demi-fratrie).`;
+        statut = "PARTIEL"; col = "#92400e"; bg = "#fef3c7";
+        matchP = (seededRandom(seedValue + "p") * 10 + 25).toFixed(2);
+        interp = `Lien au 2ème degré probable (ex: demi-fratrie).`;
     } else {
-        statut = "POSITIF"; colorStatut = "#166534"; bgStatut = "#dcfce7";
-        matchPercentage = (seededRandom(seedValue + "p") * 1.5 + 98.4).toFixed(2);
-        interpretation = `Lien de parenté au 1er degré biologiquement prouvé.`;
+        statut = "POSITIF"; col = "#166534"; bg = "#dcfce7";
+        matchP = (seededRandom(seedValue + "p") * 1.5 + 98.4).toFixed(2);
+        interp = `Lien de parenté au 1er degré biologiquement prouvé.`;
     }
 
     const nomsLocus = ["D3S1358", "vWA", "D16S539", "TH01", "TPOX", "CSF1PO", "D7S820", "D13S317"];
-    let tableauHTML = `<table style="width:100%; border-collapse: collapse; font-size: 10px; margin-bottom: 10px;">
-        <tr style="background: #0a192f; color: white;"><th style="padding: 4px; text-align: left;">LOCUS</th><th style="text-align: center;">SUJET A</th><th style="text-align: center;">SUJET B</th><th style="text-align: center;">MATCH</th></tr>`;
+    let tabHTML = `<table style="width:100%; border-collapse: collapse; font-size: 10px; margin: 5px 0;">
+        <tr style="background: #0a192f; color: white;"><th style="padding: 3px; text-align: left;">LOCUS</th><th style="text-align: center;">A</th><th style="text-align: center;">B</th><th style="text-align: center;">RÉSULTAT</th></tr>`;
 
     nomsLocus.forEach((locus) => {
         let vA1 = Math.floor(seededRandom(seedValue + locus + "1") * 15 + 10);
         let vA2 = Math.floor(seededRandom(seedValue + locus + "2") * 15 + 15);
-        let vB1, vB2, icon;
-        if (statut === "POSITIF") { vB1 = vA1; vB2 = vA2; icon = "✅"; }
-        else if (statut === "PARTIEL") { vB1 = vA1; vB2 = Math.floor(seededRandom(seedValue + locus + "3") * 10 + 25); icon = "🟠"; }
-        else { vB1 = Math.floor(seededRandom(seedValue + locus + "4") * 10 + 5); vB2 = Math.floor(seededRandom(seedValue + locus + "5") * 10 + 35); icon = "❌"; }
-
-        tableauHTML += `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 3px; font-weight: bold;">${locus}</td><td style="text-align: center;">${vA1}/${vA2}</td><td style="text-align: center;">${vB1}/${vB2}</td><td style="text-align: center;">${icon}</td></tr>`;
+        let vB1, vB2, res;
+        if (statut === "POSITIF") { vB1 = vA1; vB2 = vA2; res = "<b style='color:green'>MATCH</b>"; }
+        else if (statut === "PARTIEL") { vB1 = vA1; vB2 = Math.floor(seededRandom(seedValue + locus + "3") * 10 + 25); res = "<b style='color:orange'>SEMI</b>"; }
+        else { vB1 = Math.floor(seededRandom(seedValue + locus + "4") * 10 + 5); vB2 = Math.floor(seededRandom(seedValue + locus + "5") * 10 + 35); res = "<b style='color:red'>NON</b>"; }
+        tabHTML += `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 2px; font-weight: bold;">${locus}</td><td style="text-align: center;">${vA1}/${vA2}</td><td style="text-align: center;">${vB1}/${vB2}</td><td style="text-align: center; font-size: 9px;">${res}</td></tr>`;
     });
-    tableauHTML += `</table>`;
+    tabHTML += `</table>`;
 
-    document.getElementById('d-concl').innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 5px 10px; border-left: 4px solid #0a192f; margin-bottom: 10px;">
-            <strong style="font-size: 12px;">EXPERTISE ADN #${seedValue}</strong>
-            <span style="font-size: 10px;">Type : ${typeRecherche}</span>
-        </div>
-
-        ${tableauHTML}
-
-        <div style="padding: 8px; border-radius: 4px; background: ${bgStatut}; border: 1px solid ${colorStatut}; display: flex; align-items: center; gap: 15px;">
-            <div style="flex-shrink: 0; text-align: center; border-right: 1px solid ${colorStatut}; padding-right: 15px;">
-                <div style="font-size: 10px; font-weight: 900; color: ${colorStatut};">RÉSULTAT</div>
-                <div style="font-size: 16px; font-weight: 900; color: ${colorStatut};">${statut}</div>
+    // Injection propre sans casser le reste
+    const dConcl = document.getElementById('d-concl');
+    if (dConcl) {
+        dConcl.innerHTML = `
+            <div style="background: #f1f5f9; padding: 4px 8px; border-left: 3px solid #0a192f; margin-bottom: 8px; font-size: 11px; display: flex; justify-content: space-between;">
+                <b>EXPERTISE ADN #${seedValue}</b> <span>Type : ${typeRecherche}</span>
             </div>
-            <div style="font-size: 11px; line-height: 1.2;">
-                <strong>Probabilité : ${matchPercentage}%</strong><br>
-                <span style="font-style: italic;">${interpretation}</span>
+            ${tabHTML}
+            <div style="padding: 6px; border-radius: 4px; background: ${bg}; border: 1px solid ${col}; display: flex; align-items: center; gap: 10px;">
+                <div style="text-align: center; border-right: 1px solid ${col}; padding-right: 10px;">
+                    <span style="font-size: 8px; font-weight: 900; color: ${col};">RÉSULTAT</span><br>
+                    <b style="font-size: 13px; color: ${col};">${statut}</b>
+                </div>
+                <div style="font-size: 10px; line-height: 1.1;">
+                    <b>Probabilité : ${matchP}%</b><br>
+                    <i style="color: #333;">${interp}</i>
+                </div>
             </div>
-        </div>
-        <p style="font-size: 9px; color: #64748b; margin-top: 5px; font-style: italic;">* Locus: marqueurs ADN | Allèles: chiffres hérités.</p>
-    `;
+            <p style="font-size: 8px; color: #777; margin: 4px 0 0 0;">* Locus: marqueur | Allèles: chiffres hérités (Père/Mère).</p>
+        `;
+    }
+    window.res('rai', `ADN : ${statut}`, 'MARQUEURS CARDIAQUES');
 };
 
 
