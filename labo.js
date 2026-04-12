@@ -582,7 +582,6 @@ Carte de groupe sanguin à remettre au patient.`;
 
 
 
-// Fonction pour générer du "faux hasard" basé sur un texte (Seed)
 function seededRandom(seed) {
     let hash = 0;
     for (let i = 0; i < seed.length; i++) {
@@ -596,95 +595,102 @@ function seededRandom(seed) {
 window.lancerTestADN = function() {
     window.resetSeulementBio(false);
     
-    // Récupération des choix
     const typeRecherche = document.querySelector('input[name="adn-type"]:checked')?.value || "Fratrie";
-    const seedValue = document.getElementById('adn-seed').value;
+    let seedValue = document.getElementById('adn-seed').value;
 
+    // Si pas de code, on en crée un au hasard (ex: ADN-8429)
     if (!seedValue) {
-        alert("⚠️ Entre un CODE UNIQUE (ex: un numéro de dossier) pour pouvoir ressortir le même résultat sur l'autre rapport !");
-        return;
+        seedValue = Math.floor(Math.random() * 9000 + 1000).toString();
+        document.getElementById('adn-seed').value = seedValue;
     }
 
-    // Utilisation du code unique pour le hasard
     const rng = seededRandom(seedValue);
-    
     let statut = "";
     let matchPercentage = 0;
     let interpretation = "";
     let colorStatut = "";
+    let bgStatut = "";
     
-    if (rng < 0.4) {
-        statut = "NÉGATIF";
-        colorStatut = "#dc2626";
-        matchPercentage = (seededRandom(seedValue + "prob") * 0.02).toFixed(2);
-        interpretation = `L'analyse ne montre aucune correspondance significative. Le lien biologique n'est pas établi.`;
-    } else if (rng < 0.6) {
-        statut = "PARTIEL (DEMI-LIEN)";
-        colorStatut = "#f59e0b";
-        matchPercentage = (seededRandom(seedValue + "prob") * 5 + 23).toFixed(2);
-        interpretation = `La correspondance partielle suggère un lien au second degré (probablement demi-${typeRecherche.toLowerCase()}).`;
+    if (rng < 0.45) {
+        statut = "NÉGATIF (Aucun lien)";
+        colorStatut = "#991b1b"; bgStatut = "#fee2e2";
+        matchPercentage = (seededRandom(seedValue + "p") * 0.1).toFixed(2);
+        interpretation = `L'analyse ne révèle aucune similitude génétique significative. Le lien de parenté direct entre les deux individus est **formellement exclu**.`;
+    } else if (rng < 0.65) {
+        statut = "PARTIEL (Demi-Lien)";
+        colorStatut = "#92400e"; bgStatut = "#fef3c7";
+        matchPercentage = (seededRandom(seedValue + "p") * 10 + 25).toFixed(2);
+        interpretation = `Il existe une correspondance partielle. Cela indique que les sujets partagent environ 25% de leur patrimoine génétique. Il s'agit très probablement d'un lien au **second degré** (ex: Demi-frères/sœurs partageant un seul parent).`;
     } else {
-        statut = "POSITIF";
-        colorStatut = "#16a34a";
-        matchPercentage = (seededRandom(seedValue + "prob") * 2 + 97.8).toFixed(2);
-        interpretation = `Correspondance majeure des marqueurs. Le lien de parenté au premier degré est établi à plus de 99%.`;
+        statut = "POSITIF (Lien établi)";
+        colorStatut = "#166534"; bgStatut = "#dcfce7";
+        matchPercentage = (seededRandom(seedValue + "p") * 1.5 + 98.4).toFixed(2);
+        interpretation = `Correspondance génétique majeure. Les sujets partagent les mêmes marqueurs héréditaires. Le lien de parenté au **premier degré** est biologiquement prouvé.`;
     }
 
-    const nomsLocus = ["D3S1358", "vWA", "D16S539", "TH01", "TPOX", "CSF1PO", "D7S820", "D13S317", "D5S818", "FGA"];
-    let tableauHTML = `<div style="margin: 15px 0; border: 1px solid #e2e8f0; border-radius: 4px; overflow: hidden;">
-        <table style="width:100%; border-collapse: collapse; font-size: 12px;">
-            <thead>
-                <tr style="background: #f8fafc; border-bottom: 2px solid #0a192f; color: #0a192f;">
-                    <th style="padding: 8px; text-align: left;">LOCUS</th>
-                    <th style="padding: 8px; text-align: center;">SUJET A</th>
-                    <th style="padding: 8px; text-align: center;">SUJET B</th>
-                    <th style="padding: 8px; text-align: center;">MATCH</th>
-                </tr>
-            </thead>
-            <tbody>`;
+    // Le tableau des Locus
+    const nomsLocus = ["D3S1358", "vWA", "D16S539", "TH01", "TPOX", "CSF1PO", "D7S820", "D13S317"];
+    let tableauHTML = `
+    <div style="margin: 15px 0; border: 1px solid #0a192f; border-radius: 4px; overflow: hidden;">
+        <table style="width:100%; border-collapse: collapse; font-size: 11px;">
+            <tr style="background: #0a192f; color: white;">
+                <th style="padding: 6px; text-align: left;">MARQUEUR (Locus)</th>
+                <th style="padding: 6px; text-align: center;">SUJET A</th>
+                <th style="padding: 6px; text-align: center;">SUJET B</th>
+                <th style="padding: 6px; text-align: center;">RÉSULTAT</th>
+            </tr>`;
 
-    nomsLocus.forEach((locus, index) => {
-        // Chaque ligne est générée avec la même logique si la seed est identique
-        let valA1 = Math.floor(seededRandom(seedValue + locus + "1") * 10 + 10);
-        let valA2 = Math.floor(seededRandom(seedValue + locus + "2") * 10 + 15);
-        let valB1, valB2, matchIcon;
+    nomsLocus.forEach((locus) => {
+        let vA1 = Math.floor(seededRandom(seedValue + locus + "1") * 15 + 10);
+        let vA2 = Math.floor(seededRandom(seedValue + locus + "2") * 15 + 15);
+        let vB1, vB2, icon;
 
-        if (statut === "POSITIF") {
-            valB1 = valA1; valB2 = valA2; matchIcon = "<span style='color: #16a34a;'>✅</span>";
-        } else if (statut === "PARTIEL (DEMI-LIEN)") {
-            // Un allèle sur deux match
-            valB1 = valA1; 
-            valB2 = Math.floor(seededRandom(seedValue + locus + "3") * 10 + 20); 
-            matchIcon = "<span style='color: #f59e0b;'>✅/❌</span>";
+        if (statut.includes("POSITIF")) {
+            vB1 = vA1; vB2 = vA2; icon = "MATCH ✅";
+        } else if (statut.includes("PARTIEL")) {
+            vB1 = vA1; vB2 = Math.floor(seededRandom(seedValue + locus + "3") * 10 + 25); icon = "SEMI 🟠";
         } else {
-            valB1 = Math.floor(seededRandom(seedValue + locus + "4") * 10 + 5); 
-            valB2 = Math.floor(seededRandom(seedValue + locus + "5") * 10 + 25); 
-            matchIcon = "<span style='color: #dc2626;'>❌</span>";
+            vB1 = Math.floor(seededRandom(seedValue + locus + "4") * 10 + 5); vB2 = Math.floor(seededRandom(seedValue + locus + "5") * 10 + 35); icon = "NON ❌";
         }
 
-        tableauHTML += `<tr style="border-bottom: 1px solid #f1f5f9;">
-            <td style="padding: 6px 8px; font-weight: bold;">${locus}</td>
-            <td style="padding: 6px 8px; text-align: center;">${valA1} / ${valA2}</td>
-            <td style="padding: 6px 8px; text-align: center;">${valB1} / ${valB2}</td>
-            <td style="padding: 6px 8px; text-align: center;">${matchIcon}</td>
-        </tr>`;
+        tableauHTML += `
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 5px 8px; font-weight: bold;">${locus}</td>
+                <td style="padding: 5px 8px; text-align: center;">${vA1} / ${vA2}</td>
+                <td style="padding: 5px 8px; text-align: center;">${vB1} / ${vB2}</td>
+                <td style="padding: 5px 8px; text-align: center; font-size: 9px; font-weight: 800;">${icon}</td>
+            </tr>`;
     });
-
-    tableauHTML += `</tbody></table></div>`;
+    tableauHTML += `</table></div>`;
 
     document.getElementById('d-concl').innerHTML = `
-        <div style="color: #0a192f; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #0a192f; padding-bottom: 5px;">
-            🧬 RAPPORT D'EXPERTISE ADN - RÉF #ADN-${seedValue.toUpperCase()}
+        <div style="background: #f1f5f9; padding: 10px; border-radius: 4px; border-left: 4px solid #0a192f; margin-bottom: 15px;">
+            <strong style="color: #0a192f; font-size: 14px;">RAPPORT D'EXPERTISE GÉNÉTIQUE #${seedValue}</strong><br>
+            <span style="font-size: 11px;">Nature du test : Recherche de ${typeRecherche}</span>
         </div>
+
+        <div style="font-size: 11px; color: #475569; margin-bottom: 10px; padding: 10px; border: 1px dashed #cbd5e1;">
+            <strong>💡 COMPRENDRE LES RÉSULTATS :</strong><br>
+            • <b>LOCUS :</b> C'est un emplacement précis sur votre ADN (comme une adresse).<br>
+            • <b>CHIFFRES (Allèles) :</b> Ce sont les caractéristiques héritées. On en a deux (un du père, un de la mère).<br>
+            • <b>MATCH :</b> Si les chiffres sont identiques, cela prouve la parenté.
+        </div>
+
         ${tableauHTML}
-        <div style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 4px;">
-            <div style="margin-bottom: 5px;"><strong>RÉSULTAT :</strong> <span style="color: ${colorStatut};">${statut}</span></div>
-            <div style="margin-bottom: 10px;"><strong>PROBABILITÉ :</strong> ${matchPercentage}%</div>
-            <div style="line-height: 1.4; border-top: 1px solid #e2e8f0; padding-top: 8px;">
-                <strong>INTERPRÉTATION :</strong><br>
-                <span style="font-style: italic;">L'analyse confirme un lien de ${typeRecherche.toLowerCase()} ${statut.toLowerCase()}.</span>
+
+        <div style="padding: 15px; border-radius: 6px; background: ${bgStatut}; border: 1px solid ${colorStatut};">
+            <div style="font-size: 14px; font-weight: 900; color: ${colorStatut}; text-transform: uppercase; margin-bottom: 5px;">
+                RÉSULTAT : ${statut}
             </div>
-        </div>`;
+            <div style="font-size: 16px; font-weight: 700; color: #000; margin-bottom: 10px;">
+                Probabilité de parenté : ${matchPercentage}%
+            </div>
+            <div style="font-size: 12px; line-height: 1.5; color: #000; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 10px;">
+                <b>INTERPRÉTATION MÉDICALE :</b><br>
+                ${interpretation}
+            </div>
+        </div>
+    `;
 };
 
 // ==========================================
