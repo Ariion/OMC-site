@@ -669,7 +669,7 @@ window.lancerTestADN = function() {
             <p style="font-size: 8px; color: #94a3b8; margin: 6px 0 0 0; font-style: italic;">* Locus: emplacement du marqueur | Allèles: caractéristiques héritées (Père/Mère).</p>
         `;
     }
-    window.res('rai', `ADN : ${statut}`, 'MARQUEURS CARDIAQUES');
+    
 };
 
 
