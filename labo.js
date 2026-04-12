@@ -598,7 +598,6 @@ window.lancerTestADN = function() {
     const typeRecherche = document.querySelector('input[name="adn-type"]:checked')?.value || "Fratrie";
     let seedValue = document.getElementById('adn-seed').value;
     
-    // Génération auto du code si vide
     if (!seedValue) {
         seedValue = Math.floor(Math.random() * 9000 + 1000).toString();
         document.getElementById('adn-seed').value = seedValue;
@@ -607,27 +606,24 @@ window.lancerTestADN = function() {
     const rng = seededRandom(seedValue);
     let statut = ""; let matchP = 0; let interp = ""; let col = ""; 
     
-    // 0 à 45% de chances de tomber sur NÉGATIF
     if (rng < 0.45) {
         statut = "NÉGATIF"; col = "#dc2626"; // Rouge
-        matchP = (seededRandom(seedValue + "p") * 0.1).toFixed(2); // ~0%
+        matchP = (seededRandom(seedValue + "p") * 0.1).toFixed(2); 
         interp = `Aucune similitude génétique. Lien biologique formellement exclu.`;
     } 
-    // 45% à 65% de chances de tomber sur DEMI-LIEN
     else if (rng < 0.65) {
-        statut = "DEMI-LIEN"; col = "#ea580c"; // Orange moderne
-        matchP = (seededRandom(seedValue + "p") * 10 + 42).toFixed(2); // 42% - 52%
+        statut = "DEMI-LIEN"; col = "#0284c7"; // PASSÉ EN BLEU 🔵
+        matchP = (seededRandom(seedValue + "p") * 10 + 42).toFixed(2); 
         interp = `Lien au 2ème degré confirmé. Les sujets partagent exactement un (1) parent biologique en commun.`;
     } 
-    // 65% à 100% de chances de tomber sur POSITIF
     else {
         statut = "POSITIF"; col = "#16a34a"; // Vert
-        matchP = (seededRandom(seedValue + "p") * 1.5 + 98.4).toFixed(2); // 98.4% - 99.9%
+        matchP = (seededRandom(seedValue + "p") * 1.5 + 98.4).toFixed(2); 
         interp = `Lien de parenté au 1er degré biologiquement prouvé à quasi 100%.`;
     }
 
     const nomsLocus = ["D3S1358", "vWA", "D16S539", "TH01", "TPOX", "CSF1PO", "D7S820", "D13S317"];
-    let tabHTML = `<table style="width:100%; border-collapse: collapse; font-size: 10px; margin: 5px 0;">
+    let tabHTML = `<table style="width:100%; border-collapse: collapse; font-size: 10px; margin: 0 0 4px 0;">
         <tr style="background: #0a192f; color: white;"><th style="padding: 3px; text-align: left;">LOCUS</th><th style="text-align: center;">A</th><th style="text-align: center;">B</th><th style="text-align: center;">RÉSULTAT</th></tr>`;
 
     nomsLocus.forEach((locus) => {
@@ -638,7 +634,7 @@ window.lancerTestADN = function() {
             vB1 = vA1; vB2 = vA2; res = "<b style='color:#16a34a'>MATCH</b>"; 
         }
         else if (statut === "DEMI-LIEN") { 
-            vB1 = vA1; vB2 = Math.floor(seededRandom(seedValue + locus + "3") * 10 + 25); res = "<b style='color:#ea580c'>SEMI</b>"; 
+            vB1 = vA1; vB2 = Math.floor(seededRandom(seedValue + locus + "3") * 10 + 25); res = "<b style='color:#0284c7'>SEMI</b>"; 
         }
         else { 
             vB1 = Math.floor(seededRandom(seedValue + locus + "4") * 10 + 5); vB2 = Math.floor(seededRandom(seedValue + locus + "5") * 10 + 35); res = "<b style='color:#dc2626'>NON</b>"; 
@@ -650,12 +646,12 @@ window.lancerTestADN = function() {
     const dConcl = document.getElementById('d-concl');
     if (dConcl) {
         dConcl.innerHTML = `
-            <div style="background: #f1f5f9; padding: 4px 8px; border-left: 3px solid #0a192f; margin-bottom: 8px; font-size: 11px; display: flex; justify-content: space-between;">
+            <div style="background: #f1f5f9; padding: 4px 8px; border-left: 3px solid #0a192f; margin-bottom: 6px; font-size: 11px; display: flex; justify-content: space-between;">
                 <b>EXPERTISE ADN #${seedValue}</b> <span style="text-transform: uppercase;">Type : ${typeRecherche}</span>
             </div>
             ${tabHTML}
             
-            <div style="margin-top: 8px; padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid ${col}; border-radius: 4px; display: flex; align-items: center; gap: 12px;">
+            <div style="margin-top: 4px; padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid ${col}; border-radius: 4px; display: flex; align-items: center; gap: 12px;">
                 <div style="text-align: center; padding-right: 12px; border-right: 1px solid #cbd5e1; min-width: 70px;">
                     <span style="font-size: 8px; font-weight: 900; color: #64748b; letter-spacing: 1px;">RÉSULTAT</span><br>
                     <b style="font-size: 13px; color: ${col};">${statut}</b>
@@ -666,10 +662,9 @@ window.lancerTestADN = function() {
                 </div>
             </div>
             
-            <p style="font-size: 8px; color: #94a3b8; margin: 6px 0 0 0; font-style: italic;">* Locus: emplacement du marqueur | Allèles: caractéristiques héritées (Père/Mère).</p>
+            <p style="font-size: 8px; color: #94a3b8; margin: 4px 0 0 0; font-style: italic;">* Locus: emplacement du marqueur | Allèles: caractéristiques héritées (Père/Mère).</p>
         `;
     }
-    
 };
 
 
