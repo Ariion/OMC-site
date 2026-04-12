@@ -605,20 +605,25 @@ window.lancerTestADN = function() {
     }
 
     const rng = seededRandom(seedValue);
-    let statut = ""; let matchP = 0; let interp = ""; let col = ""; let bg = "";
+    let statut = ""; let matchP = 0; let interp = ""; let col = ""; 
     
+    // 0 à 45% de chances de tomber sur NÉGATIF
     if (rng < 0.45) {
-        statut = "NÉGATIF"; col = "#991b1b"; bg = "#fee2e2";
-        matchP = (seededRandom(seedValue + "p") * 0.1).toFixed(2);
-        interp = `Aucune similitude. Lien direct formellement exclu.`;
-    } else if (rng < 0.65) {
-        statut = "PARTIEL"; col = "#92400e"; bg = "#fef3c7";
-        matchP = (seededRandom(seedValue + "p") * 10 + 25).toFixed(2);
-        interp = `Lien au 2ème degré probable (ex: demi-fratrie).`;
-    } else {
-        statut = "POSITIF"; col = "#166534"; bg = "#dcfce7";
-        matchP = (seededRandom(seedValue + "p") * 1.5 + 98.4).toFixed(2);
-        interp = `Lien de parenté au 1er degré biologiquement prouvé.`;
+        statut = "NÉGATIF"; col = "#dc2626"; // Rouge
+        matchP = (seededRandom(seedValue + "p") * 0.1).toFixed(2); // ~0%
+        interp = `Aucune similitude génétique. Lien biologique formellement exclu.`;
+    } 
+    // 45% à 65% de chances de tomber sur DEMI-LIEN
+    else if (rng < 0.65) {
+        statut = "DEMI-LIEN"; col = "#ea580c"; // Orange moderne
+        matchP = (seededRandom(seedValue + "p") * 10 + 42).toFixed(2); // 42% - 52%
+        interp = `Lien au 2ème degré confirmé. Les sujets partagent exactement un (1) parent biologique en commun.`;
+    } 
+    // 65% à 100% de chances de tomber sur POSITIF
+    else {
+        statut = "POSITIF"; col = "#16a34a"; // Vert
+        matchP = (seededRandom(seedValue + "p") * 1.5 + 98.4).toFixed(2); // 98.4% - 99.9%
+        interp = `Lien de parenté au 1er degré biologiquement prouvé à quasi 100%.`;
     }
 
     const nomsLocus = ["D3S1358", "vWA", "D16S539", "TH01", "TPOX", "CSF1PO", "D7S820", "D13S317"];
@@ -629,9 +634,15 @@ window.lancerTestADN = function() {
         let vA1 = Math.floor(seededRandom(seedValue + locus + "1") * 15 + 10);
         let vA2 = Math.floor(seededRandom(seedValue + locus + "2") * 15 + 15);
         let vB1, vB2, res;
-        if (statut === "POSITIF") { vB1 = vA1; vB2 = vA2; res = "<b style='color:green'>MATCH</b>"; }
-        else if (statut === "PARTIEL") { vB1 = vA1; vB2 = Math.floor(seededRandom(seedValue + locus + "3") * 10 + 25); res = "<b style='color:orange'>SEMI</b>"; }
-        else { vB1 = Math.floor(seededRandom(seedValue + locus + "4") * 10 + 5); vB2 = Math.floor(seededRandom(seedValue + locus + "5") * 10 + 35); res = "<b style='color:red'>NON</b>"; }
+        if (statut === "POSITIF") { 
+            vB1 = vA1; vB2 = vA2; res = "<b style='color:#16a34a'>MATCH</b>"; 
+        }
+        else if (statut === "DEMI-LIEN") { 
+            vB1 = vA1; vB2 = Math.floor(seededRandom(seedValue + locus + "3") * 10 + 25); res = "<b style='color:#ea580c'>SEMI</b>"; 
+        }
+        else { 
+            vB1 = Math.floor(seededRandom(seedValue + locus + "4") * 10 + 5); vB2 = Math.floor(seededRandom(seedValue + locus + "5") * 10 + 35); res = "<b style='color:#dc2626'>NON</b>"; 
+        }
         tabHTML += `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 2px; font-weight: bold;">${locus}</td><td style="text-align: center;">${vA1}/${vA2}</td><td style="text-align: center;">${vB1}/${vB2}</td><td style="text-align: center; font-size: 9px;">${res}</td></tr>`;
     });
     tabHTML += `</table>`;
@@ -640,20 +651,22 @@ window.lancerTestADN = function() {
     if (dConcl) {
         dConcl.innerHTML = `
             <div style="background: #f1f5f9; padding: 4px 8px; border-left: 3px solid #0a192f; margin-bottom: 8px; font-size: 11px; display: flex; justify-content: space-between;">
-                <b>EXPERTISE ADN #${seedValue}</b> <span>Type : ${typeRecherche}</span>
+                <b>EXPERTISE ADN #${seedValue}</b> <span style="text-transform: uppercase;">Type : ${typeRecherche}</span>
             </div>
             ${tabHTML}
-            <div style="padding: 6px; border-radius: 4px; background: ${bg}; border: 1px solid ${col}; display: flex; align-items: center; gap: 10px;">
-                <div style="text-align: center; border-right: 1px solid ${col}; padding-right: 10px;">
-                    <span style="font-size: 8px; font-weight: 900; color: ${col};">RÉSULTAT</span><br>
+            
+            <div style="margin-top: 8px; padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid ${col}; border-radius: 4px; display: flex; align-items: center; gap: 12px;">
+                <div style="text-align: center; padding-right: 12px; border-right: 1px solid #cbd5e1; min-width: 70px;">
+                    <span style="font-size: 8px; font-weight: 900; color: #64748b; letter-spacing: 1px;">RÉSULTAT</span><br>
                     <b style="font-size: 13px; color: ${col};">${statut}</b>
                 </div>
-                <div style="font-size: 10px; line-height: 1.1;">
-                    <b>Probabilité : ${matchP}%</b><br>
-                    <i style="color: #333;">${interp}</i>
+                <div style="font-size: 10px; line-height: 1.3;">
+                    <b style="font-size: 11px; color: #0f172a;">Probabilité : ${matchP}%</b><br>
+                    <span style="color: #475569;">${interp}</span>
                 </div>
             </div>
-            <p style="font-size: 8px; color: #777; margin: 4px 0 0 0;">* Locus: marqueur | Allèles: chiffres hérités (Père/Mère).</p>
+            
+            <p style="font-size: 8px; color: #94a3b8; margin: 6px 0 0 0; font-style: italic;">* Locus: emplacement du marqueur | Allèles: caractéristiques héritées (Père/Mère).</p>
         `;
     }
     window.res('rai', `ADN : ${statut}`, 'MARQUEURS CARDIAQUES');
