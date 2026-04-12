@@ -111,16 +111,35 @@
                 <div class="scenario-bloc" style="border-color: #10b98133; background: #061a14;">
     <div class="scenario-bloc-title" style="color: #34d399;">🧬 EXPERTISE GÉNÉTIQUE</div>
     
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px;">
-        <label class="check-mini"><input type="radio" name="adn-type" value="Paternité"> Paternité</label>
-        <label class="check-mini"><input type="radio" name="adn-type" value="Fratrie" checked> Fratrie</label>
-        <label class="check-mini"><input type="radio" name="adn-type" value="Maternité"> Maternité</label>
-        <label class="check-mini"><input type="radio" name="adn-type" value="Cousinage"> Cousinage</label>
+    <style>
+        .radio-adn { display: none; }
+        .label-adn { 
+            background: #022c22; border: 1px solid #065f46; color: #a7f3d0; 
+            padding: 8px 4px; text-align: center; border-radius: 4px; cursor: pointer; 
+            font-size: 10px; font-weight: bold; transition: all 0.2s; 
+        }
+        .radio-adn:checked + .label-adn { 
+            background: #10b981; color: #022c22; border-color: #34d399; box-shadow: 0 0 10px rgba(16,185,129,0.3);
+        }
+    </style>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px;">
+        <input type="radio" id="adn-pat" name="adn-type" value="Paternité" class="radio-adn">
+        <label for="adn-pat" class="label-adn">Paternité</label>
+
+        <input type="radio" id="adn-fra" name="adn-type" value="Fratrie" class="radio-adn" checked>
+        <label for="adn-fra" class="label-adn">Fratrie</label>
+
+        <input type="radio" id="adn-mat" name="adn-type" value="Maternité" class="radio-adn">
+        <label for="adn-mat" class="label-adn">Maternité</label>
+
+        <input type="radio" id="adn-cou" name="adn-type" value="Cousinage" class="radio-adn">
+        <label for="adn-cou" class="label-adn">Cousinage</label>
     </div>
 
     <div class="form-group" style="margin-bottom: 8px;">
-        <label style="font-size: 9px; color: #34d399;">N° DE DOSSIER (Laissez vide pour un nouveau test)</label>
-        <input type="text" id="adn-seed" placeholder="Généré automatiquement..." style="background: #052e21; border-color: #064e3b;">
+        <label style="font-size: 9px; color: #34d399;">N° DE DOSSIER (Laissez vide pour auto)</label>
+        <input type="text" id="adn-seed" placeholder="Généré auto..." style="background: #052e21; border-color: #064e3b; text-align: center; font-weight: bold; letter-spacing: 2px;">
     </div>
 
     <button type="button" class="btn-special" style="background: linear-gradient(135deg,#059669,#064e3b); width:100%;" onclick="lancerTestADN()">

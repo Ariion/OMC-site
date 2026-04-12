@@ -582,6 +582,17 @@ Carte de groupe sanguin à remettre au patient.`;
 
 
 
+// La fonction manquante qui permet de générer les mêmes probabilités avec le même numéro !
+function seededRandom(seed) {
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+        hash |= 0;
+    }
+    const x = Math.sin(hash) * 10000;
+    return x - Math.floor(x);
+}
+
 window.lancerTestADN = function() {
     window.resetSeulementBio(false);
     const typeRecherche = document.querySelector('input[name="adn-type"]:checked')?.value || "Fratrie";
@@ -625,7 +636,6 @@ window.lancerTestADN = function() {
     });
     tabHTML += `</table>`;
 
-    // Injection propre sans casser le reste
     const dConcl = document.getElementById('d-concl');
     if (dConcl) {
         dConcl.innerHTML = `
