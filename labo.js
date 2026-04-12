@@ -578,30 +578,83 @@ Carte de groupe sanguin à remettre au patient.`;
     fusionnerConclusion(concl);
 };
 
-/* ── TEST ADN / PARENTÉ ── */
 window.lancerTestADN = function() {
     window.resetSeulementBio(false);
     
-    // On simule une analyse de 16 marqueurs génétiques (standard US)
-    const proba = Math.random();
-    let resultatText = "";
-    let conclusion = "";
+    // 1. On demande le type de recherche
+    const typeRecherche = prompt("Type de lien recherché ? (Père, Mère, Frère, Sœur, etc.)", "Frère/Sœur");
+    if (!typeRecherche) return;
 
-    if (proba > 0.5) { // 50% de chance qu'ils soient frères/soeurs en RP
-        const score = (Math.random() * 5 + 94).toFixed(2); // Score entre 94% et 99%
-        resultatText = `Analyse comparative des locus : MATCH CONFIRMÉ\nIndice de fraternité : ${score}%`;
-        conclusion = `EXPERTISE ADN : LIEN DE PARENTÉ ÉTABLI\n\nL'analyse comparative des profils génétiques entre les deux sujets révèle une correspondance sur 15 des 16 marqueurs testés.\n\nLa probabilité de fraternité est de ${score}%. Ce résultat est considéré comme une preuve biologique de parenté au premier degré.`;
+    // 2. Détermination du résultat (RNG)
+    const rng = Math.random();
+    let statut = "";
+    let matchPercentage = 0;
+    let interpretation = "";
+    let locusData = [];
+
+    // Table de probabilités : 
+    // 0.0-0.4 : Aucun lien (0%)
+    // 0.4-0.6 : Demi-lien (25%)
+    // 0.6-1.0 : Lien complet (50% ou plus)
+    
+    if (rng < 0.4) {
+        statut = "NÉGATIF";
+        matchPercentage = (Math.random() * 0.02).toFixed(2); // ~0%
+        interpretation = `L'analyse ne montre aucune correspondance significative. Le sujet testé n'est pas le ${typeRecherche} biologique du demandeur.`;
+    } else if (rng < 0.6) {
+        statut = "PARTIEL (DEMI-LIEN)";
+        matchPercentage = (Math.random() * 5 + 23).toFixed(2); // ~25%
+        interpretation = `La correspondance partielle des allèles suggère un lien de parenté au second degré. Les sujets sont probablement demi-${typeRecherche.toLowerCase()}s (partage d'un seul parent commun).`;
     } else {
-        resultatText = `Analyse comparative des locus : AUCUN MATCH`;
-        conclusion = `EXPERTISE ADN : LIEN DE PARENTÉ NON ÉTABLI\n\nL'analyse des profils génétiques ne montre aucune correspondance significative au-delà des variations aléatoires de la population.\n\nLa probabilité de lien biologique est inférieure à 0.01%. Les sujets ne partagent pas de patrimoine génétique commun direct.`;
+        statut = "POSITIF";
+        matchPercentage = (Math.random() * 4 + 95).toFixed(2); // ~99%
+        interpretation = `Correspondance quasi-totale des marqueurs génétiques. Le lien de parenté (premier degré) est biologiquement établi à plus de 99.9%.`;
     }
 
-    // On remplit la conclusion
-    fusionnerConclusion(conclusion);
+    // 3. Génération du tableau des Locus (10 marqueurs pour le visuel)
+    const nomsLocus = ["D3S1358", "vWA", "D16S539", "TH01", "TPOX", "CSF1PO", "D7S820", "D13S317", "D5S818", "FGA"];
     
-    // Optionnel : Tu peux mettre une valeur bidon dans une case "Toxicologie" 
-    // ou "Endocrino" pour que le rapport ne soit pas vide
-    set('rai', 'ANALYSE ADN EFFECTUÉE', 'MARQUEURS CARDIAQUES'); 
+    let tableauHTML = `<table style="width:100%; border-collapse: collapse; margin: 15px 0; font-size: 11px;">
+        <tr style="background: #f1f5f9; border-bottom: 2px solid #0a192f;">
+            <th style="padding: 5px; text-align: left;">LOCUS</th>
+            <th style="padding: 5px; text-align: center;">SUJET A (Allèles)</th>
+            <th style="padding: 5px; text-align: center;">SUJET B (Allèles)</th>
+            <th style="padding: 5px; text-align: center;">MATCH</th>
+        </tr>`;
+
+    nomsLocus.forEach(locus => {
+        let valA1 = Math.floor(Math.random() * 10 + 10);
+        let valA2 = Math.floor(Math.random() * 10 + 15);
+        let valB1, valB2, matchIcon;
+
+        if (statut === "POSITIF") {
+            valB1 = valA1; valB2 = valA2; matchIcon = "✅";
+        } else if (statut === "PARTIEL (DEMI-LIEN)") {
+            valB1 = valA1; valB2 = Math.floor(Math.random() * 10 + 20); matchIcon = "🟠";
+        } else {
+            valB1 = Math.floor(Math.random() * 10 + 5); valB2 = Math.floor(Math.random() * 10 + 25); matchIcon = "❌";
+        }
+
+        tableauHTML += `<tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 4px; font-weight: bold;">${locus}</td>
+            <td style="padding: 4px; text-align: center;">${valA1} / ${valA2}</td>
+            <td style="padding: 4px; text-align: center;">${valB1} / ${valB2}</td>
+            <td style="padding: 4px; text-align: center;">${matchIcon}</td>
+        </tr>`;
+    });
+    tableauHTML += `</table>`;
+
+    // 4. Injection dans le document
+    const finalConclusion = `🔬 RAPPORT D'EXPERTISE ADN - DOSSIER #ANT-${Math.floor(Math.random()*9000+1000)}\n
+TYPE DE RECHERCHE : ${typeRecherche.toUpperCase()}\n
+${tableauHTML}\n
+RÉSULTAT : ${statut}\n
+PROBABILITÉ : ${matchPercentage}%\n\n
+INTERPRÉTATION :\n${interpretation}\n\n
+Note : Ce document est une preuve biologique légale. À usage privé et judiciaire uniquement.`;
+
+    fusionnerConclusion(finalConclusion);
+    set('rai', `ANALYSE : ${statut}`, 'MARQUEURS CARDIAQUES');
 };
 
 // ==========================================
