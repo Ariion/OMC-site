@@ -578,49 +578,55 @@ Carte de groupe sanguin à remettre au patient.`;
     fusionnerConclusion(concl);
 };
 
+
+
+
+
 window.lancerTestADN = function() {
     window.resetSeulementBio(false);
     
-    // 1. On demande le type de recherche
     const typeRecherche = prompt("Type de lien recherché ? (Père, Mère, Frère, Sœur, etc.)", "Frère/Sœur");
     if (!typeRecherche) return;
 
-    // 2. Détermination du résultat (RNG)
     const rng = Math.random();
     let statut = "";
     let matchPercentage = 0;
     let interpretation = "";
-    let locusData = [];
-
-    // Table de probabilités : 
-    // 0.0-0.4 : Aucun lien (0%)
-    // 0.4-0.6 : Demi-lien (25%)
-    // 0.6-1.0 : Lien complet (50% ou plus)
+    let colorStatut = "";
     
+    // Détermination du lien
     if (rng < 0.4) {
         statut = "NÉGATIF";
-        matchPercentage = (Math.random() * 0.02).toFixed(2); // ~0%
+        colorStatut = "#dc2626"; // Rouge
+        matchPercentage = (Math.random() * 0.02).toFixed(2);
         interpretation = `L'analyse ne montre aucune correspondance significative. Le sujet testé n'est pas le ${typeRecherche} biologique du demandeur.`;
     } else if (rng < 0.6) {
         statut = "PARTIEL (DEMI-LIEN)";
-        matchPercentage = (Math.random() * 5 + 23).toFixed(2); // ~25%
-        interpretation = `La correspondance partielle des allèles suggère un lien de parenté au second degré. Les sujets sont probablement demi-${typeRecherche.toLowerCase()}s (partage d'un seul parent commun).`;
+        colorStatut = "#f59e0b"; // Orange
+        matchPercentage = (Math.random() * 5 + 23).toFixed(2);
+        interpretation = `La correspondance partielle des allèles suggère un lien de parenté au second degré. Les sujets sont probablement demi-${typeRecherche.toLowerCase()}s (un seul parent commun).`;
     } else {
         statut = "POSITIF";
-        matchPercentage = (Math.random() * 4 + 95).toFixed(2); // ~99%
+        colorStatut = "#16a34a"; // Vert
+        matchPercentage = (Math.random() * 4 + 95).toFixed(2);
         interpretation = `Correspondance quasi-totale des marqueurs génétiques. Le lien de parenté (premier degré) est biologiquement établi à plus de 99.9%.`;
     }
 
-    // 3. Génération du tableau des Locus (10 marqueurs pour le visuel)
+    // Construction du tableau HTML
     const nomsLocus = ["D3S1358", "vWA", "D16S539", "TH01", "TPOX", "CSF1PO", "D7S820", "D13S317", "D5S818", "FGA"];
     
-    let tableauHTML = `<table style="width:100%; border-collapse: collapse; margin: 15px 0; font-size: 11px;">
-        <tr style="background: #f1f5f9; border-bottom: 2px solid #0a192f;">
-            <th style="padding: 5px; text-align: left;">LOCUS</th>
-            <th style="padding: 5px; text-align: center;">SUJET A (Allèles)</th>
-            <th style="padding: 5px; text-align: center;">SUJET B (Allèles)</th>
-            <th style="padding: 5px; text-align: center;">MATCH</th>
-        </tr>`;
+    let tableauHTML = `
+    <div style="margin: 15px 0; border: 1px solid #e2e8f0; border-radius: 4px; overflow: hidden;">
+        <table style="width:100%; border-collapse: collapse; font-size: 12px; font-family: sans-serif;">
+            <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid #0a192f; color: #0a192f;">
+                    <th style="padding: 8px; text-align: left;">LOCUS</th>
+                    <th style="padding: 8px; text-align: center;">SUJET A</th>
+                    <th style="padding: 8px; text-align: center;">SUJET B</th>
+                    <th style="padding: 8px; text-align: center;">MATCH</th>
+                </tr>
+            </thead>
+            <tbody>`;
 
     nomsLocus.forEach(locus => {
         let valA1 = Math.floor(Math.random() * 10 + 10);
@@ -628,33 +634,49 @@ window.lancerTestADN = function() {
         let valB1, valB2, matchIcon;
 
         if (statut === "POSITIF") {
-            valB1 = valA1; valB2 = valA2; matchIcon = "✅";
+            valB1 = valA1; valB2 = valA2; matchIcon = "<span style='color: #16a34a;'>✅</span>";
         } else if (statut === "PARTIEL (DEMI-LIEN)") {
-            valB1 = valA1; valB2 = Math.floor(Math.random() * 10 + 20); matchIcon = "🟠";
+            valB1 = valA1; valB2 = Math.floor(Math.random() * 10 + 20); matchIcon = "<span style='color: #f59e0b;'>✅/❌</span>";
         } else {
-            valB1 = Math.floor(Math.random() * 10 + 5); valB2 = Math.floor(Math.random() * 10 + 25); matchIcon = "❌";
+            valB1 = Math.floor(Math.random() * 10 + 5); valB2 = Math.floor(Math.random() * 10 + 25); matchIcon = "<span style='color: #dc2626;'>❌</span>";
         }
 
-        tableauHTML += `<tr style="border-bottom: 1px solid #eee;">
-            <td style="padding: 4px; font-weight: bold;">${locus}</td>
-            <td style="padding: 4px; text-align: center;">${valA1} / ${valA2}</td>
-            <td style="padding: 4px; text-align: center;">${valB1} / ${valB2}</td>
-            <td style="padding: 4px; text-align: center;">${matchIcon}</td>
-        </tr>`;
+        tableauHTML += `
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 6px 8px; font-weight: bold; color: #475569;">${locus}</td>
+                    <td style="padding: 6px 8px; text-align: center;">${valA1} / ${valA2}</td>
+                    <td style="padding: 6px 8px; text-align: center;">${valB1} / ${valB2}</td>
+                    <td style="padding: 6px 8px; text-align: center;">${matchIcon}</td>
+                </tr>`;
     });
-    tableauHTML += `</table>`;
 
-    // 4. Injection dans le document
-    const finalConclusion = `🔬 RAPPORT D'EXPERTISE ADN - DOSSIER #ANT-${Math.floor(Math.random()*9000+1000)}\n
-TYPE DE RECHERCHE : ${typeRecherche.toUpperCase()}\n
-${tableauHTML}\n
-RÉSULTAT : ${statut}\n
-PROBABILITÉ : ${matchPercentage}%\n\n
-INTERPRÉTATION :\n${interpretation}\n\n
-Note : Ce document est une preuve biologique légale. À usage privé et judiciaire uniquement.`;
+    tableauHTML += `</tbody></table></div>`;
 
-    fusionnerConclusion(finalConclusion);
-    set('rai', `ANALYSE : ${statut}`, 'MARQUEURS CARDIAQUES');
+    // --- C'EST ICI QUE CA CHANGE ---
+    // On utilise innerHTML pour que le navigateur dessine le tableau au lieu d'afficher le texte
+    const dConcl = document.getElementById('d-concl');
+    if (dConcl) {
+        dConcl.innerHTML = `
+            <div style="color: #0a192f; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #0a192f; padding-bottom: 5px;">
+                🧬 RAPPORT D'EXPERTISE ADN - DOSSIER #ANT-${Math.floor(Math.random()*9000+1000)}
+            </div>
+            <div style="font-size: 13px; margin-bottom: 10px;">
+                <strong>TYPE DE RECHERCHE :</strong> ${typeRecherche.toUpperCase()}
+            </div>
+            ${tableauHTML}
+            <div style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 4px;">
+                <div style="margin-bottom: 5px;"><strong>RÉSULTAT :</strong> <span style="color: ${colorStatut};">${statut}</span></div>
+                <div style="margin-bottom: 10px;"><strong>PROBABILITÉ :</strong> ${matchPercentage}%</div>
+                <div style="line-height: 1.4; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+                    <strong>INTERPRÉTATION :</strong><br>
+                    <span style="font-style: italic;">${interpretation}</span>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Mise à jour de la ligne Analyse au dessus
+    window.res('rai', `ADN : ${statut}`, 'MARQUEURS CARDIAQUES');
 };
 
 // ==========================================
