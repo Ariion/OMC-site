@@ -60,7 +60,6 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 .ch{cursor:grab;padding:11px 16px;font-family:'Rajdhani',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;gap:6px;border-radius:10px 10px 0 0}
 .ch:active{cursor:grabbing}
 
-/* couleurs unités */
 .u-a1{background:rgba(59,130,246,.12);color:#60a5fa;border-bottom:2px solid rgba(59,130,246,.3)}
 .u-a2{background:rgba(239,68,68,.12);color:#f87171;border-bottom:2px solid rgba(239,68,68,.3)}
 .u-a3{background:rgba(34,197,94,.12);color:#4ade80;border-bottom:2px solid rgba(34,197,94,.3)}
@@ -73,19 +72,15 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 .u-frm{background:rgba(217,119,6,.12);color:#fbbf24;border-bottom:2px solid rgba(217,119,6,.3)}
 .u-def{background:rgba(56,189,248,.1);color:#38bdf8;border-bottom:2px solid rgba(56,189,248,.25)}
 
-/* SELECT STATUT unité */
 .ssel{font-size:.63rem;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.3);color:inherit;min-width:72px;cursor:pointer;outline:none;font-family:'Inter',sans-serif}
 .ssel option{background:#112240;color:#fff}
 
-/* édition label carte */
 .ch-label{flex:1;background:transparent;border:none;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;outline:none;cursor:text;min-width:0;padding:0}
 .ch-label:focus{border-bottom:1px solid rgba(255,255,255,.3)}
 
-/* bouton suppr carte */
 .card-del{background:none;border:none;color:rgba(255,255,255,.25);font-size:.75rem;padding:2px 4px;border-radius:3px;flex-shrink:0;line-height:1;letter-spacing:0}
 .card-del:hover{color:#f87171}
 
-/* SLOTS */
 .slots{padding:0;overflow:hidden;border-radius:0 0 10px 10px}
 .slot-row{display:flex;align-items:center;padding:8px 16px;gap:8px;border-bottom:1px solid rgba(30,58,95,.4);position:relative}
 .slot-row:last-child{border-bottom:none}
@@ -107,11 +102,6 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 .sadd{display:flex;align-items:center;justify-content:center;width:calc(100% - 32px);margin:6px 16px 12px;padding:5px 0;border-radius:6px;border:1px dashed rgba(30,58,95,.8);background:transparent;color:#475569;font-size:.72rem;font-family:'Inter',sans-serif}
 .sadd:hover{border-color:var(--accent);color:var(--accent)}
 
-/* bouton ajouter bloc */
-.add-bloc-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:10px;border:2px dashed rgba(30,58,95,.8);background:transparent;color:#475569;font-size:.78rem;font-family:'Rajdhani',sans-serif;letter-spacing:1px;width:100%;transition:.15s}
-.add-bloc-btn:hover{border-color:var(--accent);color:var(--accent)}
-
-/* DROPDOWN AUTOCOMPLETE */
 .acd{position:fixed;background:#1a2e4a;border:1px solid var(--bord);border-radius:8px;z-index:9999;max-height:280px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.7);display:none;width:280px}
 .aci{padding:10px 14px;font-size:.87rem;color:var(--text);cursor:pointer;border-bottom:1px solid rgba(30,58,95,.4);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .aci:last-child{border-bottom:none}
@@ -120,12 +110,10 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 .b-dispo{background:rgba(34,197,94,.2);color:#4ade80}
 .aci:hover .aci-b{background:rgba(0,0,0,.2);color:inherit}
 
-/* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#0a192f;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:.9rem;letter-spacing:1px;padding:10px 20px;border-radius:7px;transform:translateY(60px);opacity:0;transition:.25s;z-index:9999;pointer-events:none}
 .toast.on{transform:translateY(0);opacity:1}
 .toast.err{background:#f87171;color:#fff}
 
-/* ═══ MODALES ═══ */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
 .modal-overlay.hidden{display:none}
 .modal-box{background:var(--card);border:1px solid var(--bord);border-radius:14px;width:100%;max-width:540px;max-height:88vh;overflow-y:auto;padding:24px}
@@ -134,7 +122,6 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 .modal-close{background:none;border:none;color:var(--dim);font-size:1.1rem;padding:4px 8px;border-radius:4px;letter-spacing:0}
 .modal-close:hover{color:#f87171}
 
-/* liste employés dans la modale */
 .emp-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;max-height:300px;overflow-y:auto}
 .emp-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,255,255,.04);border:1px solid var(--bord);border-radius:8px}
 .emp-item input{flex:1;background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;outline:none;padding:0}
@@ -142,7 +129,6 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 .emp-item .edel{background:none;border:none;color:#475569;font-size:.75rem;padding:2px 5px;border-radius:3px;letter-spacing:0}
 .emp-item .edel:hover{color:#f87171}
 
-/* liste blocs dans la modale */
 .blk-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;max-height:300px;overflow-y:auto}
 .blk-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,255,255,.04);border:1px solid var(--bord);border-radius:8px}
 .blk-item select{background:rgba(0,0,0,.3);border:1px solid var(--bord);border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:.8rem;padding:3px 6px;outline:none;cursor:pointer}
@@ -150,7 +136,6 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 .blk-item .edel{background:none;border:none;color:#475569;font-size:.75rem;padding:2px 5px;border-radius:3px;letter-spacing:0}
 .blk-item .edel:hover{color:#f87171}
 
-/* form add */
 .fadd{display:flex;gap:8px;align-items:center;margin-top:4px}
 .fadd input,.fadd select{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--bord);border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;padding:7px 12px;outline:none}
 .fadd input:focus,.fadd select:focus{border-color:rgba(56,189,248,.4)}
@@ -158,11 +143,9 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 .btn-add-emp{background:var(--accent);border:none;color:#0a192f;padding:7px 14px;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:1px;white-space:nowrap}
 .btn-add-emp:hover{background:#0ea5e9}
 
-/* séparateur section */
 .msep{font-family:'Rajdhani',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin:14px 0 10px;display:flex;align-items:center;gap:8px}
 .msep::after{content:'';flex:1;height:1px;background:var(--bord)}
 
-/* blocs top/bot labels */
 .sect-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .sect-header .slbl{margin-bottom:0;flex:1}
 
@@ -184,6 +167,7 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
     <button class="btn-g" id="blk-btn">🗂 Blocs</button>
     <button class="btn-t" id="tbtn">🌓 <span id="ttxt">Mode clair</span></button>
     <button class="btn-s" id="sbtn">💾 Sauvegarder</button>
+    <button class="btn-d" id="dbtn">📨 Discord</button>
     <button class="btn-r" id="rbtn">↺ Reset</button>
   </div>
 </div>
@@ -222,7 +206,7 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 <div class="modal-overlay hidden" id="modal-blk">
   <div class="modal-box">
     <div class="modal-title"><span>🗂</span> GESTION DES BLOCS <button class="modal-close" id="blk-close">✕</button></div>
-    <p style="font-size:.78rem;color:var(--dim);margin-bottom:14px">Ajoutez, supprimez ou changez le type de chaque bloc. Les modifications sont appliquées immédiatement au dispatch.</p>
+    <p style="font-size:.78rem;color:var(--dim);margin-bottom:14px">Ajoutez, supprimez ou changez le type de chaque bloc. Les modifications sont appliquées au dispatch à la fermeture.</p>
     <div class="msep">Blocs actifs</div>
     <div class="blk-list" id="blk-list"></div>
     <div class="msep">Nouveau bloc</div>
@@ -264,26 +248,19 @@ var DEFAULT_EMPLOYES = [
 var EMPLOYES = DEFAULT_EMPLOYES.slice();
 
 var TYPE_CFG = {
-  ambu: { sts:['','Libre','Occupé','Pause'],        isRdv:false },
-  bob:  { sts:['','Libre','Occupé','Pause'],         isRdv:false },
-  cen:  { sts:['','Station','Libre','Occupé'],       isRdv:false },
-  rdv:  { sts:null,                                  isRdv:true  },
-  frm:  { sts:['','En cours','Terminée'],            isRdv:false },
-  def:  { sts:['','Libre','Occupé','Pause'],         isRdv:false },
+  ambu: { sts:['','Libre','Occupé','Pause'],   isRdv:false },
+  bob:  { sts:['','Libre','Occupé','Pause'],   isRdv:false },
+  cen:  { sts:['','Station','Libre','Occupé'], isRdv:false },
+  rdv:  { sts:null,                            isRdv:true  },
+  frm:  { sts:['','En cours','Terminée'],      isRdv:false },
+  def:  { sts:['','Libre','Occupé','Pause'],   isRdv:false },
 };
 
 var TYPE_CLS = {
   ambu:'u-def', bob:'u-bob', cen:'u-cen', rdv:'u-rdv', frm:'u-frm', def:'u-def'
 };
-
-/* ambus ont des couleurs différentes selon l'ordre */
 var AMBU_COLORS = ['u-a1','u-a2','u-a3','u-a4','u-a5','u-a6'];
-var ambuCount = 0;
 
-/* ══════════════════════════════════════════
-   CFG — liste des blocs (peut être modifiée)
-   Chaque bloc : { id, lbl, type, top, cls }
-══════════════════════════════════════════ */
 var CFG = [
   {id:'ambu1', lbl:'Ambu 1',      type:'ambu', top:true},
   {id:'ambu2', lbl:'Ambu 2',      type:'ambu', top:true},
@@ -301,7 +278,6 @@ var state = {};
 
 function getCls(u) {
   if (u.type === 'ambu') {
-    /* attribuer couleur ambu selon index dans cfg */
     var ambuIdx = CFG.filter(function(x){ return x.type==='ambu'; }).indexOf(u);
     return AMBU_COLORS[ambuIdx % AMBU_COLORS.length];
   }
@@ -321,9 +297,12 @@ function initState() {
   });
 }
 
+/* ══ FIX BUG 1 : ensureState crée l'état pour tout bloc qui n'en a pas ══ */
 function ensureState() {
   CFG.forEach(function(u) {
-    if (!state[u.id]) state[u.id] = initStateForUnit(u);
+    if (!state[u.id]) {
+      state[u.id] = initStateForUnit(u);
+    }
   });
 }
 
@@ -353,7 +332,7 @@ if (localStorage.getItem('omc-theme') === 'light') {
 }
 
 /* ══════════════════════════════════════════
-   DRAG & DROP — swap de cartes
+   DRAG & DROP
 ══════════════════════════════════════════ */
 var dragSrcId = null;
 
@@ -384,12 +363,10 @@ function activerDrag(cardEl, uid) {
     swapUnits(srcId, uid);
   });
 
-  /* tactile */
   var touchStartX, touchStartY, clone, moved;
   cardEl.addEventListener('touchstart', function(e) {
     if (!e.target.closest('.ch')) return;
-    moved = false;
-    dragSrcId = uid;
+    moved = false; dragSrcId = uid;
     var t = e.touches[0];
     touchStartX = t.clientX; touchStartY = t.clientY;
     clone = cardEl.cloneNode(true);
@@ -403,10 +380,10 @@ function activerDrag(cardEl, uid) {
     if (!dragSrcId || dragSrcId !== uid) return;
     moved = true;
     var t = e.touches[0];
-    if (clone) { clone.style.left = (t.clientX - parseInt(clone.style.width)/2) + 'px'; clone.style.top  = (t.clientY - 30) + 'px'; }
+    if (clone) { clone.style.left = (t.clientX - parseInt(clone.style.width)/2)+'px'; clone.style.top=(t.clientY-30)+'px'; }
     document.querySelectorAll('.card').forEach(function(c){ c.classList.remove('drag-over'); });
     var el2 = document.elementFromPoint(t.clientX, t.clientY);
-    if (el2) { var target = el2.closest('.card'); if (target && target !== cardEl) target.classList.add('drag-over'); }
+    if (el2) { var tgt = el2.closest('.card'); if (tgt && tgt !== cardEl) tgt.classList.add('drag-over'); }
     e.preventDefault();
   }, {passive:false});
   cardEl.addEventListener('touchend', function(e) {
@@ -417,13 +394,12 @@ function activerDrag(cardEl, uid) {
     if (!moved) { dragSrcId = null; return; }
     var t = e.changedTouches[0];
     var el2 = document.elementFromPoint(t.clientX, t.clientY);
-    if (el2) { var target = el2.closest('.card'); if (target && target !== cardEl) { var targetId = target.getAttribute('data-uid'); if (targetId) swapUnits(uid, targetId); } }
+    if (el2) { var tgt = el2.closest('.card'); if (tgt && tgt !== cardEl) { var tId = tgt.getAttribute('data-uid'); if (tId) swapUnits(uid, tId); } }
     dragSrcId = null;
   }, {passive:true});
 }
 
 function swapUnits(idA, idB) {
-  /* swap DOM */
   var cardA = document.querySelector('.card[data-uid="'+idA+'"]');
   var cardB = document.querySelector('.card[data-uid="'+idB+'"]');
   if (!cardA || !cardB) return;
@@ -433,25 +409,26 @@ function swapUnits(idA, idB) {
   else if (nextB === cardA) { parentB.insertBefore(cardA, cardB); }
   else { parentA.insertBefore(cardB, nextA); parentB.insertBefore(cardA, nextB); }
 
-  /* swap aussi dans CFG pour que l'ordre soit persisté */
   var iA = CFG.findIndex(function(c){ return c.id===idA; });
   var iB = CFG.findIndex(function(c){ return c.id===idB; });
-  if (iA>=0 && iB>=0) { var tmp = CFG[iA]; CFG[iA]=CFG[iB]; CFG[iB]=tmp; }
-  /* aussi swap top/bot */
+  if (iA>=0 && iB>=0) { var tmp=CFG[iA]; CFG[iA]=CFG[iB]; CFG[iB]=tmp; }
   var ua = CFG.find(function(c){ return c.id===idA; });
   var ub = CFG.find(function(c){ return c.id===idB; });
-  if (ua && ub) { var tmpTop = ua.top; ua.top = ub.top; ub.top = tmpTop; }
+  if (ua && ub) { var tmpTop=ua.top; ua.top=ub.top; ub.top=tmpTop; }
 
-  var lblA = idA, lblB = idB;
-  var ca = CFG.find(function(c){ return c.id===idA; }); if(ca) lblA=ca.lbl;
-  var cb = CFG.find(function(c){ return c.id===idB; }); if(cb) lblB=cb.lbl;
-  toast('🔄 ' + lblA + ' ↔ ' + lblB);
+  var lblA=idA, lblB=idB;
+  var ca=CFG.find(function(c){ return c.id===idA; }); if(ca) lblA=ca.lbl;
+  var cb=CFG.find(function(c){ return c.id===idB; }); if(cb) lblB=cb.lbl;
+  toast('🔄 '+lblA+' ↔ '+lblB);
 }
 
 /* ══════════════════════════════════════════
    RENDER
 ══════════════════════════════════════════ */
 function renderAll() {
+  /* ══ FIX BUG 1 : toujours s'assurer que l'état existe avant de rendre ══ */
+  ensureState();
+
   var gTop = document.getElementById('g-top');
   var gBot = document.getElementById('g-bot');
   gTop.innerHTML = '';
@@ -464,6 +441,9 @@ function renderAll() {
 }
 
 function buildCard(u) {
+  /* ══ FIX BUG 1 : garantir que state[u.id] existe ══ */
+  if (!state[u.id]) state[u.id] = initStateForUnit(u);
+
   var s = state[u.id];
   var isRdv = TYPE_CFG[u.type] && TYPE_CFG[u.type].isRdv;
   var sts = TYPE_CFG[u.type] ? TYPE_CFG[u.type].sts : ['','Libre','Occupé','Pause'];
@@ -471,15 +451,18 @@ function buildCard(u) {
   var card = el('div','card');
   card.setAttribute('data-uid', u.id);
 
-  /* — Header — */
   var hdr = el('div','ch '+cls);
 
-  /* label éditable inline */
   var lbl = el('input','ch-label');
   lbl.type = 'text';
   lbl.value = u.lbl;
   lbl.title = 'Cliquer pour renommer';
-  (function(uid, inp){ inp.addEventListener('change', function(){ var unit = CFG.find(function(c){ return c.id===uid; }); if(unit) unit.lbl=inp.value; }); })(u.id, lbl);
+  (function(uid, inp){
+    inp.addEventListener('change', function(){
+      var unit = CFG.find(function(c){ return c.id===uid; });
+      if (unit) unit.lbl = inp.value;
+    });
+  })(u.id, lbl);
   lbl.addEventListener('mousedown', function(e){ e.stopPropagation(); });
   lbl.addEventListener('touchstart', function(e){ e.stopPropagation(); }, {passive:true});
   hdr.appendChild(lbl);
@@ -492,12 +475,13 @@ function buildCard(u) {
       if (v === (s.status||'')) o.selected = true;
       sel.appendChild(o);
     });
-    (function(uid, selEl){ selEl.addEventListener('change', function(){ state[uid].status = selEl.value; }); })(u.id, sel);
+    (function(uid, selEl){
+      selEl.addEventListener('change', function(){ state[uid].status = selEl.value; });
+    })(u.id, sel);
     sel.addEventListener('mousedown', function(e){ e.stopPropagation(); });
     hdr.appendChild(sel);
   }
 
-  /* bouton supprimer carte */
   var cdel = el('button','card-del');
   cdel.textContent = '✕';
   cdel.title = 'Supprimer ce bloc';
@@ -513,29 +497,29 @@ function buildCard(u) {
   })(u.id);
   cdel.addEventListener('mousedown', function(e){ e.stopPropagation(); });
   hdr.appendChild(cdel);
-
   card.appendChild(hdr);
 
-  /* — Slots — */
   var body = el('div','slots');
   if (isRdv) {
-    s.slots.forEach(function(r, i) { body.appendChild(buildRdvRow(i, r)); });
+    s.slots.forEach(function(r, i) { body.appendChild(buildRdvRow(u.id, i, r)); });
   } else {
     s.slots.forEach(function(nom, i) { body.appendChild(buildRow(u.id, i, nom)); });
   }
   card.appendChild(body);
 
-  /* — Bouton ajouter — */
   var add = el('button','sadd');
   add.textContent = '+ Ajouter un membre';
-  (function(uid){
+  (function(uid, bodyEl, cardRef){
     add.addEventListener('click', function() {
-      if (isRdv) state[uid].slots.push({nom:'', stat:'Occupé'});
+      if (!state[uid]) state[uid] = initStateForUnit(CFG.find(function(c){ return c.id===uid; }));
+      var unit = CFG.find(function(c){ return c.id===uid; });
+      var isR = unit && TYPE_CFG[unit.type] && TYPE_CFG[unit.type].isRdv;
+      if (isR) state[uid].slots.push({nom:'', stat:'Occupé'});
       else state[uid].slots.push('');
       var newCard = buildCard(CFG.find(function(c){ return c.id===uid; }));
-      card.parentNode.replaceChild(newCard, card);
+      cardRef.parentNode.replaceChild(newCard, cardRef);
     });
-  })(u.id);
+  })(u.id, body, card);
   card.appendChild(add);
 
   activerDrag(card, u.id);
@@ -546,56 +530,57 @@ function buildCard(u) {
 function buildRow(uid, idx, nom) {
   var row = el('div','slot-row');
   var inp = el('input','sn');
-  inp.type = 'text'; inp.value = nom || ''; inp.placeholder = '— Libre —'; inp.autocomplete = 'off';
+  inp.type='text'; inp.value=nom||''; inp.placeholder='— Libre —'; inp.autocomplete='off';
   var drop = el('div','acd');
-  row.appendChild(inp);
-  row.appendChild(drop);
-  var del = el('button','sdel'); del.textContent = '✕'; del.title = 'Retirer';
+  row.appendChild(inp); row.appendChild(drop);
+  var del = el('button','sdel'); del.textContent='✕'; del.title='Retirer';
   row.appendChild(del);
 
   inp.addEventListener('input', function() {
+    if (!state[uid]) return;
     state[uid].slots[idx] = inp.value;
-    showDrop(drop, inp.value, function(choix) { state[uid].slots[idx]=choix; inp.value=choix; drop.style.display='none'; });
+    showDrop(drop, inp.value, function(choix){ state[uid].slots[idx]=choix; inp.value=choix; drop.style.display='none'; });
   });
   inp.addEventListener('focus', function() {
-    showDrop(drop, inp.value, function(choix) { state[uid].slots[idx]=choix; inp.value=choix; drop.style.display='none'; });
+    showDrop(drop, inp.value, function(choix){ if(state[uid]) state[uid].slots[idx]=choix; inp.value=choix; drop.style.display='none'; });
   });
-  inp.addEventListener('blur', function() { setTimeout(function(){ drop.style.display='none'; }, 250); });
-  del.addEventListener('click', function() { state[uid].slots.splice(idx,1); renderAll(); });
+  inp.addEventListener('blur', function(){ setTimeout(function(){ drop.style.display='none'; }, 250); });
+  del.addEventListener('click', function(){ if(state[uid]) state[uid].slots.splice(idx,1); renderAll(); });
   return row;
 }
 
 /* ── Row RDV ── */
-function buildRdvRow(idx, r) {
+function buildRdvRow(uid, idx, r) {
   var row = el('div','slot-row');
   var inp = el('input','sn');
-  inp.type = 'text'; inp.value = r.nom||''; inp.placeholder = '— Nom du patient —'; inp.autocomplete = 'off';
+  inp.type='text'; inp.value=r.nom||''; inp.placeholder='— Nom du patient —'; inp.autocomplete='off';
   var drop = el('div','acd');
   row.appendChild(inp); row.appendChild(drop);
   var sel = el('select','rsel '+rdvCls(r.stat));
-  ['Occupé','Libre','Pause'].forEach(function(v) {
-    var o = document.createElement('option'); o.value=v; o.textContent=v;
-    if (v===r.stat) o.selected=true; sel.appendChild(o);
+  ['Occupé','Libre','Pause'].forEach(function(v){
+    var o=document.createElement('option'); o.value=v; o.textContent=v;
+    if(v===r.stat) o.selected=true; sel.appendChild(o);
   });
   row.appendChild(sel);
-  var del = el('button','sdel'); del.textContent = '✕'; row.appendChild(del);
+  var del = el('button','sdel'); del.textContent='✕'; row.appendChild(del);
 
-  inp.addEventListener('input', function() {
-    state.rdv.slots[idx].nom = inp.value;
-    showDrop(drop, inp.value, function(choix){ state.rdv.slots[idx].nom=choix; inp.value=choix; drop.style.display='none'; });
+  inp.addEventListener('input', function(){
+    if (!state[uid]) return;
+    state[uid].slots[idx].nom = inp.value;
+    showDrop(drop, inp.value, function(choix){ state[uid].slots[idx].nom=choix; inp.value=choix; drop.style.display='none'; });
   });
-  inp.addEventListener('focus', function() {
-    showDrop(drop, inp.value, function(choix){ state.rdv.slots[idx].nom=choix; inp.value=choix; drop.style.display='none'; });
+  inp.addEventListener('focus', function(){
+    showDrop(drop, inp.value, function(choix){ if(state[uid]) state[uid].slots[idx].nom=choix; inp.value=choix; drop.style.display='none'; });
   });
-  inp.addEventListener('blur', function(){ setTimeout(function(){ drop.style.display='none'; }, 250); });
-  sel.addEventListener('change', function(){ state.rdv.slots[idx].stat=sel.value; sel.className='rsel '+rdvCls(sel.value); });
-  del.addEventListener('click', function(){ state.rdv.slots.splice(idx,1); renderAll(); });
+  inp.addEventListener('blur', function(){ setTimeout(function(){ drop.style.display='none'; },250); });
+  sel.addEventListener('change', function(){ if(state[uid]) state[uid].slots[idx].stat=sel.value; sel.className='rsel '+rdvCls(sel.value); });
+  del.addEventListener('click', function(){ if(state[uid]) state[uid].slots.splice(idx,1); renderAll(); });
   return row;
 }
 
-function rdvCls(v) {
-  if (v==='Libre') return 's-lib';
-  if (v==='Pause') return 's-pau';
+function rdvCls(v){
+  if(v==='Libre') return 's-lib';
+  if(v==='Pause') return 's-pau';
   return 's-occ';
 }
 
@@ -619,17 +604,17 @@ function getAssignes(slotActuel) {
 function showDrop(drop, valeur, onChoix) {
   var val = (valeur||'').toLowerCase().trim();
   var assignes = getAssignes(valeur.trim());
-  var liste = EMPLOYES.filter(function(e) {
+  var liste = EMPLOYES.filter(function(e){
     if (assignes[e]) return false;
     if (val.length>0 && e.toLowerCase().indexOf(val)===-1) return false;
     return true;
   });
   if (!liste.length) { drop.style.display='none'; return; }
   drop.innerHTML = '';
-  liste.forEach(function(e) {
+  liste.forEach(function(e){
     var item = el('div','aci');
-    var nom = el('span'); nom.textContent = e;
-    var badge = el('span','aci-b b-dispo'); badge.textContent = '✓ Disponible';
+    var nom = el('span'); nom.textContent=e;
+    var badge = el('span','aci-b b-dispo'); badge.textContent='✓ Disponible';
     item.appendChild(nom); item.appendChild(badge);
     item.addEventListener('mousedown', function(ev){ ev.preventDefault(); onChoix(e); });
     drop.appendChild(item);
@@ -648,23 +633,18 @@ function showDrop(drop, valeur, onChoix) {
 /* ══════════════════════════════════════════
    MODALE EMPLOYÉS
 ══════════════════════════════════════════ */
-function openEmpModal() {
-  renderEmpList();
-  document.getElementById('modal-emp').classList.remove('hidden');
-}
-function closeEmpModal() {
-  document.getElementById('modal-emp').classList.add('hidden');
-}
+function openEmpModal() { renderEmpList(); document.getElementById('modal-emp').classList.remove('hidden'); }
+function closeEmpModal() { document.getElementById('modal-emp').classList.add('hidden'); }
+
 function renderEmpList() {
   var list = document.getElementById('emp-list');
   list.innerHTML = '';
-  EMPLOYES.forEach(function(e, i) {
+  EMPLOYES.forEach(function(e, i){
     var item = el('div','emp-item');
     var inp = document.createElement('input');
-    inp.type = 'text'; inp.value = e;
-    inp.addEventListener('change', function(){ EMPLOYES[i] = inp.value.trim(); });
-    var del = el('button','edel'); del.textContent = '✕';
-    del.title = 'Supprimer cet employé';
+    inp.type='text'; inp.value=e;
+    inp.addEventListener('change', function(){ EMPLOYES[i]=inp.value.trim(); });
+    var del = el('button','edel'); del.textContent='✕'; del.title='Supprimer';
     (function(idx){ del.addEventListener('click', function(){ EMPLOYES.splice(idx,1); renderEmpList(); }); })(i);
     item.appendChild(inp); item.appendChild(del);
     list.appendChild(item);
@@ -673,11 +653,7 @@ function renderEmpList() {
 
 document.getElementById('emp-btn').addEventListener('click', openEmpModal);
 document.getElementById('emp-close').addEventListener('click', closeEmpModal);
-document.getElementById('emp-save-btn').addEventListener('click', function(){
-  sauvegarder();
-  closeEmpModal();
-  toast('✔ Employés sauvegardés');
-});
+document.getElementById('emp-save-btn').addEventListener('click', function(){ sauvegarder(); closeEmpModal(); toast('✔ Employés sauvegardés'); });
 document.getElementById('add-emp-btn').addEventListener('click', function(){
   var v = document.getElementById('new-emp-name').value.trim();
   if (!v) return;
@@ -685,62 +661,58 @@ document.getElementById('add-emp-btn').addEventListener('click', function(){
   document.getElementById('new-emp-name').value = '';
   renderEmpList();
 });
-document.getElementById('new-emp-name').addEventListener('keydown', function(e){
-  if (e.key==='Enter') document.getElementById('add-emp-btn').click();
-});
-document.getElementById('modal-emp').addEventListener('click', function(e){
-  if (e.target === this) closeEmpModal();
-});
+document.getElementById('new-emp-name').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('add-emp-btn').click(); });
+document.getElementById('modal-emp').addEventListener('click', function(e){ if(e.target===this) closeEmpModal(); });
 
 /* ══════════════════════════════════════════
    MODALE BLOCS
+   ══ FIX BUG 2 : closeBlkModal appelle ensureState() avant renderAll() ══
 ══════════════════════════════════════════ */
 var TYPE_LABELS = {ambu:'Ambulance', bob:'Bobologie', cen:'Centrale', rdv:'Rendez-vous', frm:'Formation', def:'Autre'};
 
-function openBlkModal() {
-  renderBlkList();
-  document.getElementById('modal-blk').classList.remove('hidden');
-}
+function openBlkModal() { renderBlkList(); document.getElementById('modal-blk').classList.remove('hidden'); }
+
 function closeBlkModal() {
-  renderAll();
   document.getElementById('modal-blk').classList.add('hidden');
+  /* On s'assure que tous les blocs ont un état avant de rendre */
+  ensureState();
+  renderAll();
 }
+
 function renderBlkList() {
   var list = document.getElementById('blk-list');
   list.innerHTML = '';
-  CFG.forEach(function(u, i) {
+  CFG.forEach(function(u){
     var item = el('div','blk-item');
 
-    /* type */
     var sel = document.createElement('select');
     Object.keys(TYPE_LABELS).forEach(function(k){
-      var o = document.createElement('option'); o.value=k; o.textContent=TYPE_LABELS[k];
-      if (k===u.type) o.selected=true; sel.appendChild(o);
+      var o=document.createElement('option'); o.value=k; o.textContent=TYPE_LABELS[k];
+      if(k===u.type) o.selected=true; sel.appendChild(o);
     });
     sel.addEventListener('change', function(){ u.type=sel.value; });
 
-    /* nom */
     var inp = document.createElement('input');
     inp.type='text'; inp.value=u.lbl;
     inp.addEventListener('change', function(){ u.lbl=inp.value.trim(); });
 
-    /* section */
     var sect = document.createElement('select');
-    var oTop = document.createElement('option'); oTop.value='top'; oTop.textContent='Principal';
-    var oBot = document.createElement('option'); oBot.value='bot'; oBot.textContent='Secondaire';
-    if (u.top) oTop.selected=true; else oBot.selected=true;
+    var oTop=document.createElement('option'); oTop.value='top'; oTop.textContent='Principal';
+    var oBot=document.createElement('option'); oBot.value='bot'; oBot.textContent='Secondaire';
+    if(u.top) oTop.selected=true; else oBot.selected=true;
     sect.appendChild(oTop); sect.appendChild(oBot);
-    sect.addEventListener('change', function(){ u.top = sect.value==='top'; });
+    sect.addEventListener('change', function(){ u.top=sect.value==='top'; });
 
-    /* del */
-    var del = el('button','edel'); del.textContent = '✕';
-    (function(uid){ del.addEventListener('click', function(){
-      if (!confirm('Supprimer le bloc "'+u.lbl+'" ?')) return;
-      CFG = CFG.filter(function(c){ return c.id!==uid; });
-      delete state[uid];
-      renderBlkList();
-      toast('Bloc supprimé');
-    }); })(u.id);
+    var del = el('button','edel'); del.textContent='✕';
+    (function(uid){
+      del.addEventListener('click', function(){
+        if(!confirm('Supprimer le bloc "'+u.lbl+'" ?')) return;
+        CFG = CFG.filter(function(c){ return c.id!==uid; });
+        delete state[uid];
+        renderBlkList();
+        toast('Bloc supprimé');
+      });
+    })(u.id);
 
     item.appendChild(sel); item.appendChild(inp); item.appendChild(sect); item.appendChild(del);
     list.appendChild(item);
@@ -748,6 +720,7 @@ function renderBlkList() {
 }
 
 document.getElementById('blk-btn').addEventListener('click', openBlkModal);
+/* ══ FIX BUG 2 : les deux boutons de fermeture appellent closeBlkModal ══ */
 document.getElementById('blk-close').addEventListener('click', closeBlkModal);
 document.getElementById('blk-save-btn').addEventListener('click', closeBlkModal);
 document.getElementById('modal-blk').addEventListener('click', function(e){ if(e.target===this) closeBlkModal(); });
@@ -784,23 +757,20 @@ function initFirebase() {
     if (!firebase.apps.length) firebase.initializeApp(cfg);
     db = firebase.firestore();
     db.doc('dispatch/current').get().then(function(snap) {
-      var ok = typeof snap.exists === 'function' ? snap.exists() : snap.exists;
+      var ok = typeof snap.exists==='function' ? snap.exists() : snap.exists;
       if (!ok) return;
       try {
         var data = snap.data();
         if (!data) return;
-        if (data.employes) {
-          try { EMPLOYES = JSON.parse(data.employes); } catch(e2){}
-        }
+        if (data.employes) { try { EMPLOYES = JSON.parse(data.employes); } catch(e2){} }
         if (data.cfg) {
           try {
             var parsedCfg = JSON.parse(data.cfg);
             if (Array.isArray(parsedCfg) && parsedCfg.length) CFG = parsedCfg;
           } catch(e2){}
         }
-        if (data.state) {
-          try { var ps = JSON.parse(data.state); state = ps; } catch(e2){}
-        }
+        if (data.state) { try { state = JSON.parse(data.state); } catch(e2){} }
+        /* ══ FIX BUG 1 : toujours ensureState après chargement Firebase ══ */
         ensureState();
         if (data.ts) document.getElementById('lsave').textContent = 'Sauvegardé à '+new Date(data.ts).toLocaleTimeString('fr-FR');
         renderAll();
@@ -810,7 +780,6 @@ function initFirebase() {
   } catch(e) { console.warn('Firebase init échoué:', e); }
 }
 
-/* ── SAUVEGARDE ── */
 function sauvegarder() {
   if (db) {
     db.doc('dispatch/current').set({
@@ -818,11 +787,11 @@ function sauvegarder() {
       cfg:      JSON.stringify(CFG),
       employes: JSON.stringify(EMPLOYES),
       ts:       Date.now()
-    }).then(function() {
+    }).then(function(){
       var h = new Date().toLocaleTimeString('fr-FR');
       document.getElementById('lsave').textContent = 'Sauvegardé à '+h;
       toast('✔ Sauvegardé — visible par tous');
-    }).catch(function(e) { console.warn(e); toast('✗ Erreur Firebase — réessaie', true); });
+    }).catch(function(e){ console.warn(e); toast('✗ Erreur Firebase', true); });
   } else {
     toast('✗ Firebase non connecté', true);
   }
@@ -843,7 +812,7 @@ var EMO  = {Libre:'🟢',Occupé:'🔴',Station:'🔵',Pause:'🟡','En cours':'
 
 function envoyerDiscord() {
   var msg = '🏥 **DISPATCH — OCEAN MEDICAL CENTER**\n⏰ '+new Date().toLocaleString('fr-FR')+'\n'+'━'.repeat(30)+'\n\n';
-  CFG.forEach(function(u) {
+  CFG.forEach(function(u){
     var s = state[u.id]; if (!s) return;
     var isRdv = TYPE_CFG[u.type] && TYPE_CFG[u.type].isRdv;
     if (isRdv) {
@@ -868,10 +837,10 @@ function envoyerDiscord() {
 }
 
 /* ══════════════════════════════════════════
-   BOUTONS TOPBAR
+   BOUTONS TOPBAR — tous présents dans le HTML
 ══════════════════════════════════════════ */
 document.getElementById('sbtn').addEventListener('click', sauvegarder);
-document.getElementById('dbtn').addEventListener('click', envoyerDiscord);
+document.getElementById('dbtn').addEventListener('click', envoyerDiscord);  /* ══ FIX BUG 3 : bouton réajouté dans le HTML ══ */
 document.getElementById('rbtn').addEventListener('click', reinitialiser);
 
 /* ══════════════════════════════════════════
@@ -881,9 +850,9 @@ function toast(msg, err) {
   var t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast on' + (err ? ' err' : '');
-  setTimeout(function(){ t.className = 'toast'; }, 3000);
+  setTimeout(function(){ t.className='toast'; }, 3000);
 }
-function el(tag, cls) { var e = document.createElement(tag); if (cls) e.className = cls; return e; }
+function el(tag, cls) { var e = document.createElement(tag); if(cls) e.className=cls; return e; }
 
 /* ══════════════════════════════════════════
    INIT
