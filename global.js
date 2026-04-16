@@ -102,7 +102,7 @@ window.uploadImageFirebase = async function(blob, nomPatient, typeDoc) {
 };
 
 /* ============================================================
-    ARCHIVAGE UNIVERSEL - NE BLOQUE PLUS JAMAIS
+    ARCHIVAGE UNIVERSEL - UTILISABLE DANS TOUTES LES PAGES (constat, rapports, etc.)
    ============================================================ */
 
 window.archiverDocument = async function(config) {

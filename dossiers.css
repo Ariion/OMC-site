@@ -8,7 +8,7 @@
 }
 
 .sidebar {
-    width: 350px; /* Un peu plus large pour les formulaires */
+    width: 350px; 
     background: #0a1324;
     border-right: 1px solid #1e293b;
     padding: 20px;
@@ -16,7 +16,7 @@
     flex-direction: column;
 }
 
-/* --- STATS BOX (Design restauré) --- */
+/* --- STATS BOX --- */
 .stats-box {
     background: #111b2d;
     border: 1px solid #1e293b;

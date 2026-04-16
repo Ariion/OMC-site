@@ -27,7 +27,7 @@ body {
 }
 
 /* ==========================================
-   2. ACCUEIL PORTAIL (index.html) - TON DESIGN D'ORIGINE
+   2. ACCUEIL PORTAIL (index.html)
    ========================================== */
 .portal-body { 
     justify-content: center; 
@@ -188,7 +188,7 @@ input, textarea, select {
 .row { display: none; grid-template-columns: 2fr 1fr 1.5fr; padding: 6px 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
 .row.active { display: grid !important; }
 .val { font-weight: bold; text-align: center; }
-.signature-line { margin-top: 60px; font-weight: bold; border-top: 2px solid #000; display: inline-block; min-width: 220px; padding-top: 10px; float: right; text-align: center; }
+.signature-line { margin-top: 60px; font-weight: bold; border-top: 2px solid #000; display: inline-block; min-width: 220px; padding-top: 10px; text-align: center; }
 
 /* ==========================================
    6. STYLE DECES (RÉSULTATS)

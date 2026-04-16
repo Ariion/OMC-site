@@ -135,7 +135,6 @@ h4 { margin: 10px 0; color: #0f172a; text-transform: uppercase; font-size: 14px;
 }
 
 /* --- FOOTER --- */
-/* --- FOOTER (CORRECTION COULEURS) --- */
 .cert-footer { 
     display: flex; 
     justify-content: space-between; 
@@ -149,13 +148,13 @@ h4 { margin: 10px 0; color: #0f172a; text-transform: uppercase; font-size: 14px;
     padding-top: 10px; 
     font-weight: bold; 
     font-size: 11px; 
-    color: #000000; /* FORCER LE NOIR ICI */
+    color: #000000; 
 }
 
 #d-sig { 
     font-family: 'Alex Brush', cursive; 
     font-size: 32px; 
-    color: #000000; /* Signature en noir */
+    color: #000000; 
 }
 
 .round-stamp {
@@ -185,7 +184,7 @@ h4 { margin: 10px 0; color: #0f172a; text-transform: uppercase; font-size: 14px;
 /* Le texte légal tout en bas */
 .legal-text {
     font-size: 10px;
-    color: #000000 !important; /* FORCER LE NOIR IMPÉRATIVEMENT */
+    color: #000000 !important; 
     text-align: center;
     margin-top: 20px;
     opacity: 0.7;
@@ -220,7 +219,7 @@ input:focus, textarea:focus { border-color: #64ffda; }
     align-items: center; 
     gap: 6px; 
     cursor: pointer; 
-    font-size: 10px; /* Police plus petite */
+    font-size: 10px; 
     color: #cbd5e1; 
     white-space: nowrap;
 }
@@ -229,7 +228,7 @@ input:focus, textarea:focus { border-color: #64ffda; }
     width: 12px; height: 12px; margin: 0; cursor: pointer;
 }
 
-/* --- PANNEAU OPTIONS (Retour aux boutons simples) --- */
+/* --- PANNEAU OPTIONS --- */
 #detailsContainer { 
     background: #0f172a; border: 1px solid #1e293b; padding: 15px; border-radius: 8px; margin-top: 15px; 
     border-left: 3px solid #3b82f6;
@@ -239,7 +238,7 @@ input:focus, textarea:focus { border-color: #64ffda; }
 
 .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 5px; }
 
-/* BOUTONS D'OPTION (Style simple) */
+/* BOUTONS D'OPTION  */
 .opt-btn { 
     background: #1e293b; 
     border: 1px solid #334155; 
@@ -295,7 +294,6 @@ input:checked + .slider { background-color: #3b82f6; }
 input:checked + .slider:before { transform: translateX(14px); }
 
 /* POPUP */
-/* POPUP */
 .popup-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.9);
@@ -311,13 +309,13 @@ input:checked + .slider:before { transform: translateX(14px); }
     padding: 25px;
     border-radius: 8px;
     width: 90%;
-    max-width: 900px;   /* ← était 600px, trop petit pour le doc 1000px */
+    max-width: 900px;   
     text-align: center;
     border: 1px solid #334155;
 }
 .popup-content img {
     max-width: 100%;
-    max-height: 70vh;   /* ← empêche l'image d'être immense */
+    max-height: 70vh;   
     height: auto;
     border: 1px solid #64ffda;
     object-fit: contain;

@@ -4,7 +4,7 @@
 
 console.log("✅ Dossiers.js chargé !");
 
-const RESERVED_IDS = ['ETAT_DES_CHAMBRES_COMPLET']; // IDs à exclure de la liste patients
+const RESERVED_IDS = ['ETAT_DES_CHAMBRES_COMPLET']; 
 
 // --- 1. FONCTION DE CHARGEMENT PRINCIPALE ---
 window.chargerPatients = function() {

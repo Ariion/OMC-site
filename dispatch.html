@@ -129,9 +129,8 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
   <div class="tr">
     <span id="lsave"></span>
     <button class="btn-t" id="tbtn">🌓 <span id="ttxt">Mode clair</span></button>
+    <button class="btn-t" id="emp-btn" style="color: #a78bfa; border-color: #7c3aed;">👥 Staff</button>
     <button class="btn-s" id="sbtn">💾 Sauvegarder</button>
-    <button class="btn-d" id="dbtn">📨 Discord</button>
-    <button class="btn-r" id="rbtn">↺ Reset</button>
   </div>
 </div>
 
@@ -148,18 +147,28 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
 
 <div class="toast" id="toast"></div>
 
+<div id="modal-staff" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
+  <div style="background:var(--card); border:1px solid var(--bord); border-radius:10px; width:400px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h3 style="color:#a78bfa; font-family:'Rajdhani'; letter-spacing:2px; margin:0;">👥 EFFECTIF OMC</h3>
+      <button id="close-staff" style="background:none; border:none; color:var(--dim); font-size:1.2rem;">✕</button>
+    </div>
+    
+    <div id="staff-list" style="max-height:300px; overflow-y:auto; margin-bottom:15px; border:1px solid var(--bord); border-radius:6px; padding:5px;"></div>
+    
+    <div style="display:flex; gap:10px;">
+      <input type="text" id="new-emp-name" placeholder="Nom du nouvel agent..." style="flex:1; background:rgba(0,0,0,0.2); border:1px solid var(--bord); color:white; padding:8px; border-radius:6px; outline:none; font-family:'Inter'; font-size:0.8rem;">
+      <button id="add-emp-btn" style="background:#16a34a; border:none; color:white; padding:8px 15px; border-radius:6px; font-weight:bold;">Ajouter</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════
 //  DONNÉES
 // ══════════════════════════════════════════
-var EMPLOYES = [
-  "Alejandro Sanchez","Anna White","Diana Coin","Ford D.Powell",
-  "Gabriella Turner","Gregor Moss","León White","Logan Edderson",
-  "Louis Brunelle","Lyrae Greystone","Nezy Frinx","Raül Menendes",
-  "Tino Cruz","Tony Pirely","Valentina Oliviera","Bob Textor","John Mars","Lorenzo Coopers"
-];
-
-var empStatuts = {}; // { "Nom": "dispo"|"occ"|"abs" }
+var EMPLOYES = ["Louis BRUNELLE", "Lyrae GREYSTONE"];
+var empStatuts = {};
 
 var CFG = [
   {id:'ambu1', lbl:'Ambu 1',     cls:'u-a1',  sts:['','Libre','Occupé','Pause'],         top:true},
@@ -175,6 +184,65 @@ var CFG = [
 ];
 
 var state = {};
+
+// ══════════════════════════════════════════
+//  GESTION DU STAFF (MODAL)
+// ══════════════════════════════════════════
+var modalStaff = document.getElementById('modal-staff');
+var staffList = document.getElementById('staff-list');
+var inputNewEmp = document.getElementById('new-emp-name');
+
+// Ouvrir/Fermer
+document.getElementById('emp-btn').addEventListener('click', function() {
+  renderStaffList();
+  modalStaff.style.display = 'flex';
+});
+document.getElementById('close-staff').addEventListener('click', function() {
+  modalStaff.style.display = 'none';
+});
+
+// Afficher la liste
+function renderStaffList() {
+  staffList.innerHTML = '';
+  // Trier par ordre alphabétique
+  EMPLOYES.sort().forEach(function(nom) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05); align-items:center;';
+    
+    var span = document.createElement('span');
+    span.textContent = nom;
+    span.style.fontSize = '0.85rem';
+    
+    var delBtn = document.createElement('button');
+    delBtn.textContent = 'Retirer';
+    delBtn.style.cssText = 'background:#dc2626; border:none; color:white; padding:3px 8px; font-size:0.65rem; border-radius:4px;';
+    delBtn.onclick = function() {
+      if(confirm('Retirer ' + nom + ' de l\'effectif ?')) {
+        EMPLOYES = EMPLOYES.filter(function(e) { return e !== nom; });
+        renderStaffList();
+        sauvegarder(); // On sauvegarde auto
+      }
+    };
+    
+    row.appendChild(span);
+    row.appendChild(delBtn);
+    staffList.appendChild(row);
+  });
+}
+
+// Ajouter
+document.getElementById('add-emp-btn').addEventListener('click', function() {
+  var val = inputNewEmp.value.trim();
+  if(val && !EMPLOYES.includes(val)) {
+    // Majuscule au début
+    val = val.charAt(0).toUpperCase() + val.slice(1);
+    EMPLOYES.push(val);
+    inputNewEmp.value = '';
+    renderStaffList();
+    sauvegarder(); // Sauvegarde auto pour tout le monde
+    toast('✔ ' + val + ' ajouté(e) au staff !');
+  }
+});
 
 function initState() {
   state = {};
@@ -653,6 +721,9 @@ function initFirebase() {
         if (data.empStat) {
           try { empStatuts = JSON.parse(data.empStat); } catch(e2) {}
         }
+        if (data.employes) {
+          try { EMPLOYES = JSON.parse(data.employes); } catch(e3) {}
+        }
         if (data.ts) {
           document.getElementById('lsave').textContent =
             'Sauvegardé à ' + new Date(data.ts).toLocaleTimeString('fr-FR');
@@ -676,10 +747,10 @@ function initFirebase() {
 // ── SAUVEGARDE ──
 function sauvegarder() {
   if (db) {
-    // Firebase — partagé entre tous
     db.doc('dispatch/current').set({
       state:   JSON.stringify(state),
       empStat: JSON.stringify(empStatuts),
+      employes: JSON.stringify(EMPLOYES), // <-- AJOUT ICI
       ts:      Date.now()
     }).then(function() {
       var h = new Date().toLocaleTimeString('fr-FR');
@@ -698,6 +769,7 @@ function sauvegarderLocal() {
   try {
     localStorage.setItem('omc-dispatch', JSON.stringify(state));
     localStorage.setItem('omc-dispatch-emp', JSON.stringify(empStatuts));
+    localStorage.setItem('omc-employes', JSON.stringify(EMPLOYES));
     var h = new Date().toLocaleTimeString('fr-FR');
     document.getElementById('lsave').textContent = 'Sauvegardé à ' + h;
     toast('✔ Sauvegardé (local)');
@@ -709,8 +781,10 @@ function charger() {
   try {
     var d = localStorage.getItem('omc-dispatch');
     var e = localStorage.getItem('omc-dispatch-emp');
+    var l = localStorage.getItem('omc-employes');
     if (d) state      = JSON.parse(d);
     if (e) empStatuts = JSON.parse(e);
+    if (l) EMPLOYES   = JSON.parse(l);
   } catch(e) { /* silent */ }
 }
 

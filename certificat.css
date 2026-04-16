@@ -26,7 +26,7 @@
     z-index: 10;
 }
 
-/* --- ZONE DE DROITE (Fond gris clair comme deces) --- */
+/* --- ZONE DE DROITE (Fond gris clair) --- */
 .preview-area {
     flex-grow: 1;
     background-color: #d1d5db; 

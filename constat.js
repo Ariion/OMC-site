@@ -67,10 +67,10 @@ window.onload = () => {
 
     // --- AUTOCOMPLETE CENTRALISÉ ---
     setupPatientAutocomplete({
-        nameId: 'patientName', // Nouvel ID standard
+        nameId: 'patientName',
         birthId: 'patientBirth',
         callback: function(p) {
-            updateReport(); // Force la mise à jour visuelle
+            updateReport(); 
         }
     });
 
@@ -392,16 +392,15 @@ function toggleDebug() {
     }
 }
 
-// À ajouter ou modifier dans constat.js au moment de l'appel à la génération
 var OMC_CONFIG = {
     webhook: 'https://discord.com/...',
-    captureId: 'capture-zone', // L'ID de la div .document-final
+    captureId: 'capture-zone', 
     nomPatientId: 'patientName',
     typeDoc: 'Constat Lésionnel',
     pageSource: 'constat.html',
-    // On force html2canvas à prendre toute la largeur définie en CSS
+    
     html2canvasOptions: {
-        width: 1000, // Largeur exacte de .document-final
+        width: 1000,
         scale: 2,
         useCORS: true,
         windowWidth: 1000

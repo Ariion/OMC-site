@@ -4,11 +4,7 @@
 ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
-/* =====================================================
-   OVERRIDE GLOBAL.CSS — Le portail a besoin de scroller
-   global.css met body { overflow: hidden; height: 100vh }
-   On écrase ça ici pour le portail uniquement
-   ===================================================== */
+
 html {
     height: auto !important;
     overflow-y: auto !important;
@@ -131,11 +127,7 @@ h1 {
     .portal-container { padding: 40px 20px; }
 }
 
-/* =====================================================
-   FIX MODULE CHAMBRES — Espace pour ne pas masquer les cartes
-   Le module chambres est position:fixed en bas (~160px ouvert)
-   On ajoute un padding-bottom suffisant sur le conteneur
-   ===================================================== */
+
 .portal-container {
     padding-bottom: 200px !important;
 }
