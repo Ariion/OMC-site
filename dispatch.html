@@ -153,9 +153,7 @@ button{cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.75rem;font-we
       <h3 style="color:#a78bfa; font-family:'Rajdhani'; letter-spacing:2px; margin:0;">👥 EFFECTIF OMC</h3>
       <button id="close-staff" style="background:none; border:none; color:var(--dim); font-size:1.2rem;">✕</button>
     </div>
-    
     <div id="staff-list" style="max-height:300px; overflow-y:auto; margin-bottom:15px; border:1px solid var(--bord); border-radius:6px; padding:5px;"></div>
-    
     <div style="display:flex; gap:10px;">
       <input type="text" id="new-emp-name" placeholder="Nom du nouvel agent..." style="flex:1; background:rgba(0,0,0,0.2); border:1px solid var(--bord); color:white; padding:8px; border-radius:6px; outline:none; font-family:'Inter'; font-size:0.8rem;">
       <button id="add-emp-btn" style="background:#16a34a; border:none; color:white; padding:8px 15px; border-radius:6px; font-weight:bold;">Ajouter</button>
@@ -171,14 +169,14 @@ var EMPLOYES = ["Louis BRUNELLE", "Lyrae GREYSTONE"];
 var empStatuts = {};
 
 var CFG = [
-  {id:'ambu1', lbl:'Ambu 1',     cls:'u-a1',  sts:['','Libre','Occupé','Pause'],         top:true},
-  {id:'ambu2', lbl:'Ambu 2',     cls:'u-a2',  sts:['','Libre','Occupé','Pause'],         top:true},
-  {id:'ambu3', lbl:'Ambu 3',     cls:'u-a3',  sts:['','Libre','Occupé','Pause'],         top:true},
-  {id:'bob',   lbl:'Bobologie',  cls:'u-bob', sts:['','Libre','Occupé','Pause'],         top:true},
+  {id:'ambu1', lbl:'Ambu 1',     cls:'u-a1',  sts:['','Libre','Occupé','Pause'],        top:true},
+  {id:'ambu2', lbl:'Ambu 2',     cls:'u-a2',  sts:['','Libre','Occupé','Pause'],        top:true},
+  {id:'ambu3', lbl:'Ambu 3',     cls:'u-a3',  sts:['','Libre','Occupé','Pause'],        top:true},
+  {id:'bob',   lbl:'Bobologie',  cls:'u-bob', sts:['','Libre','Occupé','Pause'],        top:true},
   {id:'cen',   lbl:'Centrale',   cls:'u-cen', sts:['','Station','Libre','Occupé'],       top:true},
-  {id:'ambu4', lbl:'Ambu 4',     cls:'u-a4',  sts:['','Libre','Occupé','Pause'],         top:false},
-  {id:'ambu5', lbl:'Ambu 5',     cls:'u-a5',  sts:['','Libre','Occupé','Pause'],         top:false},
-  {id:'ambu6', lbl:'Ambu 6',     cls:'u-a6',  sts:['','Libre','Occupé','Pause'],         top:false},
+  {id:'ambu4', lbl:'Ambu 4',     cls:'u-a4',  sts:['','Libre','Occupé','Pause'],        top:false},
+  {id:'ambu5', lbl:'Ambu 5',     cls:'u-a5',  sts:['','Libre','Occupé','Pause'],        top:false},
+  {id:'ambu6', lbl:'Ambu 6',     cls:'u-a6',  sts:['','Libre','Occupé','Pause'],        top:false},
   {id:'rdv',   lbl:'Rendez-vous',cls:'u-rdv', sts:null,                                  top:false},
   {id:'frm',   lbl:'Formation',  cls:'u-frm', sts:['','En cours','Terminée'],            top:false},
 ];
@@ -192,7 +190,6 @@ var modalStaff = document.getElementById('modal-staff');
 var staffList = document.getElementById('staff-list');
 var inputNewEmp = document.getElementById('new-emp-name');
 
-// Ouvrir/Fermer
 document.getElementById('emp-btn').addEventListener('click', function() {
   renderStaffList();
   modalStaff.style.display = 'flex';
@@ -201,17 +198,13 @@ document.getElementById('close-staff').addEventListener('click', function() {
   modalStaff.style.display = 'none';
 });
 
-// Afficher la liste
 function renderStaffList() {
   staffList.innerHTML = '';
-  // Trier par ordre alphabétique
   EMPLOYES.sort().forEach(function(nom) {
     var row = document.createElement('div');
     row.style.cssText = 'display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05); align-items:center;';
-    
     var span = document.createElement('span');
-    span.textContent = nom;
-    span.style.fontSize = '0.85rem';
+    span.textContent = nom; span.style.fontSize = '0.85rem';
     
     var delBtn = document.createElement('button');
     delBtn.textContent = 'Retirer';
@@ -220,26 +213,22 @@ function renderStaffList() {
       if(confirm('Retirer ' + nom + ' de l\'effectif ?')) {
         EMPLOYES = EMPLOYES.filter(function(e) { return e !== nom; });
         renderStaffList();
-        sauvegarder(); // On sauvegarde auto
+        sauvegarder();
       }
     };
-    
-    row.appendChild(span);
-    row.appendChild(delBtn);
+    row.appendChild(span); row.appendChild(delBtn);
     staffList.appendChild(row);
   });
 }
 
-// Ajouter
 document.getElementById('add-emp-btn').addEventListener('click', function() {
   var val = inputNewEmp.value.trim();
   if(val && !EMPLOYES.includes(val)) {
-    // Majuscule au début
     val = val.charAt(0).toUpperCase() + val.slice(1);
     EMPLOYES.push(val);
     inputNewEmp.value = '';
     renderStaffList();
-    sauvegarder(); // Sauvegarde auto pour tout le monde
+    sauvegarder();
     toast('✔ ' + val + ' ajouté(e) au staff !');
   }
 });
@@ -254,7 +243,7 @@ function initState() {
 }
 
 // ══════════════════════════════════════════
-//  HORLOGE
+//  HORLOGE & THÈME
 // ══════════════════════════════════════════
 function tick() {
   var n = new Date();
@@ -264,9 +253,6 @@ function tick() {
 }
 tick();
 
-// ══════════════════════════════════════════
-//  THÈME
-// ══════════════════════════════════════════
 document.getElementById('tbtn').addEventListener('click', function() {
   document.body.classList.toggle('light');
   var isL = document.body.classList.contains('light');
@@ -279,40 +265,31 @@ if (localStorage.getItem('omc-theme') === 'light') {
 }
 
 // ══════════════════════════════════════════
-//  RENDER
+//  DRAG & DROP
 // ══════════════════════════════════════════
-// ══════════════════════════════════════════
-//  DRAG & DROP — swap de cartes
-// ══════════════════════════════════════════
-var dragSrcId = null;  // id de l'unité en cours de drag
+var dragSrcId = null;
 
 function activerDrag(cardEl, uid) {
-  // ── SOURIS ──
   cardEl.setAttribute('draggable', 'true');
-
   cardEl.addEventListener('dragstart', function(e) {
     dragSrcId = uid;
     cardEl.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', uid);
   });
-
   cardEl.addEventListener('dragend', function() {
     dragSrcId = null;
     cardEl.classList.remove('dragging');
     document.querySelectorAll('.card').forEach(function(c){ c.classList.remove('drag-over'); });
   });
-
   cardEl.addEventListener('dragover', function(e) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     if (dragSrcId && dragSrcId !== uid) cardEl.classList.add('drag-over');
   });
-
   cardEl.addEventListener('dragleave', function() {
     cardEl.classList.remove('drag-over');
   });
-
   cardEl.addEventListener('drop', function(e) {
     e.preventDefault();
     cardEl.classList.remove('drag-over');
@@ -320,102 +297,33 @@ function activerDrag(cardEl, uid) {
     if (!srcId || srcId === uid) return;
     swapUnits(srcId, uid);
   });
-
-  // ── TACTILE (mobile) ──
-  var touchStartX, touchStartY, clone, moved;
-
-  cardEl.addEventListener('touchstart', function(e) {
-    var header = cardEl.querySelector('.ch');
-    if (!e.target.closest('.ch')) return; // drag seulement depuis le header
-    moved = false;
-    dragSrcId = uid;
-    var t = e.touches[0];
-    touchStartX = t.clientX;
-    touchStartY = t.clientY;
-
-    // Créer un fantôme visuel
-    clone = cardEl.cloneNode(true);
-    clone.style.cssText = 'position:fixed;z-index:9999;opacity:.8;pointer-events:none;width:'+cardEl.offsetWidth+'px;transform:scale(1.04);box-shadow:0 8px 32px rgba(0,0,0,.6);border:2px solid var(--accent);border-radius:10px;';
-    clone.style.left = (t.clientX - cardEl.offsetWidth/2) + 'px';
-    clone.style.top  = (t.clientY - 30) + 'px';
-    document.body.appendChild(clone);
-    cardEl.style.opacity = '.4';
-  }, {passive:true});
-
-  cardEl.addEventListener('touchmove', function(e) {
-    if (!dragSrcId || dragSrcId !== uid) return;
-    moved = true;
-    var t = e.touches[0];
-    if (clone) {
-      clone.style.left = (t.clientX - parseInt(clone.style.width)/2) + 'px';
-      clone.style.top  = (t.clientY - 30) + 'px';
-    }
-    // Highlight la carte sous le doigt
-    document.querySelectorAll('.card').forEach(function(c){ c.classList.remove('drag-over'); });
-    var el = document.elementFromPoint(t.clientX, t.clientY);
-    if (el) {
-      var target = el.closest('.card');
-      if (target && target !== cardEl) target.classList.add('drag-over');
-    }
-    e.preventDefault();
-  }, {passive:false});
-
-  cardEl.addEventListener('touchend', function(e) {
-    if (!dragSrcId || dragSrcId !== uid) return;
-    if (clone) { clone.remove(); clone = null; }
-    cardEl.style.opacity = '';
-    document.querySelectorAll('.card').forEach(function(c){ c.classList.remove('drag-over'); });
-
-    if (!moved) { dragSrcId = null; return; }
-
-    var t = e.changedTouches[0];
-    var el = document.elementFromPoint(t.clientX, t.clientY);
-    if (el) {
-      var target = el.closest('.card');
-      if (target && target !== cardEl) {
-        var targetId = target.getAttribute('data-uid');
-        if (targetId) swapUnits(uid, targetId);
-      }
-    }
-    dragSrcId = null;
-  }, {passive:true});
 }
 
 function swapUnits(idA, idB) {
-  // On échange uniquement les POSITIONS dans les grilles
-  // En permutant les éléments DOM directement — plus simple et sans bug
-  var cardA = document.querySelector('.card[data-uid="'+idA+'"]');
-  var cardB = document.querySelector('.card[data-uid="'+idB+'"]');
-  if (!cardA || !cardB) return;
-
-  var parentA = cardA.parentNode;
-  var parentB = cardB.parentNode;
-  var nextA   = cardA.nextSibling;
-  var nextB   = cardB.nextSibling;
-
-  // Swap DOM
-  if (nextA === cardB) {
-    parentA.insertBefore(cardB, cardA);
-  } else if (nextB === cardA) {
-    parentB.insertBefore(cardA, cardB);
-  } else {
-    parentA.insertBefore(cardB, nextA);
-    parentB.insertBefore(cardA, nextB);
-  }
-
-  // Re-activer le drag sur les cartes échangées (data-uid inchangé)
-  // Rien à faire — les event listeners sont déjà attachés
-
-  var lblA = cardA.querySelector('.ch span') ? cardA.querySelector('.ch span').textContent : idA;
-  var lblB = cardB.querySelector('.ch span') ? cardB.querySelector('.ch span').textContent : idB;
-  toast('🔄 ' + lblA + ' ↔ ' + lblB);
+  var idxA = CFG.findIndex(function(c){ return c.id === idA; });
+  var idxB = CFG.findIndex(function(c){ return c.id === idB; });
+  if(idxA === -1 || idxB === -1) return;
+  
+  // On inverse dans le tableau CFG
+  var temp = CFG[idxA];
+  CFG[idxA] = CFG[idxB];
+  CFG[idxB] = temp;
+  
+  // Sauvegarde de l'ordre
+  state.cfgOrder = CFG.map(function(c){ return c.id; });
+  
+  renderAll();
+  sauvegarder();
+  toast('🔄 Positions échangées');
 }
 
+// ══════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════
 function renderAll() {
   var gTop = document.getElementById('g-top');
   var gBot = document.getElementById('g-bot');
-  gTop.innerHTML = '';
-  gBot.innerHTML = '';
+  gTop.innerHTML = ''; gBot.innerHTML = '';
   CFG.forEach(function(u) {
     var card = buildCard(u);
     if (u.top) gTop.appendChild(card);
@@ -426,8 +334,6 @@ function renderAll() {
 function buildCard(u) {
   var s = state[u.id];
   var card = el('div','card');
-
-  // — Header —
   var hdr = el('div','ch '+u.cls);
   var lbl = el('span'); lbl.textContent = u.lbl;
   hdr.appendChild(lbl);
@@ -440,76 +346,55 @@ function buildCard(u) {
       if (v === (s.status||'')) o.selected = true;
       sel.appendChild(o);
     });
-    (function(uid, selEl) {
-      selEl.addEventListener('change', function() {
-        state[uid].status = selEl.value;
-      });
-    })(u.id, sel);
+    sel.addEventListener('change', function() {
+      state[u.id].status = sel.value;
+      sauvegarder(); // AUTO SAVE
+    });
     hdr.appendChild(sel);
   }
   card.appendChild(hdr);
 
-  // — Slots —
   var body = el('div','slots');
   if (u.id === 'rdv') {
-    s.slots.forEach(function(r, i) {
-      body.appendChild(buildRdvRow(i, r));
-    });
+    s.slots.forEach(function(r, i) { body.appendChild(buildRdvRow(i, r)); });
   } else {
-    s.slots.forEach(function(nom, i) {
-      body.appendChild(buildRow(u.id, i, nom));
-    });
+    s.slots.forEach(function(nom, i) { body.appendChild(buildRow(u.id, i, nom)); });
   }
   card.appendChild(body);
 
-  // — Bouton ajouter —
   var add = el('button','sadd');
   add.textContent = '+ Ajouter un membre';
-  (function(uid, bodyEl) {
-    add.addEventListener('click', function() {
-      if (uid === 'rdv') state.rdv.slots.push({nom:'', stat:'Occupé'});
-      else state[uid].slots.push('');
-      var newCard = buildCard(CFG.find(function(c){ return c.id===uid; }));
-      card.parentNode.replaceChild(newCard, card);
-    });
-  })(u.id, body);
+  add.addEventListener('click', function() {
+    if (u.id === 'rdv') state.rdv.slots.push({nom:'', stat:'Occupé'});
+    else state[u.id].slots.push('');
+    renderAll();
+    sauvegarder(); // AUTO SAVE
+  });
   card.appendChild(add);
-
-  // — Drag & drop —
+  
   card.setAttribute('data-uid', u.id);
   activerDrag(card, u.id);
-
   return card;
 }
 
-// ── Row membre normal ──
 function buildRow(uid, idx, nom) {
   var row = el('div','slot-row');
-
   var inp = el('input','sn');
-  inp.type = 'text';
-  inp.value = nom || '';
-  inp.placeholder = '— Libre —';
-  inp.autocomplete = 'off';
-
-  // Dropdown autocomplete
+  inp.type = 'text'; inp.value = nom || ''; inp.placeholder = '— Libre —'; inp.autocomplete = 'off';
   var drop = el('div','acd');
-  row.appendChild(inp);
-  row.appendChild(drop);
+  row.appendChild(inp); row.appendChild(drop);
 
-  // Bouton supprimer
   var del = el('button','sdel');
-  del.textContent = '✕';
-  del.title = 'Retirer';
+  del.textContent = '✕'; del.title = 'Retirer';
   row.appendChild(del);
 
-  // Events
   inp.addEventListener('input', function() {
     state[uid].slots[idx] = inp.value;
     showDrop(drop, inp.value, function(choix) {
       state[uid].slots[idx] = choix;
       inp.value = choix;
       drop.style.display = 'none';
+      sauvegarder(); // AUTO SAVE
     });
   });
 
@@ -518,36 +403,35 @@ function buildRow(uid, idx, nom) {
       state[uid].slots[idx] = choix;
       inp.value = choix;
       drop.style.display = 'none';
+      sauvegarder(); // AUTO SAVE
     });
   });
 
   inp.addEventListener('blur', function() {
-    setTimeout(function(){ drop.style.display = 'none'; }, 250);
+    setTimeout(function(){ 
+      drop.style.display = 'none'; 
+      if (state[uid].slots[idx] !== inp.value) {
+        state[uid].slots[idx] = inp.value;
+        sauvegarder(); // AUTO SAVE
+      }
+    }, 250);
   });
 
   del.addEventListener('click', function() {
     state[uid].slots.splice(idx, 1);
     renderAll();
+    sauvegarder(); // AUTO SAVE
   });
-
   return row;
 }
 
-// ── Row RDV ──
 function buildRdvRow(idx, r) {
   var row = el('div','slot-row');
-
   var inp = el('input','sn');
-  inp.type = 'text';
-  inp.value = r.nom || '';
-  inp.placeholder = '— Nom du patient —';
-  inp.autocomplete = 'off';
-
+  inp.type = 'text'; inp.value = r.nom || ''; inp.placeholder = '— Nom du patient —'; inp.autocomplete = 'off';
   var drop = el('div','acd');
-  row.appendChild(inp);
-  row.appendChild(drop);
+  row.appendChild(inp); row.appendChild(drop);
 
-  // Select statut RDV
   var sel = el('select','rsel '+rdvCls(r.stat));
   ['Occupé','Libre','Pause'].forEach(function(v) {
     var o = document.createElement('option');
@@ -557,18 +441,17 @@ function buildRdvRow(idx, r) {
   });
   row.appendChild(sel);
 
-  // Supprimer
   var del = el('button','sdel');
   del.textContent = '✕';
   row.appendChild(del);
 
-  // Events
   inp.addEventListener('input', function() {
     state.rdv.slots[idx].nom = inp.value;
     showDrop(drop, inp.value, function(choix) {
       state.rdv.slots[idx].nom = choix;
       inp.value = choix;
       drop.style.display = 'none';
+      sauvegarder(); // AUTO SAVE
     });
   });
 
@@ -577,23 +460,31 @@ function buildRdvRow(idx, r) {
       state.rdv.slots[idx].nom = choix;
       inp.value = choix;
       drop.style.display = 'none';
+      sauvegarder(); // AUTO SAVE
     });
   });
 
   inp.addEventListener('blur', function() {
-    setTimeout(function(){ drop.style.display = 'none'; }, 250);
+    setTimeout(function(){ 
+      drop.style.display = 'none'; 
+      if (state.rdv.slots[idx].nom !== inp.value) {
+        state.rdv.slots[idx].nom = inp.value;
+        sauvegarder(); // AUTO SAVE
+      }
+    }, 250);
   });
 
   sel.addEventListener('change', function() {
     state.rdv.slots[idx].stat = sel.value;
     sel.className = 'rsel ' + rdvCls(sel.value);
+    sauvegarder(); // AUTO SAVE
   });
 
   del.addEventListener('click', function() {
     state.rdv.slots.splice(idx, 1);
     renderAll();
+    sauvegarder(); // AUTO SAVE
   });
-
   return row;
 }
 
@@ -603,10 +494,6 @@ function rdvCls(v) {
   return 's-occ';
 }
 
-// ══════════════════════════════════════════
-//  AUTOCOMPLETE
-// ══════════════════════════════════════════
-// Retourne la liste des employés déjà assignés dans le dispatch (sauf dans le slot courant)
 function getAssignes(slotActuel) {
   var assignes = {};
   CFG.forEach(function(u) {
@@ -629,56 +516,38 @@ function getAssignes(slotActuel) {
 
 function showDrop(drop, valeur, onChoix) {
   var val = (valeur || '').toLowerCase().trim();
-  // Exclure les employés déjà assignés ailleurs (sauf la valeur actuelle du slot)
   var assignes = getAssignes(valeur.trim());
-
   var liste = EMPLOYES.filter(function(e) {
-    // Exclure si déjà assigné ailleurs
     if (assignes[e]) return false;
-    // Filtrer par la saisie
     if (val.length > 0 && e.toLowerCase().indexOf(val) === -1) return false;
     return true;
   });
-
   if (!liste.length) { drop.style.display = 'none'; return; }
 
   drop.innerHTML = '';
   liste.forEach(function(e) {
     var item = el('div','aci');
     var nom  = el('span'); nom.textContent = e;
-
-    var badge = el('span','aci-b b-dispo');
-    badge.textContent = '✓ Disponible';
-
-    item.appendChild(nom);
-    item.appendChild(badge);
-
-    item.addEventListener('mousedown', function(ev) {
-      ev.preventDefault();
-      onChoix(e);
-    });
-
+    var badge = el('span','aci-b b-dispo'); badge.textContent = '✓ Disponible';
+    item.appendChild(nom); item.appendChild(badge);
+    item.addEventListener('mousedown', function(ev) { ev.preventDefault(); onChoix(e); });
     drop.appendChild(item);
   });
 
-  // Positionner en fixed par rapport à l'input parent
   var inp = drop.previousElementSibling;
   if (inp) {
     var rect = inp.getBoundingClientRect();
     drop.style.top  = (rect.bottom + 4) + 'px';
-    // Centré sous l'input, mais jamais hors de l'écran à droite
     var left = rect.left;
     var dropW = 300;
-    if (left + dropW > window.innerWidth - 8) {
-      left = window.innerWidth - dropW - 8;
-    }
+    if (left + dropW > window.innerWidth - 8) left = window.innerWidth - dropW - 8;
     drop.style.left = left + 'px';
   }
   drop.style.display = 'block';
 }
 
 // ══════════════════════════════════════════
-//  FIREBASE — chargé dynamiquement pour ne pas bloquer le JS si le CDN est lent
+//  FIREBASE — ÉCOUTE EN TEMPS RÉEL (ONLINE)
 // ══════════════════════════════════════════
 var db = null;
 
@@ -694,53 +563,47 @@ function initFirebase() {
     };
     if (!firebase.apps.length) firebase.initializeApp(cfg);
     db = firebase.firestore();
-    // Charger UNE SEULE FOIS depuis Firebase au démarrage (pas onSnapshot)
-    db.doc('dispatch/current').get().then(function(snap) {
-      var ok = typeof snap.exists === 'function' ? snap.exists() : snap.exists;
-      if (!ok) {
-        // Pas de document Firebase — on sauvegarde l'état vide pour initialiser
-        console.log('Firebase: document absent, initialisation...');
-        return;
-      }
+
+    // LE CŒUR DE LA SYNCHRO EN LIGNE (onSnapshot)
+    db.doc('dispatch/current').onSnapshot(function(snap) {
+      if (!snap.exists) return;
+      var data = snap.data();
+      
       try {
-        var data = snap.data();
-        if (!data || !data.state) {
-          console.log('Firebase: data.state absent, on garde local');
-          return;
-        }
         var parsed = JSON.parse(data.state);
-        // Vérifier que chaque unité est présente (format valide)
-        var tousPresents = ['ambu1','ambu2','ambu3','bob','cen','ambu4','ambu5','ambu6','rdv','frm'].every(function(id){
-          return parsed[id] !== undefined;
-        });
-        if (!tousPresents) {
-          console.log('Firebase: format ancien ou invalide, on garde local');
-          return;
-        }
         state = parsed;
-        if (data.empStat) {
-          try { empStatuts = JSON.parse(data.empStat); } catch(e2) {}
+        
+        // Appliquer l'ordre des cartes si des D&D ont été faits
+        if (state.cfgOrder) {
+          CFG.sort(function(a, b) {
+            var posA = state.cfgOrder.indexOf(a.id);
+            var posB = state.cfgOrder.indexOf(b.id);
+            if(posA === -1) posA = 999;
+            if(posB === -1) posB = 999;
+            return posA - posB;
+          });
         }
-        if (data.employes) {
-          try { EMPLOYES = JSON.parse(data.employes); } catch(e3) {}
-        }
+        
+        if (data.empStat) empStatuts = JSON.parse(data.empStat);
+        if (data.employes) EMPLOYES = JSON.parse(data.employes);
+        
         if (data.ts) {
-          document.getElementById('lsave').textContent =
-            'Sauvegardé à ' + new Date(data.ts).toLocaleTimeString('fr-FR');
+          document.getElementById('lsave').textContent = 'Synchro : ' + new Date(data.ts).toLocaleTimeString('fr-FR');
         }
+        
+        // Sécurité : Ne pas recharger visuellement la page si l'utilisateur est en train de taper au clavier
+        if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+          return; 
+        }
+        
         renderAll();
-        console.log('Firebase: données chargées OK');
       } catch(e) {
-        console.warn('Firebase get parse erreur:', e);
-        // Ne pas toucher au state — garder l'affichage local
+        console.warn('Erreur Parse Firebase:', e);
       }
-    }).catch(function(err) { console.warn('Firebase get err:', err); });
-
-    // Écoute temps réel — met à jour la page pour TOUS les utilisateurs
-
+    });
 
   } catch(e) {
-    console.warn('Firebase init échoué, mode local:', e);
+    console.warn('Firebase init échoué:', e);
   }
 }
 
@@ -750,14 +613,11 @@ function sauvegarder() {
     db.doc('dispatch/current').set({
       state:   JSON.stringify(state),
       empStat: JSON.stringify(empStatuts),
-      employes: JSON.stringify(EMPLOYES), // <-- AJOUT ICI
+      employes: JSON.stringify(EMPLOYES),
       ts:      Date.now()
     }).then(function() {
-      var h = new Date().toLocaleTimeString('fr-FR');
-      document.getElementById('lsave').textContent = 'Sauvegardé à ' + h;
-      toast('✔ Sauvegardé — visible par tous');
+      // Le onSnapshot gérera la mise à jour de l'heure
     }).catch(function(e) {
-      console.warn(e);
       sauvegarderLocal();
     });
   } else {
@@ -772,12 +632,10 @@ function sauvegarderLocal() {
     localStorage.setItem('omc-employes', JSON.stringify(EMPLOYES));
     var h = new Date().toLocaleTimeString('fr-FR');
     document.getElementById('lsave').textContent = 'Sauvegardé à ' + h;
-    toast('✔ Sauvegardé (local)');
   } catch(e) { toast('✗ Erreur sauvegarde', true); }
 }
 
 function charger() {
-  // Chargement local en fallback (Firebase écrase ensuite via onSnapshot)
   try {
     var d = localStorage.getItem('omc-dispatch');
     var e = localStorage.getItem('omc-dispatch-emp');
@@ -788,19 +646,22 @@ function charger() {
   } catch(e) { /* silent */ }
 }
 
-function syncInputs() {
-  // Le state est tenu à jour en temps réel par les event listeners
-}
-
 function reinitialiser() {
   if (!confirm('Réinitialiser tout le dispatch ?')) return;
   initState();
+  // Remettre les cartes dans l'ordre d'origine
+  CFG.sort(function(a, b) {
+     var defOrder = ['ambu1','ambu2','ambu3','bob','cen','ambu4','ambu5','ambu6','rdv','frm'];
+     return defOrder.indexOf(a.id) - defOrder.indexOf(b.id);
+  });
+  state.cfgOrder = CFG.map(function(c){ return c.id; });
   renderAll();
+  sauvegarder();
   toast('Dispatch réinitialisé');
 }
 
 // ══════════════════════════════════════════
-//  DISCORD
+//  DISCORD & AUTRES
 // ══════════════════════════════════════════
 var HOOK = 'https://discord.com/api/webhooks/1473838500552900763/elqC43oQ76jAapLRLieQ38oQ53xHteXNdqJ3SrQ-Md_o2spH9a1AZyfhDqI6ruxVQASG';
 var NOMS = {ambu1:'Ambu 1',ambu2:'Ambu 2',ambu3:'Ambu 3',ambu4:'Ambu 4',ambu5:'Ambu 5',ambu6:'Ambu 6',bob:'Bobologie',cen:'Centrale',rdv:'Rendez-vous',frm:'Formation'};
@@ -836,52 +697,33 @@ function envoyerDiscord() {
   .catch(function(){ toast('✗ Erreur réseau', true); });
 }
 
-// ══════════════════════════════════════════
-//  BOUTONS TOPBAR
-// ══════════════════════════════════════════
-document.getElementById('sbtn').addEventListener('click', sauvegarder);
-document.getElementById('dbtn').addEventListener('click', envoyerDiscord);
-document.getElementById('rbtn').addEventListener('click', reinitialiser);
-
-// ══════════════════════════════════════════
-//  TOAST
-// ══════════════════════════════════════════
-function toast(msg, err) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast on' + (err ? ' err' : '');
-  setTimeout(function(){ t.className = 'toast'; }, 3000);
-}
-
-// ══════════════════════════════════════════
-//  HELPER
-// ══════════════════════════════════════════
 function el(tag, cls) {
   var e = document.createElement(tag);
   if (cls) e.className = cls;
   return e;
 }
+function toast(msg, err) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast on' + (err ? ' err' : '');
+  setTimeout(function(){ t.className = 'toast'; }, 3000);
+}
 
-// ══════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════
+document.getElementById('sbtn').addEventListener('click', sauvegarder);
+document.getElementById('dbtn').addEventListener('click', envoyerDiscord);
+document.getElementById('rbtn').addEventListener('click', reinitialiser);
+
 initState();
 charger();
 renderAll();
 
-// Firebase chargé après le rendu — les clics fonctionnent déjà
 var s1 = document.createElement('script');
 s1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
 s1.onload = function() {
   var s2 = document.createElement('script');
   s2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
-  s2.onload = function() {
-    initFirebase();
-  };
-  s2.onerror = function() { console.warn('Firebase Firestore CDN indisponible'); };
+  s2.onload = initFirebase;
   document.head.appendChild(s2);
 };
-s1.onerror = function() { console.warn('Firebase App CDN indisponible'); };
 document.head.appendChild(s1);
 </script>
 </body>
