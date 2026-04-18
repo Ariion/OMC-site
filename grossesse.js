@@ -268,3 +268,107 @@ function updateReport() {
 
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); }
 function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+
+// --- MODULE POLYVALENT (OBS / URO) ---
+
+window.changerModeEcho = function(mode) {
+    const mainTitle = document.getElementById('doc-main-title');
+    const tagTitle = document.getElementById('doc-tag-title');
+    const bioTitle = document.querySelector('.biometrics-panel h5');
+    const vitalTitle = document.querySelectorAll('.biometrics-panel h5')[1];
+    const blocTerme = document.getElementById('dateDebut').closest('.form-group');
+    const blocSexe = document.getElementById('sexeFoetal').closest('.form-group');
+    const blocVitalite = document.getElementById('activiteCardiaque').closest('.form-group');
+    
+    // Labels de la liste
+    const labels = document.querySelectorAll('.bio-list li span');
+
+    if (mode === 'uro') {
+        // Mode Urologie / Néphrologie
+        if(mainTitle) mainTitle.innerText = "COMPTE-RENDU D'IMAGERIE";
+        if(tagTitle) tagTitle.innerText = "OCEAN MEDICAL CENTER — RADIOLOGIE";
+        if(bioTitle) bioTitle.innerText = "BIOMÉTRIES DU GREFFON / ORGANE";
+        if(vitalTitle) vitalTitle.innerText = "VASCULARISATION (DOPPLER)";
+        
+        if(labels[0]) labels[0].innerText = "Activité vasculaire :"; 
+        if(labels[1]) labels[1].innerText = "Index de Résistance :"; 
+        if(labels[2]) labels[2].innerText = "Dilatation voies :"; 
+        if(labels[3]) labels[3].innerText = "Épaisseur Cortex :";
+        
+        // Cacher les blocs inutiles pour un rein
+        if(blocTerme) blocTerme.style.display = 'none';
+        if(blocSexe) blocSexe.style.display = 'none';
+        if(blocVitalite) blocVitalite.style.display = 'none';
+        
+    } else {
+        // Mode Obstétrique (Par défaut)
+        if(mainTitle) mainTitle.innerText = "DOSSIER DE GROSSESSE";
+        if(tagTitle) tagTitle.innerText = "OCEAN MEDICAL CENTER — OBSTÉTRIQUE";
+        if(bioTitle) bioTitle.innerText = "BIOMÉTRIES FOETALES";
+        if(vitalTitle) vitalTitle.innerText = "VITALITÉ";
+        
+        if(labels[0]) labels[0].innerText = "Activité Cardiaque :"; 
+        if(labels[1]) labels[1].innerText = "Mouvements (MAF) :"; 
+        if(labels[2]) labels[2].innerText = "Sexe Foetal :"; 
+        if(labels[3]) labels[3].innerText = "Poids Estimé :";
+        
+        if(blocTerme) blocTerme.style.display = 'block';
+        if(blocSexe) blocSexe.style.display = 'block';
+        if(blocVitalite) blocVitalite.style.display = 'block';
+    }
+};
+
+
+window.lancerDossier = function() {
+    // 1. Forcer le mode Urologie
+    document.getElementById('selectModeEcho').value = 'uro';
+    changerModeEcho('uro');
+    
+    // 2. Remplir les champs patients
+    document.getElementById('patientName').value = "";
+    document.getElementById('patientBlood').value = "";
+    document.getElementById('patientBirth').value = ""; // À ajuster selon le RP
+    document.getElementById('obsHealth').value = "";
+    
+    // 3. Remplacer l'image
+    // J'utilise l'image que tu as uploadée précédemment (si l'URL est cassée, remplace par un asset local)
+    document.getElementById('echo-img-display').src = "uploaded:image_735fe2.jpg-ed2aaf5d-f70b-4e4f-add2-d9f52655f404";
+    document.getElementById('echo-label-img').innerText = "ÉCHO DOPPLER - GREFFON FOSSE ILIAQUE GAUCHE";
+    document.getElementById('exam-type-auto').innerText = "ÉCHOGRAPHIE DOPPLER RÉNAL";
+
+    // 4. Injecter les mesures du rein greffé
+    const list = document.getElementById('bio-list-content');
+    list.innerHTML = `
+        <li><span>Grand Axe :</span> <strong>112 mm</strong></li>
+        <li><span>Largeur :</span> <strong>54 mm</strong></li>
+        <li><span>Échogénicité :</span> <strong>Augmentée (Souffrance)</strong></li>
+    `;
+    
+    document.getElementById('val-acf').innerText = "Flux ralenti";
+    document.getElementById('val-maf').innerHTML = "<span style='color:red'>0.82 (ALERTE - Résistance élevée)</span>";
+    document.getElementById('val-sexe').innerText = "Absente";
+    document.getElementById('val-poids').innerText = "14 mm"; // Utilisé pour l'épaisseur du cortex
+    
+    // 5. Modifier la conclusion
+    document.getElementById('conclusionInput').value = 
+        "RÉSULTAT DE L'IMAGERIE :\n" +
+        "Greffon rénal en fosse iliaque gauche correctement perfusé, mais avec un flux ralenti.\n" +
+        "L'Index de Résistance (IR) est très élevé (0.82), témoignant d'une souffrance rénale aiguë.\n\n" +
+        "DIAGNOSTIC :\n" +
+        "Néphropathie fonctionnelle secondaire à une déshydratation sévère. L'absence de fluides a concentré les traitements immunosuppresseurs, les rendant toxiques pour le rein.\n\n" +
+        "CONDUITE À TENIR :\n" +
+        "Hyperhydratation immédiate (Solutés IV puis Aquasolv per os).\n" +
+        "Arrêt de tout traitement néphrotoxique ou opiacé (remplacement par Nocidomine).";
+
+    // 6. Modifier l'ordonnance suggérée pour correspondre
+    const ordoList = document.getElementById('ordo-list');
+    ordoList.innerHTML = `
+        <li><strong>Aquasolv 1000 :</strong> 1 sachet dans 1L d'eau, 3 fois/jour. <em>(Force l'hydratation du greffon)</em></li>
+        <li><strong>Nocidomine 500mg :</strong> En cas de maux de tête. <em>(Antalgique non toxique pour le rein)</em></li>
+        <li><strong>Tacrol-X :</strong> Nouveau dosage ajusté par la néphrologie.</li>
+    `;
+
+    // Met à jour les éléments visuels de la page
+    updateReport();
+    buildFullNameGrossesse(); 
+};

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMC — Dossier Obstétrique</title>
+    <title>OMC — Compte rendu d'Imagerie</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="constat.css">
     <link rel="stylesheet" href="grossesse.css">
@@ -22,9 +22,17 @@
                 </button>
 </div>
         
-            <h1 class="sidebar-title">SUIVI DE GROSSESSE</h1>
+            <h1 class="sidebar-title">MODULE D'IMAGERIE</h1>
 
-            <div class="form-group" style="background: #162032; padding: 10px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 15px;">
+            <div class="form-group">
+                <label>TYPE D'EXAMEN D'IMAGERIE</label>
+                <select id="selectModeEcho" onchange="changerModeEcho(this.value)" style="width:100%; padding:8px; background:#111b2d; color:white; border:1px solid #334155; border-radius:4px; margin-bottom: 15px;">
+                    <option value="obs">🤰 Gynécologie & Obstétrique</option>
+                    <option value="uro">🫘 Urologie & Néphrologie</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="background: #162032; padding: 10px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 15px;">  
                 <label style="color: #64ffda;">CONTENU DU DOSSIER</label>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <label class="checkbox-item"><input type="checkbox" id="toggleBio" checked onchange="toggleSections()"> 🩸 Inclure Prise de Sang</label>
@@ -103,6 +111,7 @@
 
              <div class="edit-btns-container">
                 <button class="btn-edit" onclick="lancerGenerationResultats()">🎲 LANCER LES RÉSULTATS (RNG)</button>
+            <button class="btn-edit" style="background:#1e1b4b; border-color:#6366f1; color:#a5b4fc; margin-top:5px;" onclick="lancerDossier()">🫘 SCÉNARIO : GREFFON </button>
             </div>
 
             <div class="form-group" style="margin-top: 20px;">
@@ -128,8 +137,8 @@
                 <header class="header-cert">
                     <img src="assets/logo_omc.png" style="height: 60px;">
                     <div style="flex:1; text-align: left; margin-left: 15px;">
-                        <div class="cert-tag">OCEAN MEDICAL CENTER — OBSTÉTRIQUE</div>
-                        <h1 class="cert-main-title">DOSSIER DE GROSSESSE</h1>
+                        <div class="cert-tag" id="doc-tag-title">OCEAN MEDICAL CENTER — OBSTÉTRIQUE</div>
+                        <h1 class="cert-main-title" id="doc-main-title">DOSSIER DE GROSSESSE</h1>
                         <div id="display-date-top" style="font-size: 12px; color: #64748b; font-weight: bold;"></div>
                         <div id="exam-type-auto" style="font-size: 14px; color: #000; font-weight: 800; margin-top:5px; text-transform:uppercase;">TYPE EXAMEN</div>
                     </div>

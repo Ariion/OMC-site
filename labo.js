@@ -361,6 +361,28 @@ window.lancerDiabete = function() {
     );
 };
 
+/* ── SCÉNARIO (Greffe & Déshydratation) ── */
+window.lancerBilan = function() {
+    window.resetSeulementBio(false);
+    
+    // Bilan rénal (Signes de souffrance par manque d'eau)
+    set('crea', '19.5', 'BIOCHIMIE MÉTABOLIQUE'); // Très élevé (Norme < 12)
+    set('uree', '0.95', 'BIOCHIMIE MÉTABOLIQUE'); // Très élevé (Norme < 0.45)
+    set('na', '148', 'IONOGRAMME'); // Sodium haut = déshydratation
+    set('k', '5.8', 'IONOGRAMME'); // Potassium élevé = risque de troubles du rythme
+
+    // Dosage du Tacrolimus (traitement anti-rejet)
+    set('tacrol', '16.2', 'TOXICOLOGIE SANGUINE'); // Zone toxique > 12 
+    
+    fusionnerConclusion(
+        "BILAN DE SURVEILLANCE POST-GREFFE :\n\n" +
+        "1. FONCTION RÉNALE : Altération aiguë de la fonction du greffon (Créatinine à 19.5 mg/L). L'urée élevée confirme une déshydratation extra-cellulaire sévère.\n\n" +
+        "2. PHARMACOLOGIE : Dosage du Tacrol-X à 16.2 ng/mL (Zone toxique > 12). Le manque d'eau empêche l'élimination du traitement anti-rejet.\n\n" +
+        "3. CONCLUSION : Néphrotoxicité fonctionnelle par hypovolémie. Risque de rejet si non traité.\n\n" +
+        "CONDUITE À TENIR : Arrêt immédiat du Tramadolix. Réhydratation massive (3L/jour). Repos strict."
+    );
+};
+
 /* ── INSUFFISANCE RÉNALE ── */
 window.lancerRenale = function() {
     window.resetSeulementBio(false);

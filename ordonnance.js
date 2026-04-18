@@ -98,7 +98,34 @@ const medsDB = {
         { name: "Ketoflex", player_hint: "Anti-inflammatoire puissant (Dos)", doc_label: "Anti-inflammatoire", doses: ["100 mg"] },
         { name: "Muscloril", player_hint: "Décontractant musculaire", doc_label: "Myorelaxant", doses: ["1 cp le soir"] },
         { name: "Patch-X", player_hint: "Patch chauffant", doc_label: "Dispositif antalgique", doses: ["1 patch matin/soir"] }
-    ]
+    ],
+    
+    "Néphrologie": [
+        { 
+            name: "Aquasolv 1000", 
+            player_hint: "Sérum de réhydratation - Force le rein à filtrer", 
+            doc_label: "Soluté de réhydratation",
+            doses: ["1 sachet dans 1L d'eau"] 
+        },
+        { 
+            name: "Tacrol-X", 
+            player_hint: "Anti-rejet (Tacrolimus) - DOSAGE AJUSTÉ", 
+            doc_label: "Immunosuppresseur",
+            doses: ["0.5 mg", "1 mg"] 
+        },
+        { 
+            name: "Néphro-Protect", 
+            player_hint: "Protège les cellules du rein greffé", 
+            doc_label: "Protecteur du greffon",
+            doses: ["1 gélule le matin"] 
+        },
+        { 
+            name: "Nocidomine", 
+            player_hint: "Antidouleur SANS DANGER pour le rein (Remplace le Tramadol)", 
+            doc_label: "Antalgique néphro-safe",
+            doses: ["500 mg"] 
+        }
+    ],
 };
 
 // 2. INITIALISATION
