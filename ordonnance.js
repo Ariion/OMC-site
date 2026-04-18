@@ -101,31 +101,47 @@ const medsDB = {
     ],
     
     "Néphrologie": [
-        { 
-            name: "Aquasolv 1000", 
-            player_hint: "Sérum de réhydratation - Force le rein à filtrer", 
-            doc_label: "Soluté de réhydratation",
-            doses: ["1 sachet dans 1L d'eau"] 
-        },
-        { 
-            name: "Tacrol-X", 
-            player_hint: "Anti-rejet (Tacrolimus) - DOSAGE AJUSTÉ", 
-            doc_label: "Immunosuppresseur",
-            doses: ["0.5 mg", "1 mg"] 
-        },
-        { 
-            name: "Néphro-Protect", 
-            player_hint: "Protège les cellules du rein greffé", 
-            doc_label: "Protecteur du greffon",
-            doses: ["1 gélule le matin"] 
-        },
-        { 
-            name: "Nocidomine", 
-            player_hint: "Antidouleur SANS DANGER pour le rein (Remplace le Tramadol)", 
-            doc_label: "Antalgique néphro-safe",
-            doses: ["500 mg"] 
-        }
-    ],
+        { name: "Aquasolv 1000", player_hint: "Sérum de réhydratation - Force le rein à filtrer", doc_label: "Soluté de réhydratation", doses: ["1 sachet dans 1L d'eau"] },
+        { name: "Tacrol-X", player_hint: "Anti-rejet (Tacrolimus) - DOSAGE AJUSTÉ", doc_label: "Immunosuppresseur", doses: ["0.5 mg", "1 mg"] },
+        { name: "Néphro-Protect", player_hint: "Protège les cellules du rein greffé", doc_label: "Protecteur du greffon", doses: ["1 gélule le matin"] },
+        { name: "Nocidomine", player_hint: "Antidouleur SANS DANGER pour le rein (Remplace le Tramadol)", doc_label: "Antalgique néphro-safe", doses: ["500 mg"] }
+    ]
+};
+
+window.remplirOrdo = function() {
+    // 1. Reset
+    viderOrdonnance(true);
+    
+    // 2. Patient
+    document.getElementById('patientPrenom').value = "";
+    document.getElementById('patientNom').value = "";
+    buildFullNameOrdo();
+    
+    // 3. Ajout des lignes spécifiques au scénario
+    const list = document.getElementById('ordo-list');
+    list.innerHTML = ""; // On vide l'empty-msg
+    
+    const soins = [
+        { n: "Aquasolv 1000", d: "1 sachet dans 1L d'eau", p: "Boire 1 litre matin, midi et soir (Hydratation forcée)", dur: "7 jours" },
+        { n: "Nocidomine", d: "500 mg", p: "1 comprimé toutes les 6h en cas de céphalées (SÉCURISÉ REIN)", dur: "5 jours" },
+        { n: "Tacrol-X", d: "1 mg", p: "1 comprimé matin et soir (Dosage réajusté)", dur: "À vie" }
+    ];
+
+    soins.forEach(s => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span class="med-name">${s.n}</span>
+                <span style="font-weight: bold; font-size: 14px;">${s.d} / ${s.dur}</span>
+            </div>
+            <div class="med-details">➤ ${s.p}</div>
+            <span class="del-btn" onclick="supprimerLigne(this)">✖</span>
+        `;
+        list.appendChild(li);
+    });
+
+    upInst("REPOS STRICT. Surveillance de la diurèse. Arrêt impératif du Tramadolix (Toxique pour votre greffon dans cet état).");
+    updateQR();
 };
 
 // 2. INITIALISATION

@@ -60,6 +60,7 @@
                     <label>Service (Spécialité)</label>
                     <select id="service-select" onchange="updateMeds(this.value)">
                         <option value="Médecine Générale">Médecine Générale</option>
+                        <option value="Néphrologie">Néphrologie (Greffe/Rein)</option>
                         <option value="Psychologie">Psychologie / Psychiatrie</option>
                         <option value="Chirurgie">Chirurgie / Urgences</option>
                         <option value="Gynécologie">Gynécologie / Obstétrique</option>
@@ -116,6 +117,9 @@
     <button id="discord-btn" class="btn-discord" onclick="try{sauvegarderPatientDepuisFormulaire()}catch(e){}; envoyerDiscord(this)">
         ENVOYER SUR DISCORD
     </button>
+    <button onclick="remplirOrdo()" style="background: #1e1b4b; color: #a5b4fc; border: 1px solid #6366f1; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: bold; font-size: 10px;">
+    🫘 SCÉNARIO : POST-GREFFE 
+</button>
 </div>
 
         </aside>
