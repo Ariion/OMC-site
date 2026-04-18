@@ -153,11 +153,11 @@
                         <small>NAISSANCE</small>
                         <span id="display-birth">...</span>
                     </div>
-                    <div style="border-left: 1px solid #cbd5e1; padding-left: 15px;">
+                    <div id="banner-terme-1" style="border-left: 1px solid #cbd5e1; padding-left: 15px;">
                         <small>TERME ACTUEL</small>
                         <span id="display-sa" style="color: #000; font-weight: 900; font-size: 16px;">-- SA</span>
                     </div>
-                    <div>
+                    <div id="banner-terme-2">
                         <small>TERME PRÉVU AUTOUR DU</small>
                         <span id="display-dpa">--/--/----</span>
                     </div>
@@ -186,12 +186,12 @@
                 </div>
 
                 <div id="section-echo" class="section-block">
-                    <h4 class="section-title">IMAGERIE : ÉCHOGRAPHIE OBSTÉTRICALE</h4>
+                    <h4 id="section-echo-title" class="section-title">IMAGERIE : ÉCHOGRAPHIE OBSTÉTRICALE</h4>
                     
                     <div class="echo-container">
                         <div style="width: 60%; display:flex; flex-direction:column; gap:5px;">
                             <div class="echo-frame">
-                                <div class="echo-overlay-text top-left">OMC RADIOLOGY<br>OB/GYN</div>
+                                <div id="echo-overlay-dept" class="echo-overlay-text top-left">OMC RADIOLOGY<br>OB/GYN</div>
                                 <div class="echo-overlay-text top-right" id="echo-date-display">00/00/0000</div>
                                 <div class="echo-overlay-text bottom-left">Mi: 1.2 Tis: 0.4</div>
                                 <div class="echo-overlay-text bottom-center" id="echo-label-img"></div>
@@ -201,8 +201,11 @@
 
                         <div class="biometrics-panel">
                             <h5>BIOMÉTRIES FOETALES</h5>
-                            <ul class="bio-list" id="bio-list-content">
-                                <li>En attente mesures...</li>
+                            <ul class="bio-list">
+                                <li><span id="label-acf">Activité Cardiaque :</span> <strong id="val-acf">--</strong></li>
+                                <li><span id="label-maf">Mouvements (MAF) :</span> <strong id="val-maf">--</strong></li>
+                                <li><span id="label-sexe">Sexe Foetal :</span> <strong id="val-sexe">--</strong></li>
+                                <li><span id="label-poids">Poids Estimé :</span> <strong id="val-poids">-- g</strong></li>
                             </ul>
                             
                             <h5 style="margin-top: 15px;">VITALITÉ</h5>
@@ -240,11 +243,13 @@
                     </div>
                     <div class="round-stamp">
                         <img id="qr-ref" class="qr-code" src="" crossorigin="anonymous"> 
-                        <div class="stamp-text">OMC OBSTETRICS</div>
+                        <div id="stamp-dept" class="stamp-text">OMC OBSTETRICS</div>
+
+
                     </div>
                 </div>
 
-                <p class="legal-text">
+                <p id="footer-legal" class="legal-text">
                     Résultat fourni par le service d'Obstétrique de l'Ocean Medical Center. Toute reproduction est interdite. Falsification punie par la loi San Andreas.
                 </p>
 

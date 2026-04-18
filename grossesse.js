@@ -276,42 +276,64 @@ window.changerModeEcho = function(mode) {
     const tagTitle = document.getElementById('doc-tag-title');
     const bioTitle = document.querySelector('.biometrics-panel h5');
     const vitalTitle = document.querySelectorAll('.biometrics-panel h5')[1];
+    
+    // Blocs de la barre latérale (Sidebar)
     const blocTerme = document.getElementById('dateDebut').closest('.form-group');
     const blocSexe = document.getElementById('sexeFoetal').closest('.form-group');
     const blocVitalite = document.getElementById('activiteCardiaque').closest('.form-group');
-    
-    // Labels de la liste
-    const labels = document.querySelectorAll('.bio-list li span');
 
     if (mode === 'uro') {
-        // Mode Urologie / Néphrologie
+        // --- MODE UROLOGIE / NÉPHROLOGIE ---
         if(mainTitle) mainTitle.innerText = "COMPTE-RENDU D'IMAGERIE";
         if(tagTitle) tagTitle.innerText = "OCEAN MEDICAL CENTER — RADIOLOGIE";
         if(bioTitle) bioTitle.innerText = "BIOMÉTRIES DU GREFFON / ORGANE";
         if(vitalTitle) vitalTitle.innerText = "VASCULARISATION (DOPPLER)";
         
-        if(labels[0]) labels[0].innerText = "Activité vasculaire :"; 
-        if(labels[1]) labels[1].innerText = "Index de Résistance :"; 
-        if(labels[2]) labels[2].innerText = "Dilatation voies :"; 
-        if(labels[3]) labels[3].innerText = "Épaisseur Cortex :";
+        // Cacher la notion de Terme dans le rendu
+        if(document.getElementById('banner-terme-1')) document.getElementById('banner-terme-1').style.display = 'none';
+        if(document.getElementById('banner-terme-2')) document.getElementById('banner-terme-2').style.display = 'none';
         
-        // Cacher les blocs inutiles pour un rein
+        // Titres et Tampons
+        if(document.getElementById('section-echo-title')) document.getElementById('section-echo-title').innerText = "IMAGERIE MÉDICALE GÉNÉRALE";
+        if(document.getElementById('echo-overlay-dept')) document.getElementById('echo-overlay-dept').innerHTML = "OMC RADIOLOGY<br>URO/NEPHRO";
+        if(document.getElementById('stamp-dept')) document.getElementById('stamp-dept').innerText = "OMC RADIOLOGY";
+        if(document.getElementById('footer-legal')) document.getElementById('footer-legal').innerText = "Résultat fourni par le service d'Imagerie de l'Ocean Medical Center. Toute reproduction est interdite.";
+        
+        // Labels spécifiques corrigés
+        if(document.getElementById('label-acf')) document.getElementById('label-acf').innerText = "Activité vasculaire :";
+        if(document.getElementById('label-maf')) document.getElementById('label-maf').innerText = "Index de Résistance :";
+        if(document.getElementById('label-sexe')) document.getElementById('label-sexe').innerText = "Dilatation voies :";
+        if(document.getElementById('label-poids')) document.getElementById('label-poids').innerText = "Épaisseur Cortex :";
+        
+        // Cacher les inputs grossesse à gauche
         if(blocTerme) blocTerme.style.display = 'none';
         if(blocSexe) blocSexe.style.display = 'none';
         if(blocVitalite) blocVitalite.style.display = 'none';
         
     } else {
-        // Mode Obstétrique (Par défaut)
+        // --- MODE OBSTÉTRIQUE (Par défaut) ---
         if(mainTitle) mainTitle.innerText = "DOSSIER DE GROSSESSE";
         if(tagTitle) tagTitle.innerText = "OCEAN MEDICAL CENTER — OBSTÉTRIQUE";
         if(bioTitle) bioTitle.innerText = "BIOMÉTRIES FOETALES";
         if(vitalTitle) vitalTitle.innerText = "VITALITÉ";
         
-        if(labels[0]) labels[0].innerText = "Activité Cardiaque :"; 
-        if(labels[1]) labels[1].innerText = "Mouvements (MAF) :"; 
-        if(labels[2]) labels[2].innerText = "Sexe Foetal :"; 
-        if(labels[3]) labels[3].innerText = "Poids Estimé :";
+        // Afficher la notion de Terme
+        if(document.getElementById('banner-terme-1')) document.getElementById('banner-terme-1').style.display = 'block';
+        if(document.getElementById('banner-terme-2')) document.getElementById('banner-terme-2').style.display = 'block';
         
+        // Titres et Tampons
+        if(document.getElementById('section-echo-title')) document.getElementById('section-echo-title').innerText = "IMAGERIE : ÉCHOGRAPHIE OBSTÉTRICALE";
+        if(document.getElementById('echo-overlay-dept')) document.getElementById('echo-overlay-dept').innerHTML = "OMC RADIOLOGY<br>OB/GYN";
+        if(document.getElementById('stamp-dept')) document.getElementById('stamp-dept').innerText = "OMC OBSTETRICS";
+        if(document.getElementById('footer-legal')) document.getElementById('footer-legal').innerText = "Résultat fourni par le service d'Obstétrique de l'Ocean Medical Center. Toute reproduction est interdite. Falsification punie par la loi San Andreas.";
+        
+        // Remettre les labels grossesse
+        if(document.getElementById('label-acf')) document.getElementById('label-acf').innerText = "Activité Cardiaque :";
+        if(document.getElementById('label-maf')) document.getElementById('label-maf').innerText = "Mouvements (MAF) :";
+        if(document.getElementById('label-sexe')) document.getElementById('label-sexe').innerText = "Sexe Foetal :";
+        if(document.getElementById('label-poids')) document.getElementById('label-poids').innerText = "Poids Estimé :";
+        
+        // Réafficher les inputs grossesse à gauche
         if(blocTerme) blocTerme.style.display = 'block';
         if(blocSexe) blocSexe.style.display = 'block';
         if(blocVitalite) blocVitalite.style.display = 'block';
