@@ -346,30 +346,28 @@ window.lancerDossier = function() {
     document.getElementById('selectModeEcho').value = 'uro';
     changerModeEcho('uro');
     
-    // 2. Remplir les champs patients
-    document.getElementById('patientName').value = "";
-    document.getElementById('patientBlood').value = "";
-    document.getElementById('patientBirth').value = ""; // À ajuster selon le RP
-    document.getElementById('obsHealth').value = "";
+    // 2. On laisse les champs patients vides pour que tu puisses les remplir manuellement en RP
     
-    // 3. Remplacer l'image
-    // J'utilise l'image que tu as uploadée précédemment (si l'URL est cassée, remplace par un asset local)
+    // 3. Remplacer l'image (Lien à modifier si l'image casse dans le temps)
     document.getElementById('echo-img-display').src = "uploaded:image_735fe2.jpg-ed2aaf5d-f70b-4e4f-add2-d9f52655f404";
     document.getElementById('echo-label-img').innerText = "ÉCHO DOPPLER - GREFFON FOSSE ILIAQUE GAUCHE";
     document.getElementById('exam-type-auto').innerText = "ÉCHOGRAPHIE DOPPLER RÉNAL";
 
-    // 4. Injecter les mesures du rein greffé
+    // 4. Injecter les mesures du rein (Le "if" empêche le script de crasher si le HTML est modifié)
     const list = document.getElementById('bio-list-content');
-    list.innerHTML = `
-        <li><span>Grand Axe :</span> <strong>112 mm</strong></li>
-        <li><span>Largeur :</span> <strong>54 mm</strong></li>
-        <li><span>Échogénicité :</span> <strong>Augmentée (Souffrance)</strong></li>
-    `;
+    if (list) {
+        list.innerHTML = `
+            <li><span>Grand Axe :</span> <strong>112 mm</strong></li>
+            <li><span>Largeur :</span> <strong>54 mm</strong></li>
+            <li><span>Échogénicité :</span> <strong>Augmentée (Souffrance)</strong></li>
+        `;
+    }
     
+    // On remplit les valeurs
     document.getElementById('val-acf').innerText = "Flux ralenti";
     document.getElementById('val-maf').innerHTML = "<span style='color:red'>0.82 (ALERTE - Résistance élevée)</span>";
     document.getElementById('val-sexe').innerText = "Absente";
-    document.getElementById('val-poids').innerText = "14 mm"; // Utilisé pour l'épaisseur du cortex
+    document.getElementById('val-poids').innerText = "14 mm"; 
     
     // 5. Modifier la conclusion
     document.getElementById('conclusionInput').value = 
@@ -380,17 +378,24 @@ window.lancerDossier = function() {
         "Néphropathie fonctionnelle secondaire à une déshydratation sévère. L'absence de fluides a concentré les traitements immunosuppresseurs, les rendant toxiques pour le rein.\n\n" +
         "CONDUITE À TENIR :\n" +
         "Hyperhydratation immédiate (Solutés IV puis Aquasolv per os).\n" +
-        "Arrêt de tout traitement néphrotoxique ou opiacé (remplacement par Nocidomine).";
+        "Arrêt de tout traitement néphrotoxique ou opiacé.";
 
-    // 6. Modifier l'ordonnance suggérée pour correspondre
+    // 6. On coche la case Ordonnance au cas où tu l'avais décochée
+    const ordoCheck = document.getElementById('toggleOrdo');
+    if(ordoCheck && !ordoCheck.checked) {
+        ordoCheck.checked = true;
+        toggleSections();
+    }
+
     const ordoList = document.getElementById('ordo-list');
-    ordoList.innerHTML = `
-        <li><strong>Aquasolv 1000 :</strong> 1 sachet dans 1L d'eau, 3 fois/jour. <em>(Force l'hydratation du greffon)</em></li>
-        <li><strong>Nocidomine 500mg :</strong> En cas de maux de tête. <em>(Antalgique non toxique pour le rein)</em></li>
-        <li><strong>Tacrol-X :</strong> Nouveau dosage ajusté par la néphrologie.</li>
-    `;
+    if (ordoList) {
+        ordoList.innerHTML = `
+            <li><strong>Aquasolv 1000 :</strong> 1 sachet dans 1L d'eau, 3 fois/jour. <em>(Force l'hydratation du greffon)</em></li>
+            <li><strong>Antalgique néphro-compatible :</strong> En cas de maux de tête. <em>(Ex: Nocidomine, interdiction stricte Tramadol/AINS)</em></li>
+            <li><strong>Immunosuppresseurs :</strong> Nouveau dosage ajusté par la néphrologie.</li>
+        `;
+    }
 
-    // Met à jour les éléments visuels de la page
+    // 7. Mise à jour visuelle finale
     updateReport();
-    buildFullNameGrossesse(); 
 };
