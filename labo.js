@@ -63,7 +63,7 @@ const database = {
     "TOXICOLOGIE SANGUINE": [
         { id: "alc",     label: "Alcoolémie",        unit: "g/L",   norm: "0 - 0.10" },
         { id: "parace",  label: "Paracétamol",       unit: "mg/L",  norm: "< 10" },
-        { id: "lithium", label: "Lithium",           unit: "mmol/L",norm: "0.6 - 1.2" }
+        { id: "lithium", label: "Lithium",           unit: "mmol/L",norm: "0.6 - 1.2" },
         { id: "tacrol",  label: "Tacrolémie (Anti-rejet)", unit: "ng/mL", norm: "5.0 - 12.0" }
     ],
     "TOXICOLOGIE URINAIRE": [
