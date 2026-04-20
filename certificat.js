@@ -64,11 +64,12 @@ function updateCertif() {
 
     /* ── Visibilité des blocs sidebar ── */
     const showEntreprise   = type === "Aptitude professionnelle";
-    const showConcl        = !["Divers", "Arrêt de travail", "Rendez-vous médical"].includes(type);
+    const showConcl        = !["Divers", "Arrêt de travail", "Rendez-vous médical", "Prêt de matériel"].includes(type);
     const showDivers       = type === "Divers";
     const showArret        = type === "Arrêt de travail";
     const showRdv          = type === "Rendez-vous médical";
-    const showServiceGenre = showArret || showRdv;
+    const showPret         = type === "Prêt de matériel";
+    const showServiceGenre = showArret || showRdv || showPret;
 
     document.getElementById('side-entreprise-block').style.display    = showEntreprise   ? "block" : "none";
     document.getElementById('doc-entreprise-block').style.display     = showEntreprise   ? "block" : "none";
@@ -76,20 +77,22 @@ function updateCertif() {
     document.getElementById('doc-concl-block').style.display          = showConcl        ? "block" : "none";
     document.getElementById('side-divers-block').style.display        = showDivers       ? "block" : "none";
     document.getElementById('doc-divers-block').style.display         = showDivers       ? "block" : "none";
-    document.getElementById('side-arret-block').style.display         = showArret        ? "block" : "none";
+    document.getElementById('side-arret-block').style.display         = (showArret || showPret) ? "block" : "none"; 
     document.getElementById('doc-arret-block').style.display          = showArret        ? "block" : "none";
     document.getElementById('side-rdv-block').style.display           = showRdv          ? "block" : "none";
     document.getElementById('doc-rdv-block').style.display            = showRdv          ? "block" : "none";
+    document.getElementById('doc-pret-block').style.display           = showPret         ? "block" : "none";
     document.getElementById('side-service-genre-block').style.display = showServiceGenre ? "block" : "none";
 
     /* ── Titre du document ── */
     const titres = {
         "Aptitude professionnelle": "CERTIFICAT D'APTITUDE PROFESSIONNELLE",
-        "PPA Civil":                "CERTIFICAT DE CAPACITÉ À PASSER L'EXAMEN DU PPA — CIVIL",
-        "PPA Professionnel":        "CERTIFICAT DE CAPACITÉ À PASSER L'EXAMEN DU PPA — PROFESSIONNEL",
-        "Divers":                   "CERTIFICAT — DIVERS",
-        "Arrêt de travail":         "ARRÊT DE TRAVAIL",
-        "Rendez-vous médical":      "ATTESTATION DE RENDEZ-VOUS MÉDICAL",
+        "PPA Civil": "CERTIFICAT DE CAPACITÉ PPA — CIVIL",
+        "PPA Professionnel": "CERTIFICAT DE CAPACITÉ PPA — PROFESSIONNEL",
+        "Divers": "CERTIFICAT — DIVERS",
+        "Arrêt de travail": "ARRÊT DE TRAVAIL",
+        "Rendez-vous médical": "ATTESTATION DE RENDEZ-VOUS MÉDICAL",
+        "Prêt de matériel": "CONTRAT DE PRÊT DE MATÉRIEL MÉDICAL"
     };
     document.getElementById('d-titre-doc').innerText = titres[type] || "CERTIFICAT MÉDICAL";
 
@@ -114,15 +117,24 @@ function updateCertif() {
     const entreprise = document.getElementById('f-entreprise');
     if (entreprise) document.getElementById('d-entreprise').innerText = entreprise.value || '...';
 
-    /* ── Signature ── */
-    const medecin = document.getElementById('f-medecin').value || 'DOCTEUR';
+    /* ── Données Médecin (Préparées pour les blocs de texte) ── */
+    const medecin   = document.getElementById('f-medecin').value || 'DOCTEUR';
     document.getElementById('d-sig').innerText = medecin;
+
+    const medPrenom = document.getElementById('f-med-prenom')?.value.trim() || '';
+    const medNom    = document.getElementById('f-med-nom')?.value.trim().toUpperCase() || '';
+    const medLabel  = [medPrenom, medNom].filter(Boolean).join(' ');
+    const drLabel   = medLabel ? `Dr. ${medLabel}` : medecin;
+    
+    const fonction = document.getElementById('f-fonction')?.value.trim() || 'Médecin';
+    const genre    = document.getElementById('f-genre')?.value || 'm';
+    const lePatient = genre === 'f' ? 'la patiente' : 'le patient';
 
     /* ── Conclusion (certificats classiques) ── */
     if (showConcl) {
         const c = document.querySelector('input[name="concl"]:checked').value;
         let texteFinal = "";
-        if (c === "Apte")    texteFinal = "Apte — Aucune contre-indication clinique.";
+        if (c === "Apte")     texteFinal = "Apte — Aucune contre-indication clinique.";
         else if (c === "Réserve") {
             const motif = document.getElementById('f-motif-reserve').value;
             texteFinal = "Apte avec réserve" + (motif ? ` — ${motif}` : ".");
@@ -140,23 +152,14 @@ function updateCertif() {
 
     /* ── Arrêt de travail ── */
     if (showArret) {
-        const debut    = document.getElementById('f-arret-debut')?.value;
-        const fin      = document.getElementById('f-arret-fin')?.value;
-        const jours    = document.getElementById('f-arret-jours')?.value;
-        const motif    = document.getElementById('f-arret-motif')?.value || '';
-        const genre    = document.getElementById('f-genre')?.value || 'm';
-        const fonction = document.getElementById('f-fonction')?.value.trim() || 'Médecin';
-
-        // Nom du médecin spécifique au bloc
-        const medPrenom = document.getElementById('f-med-prenom')?.value.trim() || '';
-        const medNom    = document.getElementById('f-med-nom')?.value.trim().toUpperCase() || '';
-        const medLabel  = [medPrenom, medNom].filter(Boolean).join(' ');
-        const drLabel   = medLabel ? `Dr. ${medLabel}` : (medecin || 'DOCTEUR');
-
-        const lePatient = genre === 'f' ? 'la patiente' : 'le patient';
-        const debutFR   = fmtDateFR(debut);
-        const finFR     = fmtDateFR(fin);
-        const duree     = jours ? `${jours} jour${parseInt(jours) > 1 ? 's' : ''}` : '...';
+        const debut   = document.getElementById('f-arret-debut')?.value;
+        const fin     = document.getElementById('f-arret-fin')?.value;
+        const jours   = document.getElementById('f-arret-jours')?.value;
+        const motif   = document.getElementById('f-arret-motif')?.value || '';
+        
+        const debutFR = fmtDateFR(debut);
+        const finFR   = fmtDateFR(fin);
+        const duree   = jours ? `${jours} jour${parseInt(jours) > 1 ? 's' : ''}` : '...';
 
         const texte = `Je soussigné(e), ${drLabel}, ${fonction} de l'Ocean Medical Center, certifie avoir examiné ce jour ${lePatient} ${fullName || '...'} et prescris un arrêt de travail d'une durée de ${duree}, du ${debutFR} au ${finFR} inclus.${motif ? `\n\nMotif médical : ${motif}` : ''}\n\n ${lePatient} est invité à se représenter à la fin de cette période si nécessaire.`;
 
@@ -169,15 +172,6 @@ function updateCertif() {
         const dateRdv  = document.getElementById('f-rdv-date')?.value;
         const heureRdv = document.getElementById('f-rdv-heure')?.value || '...';
         const motifRdv = document.getElementById('f-rdv-motif')?.value || '';
-        const genre    = document.getElementById('f-genre')?.value || 'm';
-        const fonction = document.getElementById('f-fonction')?.value.trim() || 'Médecin';
-
-        const medPrenom = document.getElementById('f-med-prenom')?.value.trim() || '';
-        const medNom    = document.getElementById('f-med-nom')?.value.trim().toUpperCase() || '';
-        const medLabel  = [medPrenom, medNom].filter(Boolean).join(' ');
-        const drLabel   = medLabel ? `Dr. ${medLabel}` : (medecin || 'DOCTEUR');
-
-        const lePatient = genre === 'f' ? 'la patiente' : 'le patient';
 
         const dateFR = dateRdv
             ? new Date(dateRdv).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
@@ -189,13 +183,40 @@ function updateCertif() {
         if (el && !el._userEdited) el.innerText = texte;
     }
 
+    /* ── Logique Prêt de matériel ── */
+    if (showPret) {
+        const debut = document.getElementById('f-arret-debut')?.value;
+        const fin   = document.getElementById('f-arret-fin')?.value;
+        const jours = document.getElementById('f-arret-jours')?.value || '...';
+        
+        const texte = `Je soussigné(e), ${drLabel}, ${fonction}, certifie le prêt d'un **Fauteuil Roulant Standard** à l'usage exclusif de ${lePatient} ${fullName || '...'} pour une durée de ${jours} jour(s).
+
+Le matériel est mis à disposition du ${fmtDateFR(debut)} au ${fmtDateFR(fin)} inclus.
+
+**CONDITIONS DE PRÊT :**
+1. Le matériel doit être restitué à l'Ocean Medical Center au plus tard le ${fmtDateFR(fin)}.
+2. En cas de non-restitution, de dégradation volontaire ou de perte, une facture forfaitaire de **10 000$** sera automatiquement émise au nom du bénéficiaire.
+3. Le bénéficiaire s'engage à utiliser le matériel avec soin et uniquement dans le cadre de sa convalescence.`;
+
+        const el = document.getElementById('d-pret-text');
+        if (el && !el._userEdited) el.innerText = texte;
+    }
+
+    /* ── Observations ── */
+    const obs = document.getElementById('f-observations')?.value.trim() || '';
+    document.getElementById('doc-observations-block').style.display = obs ? 'block' : 'none';
+    document.getElementById('d-observations-text').innerText = obs;
+}
+
+    
+
     /* ── Observations complémentaires ── */
     const obs     = document.getElementById('f-observations')?.value.trim() || '';
     const docObs  = document.getElementById('doc-observations-block');
     const docObsT = document.getElementById('d-observations-text');
     if (docObs)  docObs.style.display = obs ? 'block' : 'none';
     if (docObsT) docObsT.innerText    = obs;
-}
+
 
 function genererReference() {
     const n   = new Date();
@@ -225,7 +246,7 @@ window.onload = function() {
     genererReference();
 
     /* ── Détection édition manuelle des blocs contenteditable ── */
-    ['d-arret-text', 'd-rdv-text'].forEach(id => {
+    ['d-arret-text', 'd-rdv-text', 'd-pret-text'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         el.addEventListener('input', () => { el._userEdited = true; });
