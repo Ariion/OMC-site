@@ -216,7 +216,7 @@ function openDetails(markerId) {
     html += `<div class="details-grid-wrapper">`;
 
     if (m.type === 'fracture') {
-        html += renderOptionGroup(m, "Type", ["Fermée non déplacée", "Fermée déplacée", "Ouverte"]);
+        html += renderOptionGroup(m, "Type", ["Fermée non déplacée", "Fermée déplacée", "Ouverte", "Usure de prothèse (Jeu mécanique)"]);
     } else if (m.type === 'plaie_laceration') {
         html += renderOptionGroup(m, "Type", ["Coupure superficielle", "Lacération profonde", "Perforation"]);
         html += renderOptionGroup(m, "Origine", ["Arme Blanche", "Autre (environnement)"], "origine");
@@ -226,7 +226,8 @@ function openDetails(markerId) {
         html += renderOptionGroup(m, "Cause", ["Thermique", "Chimique", "Électrique", "Inhalation de fumée"], "origine");
         html += renderOptionGroup(m, "Étendue", ["< 5%", "5% - 50%", "50% - 80%", "> 80%"], "extras");
     } else if (m.type === 'hematome') {
-        html += renderOptionGroup(m, "Type", ["Hématome", "Œdème", "Traumatisme crânien", "Hémorragie interne"]);
+        // Ajout de la fatigue pulmonaire (Emphysème simple) ici
+        html += renderOptionGroup(m, "Type", ["Hématome", "Œdème", "Traumatisme crânien", "Hémorragie interne", "Fatigue pulmonaire (Poumons gonflés)"]);
         html += renderOptionGroup(m, "Gravité", ["Légère", "Moyenne", "Sévère"], "extras");
     } else if (m.type === 'plaie_feu') {
         html += `<div style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-bottom: 10px; border: 1px solid rgba(239, 68, 68, 0.2);">🔴 PAF détectée</div>`;
@@ -234,7 +235,8 @@ function openDetails(markerId) {
         html += renderOptionGroup(m, "Gravité", ["Superficielle", "Pénétrante", "Traversante"], "extras");
         html += renderOptionGroup(m, "Lésion d’organe", ["Cœur", "Estomac", "Foie", "Intestin", "Poumon", "Rate", "Rein"], "organes", true);
     } else if (m.type === 'abrasion') {
-        html += renderOptionGroup(m, "Type", ["Entorse légère", "Entorse sévère", "Luxation complète"]);
+        // Ajout de l'usure du cartilage (Arthrose simple) ici
+        html += renderOptionGroup(m, "Type", ["Entorse légère", "Entorse sévère", "Luxation complète", "Usure du cartilage (Arthrose)"]);
     }
 
     html += renderOptionGroup(m, "Éléments associés", ["Hémorragie", "Corps étranger présent", "Risque infectieux"], "elements", true);
