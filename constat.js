@@ -6,6 +6,7 @@ const LESIONS = [
     {key:'brulure', label:'Brûlure', color:'#eab308', icon:'🔥'},
     {key:'hematome', label:'Contusion & traumatisme fermé', color:'#3b82f6', icon:'🟣'},
     {key:'abrasion', label:'Entorse & Luxation', color:'#10b981', icon:'🟢'},
+    {key:'autre', label:'Saisie Libre', color:'#64748b', icon:'✍️'} 
 ];
 
 const REGIONS = [
@@ -215,7 +216,11 @@ function openDetails(markerId) {
     let html = `<span class="details-header">Options de la lésion (${config.label})</span>`;
     html += `<div class="details-grid-wrapper">`;
 
-    if (m.type === 'fracture') {
+    if (m.type === 'autre') {
+        html += `<div class="option-group"><div class="details-sub-title">Saisie libre de la pathologie</div>`;
+        html += `<input type="text" placeholder="Ex: Arthrose, Déchirure..." oninput="window.updateManualLesion(${m.id}, this.value)" style="width:100%; background:#0f172a; color:white; border:1px solid #334155; padding:8px; border-radius:4px; font-size:11px;" value="${m.details.typeL || ''}">`;
+        html += `</div>`;
+    } else if (m.type === 'fracture') {
         html += renderOptionGroup(m, "Type", ["Fermée non déplacée", "Fermée déplacée", "Ouverte", "Usure de prothèse (Jeu mécanique)"]);
     } else if (m.type === 'plaie_laceration') {
         html += renderOptionGroup(m, "Type", ["Coupure superficielle", "Lacération profonde", "Perforation"]);
@@ -406,5 +411,13 @@ var OMC_CONFIG = {
         scale: 2,
         useCORS: true,
         windowWidth: 1000
+    }
+};
+
+window.updateManualLesion = function(id, val) {
+    const m = markers.find(mark => mark.id == id);
+    if(m) { 
+        m.details.typeL = val; 
+        updateReport(); 
     }
 };

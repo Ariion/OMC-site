@@ -105,6 +105,12 @@ const medsDB = {
         { name: "Tacrol-X", player_hint: "Anti-rejet (Tacrolimus) - DOSAGE AJUSTÉ", doc_label: "Immunosuppresseur", doses: ["0.5 mg", "1 mg"] },
         { name: "Néphro-Protect", player_hint: "Protège les cellules du rein greffé", doc_label: "Protecteur du greffon", doses: ["1 gélule le matin"] },
         { name: "Nocidomine", player_hint: "Antidouleur SANS DANGER pour le rein (Remplace le Tramadol)", doc_label: "Antalgique néphro-safe", doses: ["500 mg"] }
+    ],
+    "Gastro & Nutrition": [
+        { name: "Humira (Adalimumab)", player_hint: "Biothérapie Crohn/Rectocolite", doc_label: "Immunosuppresseur", doses: ["40 mg (Stylo)"] },
+        { name: "CalciBone D3", player_hint: "Calcium + Vitamine D (Pour les os)", doc_label: "Supplémentation Osseuse", doses: ["1000 mg / 800 UI"] },
+        { name: "Vitamines B12", player_hint: "Carence liée au Crohn ou fatigue", doc_label: "Supplémentation Vitaminique", doses: ["1 mg (1 cp/jour)"] },
+        { name: "Spasmex", player_hint: "Douleurs au ventre", doc_label: "Antispasmodique", doses: ["2 cp si douleur"] }
     ]
 };
 
