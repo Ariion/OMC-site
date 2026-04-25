@@ -329,3 +329,27 @@ input[type="range"] { background: transparent; accent-color: #38bdf8; }
 
 /* ── CONCLUSION PRE-LINE ── */
 #d-concl { white-space: pre-line; }
+
+/* Style pour les tableaux de résultats (ADN, Spermogramme, etc.) */
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 12px;
+}
+.result-table th {
+    background: #f1f5f9;
+    color: #0a192f;
+    padding: 5px;
+    text-align: left;
+    border-bottom: 2px solid #0a192f;
+}
+.result-table td {
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+}
+.result-table .highlight {
+    font-weight: bold;
+    color: #0a192f;
+}
+

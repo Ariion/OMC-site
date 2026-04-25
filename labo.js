@@ -448,38 +448,89 @@ window.lancerTestGrossesse = function() {
 window.lancerFertilite = function() {
     window.resetSeulementBio(false);
     const sexe = document.getElementById('patientSex')?.value;
-    if (sexe !== 'F') { alert("⛔ Pour un homme, utilisez le Test de Stérilité (Spermogramme)."); return; }
+    if (sexe !== 'F') { 
+        alert("⛔ Pour un homme, utilisez le bouton 'Test Stérilité' (Spermogramme)."); 
+        return; 
+    }
 
     const fertile = Math.random() > 0.3;
     const amh = fertile ? (Math.random()*2+2).toFixed(2) : (Math.random()*0.8+0.1).toFixed(2);
     const fsh = fertile ? (Math.random()*4+4).toFixed(1)  : (Math.random()*5+10).toFixed(1);
-    set('amh', amh, 'ENDOCRINOLOGIE & FERTILITÉ');
-    set('fsh', fsh, 'ENDOCRINOLOGIE & FERTILITÉ');
+    const lh = (Math.random()*5+3).toFixed(1);
 
-    fusionnerConclusion(fertile
-        ? `BILAN FERTILITÉ : RÉSERVE OVARIENNE SATISFAISANTE.\n\nAMH : ${amh} ng/mL ✓\nFSH : ${fsh} UI/L ✓\n\nPotentiel de fertilité optimal.`
-        : `BILAN FERTILITÉ : RÉSERVE DIMINUÉE.\n\nAMH basse : ${amh} ng/mL\nFSH élevée : ${fsh} UI/L\n\nLe stock d'ovules est réduit. Consultation spécialisée recommandée.`
-    );
+    const htmlTable = `
+    <table class="result-table">
+        <tr><th>HORMONE</th><th>RÉSULTAT</th><th>UNITÉ</th><th>NORME (Phase folliculaire)</th></tr>
+        <tr><td>AMH (Réserve ovarienne)</td><td class="highlight">${amh}</td><td>ng/mL</td><td>2.0 - 6.0</td></tr>
+        <tr><td>FSH</td><td class="highlight">${fsh}</td><td>UI/L</td><td>3.5 - 12.5</td></tr>
+        <tr><td>LH</td><td class="highlight">${lh}</td><td>UI/L</td><td>2.4 - 12.6</td></tr>
+    </table>
+    <div style="margin-top:10px; padding:10px; border-left:4px solid ${fertile ? '#16a34a':'#0284c7'}; background:#f8fafc;">
+        <b style="color:${fertile ? '#16a34a':'#0284c7'};">CONCLUSION : ${fertile ? 'RÉSERVE OVARIENNE SATISFAISANTE' : 'RÉSERVE OVARIENNE DIMINUÉE'}</b>
+    </div>`;
+
+    const dConcl = document.getElementById('d-concl');
+    if (dConcl) {
+        dConcl.innerHTML = `<b>BILAN HORMONAL DE FERTILITÉ (J3)</b><br>${htmlTable}`;
+    }
 };
 
 /* ── GYNÉCO — Stérilité homme ── */
 window.lancerSterilite = function() {
     window.resetSeulementBio(false);
     const sexe = document.getElementById('patientSex')?.value;
-    if (sexe !== 'H') { alert("⛔ Pour une femme, utilisez le Bilan Fertilité."); return; }
+    if (sexe !== 'H') { 
+        alert("⛔ Ce module est réservé aux analyses masculines (Spermogramme)."); 
+        return; 
+    }
 
     const rand = Math.random();
-    let texte;
-    if (rand < 0.2) {
-        texte = `SPERMOGRAMME : AZOOSPERMIE.\n\nConcentration : 0 M/mL — Absence totale de spermatozoïdes.\nMobilité : 0%.\n\nVERDICT : Stérilité d'origine sécrétoire ou obstructive. Bilan hormonal complémentaire requis.`;
-    } else if (rand < 0.5) {
-        const conc = Math.floor(Math.random()*10+2);
-        texte = `SPERMOGRAMME : HYPOFERTILITÉ MASCULINE.\n\nConcentration : ${conc} M/mL (Faible — norme > 15).\nMobilité : Réduite.\n\nOligospermie confirmée. Conception spontanée difficile.`;
-    } else {
-        const conc = Math.floor(Math.random()*60+20);
-        texte = `SPERMOGRAMME : PARAMÈTRES NORMAUX.\n\nConcentration : ${conc} M/mL ✓\nMobilité : Excellente.\n\nAucune stérilité détectée.`;
+    let volume = (Math.random() * 3 + 1.5).toFixed(1);
+    let ph = (Math.random() * 0.4 + 7.2).toFixed(1);
+    let concentration, mobilite, morpho, diagnostic, couleur;
+
+    if (rand < 0.2) { // Cas Stérilité (Azoospermie)
+        concentration = "0";
+        mobilite = "0";
+        morpho = "0";
+        couleur = "#dc2626";
+        diagnostic = "AZOOSPERMIE : Absence totale de spermatozoïdes dans l'éjaculat.";
+    } else if (rand < 0.5) { // Cas Hypofertilité
+        concentration = Math.floor(Math.random() * 10 + 2);
+        mobilite = Math.floor(Math.random() * 20 + 10);
+        morpho = Math.floor(Math.random() * 20 + 10);
+        couleur = "#0284c7";
+        diagnostic = "OLIGO-ASTHÉNOSPERMIE : Concentration et mobilité inférieures aux normes OMS.";
+    } else { // Cas Normal
+        concentration = Math.floor(Math.random() * 50 + 20);
+        mobilite = Math.floor(Math.random() * 30 + 40);
+        morpho = Math.floor(Math.random() * 30 + 30);
+        couleur = "#16a34a";
+        diagnostic = "NORMOSPERMIE : Paramètres séminal dans les normes de fertilité.";
     }
-    fusionnerConclusion(texte);
+
+    const htmlTable = `
+    <table class="result-table">
+        <tr>
+            <th>PARAMÈTRE</th>
+            <th>RÉSULTAT</th>
+            <th>VALEURS DE RÉFÉRENCE</th>
+        </tr>
+        <tr><td>Volume de l'éjaculat</td><td class="highlight">${volume} mL</td><td>> 1.5 mL</td></tr>
+        <tr><td>pH</td><td class="highlight">${ph}</td><td>7.2 - 8.0</td></tr>
+        <tr><td>Concentration</td><td class="highlight">${concentration} M/mL</td><td>> 15 M/mL</td></tr>
+        <tr><td>Mobilité Progressive (a+b)</td><td class="highlight">${mobilite} %</td><td>> 32 %</td></tr>
+        <tr><td>Formes typiques</td><td class="highlight">${morpho} %</td><td>> 4 %</td></tr>
+    </table>
+    <div style="margin-top:10px; padding:10px; border-left:4px solid ${couleur}; background:#f8fafc;">
+        <b style="color:${couleur}; font-size:13px;">CONCLUSION : ${diagnostic}</b><br>
+        <span style="font-size:11px; color:#475569;">Analyse effectuée après 4 jours d'abstinence sexuelle.</span>
+    </div>`;
+
+    const dConcl = document.getElementById('d-concl');
+    if (dConcl) {
+        dConcl.innerHTML = `<b>COMPTE-RENDU DE SPERMOGRAMME</b><br>${htmlTable}`;
+    }
 };
 
 window.lancerGroupageSanguin = function() {
