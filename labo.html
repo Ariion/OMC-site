@@ -170,6 +170,7 @@
                     background:#1c0505; border:1px solid #7f1d1d; border-radius:4px;">
             💡 Sélectionnez un groupe sanguin ou laissez vide pour un tirage aléatoire
         </div>
+        
 
         <!-- BOUTON 1 : Générer le groupage -->
         <button type="button"
@@ -199,7 +200,19 @@
     </div>
 </div>
 
-
+<div class="scenario-bloc" style="border-color: #0ea5e933; background: #081526;">
+    <div class="scenario-bloc-title" style="color: #38bdf8;">🩺 BILANS DE ROUTINE</div>
+    
+    <div class="scenario-card" style="border-color: #0ea5e9; background: #0f172a;">
+        <div class="scenario-card-title" style="color: #bae6fd;">✅ BILAN SANGUIN COMPLET</div>
+        <div style="font-size:10px; color:#64748b; margin-bottom:6px; font-style:italic;">
+            NFS · Ionogramme · Rénal · Hépatique · Glycémie · CRP
+        </div>
+        <button type="button" onclick="lancerBilanComplet()" class="btn-scenario" style="background:#0c4a6e; border-color:#0284c7; color:#bae6fd;">
+            GÉNÉRER UN BILAN SAIN
+        </button>
+    </div>
+</div>
 
                 <!-- URGENCES -->
                 <div class="scenario-bloc">

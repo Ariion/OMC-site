@@ -153,6 +153,47 @@ function cleanId(str) {
 // ==========================================
 // 3. SCÉNARIOS CLINIQUES COMPLETS
 // ==========================================
+/* ── BILAN COMPLET DE ROUTINE (Sain) ── */
+window.lancerBilanComplet = function() {
+    window.resetSeulementBio(false);
+
+    // Fonction pour générer un nombre aléatoire naturel entre deux normes
+    const r = (min, max) => (Math.random() * (max - min) + min);
+
+    // NFS (Sang)
+    set('gb', r(5.5, 8.5).toFixed(1), 'HÉMATOLOGIE (NFS)');
+    set('gr', r(4.6, 5.3).toFixed(2), 'HÉMATOLOGIE (NFS)');
+    set('hb', r(14.0, 16.0).toFixed(1), 'HÉMATOLOGIE (NFS)');
+    set('ht', r(42, 50).toFixed(0), 'HÉMATOLOGIE (NFS)');
+    set('pla', r(220, 350).toFixed(0), 'HÉMATOLOGIE (NFS)');
+
+    // Biochimie & Reins
+    set('gly', r(0.85, 1.05).toFixed(2), 'BIOCHIMIE MÉTABOLIQUE'); // Sucre
+    set('uree', r(0.25, 0.40).toFixed(2), 'BIOCHIMIE MÉTABOLIQUE'); // Rein
+    set('crea', r(8.0, 11.0).toFixed(1), 'BIOCHIMIE MÉTABOLIQUE'); // Rein
+    set('crp', '< 5.0', 'BIOCHIMIE MÉTABOLIQUE'); // Inflammation
+
+    // Ionogramme (Sels)
+    set('na', Math.floor(r(138, 143)).toString(), 'IONOGRAMME');
+    set('k', r(3.8, 4.5).toFixed(1), 'IONOGRAMME');
+    set('cl', Math.floor(r(98, 104)).toString(), 'IONOGRAMME');
+
+    // Hépatique (Foie)
+    set('asat', Math.floor(r(15, 30)).toString(), 'BILAN HÉPATIQUE');
+    set('alat', Math.floor(r(15, 35)).toString(), 'BILAN HÉPATIQUE');
+    set('ggt', Math.floor(r(15, 45)).toString(), 'BILAN HÉPATIQUE');
+
+    // Conclusion prête à l'emploi
+    fusionnerConclusion(
+        "BILAN BIOLOGIQUE GLOBAL DE ROUTINE :\n\n" +
+        "- Hématologie (NFS) : Sans particularité. Pas de syndrome anémique ou infectieux.\n" +
+        "- Fonction rénale : Préservée (Clairance estimée normale).\n" +
+        "- Bilan hépatique : Cytolyse et cholestase négatives.\n" +
+        "- Ionogramme sanguin : Équilibré.\n" +
+        "- Marqueurs inflammatoires : CRP négative.\n\n" +
+        "CONCLUSION : Bilan sanguin complet strictement normal. Aucune anomalie physiologique détectée."
+    );
+};
 
 /* ── TRAUMA (Accident / Écrasement) ── */
 window.lancerTrauma = function() {
