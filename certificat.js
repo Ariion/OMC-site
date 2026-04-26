@@ -195,8 +195,7 @@ Le matériel est mis à disposition du ${fmtDateFR(debut)} au ${fmtDateFR(fin)} 
 
 **CONDITIONS DE PRÊT :**
 1. Le matériel doit être restitué à l'Ocean Medical Center au plus tard le ${fmtDateFR(fin)}.
-2. En cas de non-restitution, de dégradation volontaire ou de perte, une facture forfaitaire de **10 000$** sera automatiquement émise au nom du bénéficiaire.
-3. Le bénéficiaire s'engage à utiliser le matériel avec soin et uniquement dans le cadre de sa convalescence.`;
+2. Le bénéficiaire s'engage à utiliser le matériel avec soin et uniquement dans le cadre de sa convalescence.`;
 
         const el = document.getElementById('d-pret-text');
         if (el && !el._userEdited) el.innerText = texte;
