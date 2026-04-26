@@ -10,7 +10,7 @@ const DATA = [
             </div>
 
             <div class="guide-section">
-                <div class="guide-section-title">Procédure RP</div>
+                <div class="guide-section-title">Procédure</div>
                 - Vérifier conscience<br>
                 - Contrôler hémorragie<br>
                 - Immobilisation<br>
