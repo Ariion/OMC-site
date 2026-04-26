@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMC - Guide Médical</title>
+
+<link rel="stylesheet" href="global.css">
+
+<style>
+/* ===== LAYOUT ===== */
+.guide-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.guide-sidebar {
+    width: 400px;
+    background: #0a192f;
+    border-right: 1px solid #1e293b;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.guide-title {
+    color: #00d2ff;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+/* SEARCH */
+.guide-search {
+    width: 100%;
+    padding: 12px;
+    background: #020617;
+    border: 1px solid #233554;
+    color: white;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+/* RESULT LIST */
+.guide-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.guide-item {
+    background: #112240;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.2s;
+}
+
+.guide-item:hover {
+    border-color: #00d2ff;
+}
+
+/* ===== CONTENT ===== */
+.guide-content {
+    flex: 1;
+    background: #0f172a;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.guide-card {
+    background: #ffffff;
+    color: #111;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.guide-card h2 {
+    margin-top: 0;
+}
+
+.guide-section {
+    margin-top: 20px;
+}
+
+.guide-section-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+/* TAGS */
+.tag {
+    display: inline-block;
+    background: #0ea5e9;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    margin-right: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="guide-container">
+
+    <!-- SIDEBAR -->
+    <div class="guide-sidebar">
+        <h2 class="guide-title">📚 GUIDE MÉDICAL</h2>
+
+        <input type="text" id="search" class="guide-search" placeholder="Rechercher...">
+
+        <div class="guide-list" id="guide-list"></div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="guide-content">
+        <div id="guide-display" class="guide-card">
+            <h2>Bienvenue</h2>
+            <p>Sélectionne une fiche à gauche ou utilise la recherche.</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="guide.js"></script>
+</body>
+</html>
